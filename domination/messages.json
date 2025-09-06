@@ -1,0 +1,393 @@
+{
+  "pt": {
+    "listanime": {
+      "select_letter": "Selecione a letra inicial do anime:",
+      "animes_starting_with": "Animes que começam com '{letter}':",
+      "characters_from_anime": "Personagens do anime '{anime_name}':",
+      "characters_from_selection": "Personagens da seleção:",
+      "no_anime_found": "Nenhum anime encontrado.",
+      "no_characters_found": "Nenhum personagem encontrado.",
+      "anime_not_found": "Anime não encontrado",
+      "previous": "⬅️ Anterior",
+      "next": "➡️ Próxima",
+      "back": "🔙 Voltar",
+      "character_clicked_by": "👤 <b>Clique de:</b> {user_mention}\n\n{character_info}",
+      "character_info": "📝 <b>Nome:</b> {character_name}\n🎌 <b>Anime:</b> {anime_name}\n⭐ <b>Raridade:</b> {rarity}",
+      "view_character": "👁️ Ver Personagem"
+    },
+    "erros": {
+      "error_command_welcome": "❌ Ocorreu um erro ao processar o comando de boas-vindas.",
+      "error_command_gift": "❌ Ocorreu um erro ao processar o comando de presente.",
+      "error_command_harem": "❌ Ocorreu um erro ao processar o comando de harém.",
+      "error_command_myinfos": "❌ Ocorreu um erro ao processar o comando de informações.",
+      "error_command_inline": "❌ Ocorreu um erro ao processar a consulta inline.",
+      "error_not_registered": "❌ Você não possui um harem",
+      "error_no_favorite": "❌ Você ainda não tem um personagem favorito!",
+      "error_no_characters": "❌ Nenhum personagem encontrado na sua coleção!",
+      "error_character_not_found": "Personagem não encontrado.",
+      "error_no_one_captured": "Ninguém capturou este personagem ainda!",
+      "error_update_failed": "Erro ao atualizar: {error}",
+      "error_pages_expired": "❌ Páginas expiradas!",
+      "error_cannot_use_button": "❌ Você não pode usar este botão!",
+      "error_only_giver_confirm": "Somente o usuário que enviou o presente pode confirmar.",
+      "error_invalid_id": "O ID precisa ser um número válido.",
+      "error_character_not_owned": "Você não possui esse personagem para presentear.",
+      "error_character_not_found_id": "{genero} com ID {personagem_id} não encontrado.",
+      "error_character_not_found_id_fav": "Esse personagem não faz parte da sua coleção",
+      "error_id_required": "Me informe o ID do {genero} para presentear 🤖"
+    },
+    "help_bot": {
+      "help_bot": "<b>Ajuda</b>\nEscolha uma das opções abaixo\n➼ Manipuladores utilizáveis: [{prefixo}]\n<span class=\"tg-spoiler\">\u200b</span>"
+    },
+    "welcome": {
+      "init_text": "<b>saudações, sou o <i>{bot_name}</i>, prazer em conhecê-lo(a)!</b>\n━━━━━━━▧▣▧━━━━━━━\n<b>• o que eu faço ?</b>: eu gero {genero} no seu grupo para que os usuários possam capturá-lo.\n━━━━━━━▧▣▧━━━━━━━",
+      "buttons": {
+        "add": "add+",
+        "support": "noticias/suporte",
+        "help": "ajuda",
+        "update": "atualizar",
+        "back": "voltar"
+      },
+      "commands": {
+        "fav": "para marcar uma waifu como favorita",
+        "harem": "para alterar o modo harém",
+        "set": "muda {m}"
+      }
+    },
+    "gift": {
+      "reply_required": "Responda a mensagem do usuário que deseja presentear.",
+      "id_required": "Me informe o ID do {genero} para presentear 🤖",
+      "confirmation_message": "{giver_mention} deseja enviar {character_name} para {receiver_mention}.\n\nDeseja confirmar o envio?",
+      "success_sent": "🎁 {character_name} foi enviado de {giver_mention} para o {receiver_mention} com sucesso!",
+      "cancelled": "❌ Envio cancelado. Nenhuma alteração foi feita."
+    },
+    "harem": {
+      "title": "๛Harem ツ",
+      "anime_header": "☛ {anime} {colecao}/{total_banco}\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n",
+      "character_line": "➢ ꙳ {id} ꙳ {raridade} ꙳ {nome} {evento} {count}x\n",
+      "anime_footer": "✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n",
+      "navigation": {
+        "previous": "◀️",
+        "next": "▶️",
+        "page_info": "ℹ️ Informação da página atual",
+        "inline_query": "🌐",
+        "delete": "🗑"
+      },
+      "deleted": "🗑️ Harem removido!",
+      "simple_count": "h{count}"
+    },
+    "myinfos": {
+      "title": "📜 <b>Suas Informações</b>",
+      "user_mention": "👤 <b>{user_mention}</b>",
+      "global_position": "🏆 Posição no ranking global: <code>{position}</code>",
+      "group_position": "🏆 Posição no ranking do grupo: <code>{position}</code>",
+      "user_id": "🆔 ID: <code>{user_id}</code>",
+      "progress": "📊 Progresso: <a href=tg://user?id={user_id}>{barra}</a> {porcentagem:.2f}%",
+      "dominated": "💖 {genero} Dominadas: <code>{total_dominados}/{total_geral}</code>",
+      "delete_button": "🗑"
+    },
+    "inline": {
+      "who_captured_title": "CLIKY:<a href='tg://user?id={user_id}'>{user_name}</a>\n\n☁️ <b>Quem capturou ({count}):</b>",
+      "who_captured_item": "• <a href='tg://user?id={user_id}'>{user_name}</a>",
+      "switch_pm_text": "𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾",
+      "switch_pm_parameter": "x",
+      "anime_description": "Anime: {anime}",
+      "who_captured_button": "🔢 Quem capturou"
+    },
+    "commands": {
+      "user_commands": "➲ Abaixo estão os comandos para usuários:\n",
+      "commands_header": "━━━━━━━ comandos ━━━━━━━",
+      "command_line": "⎆ /{prefixo}{command} : {description}",
+      "commands_footer": "━━━━━━━ comandos ━━━━━━━",
+      "back_button": "voltar",
+      "user_commands_button": "Comandos user"
+    },
+    "general": {
+      "loading": "carregando...",
+      "error": "❌ Erro: {error}"
+    },
+    "top": {
+      "no_data": "Nenhum dado encontrado.",
+      "no_members": "Não encontrei membros no grupo.",
+      "no_group_collection": "Nenhum membro do grupo possui coleção.",
+      "no_user_collection": "Você ainda não possui coleção neste grupo.",
+      "global_title": "🏆 <b>Top Global</b> 🏆",
+      "chat_title": "🏆 <b>Top {chat_title}</b> 🏆",
+      "position": "Sua posição no grupo: #{position}",
+      "buttons": {
+        "refresh": "🔄 Atualizar",
+        "global": "🌍 Top Global",
+        "chat": "👥 Top do Chat",
+        "position": "📊 Minha posição",
+        "delete": "🗑"
+      },
+      "refresh_text": "..."
+    },
+    "contador": {
+      "character_appeared": "{raridade} {genero} apareceu!",
+      "add_to_harem": "Adicione-o ao seu harém enviando:",
+      "dominar_command": "/dominar <code>nome</code>",
+      "use_dominar": "Use: /dominar nome_do_personagem",
+      "new_character": "<b>{user_mention} você tem um {genero} novo!</b>",
+      "name": "<b>🎞 Nome: {name}</b>",
+      "source": "<b>📦 Fonte: {source}</b>",
+      "rarity": "<b>{rarity_emoji} Raridade: {rarity_name}</b>",
+      "time_spent": "⏳ Tempo gasto: <code>{time}</code>",
+      "wrong_character": "❌ Esse não é o personagem correto. Tente novamente!",
+      "inline_button": "🌐",
+      "no_active_character": "❌ Não há nenhum personagem ativo para dominar agora!",
+      "character_clicked_by": "👤 <b>Clique de:</b> {user_mention}\n\n{character_info}",
+      "character_info": "📝 <b>Nome:</b> {character_name}\n🎌 <b>Anime:</b> {anime_name}\n⭐ <b>Raridade:</b> {rarity}",
+      "view_character": "👁️ Ver Personagem"
+    },
+    "harem_mode": {
+      "choose_option": "escolha uma das opções para ordenar o seu harem",
+      "check_mark": "✅",
+      "mode_updated": "✅ Modo do harém atualizado com sucesso para {mode}!",
+      "buttons_updated": "✅ Botões inline atualizados com sucesso!",
+      "error_saving_mode": "❌ Ocorreu um erro ao salvar o modo do harém.",
+      "error_updating_buttons": "❌ Erro ao atualizar botões inline: {error}"
+    },
+    "trade": {
+      "reply_required": "Responda a mensagem do usuário com quem deseja fazer a troca.",
+      "usage": "Use: /trade <ID_DO_SEU_PERSONAGEM> <ID_DO_OUTRO_PERSONAGEM>",
+      "invalid_ids": "IDs devem ser números válidos.",
+      "character_not_exists": "Um dos personagens não existe.",
+      "you_dont_have": "Você não possui o personagem que deseja trocar.",
+      "other_dont_have": "O outro usuário não possui o personagem solicitado.",
+      "trade_proposal": "{giver_mention} quer trocar ID {my_char_id} ({my_char_name}) por ID {other_char_id} ({other_char_name}) de {receiver_mention}.\nConfirme a troca:",
+      "only_receiver_accept": "Somente quem recebeu a troca pode aceitar.",
+      "trade_success": "✅ Troca realizada com sucesso!",
+      "trade_failed": "❌ A troca falhou: um dos personagens não existe mais na coleção.",
+      "trade_rejected": "❌ Troca recusada pelo receptor."
+    },
+    "favorito": {
+      "confirm_favorite": "Tornar seu favorito?\n\n{character_info}",
+      "favorite_set_success": "✅ Favorito definido com sucesso!\n{info}\nConfira {prefix}{harem_command}",
+      "operation_cancelled": "❌ Operação cancelada."
+    },
+    "eventos": {
+      "small_group_leaving": "Grupo tem menos de 20 membros, estou saindo.",
+      "bot_added_to_group": "✅ Fui adicionado a um novo grupo!\n\n🏷 Nome do grupo: {group_title}\n🆔 ID do grupo: <code>{group_id}</code>\n👤 Adicionado por: {adder_info}\n👥 Total de membros: {member_count}"
+    },
+    "lang": {
+      "not_admin": "❌ Apenas administradores podem alterar o idioma do chat!",
+      "error_checking_permissions": "❌ Erro ao verificar permissões do usuário.",
+      "invalid_language": "❌ Idioma inválido! Use /lang para ver idiomas disponíveis.",
+      "choose_language": "🌍 <b>Escolha o idioma do chat</b>\n\nIdioma atual: <code>{current_language}</code>",
+      "language_updated": "✅ Idioma do chat alterado para <b>{language}</b> em {chat_name}!",
+      "language_set": "✅ Idioma do chat definido como <b>{language}</b> em {chat_name}!",
+      "error_saving_language": "❌ Erro ao salvar idioma. Tente novamente."
+    },
+    "commads": {
+      "fav": "para marcar uma waifu como favorita",
+      "harem": "para alterar o modo harém",
+      "modeharem": "para configurar o modo de exibição do harém",
+      "dominar": "para dominar uma waifu",
+      "gift": "para presentear uma waifu",
+      "listanime": "para ver os animes adicionados no bot",
+      "myinfo": "para ver suas informações no banco de dados",
+      "top": "para ver os principais colecionadores",
+      "topchat": "para ver o ranking do chat",
+      "trade": "para negociar ",
+      "start": "para iniciar o bot",
+      "lang": "para alterar o idioma do bot"
+    }
+  },
+  "en": {
+    "listanime": {
+      "select_letter": "Select the initial letter of the anime:",
+      "animes_starting_with": "Animes starting with '{letter}':",
+      "characters_from_anime": "Characters from anime '{anime_name}':",
+      "characters_from_selection": "Characters from selection:",
+      "no_anime_found": "No anime found.",
+      "no_characters_found": "No characters found.",
+      "anime_not_found": "Anime not found",
+      "previous": "⬅️ Previous",
+      "next": "➡️ Next",
+      "back": "🔙 Back",
+      "character_clicked_by": "👤 <b>Clicked by:</b> {user_mention}\n\n{character_info}",
+      "character_info": "📝 <b>Name:</b> {character_name}\n🎌 <b>Anime:</b> {anime_name}\n⭐ <b>Rarity:</b> {rarity}",
+      "view_character": "👁️ View Character"
+    },
+    "erros": {
+      "error_command_welcome": "❌ An error occurred while processing the welcome command.",
+      "error_command_gift": "❌ An error occurred while processing the gift command.",
+      "error_command_harem": "❌ An error occurred while processing the harem command.",
+      "error_command_myinfos": "❌ An error occurred while processing the info command.",
+      "error_command_inline": "❌ An error occurred while processing the inline query.",
+      "error_not_registered": "❌ You don't have a harem",
+      "error_no_favorite": "❌ You don't have a favorite character yet!",
+      "error_no_characters": "❌ No characters found in your collection!",
+      "error_character_not_found": "Character not found.",
+      "error_no_one_captured": "No one has captured this character yet!",
+      "error_update_failed": "Update error: {error}",
+      "error_pages_expired": "❌ Pages expired!",
+      "error_cannot_use_button": "❌ You can't use this button!",
+      "error_only_giver_confirm": "Only the user who sent the gift can confirm.",
+      "error_invalid_id": "ID must be a valid number.",
+      "error_character_not_owned": "You don't own this character to gift.",
+      "error_character_not_found_id": "{genero} with ID {personagem_id} not found.",
+      "error_character_not_found_id_fav": "This character is not part of your collection",
+      "error_id_required": "Give me the ID of the {genero} to gift 🤖"
+    },
+    "help_bot": {
+      "help_bot": "<b>Help</b>\nChoose one of the options below\n➼ Usable handlers: [{prefixo}]\n<span class=\"tg-spoiler\">\u200b</span>"
+    },
+    "welcome": {
+      "init_text": "<b>greetings, i am <i>{bot_name}</i>, nice to meet you!</b>\n━━━━━━━▧▣▧━━━━━━━\n<b>• what do i do?</b>: i generate {genero} in your group so users can capture them.\n━━━━━━━▧▣▧━━━━━━━",
+      "buttons": {
+        "add": "add+",
+        "support": "news/support",
+        "help": "help",
+        "update": "update",
+        "back": "back"
+      },
+      "commands": {
+        "fav": "to mark a waifu as favorite",
+        "harem": "to change harem mode",
+        "set": "changes {m}"
+      }
+    },
+    "gift": {
+      "reply_required": "Reply to the message of the user you want to gift.",
+      "id_required": "Please provide a {genero} ID to gift.",
+      "confirmation_message": "{giver_mention} wants to send {character_name} to {receiver_mention}.\n\nDo you want to confirm the sending?",
+      "success_sent": "🎁 {character_name} was sent from {giver_mention} to the {receiver_mention} successfully!",
+      "cancelled": "❌ Sending cancelled. No changes were made."
+    },
+    "harem": {
+      "title": "๛Harem ツ",
+      "anime_header": "☛ {anime} {colecao}/{total_banco}\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n",
+      "character_line": "➢ ꙳ {id} ꙳ {raridade} ꙳ {nome} {evento} {count}x\n",
+      "anime_footer": "✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n",
+      "navigation": {
+        "previous": "◀️",
+        "next": "▶️",
+        "page_info": "ℹ️ Current page info",
+        "inline_query": "🌐",
+        "delete": "🗑"
+      },
+      "deleted": "🗑️ Harem removed!",
+      "simple_count": "h{count}"
+    },
+    "myinfos": {
+      "title": "📜 <b>Your Information</b>",
+      "user_mention": "👤 <b>{user_mention}</b>",
+      "global_position": "🏆 Global ranking position: <code>{position}</code>",
+      "group_position": "🏆 Position in group ranking: <code>{position}</code>",
+      "user_id": "🆔 ID: <code>{user_id}</code>",
+      "progress": "📊 Progress: <a href=tg://user?id={user_id}>{barra}</a> {porcentagem:.2f}%",
+      "dominated": "💖 {genero} Dominated: <code>{total_dominados}/{total_geral}</code>",
+      "delete_button": "🗑"
+    },
+    "inline": {
+      "who_captured_title": "CLIKY:<a href='tg://user?id={user_id}'>{user_name}</a>\n\n☁️ <b>Who captured ({count}):</b>",
+      "who_captured_item": "• <a href='tg://user?id={user_id}'>{user_name}</a>",
+      "switch_pm_text": "𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾",
+      "switch_pm_parameter": "x",
+      "anime_description": "Anime: {anime}",
+      "who_captured_button": "🔢 Who captured"
+    },
+    "commands": {
+      "user_commands": "➲ Below are the commands for users:\n",
+      "commands_header": "━━━━━━━ commands ━━━━━━━",
+      "command_line": "⎆ /{prefixo}{command} : {description}",
+      "commands_footer": "━━━━━━━ commands ━━━━━━━",
+      "back_button": "back",
+      "user_commands_button": "User commands"
+    },
+    "general": {
+      "loading": "loading...",
+      "error": "❌ Error: {error}"
+    },
+    "top": {
+      "no_data": "No data found.",
+      "no_members": "No members found in the group.",
+      "no_group_collection": "No group member has a collection.",
+      "no_user_collection": "You don't have a collection in this group yet.",
+      "global_title": "🏆 <b>Global Top</b> 🏆",
+      "chat_title": "🏆 <b>Top {chat_title}</b> 🏆",
+      "position": "Your position in the group: #{position}",
+      "buttons": {
+        "refresh": "🔄 Refresh",
+        "global": "🌍 Global Top",
+        "chat": "👥 Chat Top",
+        "position": "📊 My position",
+        "delete": "🗑"
+      },
+      "refresh_text": "..."
+    },
+    "contador": {
+      "character_appeared": "{raridade} {genero} appeared!",
+      "add_to_harem": "Add it to your harem by sending:",
+      "dominar_command": "/dominar <code>name</code>",
+      "use_dominar": "Use: /dominar character_name",
+      "new_character": "<b>{user_mention} you have a new {genero}!</b>",
+      "name": "<b>🎞 Name: {name}</b>",
+      "source": "<b>📦 Source: {source}</b>",
+      "rarity": "<b>{rarity_emoji} Rarity: {rarity_name}</b>",
+      "time_spent": "⏳ Time spent: <code>{time}</code>",
+      "wrong_character": "❌ That's not the correct character. Try again!",
+      "inline_button": "🌐",
+      "no_active_character": "❌ There's no active character to dominate now!",
+      "character_clicked_by": "👤 <b>Clicked by:</b> {user_mention}\n\n{character_info}",
+      "character_info": "📝 <b>Name:</b> {character_name}\n🎌 <b>Anime:</b> {anime_name}\n⭐ <b>Rarity:</b> {rarity}",
+      "view_character": "👁️ View Character"
+    },
+    "harem_mode": {
+      "choose_option": "choose one of the options to order your harem",
+      "check_mark": "✅",
+      "mode_updated": "✅ Harem mode updated successfully to {mode}!",
+      "buttons_updated": "✅ Inline buttons updated successfully!",
+      "error_saving_mode": "❌ An error occurred while saving harem mode.",
+      "error_updating_buttons": "❌ Error updating inline buttons: {error}"
+    },
+    "trade": {
+      "reply_required": "Reply to the message of the user you want to trade with.",
+      "usage": "Use: /trade <YOUR_CHARACTER_ID> <OTHER_CHARACTER_ID>",
+      "invalid_ids": "IDs must be valid numbers.",
+      "character_not_exists": "One of the characters does not exist.",
+      "you_dont_have": "You do not own the character you wish to trade.",
+      "other_dont_have": "The other user does not own the requested character.",
+      "trade_proposal": "{giver_mention} wants to trade ID {my_char_id} ({my_char_name}) for ID {other_char_id} ({other_char_name}) from {receiver_mention}.\nConfirm the trade:",
+      "only_receiver_accept": "Only the receiver can accept the trade.",
+      "trade_success": "✅ Trade completed successfully!",
+      "trade_failed": "❌ Trade failed: one of the characters no longer exists in the collection.",
+      "trade_rejected": "❌ Trade rejected by receiver."
+    },
+    "favorito": {
+      "confirm_favorite": "Make it your favorite?\n\n{character_info}",
+      "favorite_set_success": "✅ Favorite set successfully!\n{info}\nCheck {prefix}{harem_command}",
+      "operation_cancelled": "❌ Operation cancelled."
+    },
+    "eventos": {
+      "small_group_leaving": "Group has less than 20 members, I'm leaving.",
+      "bot_added_to_group": "✅ I was added to a new group!\n\n🏷 Group name: {group_title}\n🆔 Group ID: <code>{group_id}</code>\n👤 Added by: {adder_info}\n👥 Total members: {member_count}"
+    },
+    "lang": {
+      "not_admin": "❌ Only administrators can change the chat language!",
+      "error_checking_permissions": "❌ Error checking user permissions.",
+      "invalid_language": "❌ Invalid language! Use /lang to see available languages.",
+      "choose_language": "🌍 <b>Choose the chat language</b>\n\nCurrent language: <code>{current_language}</code>",
+      "language_updated": "✅ Chat language changed to <b>{language}</b> in {chat_name}!",
+      "language_set": "✅ Chat language set to <b>{language}</b> in {chat_name}!",
+      "error_saving_language": "❌ Error saving language. Please try again."
+    },
+    "commads": {
+      "fav": "to mark a waifu as favorite",
+      "harem": "to change harem mode",
+      "modeharem": "to configure the harem display mode",
+      "dominar": "to dominate a waifu",
+      "gift": "to gift a waifu",
+      "listanime": "to see the animes added to the bot",
+      "myinfo": "to see your information in the database",
+      "top": "to see the top collectors",
+      "topchat": "to see the chat ranking",
+      "trade": "to negotiate",
+      "start": "to start the bot",
+      "lang": "to change the bot language"
+    }
+  }
+}
+
