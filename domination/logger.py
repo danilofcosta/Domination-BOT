@@ -63,3 +63,4 @@ def log_debug(message: str, module: str = "main"):
 def log_warning(message: str, module: str = "main"):
     """Log de aviso"""
     get_module_logger(module).warning(message)
+

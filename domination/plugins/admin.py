@@ -101,13 +101,14 @@ async def set_bot_description(client: Client, message: Message):
     # Verificar se há texto no comando
     if len(message.command) < 2:
         await message.reply(
-            "📝 **Como usar:**\n"
-            "• `/setdesc <descrição>` - Define a descrição do bot\n"
-            "• `/setdesc about <texto>` - Define o 'About' do bot\n"
-            "• `/setdesc short <texto>` - Define descrição curta\n\n"
-            "**Exemplos:**\n"
-            "• `/setdesc Bot para capturar waifus`\n"
-            "• `/setdesc about Este bot permite capturar personagens de anime`",
+            """`📝 <b>Como usar:</b><br>
+            • <code>/setdesc &lt;descrição&gt;</code> - Define a descrição do bot<br>
+            • <code>/setdesc about &lt;texto&gt;</code> - Define o 'About' do bot<br>
+            • <code>/setdesc short &lt;texto&gt;</code> - Define descrição curta<br><br>
+            
+            <b>Exemplos:</b><br>
+            • <code>/setdesc Bot para capturar waifus</code><br>
+            • <code>/setdesc about Este bot permite capturar personagens de anime</code>`""",
             quote=True
         )
         return

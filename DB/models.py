@@ -246,10 +246,10 @@ class ColecaoUsuarioHusbando:
 class ChatTG:
     __tablename__ = "chats_tg"
 
-    id: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False, autoincrement=True)
     id_grupo: Mapped[int] = mapped_column(BigInteger, unique=True, index=True)
     name: Mapped[str] = mapped_column(String)
-    configs: Mapped[dict] = mapped_column(JSON,nullable=True)
+    configs: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     idioma: Mapped[Idioma] = mapped_column(Enum(Idioma), nullable=False, default=Idioma.PT)
     created_at: Mapped[datetime] = mapped_column(init=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

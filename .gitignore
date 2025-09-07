@@ -68,3 +68,11 @@ WAIFU.session
 WAIFU.session-journal
 domination/plugins/__pycache__/admin.cpython-313.pyc
 sessions/
+alembic/versions/__pycache__/3c2773b5ffc2_corrige_id_local_para_identity_.cpython-313.pyc
+alembic/versions/__pycache__/9f1734eda64b_final_check.cpython-313.pyc
+alembic/versions/__pycache__/50fcb19d2592_check_differences.cpython-313.pyc
+alembic/versions/__pycache__/0215d260f70d_fix_chattg_id_identity.cpython-313.pyc
+alembic/versions/__pycache__/add_unique_constraints.cpython-313.pyc
+alembic/versions/__pycache__/fix_auto_increment.cpython-313.pyc
+alembic/versions/__pycache__/fix_chattg_id_simple.cpython-313.pyc
+alembic/versions/__pycache__/3c2773b5ffc2_corrige_id_local_para_identity_.cpython-313.pyc
