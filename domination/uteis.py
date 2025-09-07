@@ -5,6 +5,7 @@ from pyrogram import Client,filters
 from DB.models import PersonagemHusbando, PersonagemWaifu
 from types_ import TipoCategoria, TipoEvento, TipoMidia
 from enum import Enum as PyEnum
+from domination.logger import log_info, log_error, log_debug
 
 PREXIFOS = ["/", ".", "!"]
 
@@ -58,7 +59,7 @@ def format_personagem_caption(
         f"<b>{raridade.capitalize()}</b>\n\n"
         f"{evento}"
     )
-    # print(caption)
+    # log_debug(f"Caption formatado: {caption}", "uteis")
     return "".join(caption)
 
 
@@ -182,10 +183,10 @@ def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
         for pre in PREXIFOS:
             text_lower = text_lower_f.split()[0].split("@")[0]
             if text_lower == f"{pre}{comando}":
-                print(text_lower)
+                log_debug(f"Texto em lowercase: {text_lower}", "uteis")
                 excluido_prefixo = text_lower_f.replace(pre, "", 1).split(" ")
                 message.command = excluido_prefixo
-                print(excluido_prefixo)
+                log_debug(f"Comando processado: {excluido_prefixo}", "uteis")
                 return True
         # if text_lower.startswith(f"{pre}{comando}") :
         #    excluido_prefixo = text_lower.replace(pre, "", 1).split(" ")
@@ -210,10 +211,4 @@ def create_bt_clear() -> InlineKeyboardButton:
     return InlineKeyboardButton(f"🗑", callback_data=f"clear_msg")
 
 
-@Client.on_callback_query(filters.regex(r"^clear_msg"))
-async def apagar_harem(client: Client, callback_query: CallbackQuery):
 
-    try:
-        await callback_query.message.delete()
-    except:
-        pass

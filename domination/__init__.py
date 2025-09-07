@@ -1,10 +1,13 @@
-import asyncio
+from click import command
 from DB.database import AsyncSessionLocal
 from sqlalchemy.ext.asyncio import AsyncSession
 from pyrogram import Client
 from types_ import TipoCategoria
 from pyrogram.enums import ParseMode
-
+from pyrogram.types import *
+from types_ import *
+from domination.logger import log_info, log_error, log_debug
+from pathlib import Path
 
 class Domination(Client):
     def __init__(
@@ -16,7 +19,10 @@ class Domination(Client):
         genero: TipoCategoria,
         is_memory: bool = False,
         group_main: str = None,
-    ):
+        parse_mode: ParseMode = ParseMode.HTML,
+        workdir: str = "sessions",
+    ):  
+        Path(workdir).mkdir(exist_ok=True)
         self._session_factory = AsyncSessionLocal
         self._current_session = None
         self.genero = genero
@@ -29,18 +35,10 @@ class Domination(Client):
             bot_token=bot_token,
             in_memory=is_memory,
             plugins=dict(root="domination.plugins"),
-            parse_mode=ParseMode.HTML,
+            parse_mode=parse_mode,
+            workdir=workdir,
         )
 
-    # async def initialize(self):
-    #     """Inicializa o bot de forma assíncrona"""
-    #     if self._should_start:
-    #         # Só inicia se não estiver conectado
-    #         if not self.is_connected:
-    #             await self.start()
-    #         self.me = await self.get_me()
-    #     await self.send_message(chat_id="dog244", text="Bot iniciado")
-    #     await self.stop_event.wait()
 
     async def get_session(self):
         """Retorna uma sessão assíncrona que pode ser usada diretamente"""
@@ -57,3 +55,46 @@ class Domination(Client):
         if self._current_session:
             await self._current_session.close()
             self._current_session = None
+
+    async def set_comandos(self):
+        # Precisa estar conectado (chamar após start)
+        # chats privados
+        privados=await self.set_bot_commands(
+            commands=[
+                BotCommand(command.lower(), description.lower())
+                for command, description in COMMAND_LIST_MIN_DESC_PV.items()
+            ],
+            scope=BotCommandScopeAllPrivateChats(),
+        )
+
+        # chats de grupo
+        grupos=await self.set_bot_commands(
+            commands=[
+                BotCommand(f"{self.genero.value[0].lower()}{command.lower()}", description)
+                for command, description in COMMAND_LIST_MIN_DESC_PUBLIC.items()
+            ],
+            scope=BotCommandScopeAllGroupChats(),
+        )
+
+        # comandos de admin
+        admin=await self.set_bot_commands(
+            commands=[
+                BotCommand(f"{self.genero.value[0].lower()}{command.lower()}", description)
+                for command, description in COMMAND_LIST_MIN_DESC_ADMIN.items()
+            ],
+            scope=BotCommandScopeAllChatAdministrators(),
+        )
+        log_info(f"Comandos definidos - Privados: {privados}, Grupos: {grupos}, Admin: {admin}", "commands")
+    def start(self):
+        res = super().start()
+        try:
+            try:
+                self.me = self.get_me()
+            except Exception:
+                pass
+            # agenda set_comandos no loop do cliente
+            if hasattr(self, "loop"):
+                self.loop.create_task(self.set_comandos())
+        except Exception:
+            pass
+        return res

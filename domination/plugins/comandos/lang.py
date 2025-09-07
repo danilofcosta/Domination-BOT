@@ -6,6 +6,7 @@ from types_ import COMMAND_LIST
 from domination.message import MESSAGE
 from domination.uteis import  dynamic_command_filter
 from domination.plugins.lang_utils import obter_Idioma_chat,obter_Idiomas_disponiveis,obter_mensagem_chat,validar_Idioma,obter_enum_Idioma ,definir_Idioma_chat
+from domination.logger import log_info, log_error, log_debug
 
 
 @Client.on_message(
@@ -36,7 +37,7 @@ async def comando_lang(client: Client, message: Message):
             return
 
     except Exception as e:
-        print(f"Erro ao verificar permissões: {e}")
+        log_error(f"Erro ao verificar permissões: {e}", "lang", exc_info=True)
         await message.reply(
             await obter_mensagem_chat(client, message.chat.id, "lang", "error_checking_permissions"), quote=True
         )
@@ -158,7 +159,7 @@ async def callback_lang(client: Client, query:CallbackQuery):
             return
 
     except Exception as e:
-        print(f"Erro ao verificar permissões: {e}")
+        log_error(f"Erro ao verificar permissões: {e}", "lang", exc_info=True)
         await query.answer(
             await obter_mensagem_chat(
                 client, query.message.chat.id, "lang", "error_checking_permissions"

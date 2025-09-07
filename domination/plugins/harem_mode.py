@@ -10,6 +10,7 @@ from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando, Evento_Midia
 from types_ import ModoHarem, TipoCategoria, TipoEvento, TipoRaridade,COMMAND_LIST
 from domination.uteis import  create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
 from domination.message import MESSAGE
+from domination.logger import log_info, log_error, log_debug
 
 
 # -----------------------------
@@ -44,13 +45,13 @@ async def harem_mode(client: Client, message: Message):
             if client.genero == TipoCategoria.HUSBANDO
             else usuario.configs_w
         )
-        print(f"Configs lidos do banco na função harem_mode: {configs}")
+        log_debug(f"Configs lidos do banco na função harem_mode: {configs}", "harem_mode")
         modo_harem = (
             configs.get("modo_harem", ModoHarem.PADRAO.value)
             if configs
             else ModoHarem.PADRAO.value
         )
-        print(f"Modo harém detectado: {modo_harem}")
+        log_debug(f"Modo harém detectado: {modo_harem}", "harem_mode")
 
         # Cria botões inline (cada botão em uma linha)
         bts = []
@@ -153,20 +154,20 @@ async def setmodoharem(client: Client, query: CallbackQuery):
         # Atualiza as configurações do harém
         if client.genero == TipoCategoria.HUSBANDO:
             configs = usuario.configs_h or {}
-            print(f"configs_h antes da mudança: {configs}")
+            log_debug(f"configs_h antes da mudança: {configs}", "harem_mode")
         else:
             configs = usuario.configs_w or {}
-            print(f"configs_w antes da mudança: {configs}")
+            log_debug(f"configs_w antes da mudança: {configs}", "harem_mode")
 
         configs["modo_harem"] = modo_selecionado
-        print(f"Configs após mudança: {configs}")
+        log_debug(f"Configs após mudança: {configs}", "harem_mode")
 
         if client.genero == TipoCategoria.HUSBANDO:
             usuario.configs_h = configs
-            print(f"usuario.configs_h definido como: {usuario.configs_h}")
+            log_debug(f"usuario.configs_h definido como: {usuario.configs_h}", "harem_mode")
         else:
             usuario.configs_w = configs
-            print(f"usuario.configs_w definido como: {usuario.configs_w}")
+            log_debug(f"usuario.configs_w definido como: {usuario.configs_w}", "harem_mode")
 
         # Força o SQLAlchemy a detectar a mudança
         from sqlalchemy.orm.attributes import flag_modified
@@ -180,14 +181,10 @@ async def setmodoharem(client: Client, query: CallbackQuery):
 
         try:
             await session.commit()
-            print(
-                MESSAGE.get_text(
-                    "pt", "harem_mode", "mode_updated", mode=modo_selecionado
-                )
-            )
+            log_info(f"Modo harém atualizado para: {modo_selecionado}", "harem_mode")
         except Exception as e:
             await session.rollback()
-            print("Erro ao salvar modo do harém:", e)
+            log_error(f"Erro ao salvar modo do harém: {e}", "harem_mode", exc_info=True)
             await query.message.edit_text(
                 MESSAGE.get_text("pt", "harem_mode", "error_saving_mode")
             )
@@ -195,16 +192,14 @@ async def setmodoharem(client: Client, query: CallbackQuery):
 
     # Atualiza os botões inline com o check correto
     try:
-        print(f"Atualizando botões inline com: {modo_selecionado}")
+        log_debug(f"Atualizando botões inline com: {modo_selecionado}", "harem_mode")
         await query.message.edit_caption(
             caption=f"definido {modo_selecionado} : {res[0]}" if len (res)>0 else f"definido {modo_selecionado}"
             ,reply_markup=None
         )
-        print(MESSAGE.get_text("pt", "harem_mode", "buttons_updated"))
+        log_info("Botões inline atualizados com sucesso", "harem_mode")
     except Exception as e:
-        print(
-            MESSAGE.get_text("pt", "harem_mode", "error_updating_buttons", error=str(e))
-        )
+        log_error(f"Erro ao atualizar botões inline: {e}", "harem_mode", exc_info=True)
         return
 
 

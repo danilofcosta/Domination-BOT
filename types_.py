@@ -38,19 +38,6 @@ class TipoEvento(str, PyEnum):
     ESCOLAR = 'SCHOOL'
     GAME = 'GAME'
 
-class COMMAND_LIST(PyEnum):
-    FAV = "fav"
-    HAREM = "harem"
-    HAREMMODE = "modeharem"
-    DOMINAR = "dominar"
-    GIFT = "gift"
-    LISTANIME = "listanime"
-    MYINFO = "myinfo"
-    TOP = "top"
-    TOP_CHAT = "topchat"
-    TRADE = "trade"
-    START = "start"
-    LANG = "lang"
 
 
 class TipoRaridade(str, PyEnum):
@@ -96,3 +83,50 @@ class Idioma(str, PyEnum):
     JA = 'ja'
     KO = 'ko'
     ZH = 'zh'
+
+class COMMAND_LIST(PyEnum):
+    FAV = "fav"
+    HAREM = "harem"
+    HAREMMODE = "modeharem"
+    DOMINAR = "dominar"
+    GIFT = "gift"
+    LISTANIME = "listanime"
+    MYINFO = "myinfo"
+    TOP = "top"
+    TOP_CHAT = "topchat"
+    TRADE = "trade"
+    START = "start"
+    LANG = "lang"
+    SETPROFILE = "setprofile"
+    SETDESCRIPTION = "setdesc"
+
+
+COMMAND_LIST_MIN_DESC_PV = {
+    COMMAND_LIST.FAV.value: "Adiciona ou remove um personagem dos favoritos",
+    COMMAND_LIST.HAREM.value: "Mostra seu harem",
+    COMMAND_LIST.HAREMMODE.value: "Define o modo de exibição do harem",
+    COMMAND_LIST.DOMINAR.value: "Tenta dominar um personagem",
+    COMMAND_LIST.LISTANIME.value: "Lista os animes disponíveis",
+    COMMAND_LIST.MYINFO.value: "Mostra suas informações",
+    COMMAND_LIST.TOP.value: "Mostra o ranking de usuários",
+    COMMAND_LIST.START.value: "Iniciar o bot"
+}
+COMMAND_LIST_MIN_DESC_PUBLIC = COMMAND_LIST_MIN_DESC_PV.copy()
+COMMAND_LIST_MIN_DESC_PUBLIC[COMMAND_LIST.TOP_CHAT.value] = "Mostra o ranking do chat"
+COMMAND_LIST_MIN_DESC_PUBLIC[COMMAND_LIST.GIFT.value] = "Presenteia um personagem para outro usuário"
+COMMAND_LIST_MIN_DESC_PUBLIC[COMMAND_LIST.TRADE.value] = "Troca personagens com outro usuário"
+
+COMMAND_LIST_MIN_DESC_ADMIN = {
+    COMMAND_LIST.LANG.value: "Define o idioma do bot",
+    COMMAND_LIST.SETPROFILE.value: "Define foto de perfil do bot",
+    COMMAND_LIST.SETDESCRIPTION.value: "Define descrição e about do bot"
+}
+
+
+def is_admin_or_higher(perfil_status):
+    """Verifica se o perfil do usuário é ADMIN ou superior"""
+    if not perfil_status:
+        return False
+    
+    admin_levels = [TipoPerfil.ADMIN, TipoPerfil.SUPER_ADMIN, TipoPerfil.SUPREMO]
+    return perfil_status in admin_levels

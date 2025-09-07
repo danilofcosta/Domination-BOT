@@ -7,6 +7,7 @@ from types_ import TipoCategoria
 from types_ import TipoMidia, COMMAND_LIST
 from domination.uteis import PREXIFOS, send_media_by_type
 from domination.plugins.lang_utils import obter_mensagem_chat
+from domination.logger import log_info, log_error, log_debug
 
 
 # @Client.on_message(filters.command("w") & filters.private)
@@ -86,11 +87,12 @@ async def welcome(client: object, message: Message | CallbackQuery):
             )
         else:
             await message.reply_text(
-                response_text, reply_markup=keyboard, parse_mode="HTML"
+                response_text,
+                reply_markup=keyboard,
             )
 
     except Exception as e:
-        print(f"Erro no comando : {e}")
+        log_error(f"Erro no comando welcome: {e}", "welcome", exc_info=True)
         await message.reply_text(
             await obter_mensagem_chat(
                 client, message.chat.id, "erros", "error_command_welcome"

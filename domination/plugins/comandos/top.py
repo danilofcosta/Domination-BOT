@@ -5,7 +5,6 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
-    
 )
 from types_ import TipoCategoria, TipoMidia
 from domination.plugins.lang_utils import obter_mensagem_chat
@@ -82,11 +81,7 @@ async def ranking_keyboard(client, chat_id: int, scope: str):
         ],
         [
             InlineKeyboardButton(
-                (
-                    buttons_text["global"]
-                    if scope == "chat"
-                    else buttons_text["chat"]
-                ),
+                (buttons_text["global"] if scope == "chat" else buttons_text["chat"]),
                 callback_data="ranking_global" if scope == "chat" else "ranking_chat",
             )
         ],
@@ -106,9 +101,7 @@ async def ranking_keyboard(client, chat_id: int, scope: str):
     return InlineKeyboardMarkup(buttons)
 
 
-# ====================================================
 # Comando: TOP GLOBAL
-# ====================================================
 
 
 @Client.on_message(
@@ -131,7 +124,8 @@ async def ComandoTop_global(client: Client, message: Message):
         top_list, top_text = await build_top_text(session, base, ids=None)
         if not top_list:
             await message.reply_text(
-                await obter_mensagem_chat(client, message.chat.id, "top", "no_data"), parse_mode="HTML"
+                await obter_mensagem_chat(client, message.chat.id, "top", "no_data"),
+                
             )
             return
 
@@ -152,9 +146,7 @@ async def ComandoTop_global(client: Client, message: Message):
         )
 
 
-# ====================================================
 # Comando: TOP CHAT
-# ====================================================
 
 
 @Client.on_message(
@@ -177,7 +169,8 @@ async def ComandoTop_chat(client: Client, message: Message):
     membros = [m.user.id async for m in client.get_chat_members(group_id)]
     if not membros:
         await message.reply_text(
-            await obter_mensagem_chat(client, message.chat.id, "top", "no_members"), parse_mode="HTML"
+            await obter_mensagem_chat(client, message.chat.id, "top", "no_members"),
+            
         )
         return
 
@@ -185,7 +178,10 @@ async def ComandoTop_chat(client: Client, message: Message):
         top_list, top_text = await build_top_text(session, base, ids=membros)
         if not top_list:
             await message.reply_text(
-                await obter_mensagem_chat(client, message.chat.id, "top", "no_group_collection"), parse_mode="HTML"
+                await obter_mensagem_chat(
+                    client, message.chat.id, "top", "no_group_collection"
+                ),
+                
             )
             return
 
@@ -206,9 +202,9 @@ async def ComandoTop_chat(client: Client, message: Message):
         )
 
 
-# ====================================================
 # Callback: Ver posição atual do usuário
-# ====================================================
+
+
 @Client.on_callback_query(filters.regex("^ranking_posicao$"))
 async def callback_posicao(client: Client, query: CallbackQuery):
     user_id = query.from_user.id
@@ -237,17 +233,23 @@ async def callback_posicao(client: Client, query: CallbackQuery):
 
     if posicao:
         await query.answer(
-            await obter_mensagem_chat(client, query.message.chat.id, "top", "position", position=posicao), show_alert=True
+            await obter_mensagem_chat(
+                client, query.message.chat.id, "top", "position", position=posicao
+            ),
+            show_alert=True,
         )
     else:
         await query.answer(
-            await obter_mensagem_chat(client, query.message.chat.id, "top", "no_user_collection"), show_alert=True
+            await obter_mensagem_chat(
+                client, query.message.chat.id, "top", "no_user_collection"
+            ),
+            show_alert=True,
         )
 
 
-# ====================================================
 # Callback: Ranking do Chat
-# ====================================================
+
+
 @Client.on_callback_query(filters.regex("^ranking_chat$"))
 async def call_ranking_chat(client: Client, query: CallbackQuery):
     base = (
@@ -263,7 +265,9 @@ async def call_ranking_chat(client: Client, query: CallbackQuery):
         if not top_list:
             try:
                 await query.edit_message_caption(
-                    await obter_mensagem_chat(client, query.message.chat.id, "top", "no_group_collection")
+                    await obter_mensagem_chat(
+                        client, query.message.chat.id, "top", "no_group_collection"
+                    )
                 )
                 return
             except:
@@ -277,9 +281,6 @@ async def call_ranking_chat(client: Client, query: CallbackQuery):
         pass
 
 
-# ====================================================
-# Callback: Ranking Global
-# ====================================================
 @Client.on_callback_query(filters.regex("^ranking_global$"))
 async def call_ranking_global(client: Client, query: CallbackQuery):
     base = (
@@ -287,11 +288,17 @@ async def call_ranking_global(client: Client, query: CallbackQuery):
         if client.genero == TipoCategoria.WAIFU
         else ColecaoUsuarioHusbando
     )
-    await query.edit_message_caption(await obter_mensagem_chat(client, query.message.chat.id, "top", "no_data"))
+    await query.edit_message_caption(
+        await obter_mensagem_chat(client, query.message.chat.id, "top", "no_data")
+    )
     async with await client.get_reusable_session() as session:
         top_list, top_text = await build_top_text(session, base, ids=None)
         if not top_list:
-            await query.edit_message_caption(await obter_mensagem_chat(client, query.message.chat.id, "top", "no_data"))
+            await query.edit_message_caption(
+                await obter_mensagem_chat(
+                    client, query.message.chat.id, "top", "no_data"
+                )
+            )
             return
 
     await query.edit_message_caption(
@@ -303,7 +310,11 @@ async def call_ranking_global(client: Client, query: CallbackQuery):
 @Client.on_callback_query(filters.regex("^ranking_refresh$"))
 async def ranking_refresh(client: Client, query: CallbackQuery):
     return await client.answer_callback_query(
-        query.id, text=await obter_mensagem_chat(client, query.message.chat.id, "top", "refresh_text"), show_alert=True
+        query.id,
+        text=await obter_mensagem_chat(
+            client, query.message.chat.id, "top", "refresh_text"
+        ),
+        show_alert=True,
     )
 
 

@@ -7,6 +7,7 @@ from DB.models import ChatTG
 from types_ import Idioma
 from pyrogram.types import Chat
 from domination.message import MESSAGE
+from domination.logger import log_info, log_error, log_debug
 
 async def obter_Idioma_chat(client, chat_id: int) -> str:
     """
@@ -25,7 +26,7 @@ async def obter_Idioma_chat(client, chat_id: int) -> str:
                 return "pt"  # Padrão português
 
     except Exception as e:
-        print(f"Erro ao obter Idioma do chat {chat_id}: {e}")
+        log_error(f"Erro ao obter Idioma do chat {chat_id}: {e}", "lang_utils", exc_info=True)
         return "pt"  # Padrão português
 
 
@@ -90,7 +91,7 @@ async def definir_Idioma_chat(
             return True
 
     except Exception as e:
-        print(f"Erro ao definir Idioma do chat {chat_id}: {e}")
+        log_error(f"Erro ao definir Idioma do chat {chat_id}: {e}", "lang_utils", exc_info=True)
         return False
 
 

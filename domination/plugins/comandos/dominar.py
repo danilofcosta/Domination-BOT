@@ -17,6 +17,7 @@ from DB.models import (
 from types_ import TipoCategoria, TipoPerfil,COMMAND_LIST
 
 from domination.plugins.lang_utils import obter_mensagem_chat
+from domination.logger import log_info, log_error, log_debug
 
 # ==============================
 # Função auxiliar: valida nome
@@ -131,7 +132,7 @@ async def handle_dominar(client: Client, message: Message):
             await session.commit()
         except Exception as e:
             await session.rollback()
-            print("Erro ao salvar usuário/coleção:", e)
+            log_error(f"Erro ao salvar usuário/coleção: {e}", "dominar", exc_info=True)
             return
 
     # ==============================

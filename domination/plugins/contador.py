@@ -10,6 +10,7 @@ from DB.models import (
 from types_ import TipoCategoria
 from domination.uteis import format_personagem_caption, send_media_by_type
 from domination.plugins.lang_utils import obter_mensagem_chat
+from domination.logger import log_info, log_error, log_debug
 
 from types_ import COMMAND_LIST
 message_counter: dict[str, dict[int, dict]] = {}
@@ -60,7 +61,7 @@ async def handle_group_messages(client: Client, message: Message):
         grp_counter["cont"] = 98 if grp_counter["cont"] < 98 else grp_counter["cont"]
 
     cont = grp_counter["cont"]
-    print(cont, group_id == -1001528803759,message.chat.title)
+    log_debug(f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador")
 
     # Função interna para pegar personagem aleatório
     async def get_random_character():
@@ -96,7 +97,7 @@ async def handle_group_messages(client: Client, message: Message):
             "per": personagem,
             "datetime": datetime.now(),
         }
-        print(f"Saiu: {personagem.nome_personagem}")
+        log_info(f"Personagem saiu: {personagem.nome_personagem}", "contador")
 
     # A cada 20 mensagens, deleta a mensagem atual
     elif cont % 20 == 0:
@@ -131,7 +132,7 @@ async def handle_group_messages(client: Client, message: Message):
 
         except Exception as e:
 
-            print("Erro ao deletar mensagem:", e)
+            log_error(f"Erro ao deletar mensagem: {e}", "contador", exc_info=True)
 
 
 @Client.on_callback_query(filters.regex(r"^view_character_\d+$"))
@@ -184,5 +185,16 @@ async def view_character_callback(client: Client, query: CallbackQuery):
         await query.answer("✅ Personagem enviado!")
 
     except Exception as e:
-        print(f"Erro ao visualizar personagem: {e}")
+        log_error(f"Erro ao visualizar personagem: {e}", "contador", exc_info=True)
         await query.answer("❌ Erro ao carregar personagem!", show_alert=True)
+
+
+
+@Client.on_callback_query(filters.regex(r"^clear_msg"))
+async def apagar_harem(client: Client, callback_query: CallbackQuery):
+
+    try:
+        await callback_query.message.delete()
+    except:
+        pass
+    await callback_query.answer()

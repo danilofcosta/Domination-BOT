@@ -2,6 +2,7 @@ from translate import Translator
 import re
 import json
 import os
+from domination.logger import log_info, log_error, log_debug
 
 
 # Carrega as mensagens do arquivo JSON
@@ -14,10 +15,10 @@ def _load_messages():
         with open(json_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
-        print(f"Arquivo {json_path} não encontrado!")
+        log_error(f"Arquivo {json_path} não encontrado!", "message")
         return {"pt": {}}
     except json.JSONDecodeError as e:
-        print(f"Erro ao decodificar JSON: {e}")
+        log_error(f"Erro ao decodificar JSON: {e}", "message", exc_info=True)
         return {"pt": {}}
 
 
@@ -70,7 +71,7 @@ class MESSAGE:
         # Acessa corretamente a estrutura: MESSAGES["pt"][category]
         comandos = MESSAGES.get("pt", {}).get(category, {})
         texto = comandos.get(key, "Texto não encontrado.")
-        print(kwargs)
+        log_debug(f"Kwargs para formatação: {kwargs}", "message")
         # Traduz apenas se não for português
         if Idioma != "pt":
             try:
@@ -95,7 +96,7 @@ class MESSAGE:
                 #     # Restaura placeholders após a tradução
                 #     texto = MESSAGE._restore_placeholders(texto_traduzido, placeholders)
             except Exception as e:
-                print(f"Erro na tradução com MyMemory: {e}")
+                log_error(f"Erro na tradução com MyMemory: {e}", "message", exc_info=True)
                 # try:
                 #     # Fallback para Microsoft se MyMemory falhar
                 #     translator = Translator(
@@ -119,5 +120,5 @@ class MESSAGE:
             return texto.format(**kwargs)
 
         except KeyError as e:
-            print(f"Erro ao formatar texto: {e}")
+            log_error(f"Erro ao formatar texto: {e}", "message", exc_info=True)
             return texto
