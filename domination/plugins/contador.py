@@ -8,7 +8,7 @@ from DB.models import (
     PersonagemWaifu,
 )
 from types_ import TipoCategoria
-from domination.uteis import format_personagem_caption, send_media_by_type
+from uteis import format_personagem_caption, send_media_by_type
 from domination.plugins.lang_utils import obter_mensagem_chat
 from domination.logger import log_info, log_error, log_debug
 
@@ -77,7 +77,7 @@ async def handle_group_messages(client: Client, message: Message):
             return result.scalars().first()
 
     # A cada 100 mensagens, envia personagem
-    if cont % 100 == 0:
+    if cont ==100 :
         personagem = await get_random_character()
         if not personagem:
             return
@@ -100,7 +100,7 @@ async def handle_group_messages(client: Client, message: Message):
         log_info(f"Personagem saiu: {personagem.nome_personagem}", "contador")
 
     # A cada 20 mensagens, deleta a mensagem atual
-    elif cont % 20 == 0:
+    elif cont ==120 and cont < 100:
         try:
             per= message_counter[g][group_id]["per"]
             view_text = await obter_mensagem_chat(

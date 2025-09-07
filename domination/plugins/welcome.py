@@ -5,7 +5,7 @@ from DB.models import PersonagemWaifu, PersonagemHusbando
 from sqlalchemy import select, func
 from types_ import TipoCategoria
 from types_ import TipoMidia, COMMAND_LIST
-from domination.uteis import PREXIFOS, send_media_by_type
+from uteis import PREXIFOS, send_media_by_type
 from domination.plugins.lang_utils import obter_mensagem_chat
 from domination.logger import log_info, log_error, log_debug
 

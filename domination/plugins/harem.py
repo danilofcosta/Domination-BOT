@@ -9,7 +9,7 @@ from pyrogram.types import (
 from sqlalchemy import select, func
 from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando
 from domination.plugins.lang_utils import obter_mensagem_chat
-from domination.uteis import dynamic_command_filter 
+from uteis import dynamic_command_filter 
 from types_ import TipoCategoria, ModoHarem,COMMAND_LIST
 from collections import defaultdict
 from domination.plugins.harem_pages import (

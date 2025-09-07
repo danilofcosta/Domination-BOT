@@ -4,7 +4,7 @@ from pyrogram.enums import ChatType, ChatMemberStatus
 from DB.models import ChatTG
 from types_ import COMMAND_LIST
 from domination.message import MESSAGE
-from domination.uteis import  dynamic_command_filter
+from uteis import  dynamic_command_filter
 from domination.plugins.lang_utils import obter_Idioma_chat,obter_Idiomas_disponiveis,obter_mensagem_chat,validar_Idioma,obter_enum_Idioma ,definir_Idioma_chat
 from domination.logger import log_info, log_error, log_debug
 

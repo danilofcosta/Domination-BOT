@@ -9,7 +9,7 @@ from DB.models import (
     PersonagemHusbando,
     Usuario,
 )
-from domination.uteis import format_personagem_caption, send_media_by_type
+from uteis import format_personagem_caption, send_media_by_type
 from types_ import TipoCategoria, TipoMidia
 from domination.message import MESSAGES
 from domination.plugins.lang_utils import obter_mensagem_chat

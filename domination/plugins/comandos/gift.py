@@ -11,7 +11,7 @@ from DB.models import (
     PersonagemHusbando,
     PersonagemWaifu,
 )
-from domination.uteis import (
+from uteis import (
     create_bts_y_or_n,
     dynamic_command_filter,
     send_media_by_type,

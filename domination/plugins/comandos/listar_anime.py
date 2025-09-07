@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from sqlalchemy import select
 from DB.models import PersonagemWaifu, PersonagemHusbando
-from domination.uteis import dynamic_command_filter
+from uteis import dynamic_command_filter
 from types_ import TipoCategoria,COMMAND_LIST
 from domination.plugins.lang_utils import obter_mensagem_chat
 

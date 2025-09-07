@@ -8,7 +8,7 @@ from pyrogram.types import (
 from sqlalchemy import select, func
 from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando, Evento_Midia, Raridade_Midia
 from types_ import ModoHarem, TipoCategoria, TipoEvento, TipoRaridade,COMMAND_LIST
-from domination.uteis import  create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
+from uteis import  create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
 from domination.message import MESSAGE
 from domination.logger import log_info, log_error, log_debug
 

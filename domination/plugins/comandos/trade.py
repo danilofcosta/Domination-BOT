@@ -7,7 +7,7 @@ from DB.models import (
     PersonagemHusbando, PersonagemWaifu
 )
 from types_ import TipoCategoria
-from domination.uteis import create_bts_y_or_n, dynamic_command_filter
+from uteis import create_bts_y_or_n, dynamic_command_filter
 from domination.message import MESSAGE
 from domination.plugins.lang_utils import obter_mensagem_chat
 from types_ import COMMAND_LIST

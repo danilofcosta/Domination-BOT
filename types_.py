@@ -123,6 +123,11 @@ COMMAND_LIST_MIN_DESC_ADMIN = {
 }
 
 
+class COMMAND_LIST_DB(PyEnum):
+    ADDCHAR = "addchar"
+   
+
+
 def is_admin_or_higher(perfil_status):
     """Verifica se o perfil do usuário é ADMIN ou superior"""
     if not perfil_status:

@@ -7,7 +7,7 @@ from DB.models import (
     ColecaoUsuarioHusbando,
     ColecaoUsuarioWaifu,
 )
-from domination.uteis import (
+from uteis import (
     dynamic_command_filter,
     format_personagem_caption,
     create_bts_y_or_n,

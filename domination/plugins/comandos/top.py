@@ -16,7 +16,7 @@ from DB.models import (
     PersonagemHusbando,
     PersonagemWaifu,
 )
-from domination.uteis import dynamic_command_filter, send_media_by_type
+from uteis import dynamic_command_filter, send_media_by_type
 from types_ import COMMAND_LIST
 
 

@@ -76,3 +76,11 @@ alembic/versions/__pycache__/add_unique_constraints.cpython-313.pyc
 alembic/versions/__pycache__/fix_auto_increment.cpython-313.pyc
 alembic/versions/__pycache__/fix_chattg_id_simple.cpython-313.pyc
 alembic/versions/__pycache__/3c2773b5ffc2_corrige_id_local_para_identity_.cpython-313.pyc
+domination/__pycache__/logger.cpython-313.pyc
+__pycache__/uteis.cpython-313.pyc
+domination_db/__pycache__/__init__.cpython-313.pyc
+domination_db/plugins/__init__.py
+domination_db/plugins/add.py
+domination_db/plugins/__pycache__/__init__.cpython-313.pyc
+domination_db/plugins/__pycache__/add.cpython-313.pyc
+domination_db/plugins/__pycache__/serialization_example.cpython-313.pyc

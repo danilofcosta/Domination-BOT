@@ -4,7 +4,7 @@ import aiohttp
 import io
 from sqlalchemy import select
 
-from domination.uteis import dynamic_command_filter
+from uteis import dynamic_command_filter
 from types_ import COMMAND_LIST, is_admin_or_higher
 from DB.models import Usuario
 
