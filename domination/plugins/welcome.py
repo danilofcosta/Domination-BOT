@@ -3,11 +3,10 @@ from pyrogram.types import *
 from pyrogram.enums import ChatType
 from DB.models import PersonagemWaifu, PersonagemHusbando
 from sqlalchemy import select, func
-from domination.message import MESSAGE
 from types_ import TipoCategoria
-from types_ import TipoMidia
-from domination.uteis import COMMAND_LIST, PREXIFOS, send_media_by_type
-from domination.lang_utils import obter_mensagem_chat
+from types_ import TipoMidia, COMMAND_LIST
+from domination.uteis import PREXIFOS, send_media_by_type
+from domination.plugins.lang_utils import obter_mensagem_chat
 
 
 # @Client.on_message(filters.command("w") & filters.private)
@@ -19,11 +18,16 @@ async def welcome(client: object, message: Message | CallbackQuery):
 
     try:
         response_text = await obter_mensagem_chat(
-            client, message.chat.id, "welcome", "init_text",
+            client,
+            message.chat.id,
+            "welcome",
+            "init_text",
             bot_name=client.me.first_name,
             genero=client.genero.value.capitalize(),
         )
-        buttons = await obter_mensagem_chat(client, message.chat.id, "welcome", "buttons")
+        buttons = await obter_mensagem_chat(
+            client, message.chat.id, "welcome", "buttons"
+        )
         keyboard = InlineKeyboardMarkup(
             [
                 [
@@ -81,12 +85,16 @@ async def welcome(client: object, message: Message | CallbackQuery):
                 reply_markup=keyboard,
             )
         else:
-            await message.reply_text(response_text, reply_markup=keyboard, parse_mode="HTML")
+            await message.reply_text(
+                response_text, reply_markup=keyboard, parse_mode="HTML"
+            )
 
     except Exception as e:
         print(f"Erro no comando : {e}")
         await message.reply_text(
-            await obter_mensagem_chat(client, message.chat.id, "erros", "error_command_welcome")
+            await obter_mensagem_chat(
+                client, message.chat.id, "erros", "error_command_welcome"
+            )
         )
 
 
@@ -94,21 +102,35 @@ async def welcome(client: object, message: Message | CallbackQuery):
 async def help_bot(client: Client, callback_query: CallbackQuery):
 
     help_text = await obter_mensagem_chat(
-        client, callback_query.message.chat.id, "help_bot", "help_bot", prefixo=", ".join(PREXIFOS)
+        client,
+        callback_query.message.chat.id,
+        "help_bot",
+        "help_bot",
+        prefixo=", ".join(PREXIFOS),
     )
 
     reply_markup = InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
-                    await obter_mensagem_chat(client, callback_query.message.chat.id, "commands", "user_commands_button"),
+                    await obter_mensagem_chat(
+                        client,
+                        callback_query.message.chat.id,
+                        "commands",
+                        "user_commands_button",
+                    ),
                     callback_data="commadsUser",
                 ),
                 # InlineKeyboardButton("Comandos Adm", callback_data="help_bot_commadsAdm"),
             ],
             [
                 InlineKeyboardButton(
-                    await obter_mensagem_chat(client, callback_query.message.chat.id, "commands", "back_button"),
+                    await obter_mensagem_chat(
+                        client,
+                        callback_query.message.chat.id,
+                        "commands",
+                        "back_button",
+                    ),
                     callback_data="welcome",
                 )
             ],
@@ -122,8 +144,12 @@ async def help_bot(client: Client, callback_query: CallbackQuery):
 @Client.on_callback_query(filters.regex(r"commadsUser"))
 async def help_bot_commadsUser(client: Client, callback_query: CallbackQuery):
     linhas = [
-        await obter_mensagem_chat(client, callback_query.message.chat.id, "commands", "user_commands"),
-        await obter_mensagem_chat(client, callback_query.message.chat.id, "commands", "commands_header"),
+        await obter_mensagem_chat(
+            client, callback_query.message.chat.id, "commands", "user_commands"
+        ),
+        await obter_mensagem_chat(
+            client, callback_query.message.chat.id, "commands", "commands_header"
+        ),
     ]
 
     for cmd in COMMAND_LIST:
@@ -131,20 +157,34 @@ async def help_bot_commadsUser(client: Client, callback_query: CallbackQuery):
             continue
         linhas.append(
             await obter_mensagem_chat(
-                client, callback_query.message.chat.id, "commands", "command_line",
+                client,
+                callback_query.message.chat.id,
+                "commands",
+                "command_line",
                 prefixo=client.genero.value[0].lower(),
                 command=cmd.value,
-                description=await obter_mensagem_chat(client, callback_query.message.chat.id, "commads", cmd.value),
+                description=await obter_mensagem_chat(
+                    client, callback_query.message.chat.id, "commads", cmd.value
+                ),
             )
         )
 
-    linhas.append(await obter_mensagem_chat(client, callback_query.message.chat.id, "commands", "commands_footer"))
+    linhas.append(
+        await obter_mensagem_chat(
+            client, callback_query.message.chat.id, "commands", "commands_footer"
+        )
+    )
 
     reply_markup = InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
-                    await obter_mensagem_chat(client, callback_query.message.chat.id, "commands", "back_button"),
+                    await obter_mensagem_chat(
+                        client,
+                        callback_query.message.chat.id,
+                        "commands",
+                        "back_button",
+                    ),
                     callback_data="help_bot",
                 )
             ]

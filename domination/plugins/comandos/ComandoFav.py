@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import *
 from sqlalchemy import  select
-from domination.uteis import COMMAND_LIST
+
 from DB.models import (
     Usuario,
     ColecaoUsuarioHusbando,
@@ -14,8 +14,8 @@ from domination.uteis import (
     send_media_by_type,
 )
 import logging
-from types_ import TipoCategoria
-from domination.lang_utils import obter_mensagem_chat
+from types_ import TipoCategoria,COMMAND_LIST
+from domination.plugins.lang_utils import obter_mensagem_chat
 logger = logging.getLogger(__name__)
 
 @Client.on_message(

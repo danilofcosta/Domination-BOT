@@ -45,8 +45,10 @@ async def obter_mensagem_chat(
     """
     Obtém uma mensagem no Idioma do chat
     """
-    
-    Idioma_chat = await obter_Idioma_chat(client, chat_id)
+    if chat_id :
+        Idioma_chat = await obter_Idioma_chat(client, chat_id)
+    else:
+        Idioma_chat='pt'
     return MESSAGE.get_text(Idioma_chat, categoria, chave, **kwargs)
 
 

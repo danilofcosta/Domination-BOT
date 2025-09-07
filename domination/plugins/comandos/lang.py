@@ -2,10 +2,10 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton,CallbackQuery
 from pyrogram.enums import ChatType, ChatMemberStatus
 from DB.models import ChatTG
-
+from types_ import COMMAND_LIST
 from domination.message import MESSAGE
-from domination.uteis import COMMAND_LIST, dynamic_command_filter
-from domination.lang_utils import obter_Idioma_chat,obter_Idiomas_disponiveis,obter_mensagem_chat,validar_Idioma,obter_enum_Idioma ,definir_Idioma_chat
+from domination.uteis import  dynamic_command_filter
+from domination.plugins.lang_utils import obter_Idioma_chat,obter_Idiomas_disponiveis,obter_mensagem_chat,validar_Idioma,obter_enum_Idioma ,definir_Idioma_chat
 
 
 @Client.on_message(
@@ -109,7 +109,7 @@ async def mostrar_idiomas_disponiveis(client: Client, message: Message):
                 emoji, nome = idiomas[codigo]
                 # Marcar idioma atual
                 if codigo == idioma_atual:
-                    nome += " ✅"
+                    nome = " ✅"
                 linha.append(
                     InlineKeyboardButton(
                         f"{emoji} {nome}", callback_data=f"lang_{codigo}"

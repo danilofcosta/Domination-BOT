@@ -5,10 +5,10 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     CallbackQuery,
-    InputMediaPhoto,
+    
 )
 from types_ import TipoCategoria, TipoMidia
-from domination.lang_utils import obter_mensagem_chat
+from domination.plugins.lang_utils import obter_mensagem_chat
 from sqlalchemy import select, func, desc
 from DB.models import (
     ColecaoUsuarioHusbando,
@@ -17,8 +17,8 @@ from DB.models import (
     PersonagemHusbando,
     PersonagemWaifu,
 )
-from domination.uteis import dynamic_command_filter, send_media_by_type, COMMAND_LIST
-from domination.message import MESSAGE
+from domination.uteis import dynamic_command_filter, send_media_by_type
+from types_ import COMMAND_LIST
 
 
 def format_user(info: dict | None) -> str:

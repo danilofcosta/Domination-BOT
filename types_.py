@@ -38,6 +38,19 @@ class TipoEvento(str, PyEnum):
     ESCOLAR = 'SCHOOL'
     GAME = 'GAME'
 
+class COMMAND_LIST(PyEnum):
+    FAV = "fav"
+    HAREM = "harem"
+    HAREMMODE = "modeharem"
+    DOMINAR = "dominar"
+    GIFT = "gift"
+    LISTANIME = "listanime"
+    MYINFO = "myinfo"
+    TOP = "top"
+    TOP_CHAT = "topchat"
+    TRADE = "trade"
+    START = "start"
+    LANG = "lang"
 
 
 class TipoRaridade(str, PyEnum):
@@ -67,6 +80,11 @@ class TipoPerfil(str, PyEnum):
 
 class ModoHarem(str,PyEnum):
     PADRAO ='PADRAO'
+    RECENTE = 'RECENTE'
+    ANIME = 'ANIME'
+    DELETE = 'DELETE'
+    RARIDADE = 'RARIDADE'
+    EVENTO = 'EVENTO'
 
 class Idioma(str, PyEnum):
     PT = 'pt'

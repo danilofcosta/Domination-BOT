@@ -11,9 +11,9 @@ from pyrogram.enums import ChatType
 from types_ import TipoCategoria
 from sqlalchemy import select, func, desc
 from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu
-from domination.uteis import dynamic_command_filter, get_first_photo_file_id, send_media_by_type, COMMAND_LIST
-from domination.message import MESSAGE
-from domination.lang_utils import obter_mensagem_chat
+from domination.uteis import dynamic_command_filter, get_first_photo_file_id, send_media_by_type
+from types_ import COMMAND_LIST
+from domination.plugins.lang_utils import obter_mensagem_chat
 
 import asyncio
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton

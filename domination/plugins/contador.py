@@ -6,17 +6,12 @@ from datetime import datetime
 from DB.models import (
     PersonagemHusbando,
     PersonagemWaifu,
-    Usuario,
-    ColecaoUsuarioHusbando,
-    ColecaoUsuarioWaifu,
 )
-from types_ import TipoCategoria, TipoPerfil
-import json
+from types_ import TipoCategoria
 from domination.uteis import format_personagem_caption, send_media_by_type
-from domination.message import MESSAGE
-from domination.lang_utils import obter_mensagem_chat
-from domination.uteis import COMMAND_LIST
+from domination.plugins.lang_utils import obter_mensagem_chat
 
+from types_ import COMMAND_LIST
 message_counter: dict[str, dict[int, dict]] = {}
 
 
@@ -51,6 +46,7 @@ async def handle_group_messages(client: Client, message: Message):
 
     g = client.genero.value
     group_id = message.chat.id
+    
 
     # Inicializa dict
     grp_counter = message_counter.setdefault(g, {}).setdefault(
@@ -64,7 +60,7 @@ async def handle_group_messages(client: Client, message: Message):
         grp_counter["cont"] = 98 if grp_counter["cont"] < 98 else grp_counter["cont"]
 
     cont = grp_counter["cont"]
-    print(cont, group_id == -1001528803759)
+    print(cont, group_id == -1001528803759,message.chat.title)
 
     # Função interna para pegar personagem aleatório
     async def get_random_character():

@@ -6,11 +6,10 @@ from pyrogram.types import (
     CallbackQuery,
 )
 from sqlalchemy import select, func
-from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando
-from types_ import ModoHarem, TipoCategoria
-from domination.uteis import COMMAND_LIST, dynamic_command_filter, send_media_by_type
+from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando, Evento_Midia, Raridade_Midia
+from types_ import ModoHarem, TipoCategoria, TipoEvento, TipoRaridade,COMMAND_LIST
+from domination.uteis import  create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
 from domination.message import MESSAGE
-from domination.lang_utils import obter_mensagem_chat
 
 
 # -----------------------------
@@ -35,7 +34,7 @@ async def harem_mode(client: Client, message: Message):
         usuario: Usuario = result.scalar_one_or_none()
         if not usuario:
             await message.reply_text(
-                await obter_mensagem_chat(client, message.chat.id, "erros", "error_not_registered"),
+                MESSAGE.get_text("pt", "erros", "error_not_registered"),
             )
             return
 
@@ -57,17 +56,17 @@ async def harem_mode(client: Client, message: Message):
         bts = []
         for cmd in ModoHarem:
             check = (
-                await obter_mensagem_chat(client, message.chat.id, "harem_mode", "check_mark")
-                if modo_harem == cmd.value
+                MESSAGE.get_text("pt", "harem_mode", "check_mark")
+                if modo_harem.split("_")[0] == cmd.value
                 else ""
             )
             bts.append(
-                [
+                
                     InlineKeyboardButton(
                         f"{cmd.value} {check}",
-                        callback_data=f"setmodoharem_{cmd.value}",
+                        callback_data=f"setmodoharem_{cmd.value if check == '' else modo_harem}",
                     )
-                ]
+                
             )
 
         # Seleciona personagem aleatório
@@ -79,14 +78,14 @@ async def harem_mode(client: Client, message: Message):
         result = await session.execute(stmt)
         personagem = result.scalars().first()
 
-        response_text = await obter_mensagem_chat(client, message.chat.id, "harem_mode", "choose_option")
+        response_text = MESSAGE.get_text("pt", "harem_mode", "choose_option")
 
         await send_media_by_type(
             client=client,
             message=message,
             personagem=personagem,
             caption=response_text,
-            reply_markup=InlineKeyboardMarkup(bts),
+            reply_markup=InlineKeyboardMarkup( re_linhas(bts)),
         )
 
 
@@ -95,9 +94,49 @@ async def harem_mode(client: Client, message: Message):
 # -----------------------------
 @Client.on_callback_query(filters.regex(r"^setmodoharem_.*$"))
 async def setmodoharem(client: Client, query: CallbackQuery):
+
     await query.answer()
     user_id = query.from_user.id
-    modo_selecionado = query.data.split("_")[-1]
+    setmodoharem, modo_selecionado, *res = query.data.split("_")
+
+    if (
+        modo_selecionado in [ModoHarem.RARIDADE.value, ModoHarem.EVENTO.value]
+        and "set" not in res
+    ):
+        buttons = []
+        # Buscar do banco para ter emojis dos modelos
+        async with await client.get_reusable_session() as session:
+            if modo_selecionado == ModoHarem.EVENTO.value:
+                result = await session.execute(select(Evento_Midia))
+                for ev in result.scalars().all():
+                    label = f"{(ev.emoji or '').strip()}"
+                    buttons.append(
+                        InlineKeyboardButton(
+                            label,
+                            callback_data=f"setmodoharem_{modo_selecionado}_{ev.cod.value}_set",
+                        )
+                    )
+            else:
+                result = await session.execute(select(Raridade_Midia))
+                for ra in result.scalars().all():
+                    label = f"{(ra.emoji or '').strip()} {ra.cod.value}".strip()
+                    buttons.append(
+                        InlineKeyboardButton(
+                            label,
+                            callback_data=f"setmodoharem_{modo_selecionado}_{ra.cod.value}_set",
+                        )
+                    )
+
+        bts = re_linhas(buttons)
+        bts.append([create_bt_clear()])
+
+        return await query.message.edit_caption(
+            caption=f"escolha o {modo_selecionado.capitalize()}",
+            reply_markup=InlineKeyboardMarkup(bts),
+        )
+
+    if "set" in res:
+        modo_selecionado = modo_selecionado +'_'+ res[0]
 
     async with await client.get_reusable_session() as session:
         # Busca o usuário
@@ -107,7 +146,7 @@ async def setmodoharem(client: Client, query: CallbackQuery):
 
         if not usuario:
             await query.message.edit_text(
-                await obter_mensagem_chat(client, query.message.chat.id, "erros", "error_not_registered")
+                MESSAGE.get_text("pt", "erros", "error_not_registered")
             )
             return
 
@@ -142,39 +181,30 @@ async def setmodoharem(client: Client, query: CallbackQuery):
         try:
             await session.commit()
             print(
-                await obter_mensagem_chat(
-                    client, query.message.chat.id, "harem_mode", "mode_updated", mode=modo_selecionado
+                MESSAGE.get_text(
+                    "pt", "harem_mode", "mode_updated", mode=modo_selecionado
                 )
             )
         except Exception as e:
             await session.rollback()
             print("Erro ao salvar modo do harém:", e)
             await query.message.edit_text(
-                await obter_mensagem_chat(client, query.message.chat.id, "harem_mode", "error_saving_mode")
+                MESSAGE.get_text("pt", "harem_mode", "error_saving_mode")
             )
             return
 
     # Atualiza os botões inline com o check correto
-    bts = []
-    for cmd in ModoHarem:
-        check = (
-            await obter_mensagem_chat(client, query.message.chat.id, "harem_mode", "check_mark")
-            if cmd.value == modo_selecionado
-            else ""
-        )
-        bts.append(
-            [
-                InlineKeyboardButton(
-                    f"{cmd.value} {check}", callback_data=f"setmodoharem_{cmd.value}"
-                )
-            ]
-        )
     try:
         print(f"Atualizando botões inline com: {modo_selecionado}")
-        await query.message.edit_reply_markup(InlineKeyboardMarkup(bts))
-        print(await obter_mensagem_chat(client, query.message.chat.id, "harem_mode", "buttons_updated"))
+        await query.message.edit_caption(
+            caption=f"definido {modo_selecionado} : {res[0]}" if len (res)>0 else f"definido {modo_selecionado}"
+            ,reply_markup=None
+        )
+        print(MESSAGE.get_text("pt", "harem_mode", "buttons_updated"))
     except Exception as e:
         print(
-            await obter_mensagem_chat(client, query.message.chat.id, "harem_mode", "error_updating_buttons", error=str(e))
+            MESSAGE.get_text("pt", "harem_mode", "error_updating_buttons", error=str(e))
         )
         return
+
+

@@ -1,8 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import *
 from DB.models import ChatTG
-from domination.message import MESSAGE
-from domination.lang_utils import obter_mensagem_chat
+from domination.plugins.lang_utils import obter_mensagem_chat
 
 @Client.on_message(filters.new_chat_members)
 async def bot_added_to_group(client: Client, message: Message):

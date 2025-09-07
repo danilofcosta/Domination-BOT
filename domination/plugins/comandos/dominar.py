@@ -14,9 +14,9 @@ from DB.models import (
     ColecaoUsuarioHusbando,
     ColecaoUsuarioWaifu,
 )
-from types_ import TipoCategoria, TipoPerfil
-from domination.uteis import COMMAND_LIST
-from domination.lang_utils import obter_mensagem_chat
+from types_ import TipoCategoria, TipoPerfil,COMMAND_LIST
+
+from domination.plugins.lang_utils import obter_mensagem_chat
 
 # ==============================
 # Função auxiliar: valida nome

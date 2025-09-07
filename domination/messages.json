@@ -2,7 +2,7 @@
   "pt": {
     "listanime": {
       "select_letter": "Selecione a letra inicial do anime:",
-      "animes_starting_with": "Animes que começam com '{letter}':",
+      "animes_starting_with": "Animes que começam com '{letter}': {cont}",
       "characters_from_anime": "Personagens do anime '{anime_name}':",
       "characters_from_selection": "Personagens da seleção:",
       "no_anime_found": "Nenhum anime encontrado.",
@@ -203,7 +203,7 @@
   "en": {
     "listanime": {
       "select_letter": "Select the initial letter of the anime:",
-      "animes_starting_with": "Animes starting with '{letter}':",
+      "animes_starting_with": "Animes starting with '{letter}': {cont}",
       "characters_from_anime": "Characters from anime '{anime_name}':",
       "characters_from_selection": "Characters from selection:",
       "no_anime_found": "No anime found.",

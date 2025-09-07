@@ -1,5 +1,6 @@
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from pyrogram import Client
+
+from pyrogram.types import *
+from pyrogram import Client,filters
 
 from DB.models import PersonagemHusbando, PersonagemWaifu
 from types_ import TipoCategoria, TipoEvento, TipoMidia
@@ -169,7 +170,7 @@ def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
     comando = getattr(filter, "command", None)
 
     if comando:
-        if isinstance(comando, list):
+        if type(comando) is list:
             comandos_esperados.extend(
                 [f"{client.genero.value[0].lower()}{c.lower()}" for c in comando]
             )
@@ -194,23 +195,25 @@ def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
     return False
 
 
-class COMMAND_LIST(PyEnum):
-    FAV = "fav"
-    HAREM = "harem"
-    HAREMMODE = "modeharem"
-    DOMINAR = "dominar"
-    GIFT = "gift"
-    LISTANIME = "listanime"
-    MYINFO = "myinfo"
-    TOP = "top"
-    TOP_CHAT = "topchat"
-    TRADE = "trade"
-    START = "start"
-    LANG = "lang"
-
-
 async def get_first_photo_file_id(app: Client, user_id: int) -> str | None:
     """Retorna o file_id da primeira foto do usuário/chat."""
     async for photo in app.get_chat_photos(user_id):
         return photo.file_id
     return None
+
+
+def re_linhas(lista: list, tamanho: int = 3) -> list:
+    return [lista[i : i + tamanho] for i in range(0, len(lista), tamanho)]
+
+
+def create_bt_clear() -> InlineKeyboardButton:
+    return InlineKeyboardButton(f"🗑", callback_data=f"clear_msg")
+
+
+@Client.on_callback_query(filters.regex(r"^clear_msg"))
+async def apagar_harem(client: Client, callback_query: CallbackQuery):
+
+    try:
+        await callback_query.message.delete()
+    except:
+        pass

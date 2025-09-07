@@ -8,7 +8,7 @@ from types_ import TipoCategoria
 def main():
     var = Settings()
     bot = Domination(
-        name="teste_w",
+        name="WAIFU",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.WAIFU_TK,
@@ -17,7 +17,7 @@ def main():
         # start=True,
     )
     bot2 = Domination(
-        name="teste_h",
+        name="HUS",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.HUSBANDO_TK,
