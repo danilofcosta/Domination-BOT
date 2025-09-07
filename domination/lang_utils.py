@@ -6,7 +6,7 @@ from sqlalchemy import select
 from DB.models import ChatTG
 from types_ import Idioma
 from pyrogram.types import Chat
-
+from domination.message import MESSAGE
 
 async def obter_Idioma_chat(client, chat_id: int) -> str:
     """
@@ -45,9 +45,7 @@ async def obter_mensagem_chat(
     """
     Obtém uma mensagem no Idioma do chat
     """
-    # Importar MESSAGE aqui para evitar dependência circular
-    from domination.message import MESSAGE
-
+    
     Idioma_chat = await obter_Idioma_chat(client, chat_id)
     return MESSAGE.get_text(Idioma_chat, categoria, chave, **kwargs)
 

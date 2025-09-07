@@ -70,7 +70,7 @@ class MESSAGE:
         # Acessa corretamente a estrutura: MESSAGES["pt"][category]
         comandos = MESSAGES.get("pt", {}).get(category, {})
         texto = comandos.get(key, "Texto não encontrado.")
-
+        print(kwargs)
         # Traduz apenas se não for português
         if Idioma != "pt":
             try:

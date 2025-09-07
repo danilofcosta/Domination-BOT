@@ -6,7 +6,7 @@ from sqlalchemy import select, func
 from domination.message import MESSAGE
 from types_ import TipoCategoria
 from types_ import TipoMidia
-from domination.uteis import COMMAND_LIST, DESCRICOES, PREXIFOS, send_media_by_type
+from domination.uteis import COMMAND_LIST, PREXIFOS, send_media_by_type
 from domination.lang_utils import obter_mensagem_chat
 
 

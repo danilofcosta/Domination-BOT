@@ -11,7 +11,7 @@ from DB.models import (
 )
 from domination.uteis import format_personagem_caption, send_media_by_type
 from types_ import TipoCategoria, TipoMidia, TipoEvento
-from domination.message import MESSAGE
+from domination.message import MESSAGES
 from domination.lang_utils import obter_mensagem_chat
 
 
@@ -24,6 +24,7 @@ async def create_results(
     reply_markup: bool = False,
 ):
     results = []
+    txt_bt = await obter_mensagem_chat(client, chat_id, "inline", "who_captured_button")
     for i, p in enumerate(paginated):
         # Não passar user como nome na caption
         caption = format_personagem_caption(p, user=user)
@@ -31,13 +32,7 @@ async def create_results(
         # Criar botão "quem capturou"
         reply_markup = (
             InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            await obter_mensagem_chat(client, chat_id, "inline", "who_captured_button"), callback_data=f"who_captured_{p.id}"
-                        )
-                    ]
-                ]
+                [[InlineKeyboardButton(txt_bt, callback_data=f"who_captured_{p.id}_{chat_id}")]]
             )
             if reply_markup
             else None
@@ -56,7 +51,7 @@ async def create_results(
                     photo_url=p.data,
                     thumb_url=p.data,
                     title=p.nome_personagem,
-                    description=await obter_mensagem_chat(client, chat_id, "inline", "anime_description", anime=p.nome_anime),
+                    description=caption,
                     caption=caption,
                     reply_markup=reply_markup,
                 )
@@ -67,7 +62,7 @@ async def create_results(
                     id=str(offset + i),
                     photo_file_id=p.data,
                     caption=caption,
-                    description=await obter_mensagem_chat(client, chat_id, "inline", "anime_description", anime=p.nome_anime),
+                    description=caption,
                     reply_markup=reply_markup,
                 )
             )
@@ -84,7 +79,7 @@ async def create_results(
                     video_url=p.data,
                     thumb_url=p.data,
                     title=p.nome_personagem,
-                    description=await obter_mensagem_chat(client, chat_id, "inline", "anime_description", anime=p.nome_anime),
+                    description=caption,
                     caption=caption,
                     reply_markup=reply_markup,
                 )
@@ -95,7 +90,7 @@ async def create_results(
                     id=str(offset + i),
                     video_file_id=p.data,
                     caption=caption,
-                    description=await obter_mensagem_chat(client, chat_id, "inline", "anime_description", anime=p.nome_anime),
+                    description=caption,
                     reply_markup=reply_markup,
                 )
             )
@@ -107,7 +102,13 @@ async def create_results(
                     photo_url=p.data,
                     thumb_url=p.data,
                     title=p.nome_personagem,
-                    description=await obter_mensagem_chat(client, chat_id, "inline", "anime_description", anime=p.nome_anime),
+                    description=await obter_mensagem_chat(
+                        client,
+                        chat_id,
+                        "inline",
+                        "anime_description",
+                        anime=p.nome_anime,
+                    ),
                     caption=caption,
                     reply_markup=reply_markup,
                 )
@@ -122,11 +123,11 @@ async def show_result(
     results: list,
     offset: int,
     limit: int,
-    switch_pm_text=None,
+    switch_pm_text: str = None,
     is_personal: bool = None,
 ):
     if switch_pm_text is None:
-        switch_pm_text = await obter_mensagem_chat(client, chat_id, "inline", "switch_pm_text")
+        switch_pm_text = MESSAGES['pt']['inline']['switch_pm_text']
     next_offset = str(offset + limit) if len(results) == limit else ""
     """Mostra resultados de inline query"""
     await inline_query.answer(
@@ -136,7 +137,7 @@ async def show_result(
         cache_time=0,
         is_personal=is_personal,
         switch_pm_text=switch_pm_text,
-        switch_pm_parameter=await obter_mensagem_chat(client, chat_id, "inline", "switch_pm_parameter"),
+        switch_pm_parameter="start",
     )
 
 
@@ -156,8 +157,17 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
         async with await client.get_reusable_session() as session:
             personagem = await session.get(base_cls, personagem_id)
             if personagem:
-                results = await create_results(client, inline_query.from_user.id, [personagem], reply_markup=True)
-                await show_result(client, inline_query.from_user.id, inline_query, results, offset=offset, limit=limite)
+                results = await create_results(
+                    client, inline_query.from_user.id, [personagem], reply_markup=True
+                )
+                await show_result(
+                    client,
+                    inline_query.from_user.id,
+                    inline_query,
+                    results,
+                    offset=offset,
+                    limit=limite,
+                )
             else:
                 await inline_query.answer([], cache_time=0)
         return
@@ -184,9 +194,8 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
                 else user.colecoes_husbando
             )
 
-            # 最新のアイテムを最初に表示するために、adicionado_emでソート
             colecoes_ordenadas = sorted(
-                colecoes, key=lambda x: x.adicionado_em, reverse=True
+                colecoes, key=lambda x: x.id_local, reverse=True
             )
 
             paginated = colecoes_ordenadas[offset : offset + limite]
@@ -206,11 +215,18 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
 
             # print(user_mention)
             results = await create_results(
-                client, inline_query.from_user.id, unique_characters, offset, user=user_mention, reply_markup=False
+                client,
+                inline_query.from_user.id,
+                unique_characters,
+                offset,
+                user=user_mention,
+                reply_markup=False,
             )
 
             await show_result(
-                client, inline_query.from_user.id, inline_query,
+                client,
+                inline_query.from_user.id,
+                inline_query,
                 results=results,
                 switch_pm_text=f"{client.genero.capitalize()} {len([
              q.character  for q in colecoes
@@ -227,8 +243,17 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
             result = await session.execute(stmt)
         pers = result.scalars().all()
 
-        pers = await create_results(client, inline_query.from_user.id, pers, offset, reply_markup=False)
-        await show_result(client, inline_query.from_user.id, inline_query, pers, offset=offset, limit=limite)
+        pers = await create_results(
+            client, inline_query.from_user.id, pers, offset, reply_markup=False
+        )
+        await show_result(
+            client,
+            inline_query.from_user.id,
+            inline_query,
+            pers,
+            offset=offset,
+            limit=limite,
+        )
     elif query_text.startswith("list_anime_"):
         async with await client.get_reusable_session() as session:
             stmt = select(base_cls).where(
@@ -242,16 +267,25 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
 
         paginated = personagens[offset : offset + limite]
 
-        results = await create_results(client, inline_query.from_user.id, paginated, offset, reply_markup=True)
+        results = await create_results(
+            client, inline_query.from_user.id, paginated, offset, reply_markup=True
+        )
 
-        await show_result(client, inline_query.from_user.id, inline_query, results, offset=offset, limit=limite)
+        await show_result(
+            client,
+            inline_query.from_user.id,
+            inline_query,
+            results,
+            offset=offset,
+            limit=limite,
+        )
 
 
-@Client.on_callback_query(filters.regex(r"^who_captured_(\d+)$"))
+@Client.on_callback_query(filters.regex(r"^who_captured_"))
 async def who_captured_callback(client: Client, query: CallbackQuery):
     """Callback para mostrar quem capturou o personagem"""
-    personagem_id = int(query.matches[0].group(1))
 
+    who,captured,personagem_id,chat_id=query.data.split("_")
     # Define classe base de coleção
     base_cls = (
         ColecaoUsuarioWaifu
@@ -261,13 +295,16 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
 
     async with await client.get_reusable_session() as session:
         # Buscar quem tem o personagem na coleção
-        stmt = select(base_cls).where(base_cls.id_global == personagem_id)
+        stmt = select(base_cls).where(base_cls.id_global == int(personagem_id))
         result = await session.execute(stmt)
         colecoes = result.scalars().all()
 
         if not colecoes:
             await query.answer(
-                await obter_mensagem_chat(client, query.message.chat.id, "erros", "error_no_one_captured"), show_alert=True
+                await obter_mensagem_chat(
+                    client, query.message.chat.id, "erros", "error_no_one_captured"
+                ),
+                show_alert=True,
             )
             return
 
@@ -291,22 +328,42 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
                     or f"Usuário {user.telegram_id}"
                 )
                 nomes_capturadores.append(
-                    await obter_mensagem_chat(client, query.message.chat.id, "inline", "who_captured_item", user_name=user_name, user_id=user.telegram_id)
+                    await obter_mensagem_chat(
+                        client,
+                       chat_id,
+                        "inline",
+                        "who_captured_item",
+                        user_name=user_name,
+                        user_id=user.telegram_id,
+                    )
                 )
 
         # Criar nova caption com lista de capturadores
         nova_caption = (
-            await obter_mensagem_chat(client, query.message.chat.id, "inline", "who_captured_title", 
-                           user_name=query.from_user.first_name, 
-                           user_id=query.from_user.id, 
-                           count=len(nomes_capturadores))
+            await obter_mensagem_chat(
+                client,
+chat_id,                "inline",
+                "who_captured_title",
+                user_name=query.from_user.first_name,
+                user_id=query.from_user.id,
+                count=len(nomes_capturadores),
+            )
             + "\n"
             + "\n".join(nomes_capturadores)
         )
         # Atualizar a mensagem
         try:
             await query.edit_message_caption(
-                caption=nova_caption, parse_mode=ParseMode.MARKDOWN
+                caption=nova_caption, parse_mode=ParseMode.HTML
             )
         except Exception as e:
-            await query.answer(await obter_mensagem_chat(client, query.message.chat.id, "erros", "error_update_failed", error=str(e)), show_alert=True)
+            await query.answer(
+                await obter_mensagem_chat(
+                    client,
+                    query.message.chat.id,
+                    "erros",
+                    "error_update_failed",
+                    error=str(e),
+                ),
+                show_alert=True,
+            )

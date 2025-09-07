@@ -183,13 +183,13 @@ def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
             if text_lower == f"{pre}{comando}":
                 print(text_lower)
                 excluido_prefixo = text_lower_f.replace(pre, "", 1).split(" ")
-                message.command = excluido_prefixo 
+                message.command = excluido_prefixo
                 print(excluido_prefixo)
                 return True
-           # if text_lower.startswith(f"{pre}{comando}") :
-            #    excluido_prefixo = text_lower.replace(pre, "", 1).split(" ")
-             #   message.command = excluido_prefixo  # ['fav', '506']
-            #    return True
+        # if text_lower.startswith(f"{pre}{comando}") :
+        #    excluido_prefixo = text_lower.replace(pre, "", 1).split(" ")
+        #   message.command = excluido_prefixo  # ['fav', '506']
+        #    return True
 
     return False
 
@@ -209,17 +209,8 @@ class COMMAND_LIST(PyEnum):
     LANG = "lang"
 
 
-DESCRICOES = {
-    "fav": "para marcar uma waifu como favorita",
-    "harem": "para alterar o modo harém",
-    "haremmode": "para configurar o modo de exibição do harém",
-    "dominar": "para dominar uma waifu",
-    "gift": "para presentear uma waifu",
-    "listanime": "para ver os animes adicionados no bot",
-    "myinfo": "para ver suas informações no banco de dados",
-    "top": "para ver os principais colecionadores",
-    "topchat": "para ver o ranking do chat",
-    "trade": "para trocar waifus",
-    "start": "para iniciar o bot",
-    "lang": "para alterar o idioma do bot",
-}
+async def get_first_photo_file_id(app: Client, user_id: int) -> str | None:
+    """Retorna o file_id da primeira foto do usuário/chat."""
+    async for photo in app.get_chat_photos(user_id):
+        return photo.file_id
+    return None

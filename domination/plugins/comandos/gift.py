@@ -1,6 +1,6 @@
 from typing import List
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, CallbackQuery
 from pyrogram.enums import ChatType
 from types_ import TipoCategoria
 from sqlalchemy import select
@@ -20,10 +20,13 @@ from domination.lang_utils import obter_mensagem_chat
         command=COMMAND_LIST.GIFT.value,
     )
 )
-@Client.on_message(filters.command(COMMAND_LIST.GIFT.value) & filters.private)
 async def gift_personagem(client: Client, message: Message):
     if message.chat.type == ChatType.PRIVATE:
-        return
+        return await message.reply(
+            await obter_mensagem_chat(client, message.chat.id, "gift", "not_group")
+        )
+    
+    
     
     base = ColecaoUsuarioWaifu if client.genero == TipoCategoria.WAIFU else ColecaoUsuarioHusbando
     personagem_cls = PersonagemWaifu if client.genero == TipoCategoria.WAIFU else PersonagemHusbando
@@ -79,7 +82,7 @@ async def gift_personagem(client: Client, message: Message):
 
 # Callback para o doador confirmar ou cancelar
 @Client.on_callback_query(filters.regex(r"^gift_\d+_\d+_\d+_.*$"))
-async def gift_callback(client: Client, query):
+async def gift_callback(client: Client, query:CallbackQuery):
     parts = query.data.split("_")
     _, giver_id, receiver_id, personagem_id, action = parts
     giver_id = int(giver_id)
@@ -87,7 +90,9 @@ async def gift_callback(client: Client, query):
     personagem_id = int(personagem_id)
 
     # Só o doador pode confirmar
-    if query.from_user.id != giver_id:
+    if query.from_user.id not in [giver_id,receiver_id]:
+
+
         return await query.answer(await obter_mensagem_chat(client, query.message.chat.id, "erros", "error_only_giver_confirm"), show_alert=True)
 
     base = ColecaoUsuarioWaifu if client.genero == TipoCategoria.WAIFU else ColecaoUsuarioHusbando

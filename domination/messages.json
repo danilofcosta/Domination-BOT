@@ -21,7 +21,7 @@
       "error_command_harem": "❌ Ocorreu um erro ao processar o comando de harém.",
       "error_command_myinfos": "❌ Ocorreu um erro ao processar o comando de informações.",
       "error_command_inline": "❌ Ocorreu um erro ao processar a consulta inline.",
-      "error_not_registered": "❌ Você não possui um harem",
+
       "error_no_favorite": "❌ Você ainda não tem um personagem favorito!",
       "error_no_characters": "❌ Nenhum personagem encontrado na sua coleção!",
       "error_character_not_found": "Personagem não encontrado.",
@@ -34,7 +34,10 @@
       "error_character_not_owned": "Você não possui esse personagem para presentear.",
       "error_character_not_found_id": "{genero} com ID {personagem_id} não encontrado.",
       "error_character_not_found_id_fav": "Esse personagem não faz parte da sua coleção",
-      "error_id_required": "Me informe o ID do {genero} para presentear 🤖"
+      
+      
+      "error_id_required": "Me informe o ID também 🤖",
+            "error_not_registered": "❌ Você não possui um harem /{comadoharem}"
     },
     "help_bot": {
       "help_bot": "<b>Ajuda</b>\nEscolha uma das opções abaixo\n➼ Manipuladores utilizáveis: [{prefixo}]\n<span class=\"tg-spoiler\">\u200b</span>"
@@ -59,7 +62,8 @@
       "id_required": "Me informe o ID do {genero} para presentear 🤖",
       "confirmation_message": "{giver_mention} deseja enviar {character_name} para {receiver_mention}.\n\nDeseja confirmar o envio?",
       "success_sent": "🎁 {character_name} foi enviado de {giver_mention} para o {receiver_mention} com sucesso!",
-      "cancelled": "❌ Envio cancelado. Nenhuma alteração foi feita."
+      "cancelled": "❌ Envio cancelado. Nenhuma alteração foi feita.",
+      "not_group":" use esse comado em um grupo"
     },
     "harem": {
       "title": "๛Harem ツ",
@@ -124,9 +128,10 @@
       "refresh_text": "..."
     },
     "contador": {
+      "caption":"{nome} - {anime} escapou\n lembre do seu nome da proxima vez ",
       "character_appeared": "{raridade} {genero} apareceu!",
       "add_to_harem": "Adicione-o ao seu harém enviando:",
-      "dominar_command": "/dominar <code>nome</code>",
+      "dominar_command": "<code>nome</code>",
       "use_dominar": "Use: /dominar nome_do_personagem",
       "new_character": "<b>{user_mention} você tem um {genero} novo!</b>",
       "name": "<b>🎞 Nome: {name}</b>",
@@ -164,7 +169,8 @@
     "favorito": {
       "confirm_favorite": "Tornar seu favorito?\n\n{character_info}",
       "favorite_set_success": "✅ Favorito definido com sucesso!\n{info}\nConfira {prefix}{harem_command}",
-      "operation_cancelled": "❌ Operação cancelada."
+      "operation_cancelled": "❌ Operação cancelada."   
+      
     },
     "eventos": {
       "small_group_leaving": "Grupo tem menos de 20 membros, estou saindo.",

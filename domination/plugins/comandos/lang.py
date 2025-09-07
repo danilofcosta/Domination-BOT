@@ -52,7 +52,7 @@ async def comando_lang(client: Client, message: Message):
     idioma_solicitado = message.command[1].lower()
 
     # Validar idioma
-    if not validar_idioma(idioma_solicitado):
+    if not validar_Idioma(idioma_solicitado):
         await message.reply(
             await obter_mensagem_chat(
                 client, message.chat.id, "lang", "invalid_language"
@@ -62,10 +62,10 @@ async def comando_lang(client: Client, message: Message):
         return
 
     # Obter o idioma enum
-    novo_idioma = obter_enum_idioma(idioma_solicitado)
+    novo_idioma = obter_enum_Idioma(idioma_solicitado)
 
     # Salvar no banco
-    sucesso = await definir_idioma_chat(client, message.chat.id, novo_idioma)
+    sucesso = await obter_Idioma_chat(client, message.chat.id, novo_idioma)
 
     if sucesso:
         # Obter mensagem no idioma atual do chat

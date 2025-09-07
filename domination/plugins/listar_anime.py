@@ -78,7 +78,9 @@ async def anime_letter_callback(client: Client, query: CallbackQuery):
     base_cls = PersonagemWaifu if client.genero == TipoCategoria.WAIFU else PersonagemHusbando
 
     async with await client.get_reusable_session() as session:
-        stmt = select(base_cls.nome_anime).distinct().where(base_cls.nome_anime.startswith(letter))
+        # Convert letter to lowercase for case-insensitive search
+        letter_lower = letter.lower()
+        stmt = select(base_cls.nome_anime).distinct().where(base_cls.nome_anime.startswith(letter_lower))
         result = await session.execute(stmt)
         animes = [row[0] for row in result.all()]
 
@@ -105,8 +107,9 @@ async def anime_page_callback(client: Client, query: CallbackQuery):
     page = int(parts[1])
     letter = prefix.replace("anime_", "")
 
-    # pegar todos os animes da letra
-    animes = [anime for anime in anime_lookup.values() if anime.startswith(letter)]
+    # pegar todos os animes da letra (convert to lowercase for case-insensitive search)
+    letter_lower = letter.lower()
+    animes = [anime for anime in anime_lookup.values() if anime.startswith(letter_lower)]
     keyboard = await create_keyboard(client, query.message.chat.id, [a[:25] for a in animes], page=page, per_page=14, prefix=f"anime_{letter}", back_data="back_alphabet")
     animes_text = await obter_mensagem_chat(client, query.message.chat.id, "listanime", "animes_starting_with", letter=letter)
     await query.edit_message_text(animes_text, reply_markup=keyboard)
@@ -150,8 +153,9 @@ async def personagem_page_callback(client: Client, query: CallbackQuery):
     prefix = parts[0]
     page = int(parts[1])
     key = prefix.replace("personagem_", "")
-    # todos os personagens da seleção
-    personagens = [p.nome_personagem[:25] for p in personagem_lookup.values() if p.nome_anime.startswith(key[0])]
+    # todos os personagens da seleção (convert to lowercase for case-insensitive search)
+    key_lower = key[0].lower()
+    personagens = [p.nome_personagem[:25] for p in personagem_lookup.values() if p.nome_anime.startswith(key_lower)]
     keyboard = await create_keyboard(client, query.message.chat.id, personagens, page=page, per_page=14, prefix=prefix, back_data=f"anime_letter_{key[0]}", is_character_list=True)
     selection_text = await obter_mensagem_chat(client, query.message.chat.id, "listanime", "characters_from_selection")
     await query.edit_message_text(selection_text, reply_markup=keyboard)

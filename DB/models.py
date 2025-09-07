@@ -40,7 +40,7 @@ table_registry = registry()
 class BasePersonagem:
     __abstract__ = True
 
-    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     nome_personagem: Mapped[str] = mapped_column(String, nullable=False)
     nome_anime: Mapped[str] = mapped_column(String, nullable=False)
     evento: Mapped[TipoEvento] = mapped_column(
@@ -88,7 +88,7 @@ class BasePersonagem:
 @table_registry.mapped_as_dataclass
 class Evento_Midia:
     __tablename__ = "e_eventos"
-    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     cod: Mapped[TipoEvento] = mapped_column(
         Enum(TipoEvento), unique=True, nullable=False
     )
@@ -100,7 +100,7 @@ class Evento_Midia:
 @table_registry.mapped_as_dataclass
 class Raridade_Midia:
     __tablename__ = "e_raridade"
-    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     cod: Mapped[TipoRaridade] = mapped_column(
         Enum(TipoRaridade), unique=True, nullable=False
     )
@@ -141,7 +141,7 @@ class PersonagemHusbando(BasePersonagem):
 @table_registry.mapped_as_dataclass
 class Usuario:
     __tablename__ = "usuarios"
-    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False, index=True)
     telegram_from_user: Mapped[dict] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime] = mapped_column(init=False, server_default=func.now())
@@ -195,7 +195,7 @@ class ColecaoUsuarioWaifu:
     __tablename__ = "colecao_w"
     __allow_unmapped__ = True
 
-    id_local: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id_local: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     telegram_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("usuarios.telegram_id", ondelete="CASCADE"),
         nullable=False,
@@ -221,7 +221,7 @@ class ColecaoUsuarioHusbando:
     __tablename__ = "colecao_h"
     __allow_unmapped__ = True
 
-    id_local: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id_local: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     telegram_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("usuarios.telegram_id", ondelete="CASCADE"),
         nullable=False,
@@ -246,7 +246,7 @@ class ColecaoUsuarioHusbando:
 class ChatTG:
     __tablename__ = "chats_tg"
 
-    id: Mapped[int] = mapped_column(primary_key=True, init=False)
+    id: Mapped[int] = mapped_column(primary_key=True, init=False,autoincrement=True)
     id_grupo: Mapped[int] = mapped_column(BigInteger, unique=True, index=True)
     name: Mapped[str] = mapped_column(String)
     configs: Mapped[dict] = mapped_column(JSON,nullable=True)

@@ -50,3 +50,11 @@ alembic/versions/__pycache__/ec670a2146be_adicionar_sistema_idiomas_chats.cpytho
 alembic/__pycache__/env.cpython-313.pyc
 .vscode/launch.json
 .env
+domination/plugins/comandos/__pycache__/ComandoFav.cpython-313.pyc
+domination/plugins/comandos/__pycache__/contador.cpython-313.pyc
+domination/plugins/comandos/__pycache__/dominar.cpython-313.pyc
+domination/plugins/comandos/__pycache__/gift.cpython-313.pyc
+domination/plugins/comandos/__pycache__/lang.cpython-313.pyc
+domination/plugins/comandos/__pycache__/myinfos.cpython-313.pyc
+domination/plugins/comandos/__pycache__/top.cpython-313.pyc
+domination/plugins/comandos/__pycache__/trade.cpython-313.pyc
