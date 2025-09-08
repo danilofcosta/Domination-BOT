@@ -111,6 +111,13 @@ async def addchar_command(client: Client, message: Message):
         for key, value in create_prelist(TipoEvento, "e").items():
             es.append(f"{key} ({value.name})")
 
+        raridades = "\n".join(rs)
+        eventos = "\n".join(es)
+
         await message.reply_text(
-            f"❌ Por favor, responda a uma foto ou vídeo com o comando no formato: /addchar nome, anime, r-<raridade>, e-<evento> <exemplo: /addchar Rem, Re:Zero, r5, e2>,\n raridades disponíveis:\n {'\n'.join(rs)} \n eventos disponíveis:\n {'\n'.join(es)}"
+            f"❌ Por favor, responda a uma foto ou vídeo com o comando no formato: "
+            f"/addchar nome, anime, r-<raridade>, e-<evento> "
+            f"<exemplo: /addchar Rem, Re:Zero, r5, e2>,\n"
+            f"Raridades disponíveis:\n{raridades}\n"
+            f"Eventos disponíveis:\n{eventos}"
         )
