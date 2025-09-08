@@ -125,7 +125,8 @@ COMMAND_LIST_MIN_DESC_ADMIN = {
 
 class COMMAND_LIST_DB(PyEnum):
     ADDCHAR = "addchar"
-   
+    EDITCHAR = "editchar"
+    DELCHAR = "delchar"
 
 
 def is_admin_or_higher(perfil_status):

@@ -85,3 +85,8 @@ domination_db/plugins/__pycache__/__init__.cpython-313.pyc
 domination_db/plugins/__pycache__/add.cpython-313.pyc
 domination_db/plugins/__pycache__/serialization_example.cpython-313.pyc
 main copy.py
+__pycache__/teste.cpython-313.pyc
+alembic/versions/__pycache__/8d7faf9d6785_fix_id_columns_identity.cpython-313.pyc
+domination/plugins/comandos/__pycache__/listar_anime.cpython-313.pyc
+domination_db/plugins/__pycache__/edit.cpython-313.pyc
+logs/domination.log

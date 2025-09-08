@@ -94,7 +94,8 @@ class Domination(Client):
                 pass
             # agenda set_comandos no loop do cliente
             if hasattr(self, "loop"):
-                self.loop.create_task(self.set_comandos())
+                # self.loop.create_task(self.set_comandos())
+                pass
         except Exception:
             pass
         return res

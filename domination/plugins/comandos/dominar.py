@@ -130,6 +130,7 @@ async def handle_dominar(client: Client, message: Message):
 
         try:
             await session.commit()
+            
         except Exception as e:
             await session.rollback()
             log_error(f"Erro ao salvar usuário/coleção: {e}", "dominar", exc_info=True)

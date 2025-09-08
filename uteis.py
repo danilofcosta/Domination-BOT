@@ -1,11 +1,12 @@
-
+from ctypes import Union
 from pyrogram.types import *
-from pyrogram import Client,filters
-
+from pyrogram import Client, filters
+from pyrogram.enums import ChatType, ChatMemberStatus
 from DB.models import PersonagemHusbando, PersonagemWaifu
 from types_ import TipoCategoria, TipoEvento, TipoMidia
 from enum import Enum as PyEnum
 from domination.logger import log_info, log_error, log_debug
+from pyrogram.enums import ChatType, ChatMemberStatus
 
 PREXIFOS = ["/", ".", "!"]
 
@@ -21,7 +22,7 @@ def create_bts_y_or_n(prefix: str, callback_data_true: str, callback_data_false:
 
 
 def format_personagem_caption(
-    personagem: PersonagemWaifu | PersonagemHusbando, user=None
+    personagem: PersonagemWaifu | PersonagemHusbando, user=None, mention: str = None
 ):
     """Gera legenda do personagem com limite de 1024 caracteres"""
     nome: str = personagem.nome_personagem
@@ -52,13 +53,17 @@ def format_personagem_caption(
         if not user
         else f"Wow! Confira {e}  {personagem.genero.value.capitalize()} de {user}\n\n"
     )
+    mention = f"\n\n📎 ADD: {mention}" if mention else ""
     caption = (
         f"{head}"
         f"<b>{anime.capitalize()}</b>\n"
         f"<b>{personagem.id}</b> :{nome.capitalize()}\n"
         f"<b>{raridade.capitalize()}</b>\n\n"
         f"{evento}"
+        f"{mention}"
+
     )
+    
     # log_debug(f"Caption formatado: {caption}", "uteis")
     return "".join(caption)
 
@@ -162,6 +167,64 @@ async def send_media_by_type(
         )
 
 
+async def send_media_by_chat_id(
+    client: Client, chat_id: int, personagem, caption: str, reply_markup=None
+):
+    """
+    Função que verifica o tipo de mídia do personagem e envia de acordo
+    diretamente para um chat_id (sem depender de reply_to_message).
+
+    Args:
+        client: Cliente do Pyrogram
+        chat_id: ID do chat onde será enviada a mídia
+        personagem: Objeto do personagem com data e tipo_midia
+        caption: Legenda da mensagem
+        reply_markup: Teclado inline (opcional)
+    """
+    try:
+        if personagem.tipo_midia in [
+            TipoMidia.IMAGEM_URL,
+            TipoMidia.IMAGEM_FILEID,
+            TipoMidia.IMAGEM_BYTES,
+            TipoMidia.IMAGEM_ARQUIVO,
+            TipoMidia.IMAGEM_BASE64,
+        ]:
+            return await client.send_photo(
+                chat_id=chat_id,
+                photo=personagem.data,
+                caption=caption,
+                reply_markup=reply_markup,
+            )
+        elif personagem.tipo_midia in [
+            TipoMidia.VIDEO_URL,
+            TipoMidia.VIDEO_FILEID,
+            TipoMidia.VIDEO_BYTES,
+            TipoMidia.VIDEO_ARQUIVO,
+            TipoMidia.VIDEO_BASE64,
+        ]:
+            return await client.send_video(
+                chat_id=chat_id,
+                video=personagem.data,
+                caption=caption,
+                reply_markup=reply_markup,
+            )
+        else:
+            # fallback para imagem caso não seja reconhecido
+            return await client.send_photo(
+                chat_id=chat_id,
+                photo=personagem.data,
+                caption=caption,
+                reply_markup=reply_markup,
+            )
+    except Exception as e:
+        # fallback: envia só o texto com info da mídia
+        return await client.send_message(
+            chat_id=chat_id,
+            text=f"{caption}\n\n📎 Mídia: {personagem.tipo_midia.value}",
+            reply_markup=reply_markup,
+        )
+
+
 def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
 
     comandos_esperados = []
@@ -210,5 +273,41 @@ def re_linhas(lista: list, tamanho: int = 3) -> list:
 def create_bt_clear() -> InlineKeyboardButton:
     return InlineKeyboardButton(f"🗑", callback_data=f"clear_msg")
 
+def create_prelist(base_enum, key: str) -> dict:
+    prelist = {}
+    for num, enum in enumerate(base_enum, start=0):
+        prelist[f"{key}{num}"] = enum
+    return prelist
 
 
+def create_on_bt(
+    text: str,
+    callback_data: str = None,
+    url: str = None,
+    user_id: int = None,
+    switch_inline_query: str = None,
+    switch_inline_query_current_chat: str = None,
+) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=text,
+        callback_data=callback_data,
+        url=url,
+        user_id=user_id,
+        switch_inline_query=switch_inline_query,
+        switch_inline_query_current_chat=switch_inline_query_current_chat,
+    )
+
+
+async def check_admin_group(client: Client, user_id, chat_id) -> bool:
+    try:
+        chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+    except Exception as e:
+        log_error(f"Erro ao verificar admin no grupo {chat_id} {user_id}: {e}", "uteis", exc_info=True)
+        return False
+    if chat_member.status in [
+        ChatMemberStatus.OWNER,
+        ChatMemberStatus.ADMINISTRATOR,
+    ]:
+        return True
+    else:
+        return False
