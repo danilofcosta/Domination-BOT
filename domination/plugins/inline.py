@@ -92,6 +92,7 @@ async def create_results(
                 InlineQueryResultCachedVideo(
                     id=str(offset + i),
                     video_file_id=p.data,
+                    title=p.nome_personagem,
                     caption=caption,
                     description=caption,
                     reply_markup=kb,
