@@ -53,7 +53,7 @@ def format_personagem_caption(
         if not user
         else f"Wow! Confira {e}  {personagem.genero.value.capitalize()} de {user}\n\n"
     )
-    mention = f"\n\n📎 ADD: {mention}" if mention else ""
+    mention = f"\n📎 ADD: {mention}" if mention else ""
     caption = (
         f"{head}"
         f"<b>{anime.capitalize()}</b>\n"
