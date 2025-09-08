@@ -79,8 +79,6 @@ alembic/versions/__pycache__/3c2773b5ffc2_corrige_id_local_para_identity_.cpytho
 domination/__pycache__/logger.cpython-313.pyc
 __pycache__/uteis.cpython-313.pyc
 domination_db/__pycache__/__init__.cpython-313.pyc
-domination_db/plugins/__init__.py
-domination_db/plugins/add.py
 domination_db/plugins/__pycache__/__init__.cpython-313.pyc
 domination_db/plugins/__pycache__/add.cpython-313.pyc
 domination_db/plugins/__pycache__/serialization_example.cpython-313.pyc
