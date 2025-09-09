@@ -9,7 +9,7 @@ from pyrogram.types import (
 from sqlalchemy import select, func
 from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando
 from domination.plugins.lang_utils import obter_mensagem_chat
-from uteis import dynamic_command_filter 
+from uteis import dynamic_command_filter,send_media_by_type 
 from types_ import TipoCategoria, ModoHarem,COMMAND_LIST
 from collections import defaultdict
 from domination.plugins.harem_pages import (
@@ -144,9 +144,7 @@ async def harem(client: Client, message: Message):
             reply_markup = build_harem_keyboard(
                 user_id, genero.value, current_page, len(pages)
             )
-            await message.reply_photo(
-                fav_info.data, caption=caption, reply_markup=reply_markup
-            )
+   
         elif modo_harem == ModoHarem.RECENTE.value:
             colecoes_sorted = sorted(
                 colecoes,
@@ -169,9 +167,7 @@ async def harem(client: Client, message: Message):
             reply_markup = build_harem_keyboard(
                 user_id, genero.value, current_page, len(pages)
             )
-            await message.reply_photo(
-                fav_info.data, caption=caption, reply_markup=reply_markup
-            )
+         
         elif modo_harem == ModoHarem.ANIME.value:
             pages = await build_anime_mode_pages(session, colecoes, genero)
             if not pages:
@@ -189,9 +185,7 @@ async def harem(client: Client, message: Message):
             reply_markup = build_harem_keyboard(
                 user_id, genero.value, current_page, len(pages)
             )
-            await message.reply_photo(
-                fav_info.data, caption=caption, reply_markup=reply_markup
-            )
+    
         elif modo_harem == ModoHarem.DELETE.value:
             pages = await build_delete_mode_pages(session, colecoes, genero)
             if not pages:
@@ -209,9 +203,7 @@ async def harem(client: Client, message: Message):
             reply_markup = build_harem_keyboard(
                 user_id, genero.value, current_page, len(pages)
             )
-            await message.reply_photo(
-                fav_info.data, caption=caption, reply_markup=reply_markup
-            )
+           
         elif modo_harem == ModoHarem.RARIDADE.value:
           
             
@@ -236,9 +228,7 @@ async def harem(client: Client, message: Message):
             reply_markup = build_harem_keyboard(
                 user_id, genero.value, current_page, len(pages)
             )
-            await message.reply_photo(
-                fav_info.data, caption=caption, reply_markup=reply_markup
-            )
+
         elif modo_harem == ModoHarem.EVENTO.value:
             colecoes_filtradas = [c for c in colecoes if c.character.evento.value == submodo]
             if not colecoes_filtradas:
@@ -257,11 +247,11 @@ async def harem(client: Client, message: Message):
             reply_markup = build_harem_keyboard(
                 user_id, genero.value, current_page, len(pages)
             )
-            await message.reply_photo(
-                fav_info.data, caption=caption, reply_markup=reply_markup
-            )
-        else:
-            await message.reply_photo(fav_info.data, f"h{len(colecoes)}")
+        try:
+            await send_media_by_type(message, fav_info, caption=caption, reply_markup=reply_markup
+                                     )
+        except Exception as e:
+            await message.reply_text(f"❌ Erro ao enviar mídia: {e}")
 
 
 @Client.on_callback_query(filters.regex(r"^page_(\d+)_(\w+)_(\d+)$"))
