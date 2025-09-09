@@ -248,7 +248,7 @@ async def harem(client: Client, message: Message):
                 user_id, genero.value, current_page, len(pages)
             )
         try:
-            await send_media_by_type(message, fav_info, caption=caption, reply_markup=reply_markup
+            await send_media_by_type(client, message, fav_info, caption=caption, reply_markup=reply_markup
                                      )
         except Exception as e:
             await message.reply_text(f"❌ Erro ao enviar mídia: {e}")
