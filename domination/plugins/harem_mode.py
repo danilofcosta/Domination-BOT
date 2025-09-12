@@ -6,6 +6,7 @@ from pyrogram.types import (
     CallbackQuery,
 )
 from sqlalchemy import select, func
+from DB.database import DATABASE,Session
 from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando, Evento_Midia, Raridade_Midia
 from types_ import ModoHarem, TipoCategoria, TipoEvento, TipoRaridade,COMMAND_LIST
 from uteis import  create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
@@ -31,8 +32,9 @@ async def harem_mode(client: Client, message: Message):
     async with await client.get_session() as session:
         # Força leitura direta do banco com uma nova query
         stmt = select(Usuario).where(Usuario.telegram_id == user_id)
-        result = await session.execute(stmt)
-        usuario: Usuario = result.scalar_one_or_none()
+     
+        result = await DATABASE.get_info_one(stmt)
+        usuario: Usuario = result
         if not usuario:
             await message.reply_text(
                 MESSAGE.get_text("pt", "erros", "error_not_registered"),
@@ -76,13 +78,12 @@ async def harem_mode(client: Client, message: Message):
         else:
             stmt = select(PersonagemWaifu).order_by(func.random()).limit(1)
 
-        result = await session.execute(stmt)
-        personagem = result.scalars().first()
+        personagem =    await DATABASE.get_info_one(stmt)
 
         response_text = MESSAGE.get_text("pt", "harem_mode", "choose_option")
 
         await send_media_by_type(
-            client=client,
+         
             message=message,
             personagem=personagem,
             caption=response_text,
@@ -105,28 +106,30 @@ async def setmodoharem(client: Client, query: CallbackQuery):
         and "set" not in res
     ):
         buttons = []
+        event = await DATABASE.get_info_all(select(Evento_Midia))
+        rar = await DATABASE.get_info_one(select(Raridade_Midia))
+
         # Buscar do banco para ter emojis dos modelos
-        async with await client.get_reusable_session() as session:
-            if modo_selecionado == ModoHarem.EVENTO.value:
-                result = await session.execute(select(Evento_Midia))
-                for ev in result.scalars().all():
-                    label = f"{(ev.emoji or '').strip()}"
-                    buttons.append(
-                        InlineKeyboardButton(
-                            label,
-                            callback_data=f"setmodoharem_{modo_selecionado}_{ev.cod.value}_set",
-                        )
+        if modo_selecionado == ModoHarem.EVENTO.value:
+            
+            for ev in event:
+                label = f"{(ev.emoji or '').strip()}"
+                buttons.append(
+                    InlineKeyboardButton(
+                        label,
+                        callback_data=f"setmodoharem_{modo_selecionado}_{ev.cod.value}_set",
                     )
-            else:
-                result = await session.execute(select(Raridade_Midia))
-                for ra in result.scalars().all():
-                    label = f"{(ra.emoji or '').strip()} {ra.cod.value}".strip()
-                    buttons.append(
-                        InlineKeyboardButton(
-                            label,
-                            callback_data=f"setmodoharem_{modo_selecionado}_{ra.cod.value}_set",
-                        )
+                )
+        else:
+         
+            for ra in rar:
+                label = f"{(ra.emoji or '').strip()} {ra.cod.value}".strip()
+                buttons.append(
+                    InlineKeyboardButton(
+                        label,
+                        callback_data=f"setmodoharem_{modo_selecionado}_{ra.cod.value}_set",
                     )
+                )
 
         bts = re_linhas(buttons)
         bts.append([create_bt_clear()])
@@ -139,56 +142,58 @@ async def setmodoharem(client: Client, query: CallbackQuery):
     if "set" in res:
         modo_selecionado = modo_selecionado +'_'+ res[0]
 
-    async with await client.get_reusable_session() as session:
+ 
         # Busca o usuário
-        stmt = select(Usuario).where(Usuario.telegram_id == user_id)
-        result = await session.execute(stmt)
-        usuario: Usuario = result.scalar_one_or_none()
+    stmt = select(Usuario).where(Usuario.telegram_id == user_id)
+       
+    result = await DATABASE.get_info_all(select(stmt))
 
-        if not usuario:
-            await query.message.edit_text(
-                MESSAGE.get_text("pt", "erros", "error_not_registered")
-            )
-            return
+    usuario: Usuario = result
 
-        # Atualiza as configurações do harém
-        if client.genero == TipoCategoria.HUSBANDO:
-            configs = usuario.configs_h or {}
-            log_debug(f"configs_h antes da mudança: {configs}", "harem_mode")
-        else:
-            configs = usuario.configs_w or {}
-            log_debug(f"configs_w antes da mudança: {configs}", "harem_mode")
+    if not usuario:
+        await query.message.edit_text(
+            MESSAGE.get_text("pt", "erros", "error_not_registered")
+        )
+        return
 
-        configs["modo_harem"] = modo_selecionado
-        log_debug(f"Configs após mudança: {configs}", "harem_mode")
+    # Atualiza as configurações do harém
+    if client.genero == TipoCategoria.HUSBANDO:
+        configs = usuario.configs_h or {}
+        log_debug(f"configs_h antes da mudança: {configs}", "harem_mode")
+    else:
+        configs = usuario.configs_w or {}
+        log_debug(f"configs_w antes da mudança: {configs}", "harem_mode")
 
-        if client.genero == TipoCategoria.HUSBANDO:
-            usuario.configs_h = configs
-            log_debug(f"usuario.configs_h definido como: {usuario.configs_h}", "harem_mode")
-        else:
-            usuario.configs_w = configs
-            log_debug(f"usuario.configs_w definido como: {usuario.configs_w}", "harem_mode")
+    configs["modo_harem"] = modo_selecionado
+    log_debug(f"Configs após mudança: {configs}", "harem_mode")
 
-        # Força o SQLAlchemy a detectar a mudança
-        from sqlalchemy.orm.attributes import flag_modified
+    if client.genero == TipoCategoria.HUSBANDO:
+        usuario.configs_h = configs
+        log_debug(f"usuario.configs_h definido como: {usuario.configs_h}", "harem_mode")
+    else:
+        usuario.configs_w = configs
+        log_debug(f"usuario.configs_w definido como: {usuario.configs_w}", "harem_mode")
 
-        if client.genero == TipoCategoria.HUSBANDO:
-            flag_modified(usuario, "configs_h")
-        else:
-            flag_modified(usuario, "configs_w")
+    # Força o SQLAlchemy a detectar a mudança
+    from sqlalchemy.orm.attributes import flag_modified
 
-        session.add(usuario)
+    if client.genero == TipoCategoria.HUSBANDO:
+        flag_modified(usuario, "configs_h")
+    else:
+        flag_modified(usuario, "configs_w")
 
-        try:
-            await session.commit()
-            log_info(f"Modo harém atualizado para: {modo_selecionado}", "harem_mode")
-        except Exception as e:
-            await session.rollback()
-            log_error(f"Erro ao salvar modo do harém: {e}", "harem_mode", exc_info=True)
-            await query.message.edit_text(
-                MESSAGE.get_text("pt", "harem_mode", "error_saving_mode")
-            )
-            return
+
+
+    try:
+        await DATABASE.add_object(usuario)
+        log_info(f"Modo harém atualizado para: {modo_selecionado}", "harem_mode")
+    except Exception as e:
+        await Session.rollback()
+        log_error(f"Erro ao salvar modo do harém: {e}", "harem_mode", exc_info=True)
+        await query.message.edit_text(
+            MESSAGE.get_text("pt", "harem_mode", "error_saving_mode")
+        )
+        return
 
     # Atualiza os botões inline com o check correto
     try:

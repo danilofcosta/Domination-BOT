@@ -44,6 +44,13 @@ class DATABASE:
             async with session.begin():   # commit automático
                 session.add(obj)
         return obj # Retorna o objeto com ID atualizado
+    @staticmethod
+    async def delete_object(obj: object) -> object:
+        """ Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado """
+        async with Session() as session:  # VS Code reconhece AsyncSession
+            async with session.begin():   # commit automático
+                session.delete(obj)
+        return obj # Retorna o objeto com ID atualizado
 
     @staticmethod
     async def get_info_one(search_query: object) -> object | None:

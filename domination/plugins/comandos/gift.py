@@ -120,7 +120,7 @@ async def gift_personagem(client: Client, message: Message):
         receiver_mention=message.reply_to_message.from_user.mention,
     )
     await send_media_by_type(
-        client=client,
+       
         message=message,
         personagem=personagem,
         caption=caption,

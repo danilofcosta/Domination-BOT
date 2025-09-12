@@ -7,7 +7,6 @@ from pyrogram.types import (
     CallbackQuery,
 )
 from types_ import TipoCategoria, TipoMidia
-from domination.plugins.lang_utils import obter_mensagem_chat
 from sqlalchemy import select, func, desc
 from DB.models import (
     ColecaoUsuarioHusbando,
@@ -18,6 +17,8 @@ from DB.models import (
 )
 from uteis import dynamic_command_filter, send_media_by_type
 from types_ import COMMAND_LIST
+from DB.database import DATABASE
+from message import MESSAGE
 
 
 def format_user(info: dict | None) -> str:
@@ -28,7 +29,7 @@ def format_user(info: dict | None) -> str:
     return info.get("NAME", "Desconhecido")
 
 
-async def build_top_text(session, base, ids: list[int] | None, limit: int = 10):
+async def build_top_text( base, ids: list[int] | None, limit: int = 10):
     stmt = (
         select(base.telegram_id, func.count(base.id_local).label("quantidade"))
         .group_by(base.telegram_id)
@@ -38,8 +39,7 @@ async def build_top_text(session, base, ids: list[int] | None, limit: int = 10):
     if ids is not None:
         stmt = stmt.where(base.telegram_id.in_(ids))
 
-    result = await session.execute(stmt)
-    top_list = result.all()
+    top_list = await DATABASE.get_info_all_objects(stmt)
     if not top_list:
         return None, None
 
@@ -48,6 +48,7 @@ async def build_top_text(session, base, ids: list[int] | None, limit: int = 10):
         Usuario.telegram_id.in_(telegram_ids)
     )
     users_result = await session.execute(users_stmt)
+    users_result = await DATABASE.get_info_all_objects()
     users_dict = {tid: info for tid, info in users_result.all()}
 
     top_text = "\n".join(
@@ -57,21 +58,19 @@ async def build_top_text(session, base, ids: list[int] | None, limit: int = 10):
     return top_list, top_text
 
 
-async def get_random_personagem(session, genero: TipoCategoria):
+async def get_random_personagem( genero: TipoCategoria):
     if genero == TipoCategoria.HUSBANDO:
-        result = await session.execute(
-            select(PersonagemHusbando).order_by(func.random()).limit(1)
-        )
+        smtr=         select(PersonagemHusbando).order_by(func.random()).limit(1)
+
     else:
-        result = await session.execute(
-            select(PersonagemWaifu).order_by(func.random()).limit(1)
-        )
-    return result.scalars().first()
+         smtr=       select(PersonagemHusbando).order_by(func.random()).limit(1)
+     
+    return DATABASE.get_info_one(smtr)
 
 
 async def ranking_keyboard(client, chat_id: int, scope: str):
     """scope = 'top' (global) ou 'chat' (chat)"""
-    buttons_text = await obter_mensagem_chat(client, chat_id, "top", "buttons")
+    buttons_text =    MESSAGE.get_text('pt', "top", "buttons")
     buttons = [
         [
             InlineKeyboardButton(
@@ -124,7 +123,7 @@ async def ComandoTop_global(client: Client, message: Message):
         top_list, top_text = await build_top_text(session, base, ids=None)
         if not top_list:
             await message.reply_text(
-                await obter_mensagem_chat(client, message.chat.id, "top", "no_data"),
+                   MESSAGE.get_text('pt', "top", "no_data"),
                 
             )
             return
@@ -133,15 +132,15 @@ async def ComandoTop_global(client: Client, message: Message):
 
     if personagem:
         await send_media_by_type(
-            client=client,
+         
             message=message,
             personagem=personagem,
-            caption=f"{await obter_mensagem_chat(client, message.chat.id, 'top', 'global_title')}\n\n{top_text}",
+            caption=f"{   MESSAGE.get_text('pt', 'top', 'global_title')}\n\n{top_text}",
             reply_markup=await ranking_keyboard(client, message.chat.id, "top"),
         )
     else:
         await message.reply_text(
-            f"{await obter_mensagem_chat(client, message.chat.id, 'top', 'global_title')}\n\n{top_text}",
+            f"{   MESSAGE.get_text('pt','top', 'global_title')}\n\n{top_text}",
             reply_markup=await ranking_keyboard(client, message.chat.id, "top"),
         )
 
@@ -169,7 +168,7 @@ async def ComandoTop_chat(client: Client, message: Message):
     membros = [m.user.id async for m in client.get_chat_members(group_id)]
     if not membros:
         await message.reply_text(
-            await obter_mensagem_chat(client, message.chat.id, "top", "no_members"),
+               MESSAGE.get_text('pt',"top", "no_members"),
             
         )
         return
@@ -178,8 +177,7 @@ async def ComandoTop_chat(client: Client, message: Message):
         top_list, top_text = await build_top_text(session, base, ids=membros)
         if not top_list:
             await message.reply_text(
-                await obter_mensagem_chat(
-                    client, message.chat.id, "top", "no_group_collection"
+                 MESSAGE.get_text('pt', "top", "no_group_collection"
                 ),
                 
             )
@@ -189,15 +187,15 @@ async def ComandoTop_chat(client: Client, message: Message):
 
     if personagem:
         await send_media_by_type(
-            client=client,
+            
             message=message,
             personagem=personagem,
-            caption=f"{await obter_mensagem_chat(client, message.chat.id, 'top', 'chat_title', chat_title=message.chat.title)}\n\n{top_text}",
+            caption=f"{   MESSAGE.get_text('pt','top', 'chat_title', chat_title=message.chat.title)}\n\n{top_text}",
             reply_markup=await ranking_keyboard(client, message.chat.id, "chat"),
         )
     else:
         await message.reply_text(
-            f"{await obter_mensagem_chat(client, message.chat.id, 'top', 'chat_title', chat_title=message.chat.title)}\n\n{top_text}",
+            f"{   MESSAGE.get_text('pt', 'top', 'chat_title', chat_title=message.chat.title)}\n\n{top_text}",
             reply_markup=await ranking_keyboard(client, message.chat.id, "chat"),
         )
 
@@ -233,15 +231,13 @@ async def callback_posicao(client: Client, query: CallbackQuery):
 
     if posicao:
         await query.answer(
-            await obter_mensagem_chat(
-                client, query.message.chat.id, "top", "position", position=posicao
+           MESSAGE.get_text('pt',"top", "position", position=posicao
             ),
             show_alert=True,
         )
     else:
         await query.answer(
-            await obter_mensagem_chat(
-                client, query.message.chat.id, "top", "no_user_collection"
+            MESSAGE.get_text('pt', "top", "no_user_collection"
             ),
             show_alert=True,
         )
@@ -274,7 +270,7 @@ async def call_ranking_chat(client: Client, query: CallbackQuery):
                 pass
     try:
         await query.edit_message_caption(
-            caption=f"{await obter_mensagem_chat(client, query.message.chat.id, 'top', 'chat_title', chat_title=query.message.chat.title)}\n\n{top_text}",
+            caption=f"{   MESSAGE.get_text('pt','top', 'chat_title', chat_title=query.message.chat.title)}\n\n{top_text}",
             reply_markup=await ranking_keyboard(client, query.message.chat.id, "chat"),
         )
     except:

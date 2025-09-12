@@ -6,7 +6,7 @@ from types_ import TipoCategoria
 from pyrogram.enums import ParseMode
 from pyrogram.types import *
 from types_ import *
-from domination.logger import log_info, log_error, log_debug
+from domination.logger import log_info
 from pathlib import Path
 
 class Domination(Client):

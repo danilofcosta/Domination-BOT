@@ -8,11 +8,12 @@ from DB.models import (
     PersonagemWaifu,
 )
 from types_ import TipoCategoria
-from uteis import format_personagem_caption, send_media_by_type
-from domination.plugins.lang_utils import obter_mensagem_chat
+from uteis import format_personagem_caption, send_media_by_type, send_media_by_chat_id
 from domination.logger import log_info, log_error, log_debug
-
+from DB import database
 from types_ import COMMAND_LIST
+from message import MESSAGE
+
 message_counter: dict[str, dict[int, dict]] = {}
 
 
@@ -20,16 +21,15 @@ async def create_secret_caption(
     client, personagem, genero: TipoCategoria, chat_id: int
 ):
     tasks = [
-        obter_mensagem_chat(
-            client,
-            chat_id,
+        MESSAGE.get_text(
+            "pt",
             "contador",
             "character_appeared",
             raridade=personagem.raridade_full.emoji,
             genero=genero.value.capitalize(),
         ),
-        obter_mensagem_chat(client, chat_id, "contador", "add_to_harem"),
-        obter_mensagem_chat(client, chat_id, "contador", "dominar_command"),
+        MESSAGE.get_text("pt", "contador", "add_to_harem"),
+        MESSAGE.get_text("pt", "contador", "dominar_command"),
     ]
     results = await asyncio.gather(*tasks)
     return "\n".join(
@@ -47,7 +47,6 @@ async def handle_group_messages(client: Client, message: Message):
 
     g = client.genero.value
     group_id = message.chat.id
-    
 
     # Inicializa dict
     grp_counter = message_counter.setdefault(g, {}).setdefault(
@@ -61,29 +60,28 @@ async def handle_group_messages(client: Client, message: Message):
         grp_counter["cont"] = 98 if grp_counter["cont"] < 98 else grp_counter["cont"]
 
     cont = grp_counter["cont"]
-    log_debug(f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador")
+    log_debug(
+        f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador"
+    )
 
     # Função interna para pegar personagem aleatório
     async def get_random_character():
-        async with await client.get_reusable_session() as session:
-            base = (
-                PersonagemHusbando
-                if client.genero == TipoCategoria.HUSBANDO
-                else PersonagemWaifu
-            )
-            result = await session.execute(
-                select(base).order_by(func.random()).limit(1)
-            )
-            return result.scalars().first()
+        base = (
+            PersonagemHusbando
+            if client.genero == TipoCategoria.HUSBANDO
+            else PersonagemWaifu
+        )
+        return database.DATABASE.get_info_one(
+            select(base).order_by(func.random()).limit(1)
+        )
 
     # A cada 100 mensagens, envia personagem
-    if cont ==100 :
+    if cont == 100:
         personagem = await get_random_character()
         if not personagem:
             return
 
         msg_res: Message = await send_media_by_type(
-            client,
             message,
             personagem,
             caption=await create_secret_caption(
@@ -100,12 +98,10 @@ async def handle_group_messages(client: Client, message: Message):
         log_info(f"Personagem saiu: {personagem.nome_personagem}", "contador")
 
     # A cada 20 mensagens, deleta a mensagem atual
-    elif cont ==120 and cont < 100:
+    elif cont == 120 and cont < 100:
         try:
-            per= message_counter[g][group_id]["per"]
-            view_text = await obter_mensagem_chat(
-                client, group_id, "contador", "view_character"
-            )
+            per = message_counter[g][group_id]["per"]
+            view_text = MESSAGE.get_text("pt", "contador", "view_character")
             keyboard = InlineKeyboardMarkup(
                 [
                     [
@@ -119,9 +115,8 @@ async def handle_group_messages(client: Client, message: Message):
             await client.delete_messages(
                 message.chat.id, message_counter[g][group_id].get("id_mens")
             )
-            view_text = await obter_mensagem_chat(
-                client,
-                group_id,
+            view_text = MESSAGE.get_text(
+                "pt",
                 "contador",
                 "caption",
                 nome=per.nome_personagem,
@@ -155,18 +150,16 @@ async def view_character_callback(client: Client, query: CallbackQuery):
             return await query.answer("❌ Personagem não encontrado!", show_alert=True)
 
         character_info, clicked_text = await asyncio.gather(
-            obter_mensagem_chat(
-                client,
-                query.message.chat.id,
+            MESSAGE.get_text(
+                "pt",
                 "contador",
                 "character_info",
                 character_name=personagem.nome_personagem,
                 anime_name=personagem.nome_anime,
                 rarity=f"{personagem.raridade_full.emoji} {personagem.raridade_full.nome}",
             ),
-            obter_mensagem_chat(
-                client,
-                query.message.chat.id,
+            MESSAGE.get_text(
+                "pt",
                 "contador",
                 "character_clicked_by",
                 user_mention=query.from_user.mention,
@@ -174,9 +167,11 @@ async def view_character_callback(client: Client, query: CallbackQuery):
             ),
         )
 
-        await client.send_photo(
+     
+        await send_media_by_chat_id(
+            client=client,
             chat_id=query.message.chat.id,
-            photo=personagem.data,
+            personagem=personagem,
             caption=clicked_text,
             reply_to_message_id=query.message.id,
         )
@@ -187,7 +182,6 @@ async def view_character_callback(client: Client, query: CallbackQuery):
     except Exception as e:
         log_error(f"Erro ao visualizar personagem: {e}", "contador", exc_info=True)
         await query.answer("❌ Erro ao carregar personagem!", show_alert=True)
-
 
 
 @Client.on_callback_query(filters.regex(r"^clear_msg"))

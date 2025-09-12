@@ -69,7 +69,7 @@ def format_personagem_caption(
 
 
 async def send_media_by_type(
-    client: Client, message: Message, personagem, caption: str, reply_markup=None
+    message: Message, personagem, caption: str, reply_markup=None
 ):
     """
     Função que verifica o tipo de mídia do personagem e envia de acordo.
@@ -168,7 +168,7 @@ async def send_media_by_type(
 
 
 async def send_media_by_chat_id(
-    client: Client, chat_id: int, personagem, caption: str, reply_markup=None
+    client: Client, chat_id: int, personagem, caption: str, reply_markup=None,**kwargs
 ):
     """
     Função que verifica o tipo de mídia do personagem e envia de acordo
@@ -193,7 +193,7 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 photo=personagem.data,
                 caption=caption,
-                reply_markup=reply_markup,
+                reply_markup=reply_markup,**kwargs
             )
         elif personagem.tipo_midia in [
             TipoMidia.VIDEO_URL,
@@ -206,7 +206,7 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 video=personagem.data,
                 caption=caption,
-                reply_markup=reply_markup,
+                reply_markup=reply_markup,**kwargs
             )
         else:
             # fallback para imagem caso não seja reconhecido
@@ -214,14 +214,14 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 photo=personagem.data,
                 caption=caption,
-                reply_markup=reply_markup,
+                reply_markup=reply_markup,**kwargs
             )
     except Exception as e:
         # fallback: envia só o texto com info da mídia
         return await client.send_message(
             chat_id=chat_id,
             text=f"{caption}\n\n📎 Mídia: {personagem.tipo_midia.value}",
-            reply_markup=reply_markup,
+            reply_markup=reply_markup,**kwargs
         )
 
 

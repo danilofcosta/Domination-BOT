@@ -2,9 +2,9 @@ from collections import defaultdict
 from sqlalchemy import select, func
 from DB.models import PersonagemWaifu, PersonagemHusbando
 from types_ import TipoCategoria
+from DB.database import DATABASE
 
-
-async def create_harem_pages_ref(session, colecoes, genero):
+async def create_harem_pages_ref( colecoes, genero):
     """
     Cria páginas do harém com contagem correta do banco.
     """
@@ -44,8 +44,8 @@ async def create_harem_pages_ref(session, colecoes, genero):
 
     for anime in anime_groups.keys():
         stmt = select(func.count(db_model.id)).where(db_model.nome_anime == anime)
-        result = await session.execute(stmt)
-        total = result.scalar() or 1
+        result = await DATABASE.get_info_one(stmt)
+        total = result or 1
         anime_groups[anime]["total_banco"] = total
 
     sorted_animes = sorted(anime_groups.keys())
@@ -78,7 +78,7 @@ async def create_harem_pages_ref(session, colecoes, genero):
     return pages
 
 
-async def build_delete_mode_pages(session, colecoes, genero):
+async def build_delete_mode_pages( colecoes, genero):
     """Cria páginas do modo DELETE com info detalhada para exclusão/gestão."""
     db_model = (
         PersonagemHusbando if genero == TipoCategoria.HUSBANDO else PersonagemWaifu
@@ -94,8 +94,8 @@ async def build_delete_mode_pages(session, colecoes, genero):
     animes_unicos = {c.character.nome_anime for c in colecoes}
     for anime in animes_unicos:
         stmt = select(func.count(db_model.id)).where(db_model.nome_anime == anime)
-        result = await session.execute(stmt)
-        anime_to_total[anime] = result.scalar() or 0
+        result = await DATABASE.get_info_one(stmt)
+        anime_to_total[anime] = result or 0
 
     def format_line(c):
         raridade_emoji = c.character.raridade_full.emoji if c.character.raridade_full else ""
@@ -144,7 +144,7 @@ def build_recent_pages(colecoes_sorted_desc):
     return pages
 
 
-async def build_anime_mode_pages(session, colecoes, genero):
+async def build_anime_mode_pages( colecoes, genero):
     """Cria páginas do modo ANIME: um bloco por anime com contagem única e total no banco."""
     db_model = (
         PersonagemHusbando if genero == TipoCategoria.HUSBANDO else PersonagemWaifu
@@ -157,7 +157,7 @@ async def build_anime_mode_pages(session, colecoes, genero):
     anime_to_total = {}
     for anime in unique_per_anime.keys():
         stmt = select(func.count(db_model.id)).where(db_model.nome_anime == anime)
-        result = await session.execute(stmt)
+        result = await DATABASE.get_info_one(stmt)
         anime_to_total[anime] = result.scalar() or 0
 
     lines = []

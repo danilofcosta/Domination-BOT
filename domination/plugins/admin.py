@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 import aiohttp
-import io
+from DB.database import DATABASE
 from sqlalchemy import select
 
 from uteis import dynamic_command_filter
@@ -18,14 +18,13 @@ from DB.models import Usuario
 @Client.on_message(filters.command(COMMAND_LIST.SETPROFILE.value) & filters.private)
 async def set_photo_profile_bot(client: Client, message: Message):
     # Verificar se o usuário é admin ou superior
-    async with await client.get_reusable_session() as session:
-        stmt = select(Usuario).where(Usuario.telegram_id == message.from_user.id)
-        result = await session.execute(stmt)
-        usuario = result.scalar_one_or_none()
-        
-        if not usuario or not is_admin_or_higher(usuario.perfil_status):
-            await message.reply("❌ Apenas administradores podem usar este comando!", quote=True)
-            return
+
+    stmt = select(Usuario).where(Usuario.telegram_id == message.from_user.id)
+    usuario = DATABASE.get_info_one(stmt)
+    
+    if not usuario or not is_admin_or_higher(usuario.perfil_status):
+        await message.reply("❌ Apenas administradores podem usar este comando!", quote=True)
+        return
     # if len(message.command) < 2:
     #     return await message.reply(
     #         "Por favor, envie uma URL de imagem ou anexe uma foto para definir como foto de perfil do bot.",
@@ -89,14 +88,14 @@ async def set_photo_profile_bot(client: Client, message: Message):
 @Client.on_message(filters.command(COMMAND_LIST.SETDESCRIPTION.value) & filters.private)
 async def set_bot_description(client: Client, message: Message):
     # Verificar se o usuário é admin ou superior
-    async with await client.get_reusable_session() as session:
-        stmt = select(Usuario).where(Usuario.telegram_id == message.from_user.id)
-        result = await session.execute(stmt)
-        usuario = result.scalar_one_or_none()
-        
-        if not usuario or not is_admin_or_higher(usuario.perfil_status):
-            await message.reply("❌ Apenas administradores podem usar este comando!", quote=True)
-            return
+   
+    stmt = select(Usuario).where(Usuario.telegram_id == message.from_user.id)
+  
+    usuario =await DATABASE.get_info_one(stmt)
+    
+    if not usuario or not is_admin_or_higher(usuario.perfil_status):
+        await message.reply("❌ Apenas administradores podem usar este comando!", quote=True)
+        return
 
     # Verificar se há texto no comando
     if len(message.command) < 2:

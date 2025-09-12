@@ -1,9 +1,8 @@
 from pyrogram import Client, filters
 from pyrogram.types import *
 from DB.models import ChatTG
-from domination.plugins.lang_utils import obter_mensagem_chat
 from types_ import Idioma
-
+from message import MESSAGE
 @Client.on_message(filters.new_chat_members)
 async def bot_added_to_group(client: Client, message: Message):
     for member in message.new_chat_members:
@@ -17,7 +16,7 @@ async def bot_added_to_group(client: Client, message: Message):
             member_count = await client.get_chat_members_count(message.chat.id)
             if member_count < 20:
                 try:
-                    text = await obter_mensagem_chat(client, message.chat.id, "eventos", "small_group_leaving")
+                    text =MESSAGE.get_text('pt', "eventos", "small_group_leaving")
                     await client.send_message(message.chat.id, text=text)
                     await client.leave_chat(message.chat.id)
                     return
@@ -41,7 +40,9 @@ async def bot_added_to_group(client: Client, message: Message):
                 await session.commit()
             
             # Monta a mensagem
-            cap = await obter_mensagem_chat(client, message.chat.id, "eventos", "bot_added_to_group",
+       
+
+            cap = await MESSAGE.get_text('pt' "eventos", "bot_added_to_group",
                 group_title=message.chat.title,
                 group_id=message.chat.id,
                 adder_info=adder_info,

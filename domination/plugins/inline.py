@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.enums import ParseMode, ChatType
+from pyrogram.enums import ParseMode
 from pyrogram.types import *
 from sqlalchemy import select, desc
 from DB.models import (
@@ -11,12 +11,11 @@ from DB.models import (
 )
 from uteis import format_personagem_caption, send_media_by_type
 from types_ import TipoCategoria, TipoMidia
-from domination.message import MESSAGES
-from domination.plugins.lang_utils import obter_mensagem_chat
+from domination.message import MESSAGE
+from DB.database import DATABASE
 
 
 async def create_results(
-    client,
     chat_id,
     paginated,
     offset=0,
@@ -24,10 +23,11 @@ async def create_results(
     reply_markup: bool = False,
 ):
     results = []
-    txt_bt = await obter_mensagem_chat(client, chat_id, "inline", "who_captured_button")
+    txt_bt = MESSAGE.get_text("pt", "inline", "who_captured_button")
 
     for i, p in enumerate(paginated):
         caption = format_personagem_caption(p, user=user)
+        p: PersonagemWaifu | PersonagemHusbando = p  # personagem
 
         kb = (
             InlineKeyboardMarkup(
@@ -105,12 +105,8 @@ async def create_results(
                     photo_url=p.data,
                     thumb_url=p.data,
                     title=p.nome_personagem,
-                    description=await obter_mensagem_chat(
-                        client,
-                        chat_id,
-                        "inline",
-                        "anime_description",
-                        anime=p.nome_anime,
+                    description=MESSAGE.get_text(
+                        "pt", "inline", "media_type_not_supported"
                     ),
                     caption=caption,
                     reply_markup=kb,
@@ -120,8 +116,6 @@ async def create_results(
 
 
 async def show_result(
-    client,
-    chat_id,
     inline_query: InlineQuery,
     results: list,
     offset: int,
@@ -131,7 +125,7 @@ async def show_result(
     has_more: bool = False,
 ):
     if switch_pm_text is None:
-        switch_pm_text = MESSAGES["pt"]["inline"]["switch_pm_text"]
+        switch_pm_text = MESSAGE.get_text("pt", "inline", "switch_pm_text")
 
     next_offset = str(offset + limit) if has_more else ""
 
@@ -148,7 +142,7 @@ async def show_result(
 
 @Client.on_inline_query()
 async def inline_personagem_search(client: Client, inline_query, limite: int = 15):
-    query_text = inline_query.query.strip()
+    query_text: str = inline_query.query.strip()
     offset = int(inline_query.offset) if inline_query.offset else 0
 
     base_cls: PersonagemWaifu | PersonagemHusbando = (
@@ -158,93 +152,89 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
     # Busca por ID
     if query_text.isdigit():
         personagem_id = int(query_text)
-        async with await client.get_reusable_session() as session:
-            personagem = await session.get(base_cls, personagem_id)
-            if personagem:
-                results = await create_results(
-                    client, inline_query.from_user.id, [personagem], reply_markup=True
-                )
-                await show_result(
-                    client,
-                    inline_query.from_user.id,
-                    inline_query,
-                    results,
-                    offset=offset,
-                    limit=limite,
-                    has_more=False,
-                )
-            else:
-                await inline_query.answer([], cache_time=5)
+
+        personagem: PersonagemWaifu | PersonagemHusbando = DATABASE.get_id_primary(
+            base_cls, personagem_id
+        )
+        if personagem:
+            results = await create_results(
+                client, inline_query.from_user.id, [personagem], reply_markup=True
+            )
+            await show_result(
+                client,
+                inline_query.from_user.id,
+                inline_query,
+                results,
+                offset=offset,
+                limit=limite,
+                has_more=False,
+            )
+        else:
+            await inline_query.answer([], cache_time=5)
         return
 
     # Busca harém
-    if query_text.startswith("user.harem."):
+    elif query_text.startswith("user.harem."):
         try:
             iduser = int(query_text.split(".")[-1])
         except ValueError:
             return
 
-        async with await client.get_reusable_session() as session:
-            stmt = select(Usuario).where(Usuario.telegram_id == iduser)
-            result = await session.execute(stmt)
-            user = result.scalars().first()
+        stmt = select(Usuario).where(Usuario.telegram_id == iduser)
+        user: Usuario | None = await DATABASE.get_info_one(stmt)
 
-            if not user:
-                return
+        if not user:
+            return
 
-            colecoes = (
-                user.colecoes_waifu
-                if client.genero == TipoCategoria.WAIFU
-                else user.colecoes_husbando
-            )
-            colecoes_ordenadas = sorted(
-                colecoes, key=lambda x: x.id_local, reverse=True
-            )
+        colecoes = (
+            user.colecoes_waifu
+            if client.genero == TipoCategoria.WAIFU
+            else user.colecoes_husbando
+        )
+        colecoes_ordenadas = sorted(colecoes, key=lambda x: x.id_local, reverse=True)
 
-            paginated = colecoes_ordenadas[offset : offset + limite]
+        paginated = colecoes_ordenadas[offset : offset + limite]
 
-            # garante unicidade sem quebrar paginação
-            seen_ids = set()
-            unique_characters = []
-            for q in paginated:
-                if q.character.id not in seen_ids:
-                    seen_ids.add(q.character.id)
-                    unique_characters.append(q.character)
+        # garante unicidade sem quebrar paginação
+        seen_ids = set()
+        unique_characters = []
+        for q in paginated:
+            if q.character.id not in seen_ids:
+                seen_ids.add(q.character.id)
+                unique_characters.append(q.character)
 
-            user_name = (
-                user.telegram_from_user.get("NAME")
-                or user.telegram_from_user.get("User")
-                or "Usuário"
-            )
-            user_mention = f'<a href="tg://user?id={user.telegram_id}">{user_name}</a>'
+        user_name = (
+            user.telegram_from_user.get("NAME")
+            or user.telegram_from_user.get("User")
+            or "Usuário"
+        )
+        user_mention = f'<a href="tg://user?id={user.telegram_id}">{user_name}</a>'
 
-            results = await create_results(
-                client,
-                inline_query.from_user.id,
-                unique_characters,
-                offset,
-                user=user_mention,
-            )
+        results = await create_results(
+            client,
+            inline_query.from_user.id,
+            unique_characters,
+            offset,
+            user=user_mention,
+        )
 
-            has_more = offset + limite < len(colecoes_ordenadas)
-            await show_result(
-                client,
-                inline_query.from_user.id,
-                inline_query,
-                results=results,
-                switch_pm_text=f"{client.genero.capitalize()} {len(colecoes)}",
-                offset=offset,
-                limit=limite,
-                has_more=has_more,
-            )
-        return
+        has_more = offset + limite < len(colecoes_ordenadas)
+        await show_result(
+            client,
+            inline_query.from_user.id,
+            inline_query,
+            results=results,
+            switch_pm_text=f"{client.genero.capitalize()} {len(colecoes)}",
+            offset=offset,
+            limit=limite,
+            has_more=has_more,
+        )
 
     # Busca geral sem query
-    if not query_text:
+    elif not query_text:
         stmt = select(base_cls).order_by(desc(base_cls.id)).limit(limite).offset(offset)
-        async with await client.get_reusable_session() as session:
-            result = await session.execute(stmt)
-        pers = result.scalars().all()
+
+        pers = await DATABASE.get_info_all(stmt)
 
         results = await create_results(
             client, inline_query.from_user.id, pers, offset, reply_markup=False
@@ -264,13 +254,11 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
 
     # Busca por anime
     if query_text.startswith("list_anime_"):
-        async with await client.get_reusable_session() as session:
-            stmt = select(base_cls).where(
+        personagens: list[PersonagemWaifu | PersonagemHusbando] = (
+            await DATABASE.get_info_all(
                 base_cls.nome_anime.ilike(f"%{query_text.replace('list_anime_','')}%")
             )
-            result = await session.execute(stmt)
-            personagens = result.scalars().all()
-
+        )
         if not personagens:
             return await inline_query.answer([], cache_time=5)
 
@@ -297,8 +285,7 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
 @Client.on_callback_query(filters.regex(r"^who_captured_"))
 async def who_captured_callback(client: Client, query: CallbackQuery):
     """Callback para mostrar quem capturou o personagem"""
-    
-    
+
     who, captured, personagem_id, chat_id = query.data.split("_")
     # Define classe base de coleção
     base_cls = (
@@ -316,9 +303,7 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
         if not colecoes:
 
             await query.answer(
-                await obter_mensagem_chat(
-                    client, chat_id, "erros", "error_no_one_captured"
-                ),
+                MESSAGE.get_text("pt", "erros", "error_no_one_captured"),
                 show_alert=True,
             )
             return
@@ -326,8 +311,8 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
         # Buscar informações dos usuários
         user_ids = [c.telegram_id for c in colecoes]
         stmt_users = select(Usuario).where(Usuario.telegram_id.in_(user_ids))
-        result_users = await session.execute(stmt_users)
-        usuarios = result_users.scalars().all()
+
+        usuarios = await DATABASE.get_info_all(stmt_users)
 
         # Criar dicionário de usuários
         users_dict = {u.telegram_id: u for u in usuarios}
@@ -343,9 +328,8 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
                     or f"Usuário {user.telegram_id}"
                 )
                 nomes_capturadores.append(
-                    await obter_mensagem_chat(
-                        client,
-                        chat_id,
+                    MESSAGE.get_text(
+                        "pt",
                         "inline",
                         "who_captured_item",
                         user_name=user_name,
@@ -355,9 +339,8 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
 
         # Criar nova caption com lista de capturadores
         nova_caption = (
-            await obter_mensagem_chat(
-                client,
-                chat_id,
+            MESSAGE.get_text(
+                "pt",
                 "inline",
                 "who_captured_title",
                 user_name=query.from_user.first_name,
@@ -374,12 +357,6 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
             )
         except Exception as e:
             await query.answer(
-                await obter_mensagem_chat(
-                    client,
-                    query.message.chat.id,
-                    "erros",
-                    "error_update_failed",
-                    error=str(e),
-                ),
+                MESSAGE.get_text("pt", "erros", "error_update_failed", error=str(e)),
                 show_alert=True,
             )

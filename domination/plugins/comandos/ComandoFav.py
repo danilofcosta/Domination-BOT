@@ -97,7 +97,7 @@ async def ComandoFav(client: Client, message: Message):
         )
 
         await send_media_by_type(
-            client=client,
+           
             message=message,
             personagem=personagem,
             caption=await obter_mensagem_chat(
