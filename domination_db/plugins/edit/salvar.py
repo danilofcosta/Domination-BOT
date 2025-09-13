@@ -44,7 +44,7 @@ async def salvar_edicao(client: Client, callback_query: CallbackQuery):
             await client.edit_message_caption(
                 chat_id=callback_query.message.chat.id,
                 message_id=msg_id,
-                caption=f"{format_personagem_caption(personagem_data["per_edit"])}",
+                caption=f"{format_personagem_caption(personagem_data['per_edit'])}",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
