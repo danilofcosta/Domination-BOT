@@ -15,24 +15,25 @@ message_counter: dict[str, dict[int, dict]] = {}
 
 
 async def create_secret_caption(client, personagem, genero: TipoCategoria, chat_id: int):
-    text_appeared = await MESSAGE.get_text(
+    text_appeared =  MESSAGE.get_text(
         "pt", "contador", "character_appeared",
         raridade=personagem.raridade_full.emoji,
         genero=genero.value.capitalize(),
     )
-    add_to_harem = await MESSAGE.get_text("pt", "contador", "add_to_harem")
-    dominar_command = await MESSAGE.get_text("pt", "contador", "dominar_command")
+    add_to_harem =  MESSAGE.get_text("pt", "contador", "add_to_harem")
+    dominar_command =  MESSAGE.get_text("pt", "contador", "dominar_command")
 
     return "\n".join(
         [text_appeared, add_to_harem, f"/{COMMAND_LIST.DOMINAR.value} {dominar_command}"]
     )
 
 
-async def get_random_character(client: Client):
+async def get_random_character(client):
     base = PersonagemHusbando if client.genero == TipoCategoria.HUSBANDO else PersonagemWaifu
-    return await DATABASE.get_info_one(
+    per = await DATABASE.get_info_one(
         select(base).order_by(func.random()).limit(1)
     )
+    return per
 
 
 @Client.on_message(
@@ -59,13 +60,13 @@ async def handle_group_messages(client: Client, message: Message):
         cont = grp_counter["cont"] = 98
 
     log_debug(f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador")
-    print(group_id, message.chat.title, cont)
+    print(group_id, message.chat.title, cont, cont % 100 == 0)
 
     # A cada 100 mensagens, envia personagem
     if cont % 100 == 0:
         personagem = await get_random_character(client)
         if not personagem:
-            return
+            return 
 
         msg_res: Message = await send_media_by_type(
             message,
