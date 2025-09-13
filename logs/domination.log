@@ -110,3 +110,135 @@ Traceback (most recent call last):
     ...<5 lines>...
       is_signed=is_signed)
 pyrogram.errors.exceptions.bad_request_400.UserNotParticipant: Telegram says: [400 USER_NOT_PARTICIPANT] - The user is not a member of this chat (caused by "channels.GetParticipant")
+2025-09-13 12:48:42,188 - domination.uteis - ERROR - log_error:57 - Erro ao verificar admin no grupo 6874062454 -1001659176163: The chat_id "6874062454" belongs to a user
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\uteis.py", line 315, in check_admin_group
+    chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\chats\get_chat_member.py", line 92, in get_chat_member
+    raise ValueError(f'The chat_id "{chat_id}" belongs to a user')
+ValueError: The chat_id "6874062454" belongs to a user
+2025-09-13 13:23:15,037 - domination.uteis - ERROR - log_error:57 - Erro ao verificar admin no grupo -1001659176163 12345: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 62, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 123, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\uteis.py", line 315, in check_admin_group
+    chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\chats\get_chat_member.py", line 56, in get_chat_member
+    user = await self.resolve_peer(user_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 125, in resolve_peer
+    raise PeerIdInvalid
+pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+2025-09-13 13:24:06,956 - domination.uteis - ERROR - log_error:57 - Erro ao verificar admin no grupo -1001659176163 12345: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 62, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 123, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\uteis.py", line 315, in check_admin_group
+    chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\chats\get_chat_member.py", line 56, in get_chat_member
+    user = await self.resolve_peer(user_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 125, in resolve_peer
+    raise PeerIdInvalid
+pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+2025-09-13 13:31:45,960 - domination.uteis - ERROR - log_error:57 - Erro ao verificar admin no grupo -1001659176163 12345: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 62, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 123, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\uteis.py", line 315, in check_admin_group
+    chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\chats\get_chat_member.py", line 56, in get_chat_member
+    user = await self.resolve_peer(user_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 125, in resolve_peer
+    raise PeerIdInvalid
+pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+2025-09-13 13:32:31,861 - domination.uteis - ERROR - log_error:57 - Erro ao verificar admin no grupo -1001659176163 12345: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 62, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 123, in resolve_peer
+    return await self.storage.get_peer_by_id(peer_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\storage\sqlite_storage.py", line 142, in get_peer_by_id
+    raise KeyError(f"ID not found: {peer_id}")
+KeyError: 'ID not found: 12345'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\uteis.py", line 315, in check_admin_group
+    chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\chats\get_chat_member.py", line 56, in get_chat_member
+    user = await self.resolve_peer(user_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 125, in resolve_peer
+    raise PeerIdInvalid
+pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 

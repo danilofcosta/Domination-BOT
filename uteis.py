@@ -40,7 +40,7 @@ def format_personagem_caption(
 
     # Evento
     if personagem.evento_full:
-        evento = f"{personagem.evento_full.emoji or ''} {personagem.evento_full.cod.value.capitalize()} {personagem.evento_full.emoji or ''}"
+        evento = f"{personagem.evento_full.emoji or ''} {scriptify(personagem.evento_full.cod.value.capitalize())} {personagem.evento_full.emoji or ''}"
     else:
         evento = (
             personagem.evento.value.capitalize()
@@ -57,13 +57,12 @@ def format_personagem_caption(
     caption = (
         f"{head}"
         f"<b>{anime.capitalize()}</b>\n"
-        f"<b>{personagem.id}</b> :{nome.capitalize()}\n"
+        f"<b>{personagem.id}</b> : {nome.capitalize()}\n"
         f"<b>{raridade.capitalize()}</b>\n\n"
         f"{evento}"
         f"{mention}"
-
     )
-    
+
     # log_debug(f"Caption formatado: {caption}", "uteis")
     return "".join(caption)
 
@@ -169,7 +168,7 @@ async def send_media_by_type(
 
 
 async def send_media_by_chat_id(
-    client: Client, chat_id: int, personagem, caption: str, reply_markup=None,**kwargs
+    client: Client, chat_id: int, personagem, caption: str, reply_markup=None, **kwargs
 ):
     """
     Função que verifica o tipo de mídia do personagem e envia de acordo
@@ -194,7 +193,8 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 photo=personagem.data,
                 caption=caption,
-                reply_markup=reply_markup,**kwargs
+                reply_markup=reply_markup,
+                **kwargs,
             )
         elif personagem.tipo_midia in [
             TipoMidia.VIDEO_URL,
@@ -207,7 +207,8 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 video=personagem.data,
                 caption=caption,
-                reply_markup=reply_markup,**kwargs
+                reply_markup=reply_markup,
+                **kwargs,
             )
         else:
             # fallback para imagem caso não seja reconhecido
@@ -215,14 +216,16 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 photo=personagem.data,
                 caption=caption,
-                reply_markup=reply_markup,**kwargs
+                reply_markup=reply_markup,
+                **kwargs,
             )
     except Exception as e:
         # fallback: envia só o texto com info da mídia
         return await client.send_message(
             chat_id=chat_id,
             text=f"{caption}\n\n📎 Mídia: {personagem.tipo_midia.value}",
-            reply_markup=reply_markup,**kwargs
+            reply_markup=reply_markup,
+            **kwargs,
         )
 
 
@@ -274,6 +277,7 @@ def re_linhas(lista: list, tamanho: int = 3) -> list:
 def create_bt_clear() -> InlineKeyboardButton:
     return InlineKeyboardButton(f"🗑", callback_data=f"clear_msg")
 
+
 def create_prelist(base_enum, key: str) -> dict:
     prelist = {}
     for num, enum in enumerate(base_enum, start=0):
@@ -281,7 +285,7 @@ def create_prelist(base_enum, key: str) -> dict:
     return prelist
 
 
-def create_on_bt(
+def create_one_bt(
     text: str,
     callback_data: str = None,
     url: str = None,
@@ -299,11 +303,22 @@ def create_on_bt(
     )
 
 
-async def check_admin_group(client: Client, user_id, chat_id) -> bool:
+async def check_admin_group(client: Client, chat_id, user_id) -> bool:
+    if not chat_id:
+        try:
+            from settings import Settings
+
+            chat_id = int(Settings().GROUP_DATABASE_ID)
+        except Exception as e:
+            raise f"erro ao obter caht adm {e}"
     try:
         chat_member = await client.get_chat_member(chat_id=chat_id, user_id=user_id)
     except Exception as e:
-        log_error(f"Erro ao verificar admin no grupo {chat_id} {user_id}: {e}", "uteis", exc_info=True)
+        log_error(
+            f"Erro ao verificar admin no grupo {chat_id} {user_id}: {e}",
+            "uteis",
+            exc_info=True,
+        )
         return False
     if chat_member.status in [
         ChatMemberStatus.OWNER,
@@ -312,3 +327,65 @@ async def check_admin_group(client: Client, user_id, chat_id) -> bool:
         return True
     else:
         return False
+
+
+def scriptify(text: str):
+    """ """
+    # Dicionário para mapear letras minúsculas e maiúsculas para estilo manuscrito Unicode
+    script_map = {
+        "a": "𝒂",
+        "b": "𝒃",
+        "c": "𝒄",
+        "d": "𝒅",
+        "e": "𝒆",
+        "f": "𝒇",
+        "g": "𝒈",
+        "h": "𝒉",
+        "i": "𝒊",
+        "j": "𝒋",
+        "k": "𝒌",
+        "l": "𝒍",
+        "m": "𝒎",
+        "n": "𝒏",
+        "o": "𝒐",
+        "p": "𝒑",
+        "q": "𝒒",
+        "r": "𝒓",
+        "s": "𝒔",
+        "t": "𝒕",
+        "u": "𝒖",
+        "v": "𝒗",
+        "w": "𝒘",
+        "x": "𝒙",
+        "y": "𝒚",
+        "z": "𝒛",
+        "A": "𝑨",
+        "B": "𝑩",
+        "C": "𝑪",
+        "D": "𝑫",
+        "E": "𝑬",
+        "F": "𝑭",
+        "G": "𝑮",
+        "H": "𝑯",
+        "I": "𝑰",
+        "J": "𝑱",
+        "K": "𝑲",
+        "L": "𝑳",
+        "M": "𝑴",
+        "N": "𝑵",
+        "O": "𝑶",
+        "P": "𝑷",
+        "Q": "𝑸",
+        "R": "𝑹",
+        "S": "𝑺",
+        "T": "𝑻",
+        "U": "𝑼",
+        "V": "𝑽",
+        "W": "𝑾",
+        "X": "𝑿",
+        "Y": "𝒀",
+        "Z": "𝒁",
+    }
+
+    # Converte o texto para estilo manuscrito Unicode
+    return "".join(script_map.get(char, char) for char in text)

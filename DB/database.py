@@ -41,10 +41,9 @@ class DATABASE:
     async def add_object_comit(obj: object| list[object]) -> object:
         """ Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado """
         async with Session() as session:  # VS Code reconhece AsyncSession
-              # commit automático
+            async with session.begin():   # commit automático
                 session.add(obj) if type(obj) is not list else session.add_all(obj)
-                session.commit()
-                session.refresh(obj)
+                await session.refresh(obj)
         return obj # Retorna o objeto com ID atualizado
 
     @staticmethod
@@ -85,3 +84,12 @@ class DATABASE:
         async with Session() as session:
             result = await session.execute(search_query)
             return result.all()
+
+    @staticmethod
+    async def update_personagem(personagem: object) -> object:
+        """Atualiza um personagem no banco de dados"""
+        async with Session() as session:
+            async with session.begin():
+                # Merge atualiza o objeto se ele já existe, ou cria se não existe
+                updated_personagem = await session.merge(personagem)
+                return updated_personagem

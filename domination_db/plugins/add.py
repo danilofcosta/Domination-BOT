@@ -6,7 +6,7 @@ from settings import Settings
 from teste import create_prelist
 from types_ import COMMAND_LIST_DB, TipoCategoria, TipoEvento, TipoMidia, TipoRaridade
 from uteis import check_admin_group, dynamic_command_filter, format_personagem_caption, send_media_by_chat_id
-import asyncio
+
 
 
 
@@ -25,7 +25,7 @@ async def addchar_command(client: Client, message: Message):
         if client.genero == TipoCategoria.HUSBANDO
         else PersonagemWaifu
     )
-    if await check_admin_group(client,chat_id=-1001659176163 ,user_id= message.from_user.id)==False:
+    if await check_admin_group(client,user_id= message.from_user.id)==False:
         await message.reply("❌ Comando disponível apenas em chats admin .", quote=True)
         return
 
