@@ -69,7 +69,7 @@ class ModoHarem(str, PyEnum):
     PADRAO = "PADRAO"
     RECENTE = "RECENTE"
     ANIME = "ANIME"
-    DELETE = "DELETE"
+    DETALHE = "DETALHE"
     RARIDADE = "RARIDADE"
     EVENTO = "EVENTO"
 

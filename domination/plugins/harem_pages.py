@@ -4,7 +4,8 @@ from DB.models import PersonagemWaifu, PersonagemHusbando
 from types_ import TipoCategoria
 from DB.database import DATABASE
 
-async def create_harem_pages_ref( colecoes, genero):
+
+async def create_harem_pages_ref(colecoes, genero):
     """
     Cria páginas do harém com contagem correta do banco.
     """
@@ -78,7 +79,7 @@ async def create_harem_pages_ref( colecoes, genero):
     return pages
 
 
-async def build_delete_mode_pages( colecoes, genero):
+async def build_delete_mode_pages(colecoes, genero):
     """Cria páginas do modo DELETE com info detalhada para exclusão/gestão."""
     db_model = (
         PersonagemHusbando if genero == TipoCategoria.HUSBANDO else PersonagemWaifu
@@ -98,9 +99,13 @@ async def build_delete_mode_pages( colecoes, genero):
         anime_to_total[anime] = result or 0
 
     def format_line(c):
-        raridade_emoji = c.character.raridade_full.emoji if c.character.raridade_full else ""
+        raridade_emoji = (
+            c.character.raridade_full.emoji if c.character.raridade_full else ""
+        )
         repeticoes = counts[c.character.id]
-        ids_locais = ", ".join(str(x) for x in sorted(ids_locais_por_char[c.character.id], reverse=True))
+        ids_locais = ", ".join(
+            str(x) for x in sorted(ids_locais_por_char[c.character.id], reverse=True)
+        )
         total_banco_anime = anime_to_total.get(c.character.nome_anime, 0)
         return (
             f"🍁 nome: {c.character.nome_personagem} (x{repeticoes})\n"
@@ -111,7 +116,9 @@ async def build_delete_mode_pages( colecoes, genero):
 
     seen = set()
     lines = []
-    for c in sorted(colecoes, key=lambda x: (x.character.nome_anime, x.character.nome_personagem)):
+    for c in sorted(
+        colecoes, key=lambda x: (x.character.nome_anime, x.character.nome_personagem)
+    ):
         if c.character.id in seen:
             continue
         seen.add(c.character.id)
@@ -119,15 +126,18 @@ async def build_delete_mode_pages( colecoes, genero):
 
     pages = []
     for i in range(0, len(lines), 5):
-        pages.append("\n".join(lines[i:i+5]))
+        pages.append("\n".join(lines[i : i + 5]))
     return pages
 
 
 def build_recent_pages(colecoes_sorted_desc):
     """Cria páginas do modo RECENTE: 3 itens por página, ordenados por id_local desc."""
+
     def format_item(c):
         evento_emoji = c.character.evento_full.emoji if c.character.evento_full else ""
-        raridade_emoji = c.character.raridade_full.emoji if c.character.raridade_full else ""
+        raridade_emoji = (
+            c.character.raridade_full.emoji if c.character.raridade_full else ""
+        )
         return (
             f"{raridade_emoji} Nome: {c.character.nome_personagem}\n"
             f"🆔 ID: {c.character.id}\n"
@@ -139,12 +149,12 @@ def build_recent_pages(colecoes_sorted_desc):
     items_text = [format_item(c) for c in colecoes_sorted_desc]
     pages = []
     for i in range(0, len(items_text), 3):
-        page_items = items_text[i:i+3]
+        page_items = items_text[i : i + 3]
         pages.append("\n".join(page_items))
     return pages
 
 
-async def build_anime_mode_pages( colecoes, genero):
+async def build_anime_mode_pages(colecoes, genero):
     """Cria páginas do modo ANIME: um bloco por anime com contagem única e total no banco."""
     db_model = (
         PersonagemHusbando if genero == TipoCategoria.HUSBANDO else PersonagemWaifu
@@ -172,8 +182,5 @@ async def build_anime_mode_pages( colecoes, genero):
 
     pages = []
     for i in range(0, len(lines), 8):
-        pages.append("\n".join(lines[i:i+8]))
+        pages.append("\n".join(lines[i : i + 8]))
     return pages
-
-
-

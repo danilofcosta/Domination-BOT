@@ -246,3 +246,9 @@ pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PE
 2025-09-13 17:59:01,463 - domination.contador - INFO - log_info:53 - Personagem saiu: hu tao and xianling
 2025-09-13 18:07:35,252 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-13 18:07:36,893 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 18:54:09,766 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 18:57:02,830 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 18:59:02,778 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 19:00:18,575 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 19:02:27,421 - domination.contador - INFO - log_info:53 - Personagem saiu: kiana kaslana
+2025-09-13 19:03:54,561 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True

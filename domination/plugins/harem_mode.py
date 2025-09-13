@@ -6,10 +6,16 @@ from pyrogram.types import (
     CallbackQuery,
 )
 from sqlalchemy import select, func
-from DB.database import DATABASE,Session
-from DB.models import Usuario, PersonagemWaifu, PersonagemHusbando, Evento_Midia, Raridade_Midia
-from types_ import ModoHarem, TipoCategoria, TipoEvento, TipoRaridade,COMMAND_LIST
-from uteis import  create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
+from DB.database import DATABASE, Session
+from DB.models import (
+    Usuario,
+    PersonagemWaifu,
+    PersonagemHusbando,
+    Evento_Midia,
+    Raridade_Midia,
+)
+from types_ import ModoHarem, TipoCategoria, TipoEvento, TipoRaridade, COMMAND_LIST
+from uteis import create_bt_clear, dynamic_command_filter, re_linhas, send_media_by_type
 from domination.message import MESSAGE
 from domination.logger import log_info, log_error, log_debug
 
@@ -32,7 +38,7 @@ async def harem_mode(client: Client, message: Message):
     async with await client.get_session() as session:
         # Força leitura direta do banco com uma nova query
         stmt = select(Usuario).where(Usuario.telegram_id == user_id)
-     
+
         result = await DATABASE.get_info_one(stmt)
         usuario: Usuario = result
         if not usuario:
@@ -47,7 +53,9 @@ async def harem_mode(client: Client, message: Message):
             if client.genero == TipoCategoria.HUSBANDO
             else usuario.configs_w
         )
-        log_debug(f"Configs lidos do banco na função harem_mode: {configs}", "harem_mode")
+        log_debug(
+            f"Configs lidos do banco na função harem_mode: {configs}", "harem_mode"
+        )
         modo_harem = (
             configs.get("modo_harem", ModoHarem.PADRAO.value)
             if configs
@@ -64,12 +72,10 @@ async def harem_mode(client: Client, message: Message):
                 else ""
             )
             bts.append(
-                
-                    InlineKeyboardButton(
-                        f"{cmd.value} {check}",
-                        callback_data=f"setmodoharem_{cmd.value if check == '' else modo_harem}",
-                    )
-                
+                InlineKeyboardButton(
+                    f"{cmd.value} {check}",
+                    callback_data=f"setmodoharem_{cmd.value if check == '' else modo_harem}",
+                )
             )
 
         # Seleciona personagem aleatório
@@ -78,16 +84,15 @@ async def harem_mode(client: Client, message: Message):
         else:
             stmt = select(PersonagemWaifu).order_by(func.random()).limit(1)
 
-        personagem =    await DATABASE.get_info_one(stmt)
+        personagem = await DATABASE.get_info_one(stmt)
 
         response_text = MESSAGE.get_text("pt", "harem_mode", "choose_option")
 
         await send_media_by_type(
-         
             message=message,
             personagem=personagem,
             caption=response_text,
-            reply_markup=InlineKeyboardMarkup( re_linhas(bts)),
+            reply_markup=InlineKeyboardMarkup(re_linhas(bts)),
         )
 
 
@@ -111,7 +116,7 @@ async def setmodoharem(client: Client, query: CallbackQuery):
 
         # Buscar do banco para ter emojis dos modelos
         if modo_selecionado == ModoHarem.EVENTO.value:
-            
+
             for ev in event:
                 label = f"{(ev.emoji or '').strip()}"
                 buttons.append(
@@ -121,7 +126,7 @@ async def setmodoharem(client: Client, query: CallbackQuery):
                     )
                 )
         else:
-         
+
             for ra in rar:
                 label = f"{(ra.emoji or '').strip()} {ra.cod.value}".strip()
                 buttons.append(
@@ -140,12 +145,11 @@ async def setmodoharem(client: Client, query: CallbackQuery):
         )
 
     if "set" in res:
-        modo_selecionado = modo_selecionado +'_'+ res[0]
+        modo_selecionado = modo_selecionado + "_" + res[0]
 
- 
         # Busca o usuário
     stmt = select(Usuario).where(Usuario.telegram_id == user_id)
-       
+
     result = await DATABASE.get_info_one(stmt)
 
     usuario: Usuario = result
@@ -182,8 +186,6 @@ async def setmodoharem(client: Client, query: CallbackQuery):
     else:
         flag_modified(usuario, "configs_w")
 
-
-
     try:
         await DATABASE.add_object(usuario)
         log_info(f"Modo harém atualizado para: {modo_selecionado}", "harem_mode")
@@ -199,12 +201,14 @@ async def setmodoharem(client: Client, query: CallbackQuery):
     try:
         log_debug(f"Atualizando botões inline com: {modo_selecionado}", "harem_mode")
         await query.message.edit_caption(
-            caption=f"definido {modo_selecionado} : {res[0]}" if len (res)>0 else f"definido {modo_selecionado}"
-            ,reply_markup=None
+            caption=(
+                f"definido {modo_selecionado} : {res[0]}"
+                if len(res) > 0
+                else f"definido {modo_selecionado}"
+            ),
+            reply_markup=None,
         )
         log_info("Botões inline atualizados com sucesso", "harem_mode")
     except Exception as e:
         log_error(f"Erro ao atualizar botões inline: {e}", "harem_mode", exc_info=True)
         return
-
-

@@ -176,7 +176,7 @@ async def harem(client: Client, message: Message):
             user_id, genero.value, current_page, len(pages)
         )
 
-    elif modo_harem == ModoHarem.DELETE.value:
+    elif modo_harem == ModoHarem.DETALHE.value:
         pages = await build_delete_mode_pages(colecoes, genero)
         if not pages:
             await message.reply_text("❌ Nenhum personagem encontrado na sua coleção!")

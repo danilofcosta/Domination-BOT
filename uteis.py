@@ -230,13 +230,12 @@ async def send_media_by_chat_id(
 
 
 def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
-
+  
     comandos_esperados = []
     if not message.text:
         return False
     # Pega o que você passou em filters.create(..., commands="fav")
     comando = getattr(filter, "command", None)
-
     if comando:
         if type(comando) is list:
             comandos_esperados.extend(
@@ -308,7 +307,7 @@ async def check_admin_group(client: Client = None, chat_id =None, user_id=None) 
         try:
             from settings import Settings
 
-            chat_id = int(Settings().GROUP_DATABASE_ID)
+            chat_id = int(Settings().GROUP_ADDMS_ID)
         except Exception as e:
             raise f"erro ao obter caht adm {e}"
     try:

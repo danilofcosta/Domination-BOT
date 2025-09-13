@@ -12,13 +12,14 @@ from uteis import check_admin_group, dynamic_command_filter, format_personagem_c
 
 @Client.on_message(
     filters.create(
-        name=f"comand{' '.join(COMMAND_LIST_DB.ADDCHAR.value)}",
+        name=f"comand{''.join(COMMAND_LIST_DB.ADDCHAR.value)}",
         func=dynamic_command_filter,
         command=COMMAND_LIST_DB.ADDCHAR.value,
     )
 )
 @Client.on_message(filters.command(COMMAND_LIST_DB.ADDCHAR.value) & filters.private)
 async def addchar_command(client: Client, message: Message):
+    print('ok')
    
     base_per: PersonagemHusbando | PersonagemWaifu = (
         PersonagemHusbando
