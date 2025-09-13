@@ -146,7 +146,7 @@ async def setmodoharem(client: Client, query: CallbackQuery):
         # Busca o usuário
     stmt = select(Usuario).where(Usuario.telegram_id == user_id)
        
-    result = await DATABASE.get_info_all(select(stmt))
+    result = await DATABASE.get_info_one(stmt)
 
     usuario: Usuario = result
 

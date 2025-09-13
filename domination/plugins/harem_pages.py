@@ -158,7 +158,7 @@ async def build_anime_mode_pages( colecoes, genero):
     for anime in unique_per_anime.keys():
         stmt = select(func.count(db_model.id)).where(db_model.nome_anime == anime)
         result = await DATABASE.get_info_one(stmt)
-        anime_to_total[anime] = result.scalar() or 0
+        anime_to_total[anime] = result or 0
 
     lines = []
     for anime in sorted(unique_per_anime.keys()):

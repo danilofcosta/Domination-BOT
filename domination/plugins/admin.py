@@ -20,7 +20,7 @@ async def set_photo_profile_bot(client: Client, message: Message):
     # Verificar se o usuário é admin ou superior
 
     stmt = select(Usuario).where(Usuario.telegram_id == message.from_user.id)
-    usuario = DATABASE.get_info_one(stmt)
+    usuario = await DATABASE.get_info_one(stmt)
     
     if not usuario or not is_admin_or_higher(usuario.perfil_status):
         await message.reply("❌ Apenas administradores podem usar este comando!", quote=True)

@@ -2,6 +2,8 @@ from typing import List
 from pyrogram import Client, filters
 from pyrogram.types import Message, CallbackQuery
 from pyrogram.enums import ChatType
+from DB.database import DATABASE
+from domination.message import MESSAGE
 from types_ import TipoCategoria, COMMAND_LIST
 from sqlalchemy import select
 from DB.models import (
@@ -17,7 +19,6 @@ from uteis import (
     send_media_by_type,
 )
 
-from domination.plugins.lang_utils import obter_mensagem_chat
 
 # Função para criar botões de confirmação
 
@@ -32,7 +33,7 @@ from domination.plugins.lang_utils import obter_mensagem_chat
 async def gift_personagem(client: Client, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply(
-            await obter_mensagem_chat(client, message.chat.id, "gift", "not_group")
+            MESSAGE.get_text('pt', "gift", "not_group")
         )
 
     base = (
@@ -50,8 +51,7 @@ async def gift_personagem(client: Client, message: Message):
         or message.reply_to_message.from_user.id == message.from_user.id
     ):
         return await message.reply(
-            await obter_mensagem_chat(
-                client, message.chat.id, "gift", "reply_required"
+              MESSAGE.get_text('pt',  "gift", "reply_required"
             ),
             quote=True,
         )
@@ -59,9 +59,7 @@ async def gift_personagem(client: Client, message: Message):
     # Verifica se o ID do personagem foi enviado
     if len(message.command) < 2:
         return await message.reply(
-            await obter_mensagem_chat(
-                client,
-                message.chat.id,
+            MESSAGE.get_text('pt', 
                 "gift",
                 "id_required",
                 genero=client.genero.value,
@@ -73,46 +71,39 @@ async def gift_personagem(client: Client, message: Message):
         personagem_id = int(message.command[1])
     except ValueError:
         return await message.reply(
-            await obter_mensagem_chat(
-                client, message.chat.id, "erros", "error_invalid_id"
+            MESSAGE.get_text('pt',  "erros", "error_invalid_id"
             ),
             quote=True,
         )
 
-    async with await client.get_reusable_session() as session:
+    
         # Checa se o personagem existe
-        personagem = await session.get(personagem_cls, personagem_id)
-        if not personagem:
-            return await message.reply(
-                await obter_mensagem_chat(
-                    client,
-                    message.chat.id,
-                    "erros",
-                    "error_character_not_found_id",
-                    genero=client.genero.value,
-                    personagem_id=personagem_id,
-                ),
-                quote=True,
-            )
-
-        # Checa se o doador possui o personagem
-        stmt = select(base).where(
-            base.telegram_id == message.from_user.id, base.id_global == personagem_id
+    personagem = await DATABASE.get_id_primary(personagem_cls, personagem_id)
+    if not personagem:
+        return await message.reply(
+               MESSAGE.get_text('pt', 
+                "erros",
+                "error_character_not_found_id",
+                genero=client.genero.value,
+                personagem_id=personagem_id,
+            ),
+            quote=True,
         )
-        result = await session.execute(stmt)
-        colecao = result.scalars().first()
-        if not colecao:
-            return await message.reply(
-                await obter_mensagem_chat(
-                    client, message.chat.id, "erros", "error_character_not_owned"
-                ),
-                quote=True,
-            )
+
+    # Checa se o doador possui o personagem
+    stmt = select(base).where(
+        base.telegram_id == message.from_user.id, base.id_global == personagem_id
+    )
+    colecao = await DATABASE.get_info_one(stmt)
+    if not colecao:
+        return await message.reply(
+              MESSAGE.get_text('pt', "erros", "error_character_not_owned"
+            ),
+            quote=True,
+        )
 
     # Mensagem de confirmação para o doador enviar
-    caption = await obter_mensagem_chat(
-        client,
-        message.chat.id,
+    caption =     MESSAGE.get_text('pt', 
         "gift",
         "confirmation_message",
         giver_mention=message.from_user.mention,
@@ -145,8 +136,7 @@ async def gift_callback(client: Client, query: CallbackQuery):
     if query.from_user.id not in [giver_id, receiver_id]:
 
         return await query.answer(
-            await obter_mensagem_chat(
-                client, query.message.chat.id, "erros", "error_only_giver_confirm"
+                MESSAGE.get_text('pt',  "erros", "error_only_giver_confirm"
             ),
             show_alert=True,
         )
@@ -160,29 +150,27 @@ async def gift_callback(client: Client, query: CallbackQuery):
         PersonagemWaifu if client.genero == TipoCategoria.WAIFU else PersonagemHusbando
     )
 
-    async with await client.get_reusable_session() as session:
-        personagem = await session.get(personagem_cls, personagem_id)
-        if not personagem:
-            return await query.answer(
-                await obter_mensagem_chat(
-                    client, query.message.chat.id, "erros", "error_character_not_found"
-                ),
-                show_alert=True,
-            )
+    personagem = await DATABASE.get_id_primary(personagem_cls, personagem_id)
+    if not personagem:
+        return await query.answer(
+               MESSAGE.get_text('pt',  "erros", "error_character_not_found"
+            ),
+            show_alert=True,
+        )
 
         if action == "send":
             # Remove da coleção do doador
             stmt_remove = select(base).where(
                 base.telegram_id == giver_id, base.id_global == personagem_id
             )
-            result = await session.execute(stmt_remove)
-            item = result.scalars().first()
+    
+            item = await DATABASE.get_info_one(stmt_remove)
             if item:
-                await session.delete(item)
+                await DATABASE.delete_object(item)
 
             # Verifica se o receptor existe no banco, se não cria
             stmt_user = select(Usuario).where(Usuario.telegram_id == receiver_id)
-            user = (await session.execute(stmt_user)).scalars().first()
+            user = await DATABASE.get_info_one(stmt_user)
             if not user:
                 user_info = {
                     "id": receiver_id,
@@ -190,18 +178,15 @@ async def gift_callback(client: Client, query: CallbackQuery):
                     "username": None,
                 }
                 user = Usuario(telegram_id=receiver_id, telegram_from_user=user_info)
-                session.add(user)
-                await session.flush()
+                await DATABASE.add_object(user)
 
             # Adiciona o personagem na coleção do receptor
             nova_entrada = base(telegram_id=receiver_id, id_global=personagem_id)
-            session.add(nova_entrada)
+            await DATABASE.add_object(nova_entrada)
 
-            await session.commit()
+
             await query.edit_message_caption(
-                await obter_mensagem_chat(
-                    client,
-                    query.message.chat.id,
+                  MESSAGE.get_text('pt', 
                     "gift",
                     "success_sent",
                     character_name=personagem.nome_personagem,
@@ -212,7 +197,6 @@ async def gift_callback(client: Client, query: CallbackQuery):
 
         else:
             await query.edit_message_caption(
-                await obter_mensagem_chat(
-                    client, query.message.chat.id, "gift", "cancelled"
+                   MESSAGE.get_text('pt',  "gift", "cancelled"
                 )
             )

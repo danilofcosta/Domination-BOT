@@ -10,9 +10,9 @@ from DB.models import (
 from types_ import TipoCategoria
 from uteis import format_personagem_caption, send_media_by_type, send_media_by_chat_id
 from domination.logger import log_info, log_error, log_debug
-from DB import database
+from DB.database import DATABASE
 from types_ import COMMAND_LIST
-from message import MESSAGE
+from domination.message import MESSAGE
 
 message_counter: dict[str, dict[int, dict]] = {}
 
@@ -71,7 +71,7 @@ async def handle_group_messages(client: Client, message: Message):
             if client.genero == TipoCategoria.HUSBANDO
             else PersonagemWaifu
         )
-        return database.DATABASE.get_info_one(
+        return await DATABASE.get_info_one(
             select(base).order_by(func.random()).limit(1)
         )
 
@@ -134,17 +134,13 @@ async def handle_group_messages(client: Client, message: Message):
 async def view_character_callback(client: Client, query: CallbackQuery):
     try:
         character_id = int(query.data.split("_")[-1])
-        async with await client.get_reusable_session() as session:
-            base = (
-                PersonagemHusbando
-                if client.genero == TipoCategoria.HUSBANDO
-                else PersonagemWaifu
-            )
-            personagem = (
-                (await session.execute(select(base).where(base.id == character_id)))
-                .scalars()
-                .first()
-            )
+        base = (
+            PersonagemHusbando
+            if client.genero == TipoCategoria.HUSBANDO
+            else PersonagemWaifu
+        )
+        stmt = select(base).where(base.id == character_id)
+        personagem = await DATABASE.get_info_one(stmt)
 
         if not personagem:
             return await query.answer("❌ Personagem não encontrado!", show_alert=True)
@@ -167,7 +163,6 @@ async def view_character_callback(client: Client, query: CallbackQuery):
             ),
         )
 
-     
         await send_media_by_chat_id(
             client=client,
             chat_id=query.message.chat.id,

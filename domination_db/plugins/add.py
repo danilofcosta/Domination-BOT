@@ -1,7 +1,7 @@
 from pyrogram import *
 from pyrogram.types import *
 from DB.models import PersonagemHusbando, PersonagemWaifu
-from DB.database import AsyncSessionLocal
+from DB.database import DATABASE, Session
 from settings import Settings
 from teste import create_prelist
 from types_ import COMMAND_LIST_DB, TipoCategoria, TipoEvento, TipoMidia, TipoRaridade
@@ -82,26 +82,24 @@ async def addchar_command(client: Client, message: Message):
         )
 
         # Salvar no banco de dados primeiro para obter o ID
-        async with AsyncSessionLocal() as session:
-            session.add(pre)
-            try:
-                await session.commit()
-                await session.refresh(pre)
-                await message.reply(
-                    f"✅ Personagem '{pre.nome_personagem}' adicionado com sucesso ao banco de dados com ID {pre.id}!"
-                )  # Atualiza o objeto com o ID gerado   
-                         
-                await send_media_by_chat_id(
-                    client=client,
-                    chat_id=Settings().GROUP_DATABASE_ID,
-                    personagem=pre,
-                    caption=format_personagem_caption(pre,mention=message.from_user.mention),
-                    reply_markup=None,
-                )
+    
+     
+        try:
+            pre= await DATABASE.add_object_comit(pre)
+            await message.reply(
+                f"✅ Personagem '{pre.nome_personagem}' adicionado com sucesso ao banco de dados com ID {pre.id}!"
+            )  # Atualiza o objeto com o ID gerado   
+                        
+            await send_media_by_chat_id(
+                client=client,
+                chat_id=Settings().GROUP_DATABASE_ID,
+                personagem=pre,
+                caption=format_personagem_caption(pre,mention=message.from_user.mention),
+                reply_markup=None,
+            )
 
-            except Exception as e:
-                await session.rollback()
-                await message.reply_text(f"❌ Erro ao adicionar personagem: {e}")
+        except Exception as e:
+            await message.reply_text(f"❌ Erro ao adicionar personagem: {e}")
     else:
         rs = []
         es = []

@@ -161,7 +161,8 @@ async def send_media_by_type(
             )
     except Exception as e:
         return await message.reply(
-            f"{caption}\n\n📎 Mídia: {personagem.tipo_midia.value}",
+            # f"{caption}\n\n📎 Mídia: {personagem.tipo_midia.value}",
+            e,
             reply_markup=reply_markup,
             quote=True,
         )

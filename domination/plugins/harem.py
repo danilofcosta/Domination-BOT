@@ -17,7 +17,7 @@ from domination.plugins.harem_pages import (
     build_anime_mode_pages,
     build_delete_mode_pages,
 )
-from message import MESSAGE
+from domination.message import MESSAGE
 
 # Inicializa cache de páginas no Client
 if not hasattr(Client, "pages_cache"):

@@ -38,6 +38,16 @@ Session = async_sessionmaker(
 
 class DATABASE:
     @staticmethod
+    async def add_object_comit(obj: object| list[object]) -> object:
+        """ Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado """
+        async with Session() as session:  # VS Code reconhece AsyncSession
+              # commit automático
+                session.add(obj) if type(obj) is not list else session.add_all(obj)
+                session.commit()
+                session.refresh(obj)
+        return obj # Retorna o objeto com ID atualizado
+
+    @staticmethod
     async def add_object(obj: object) -> object:
         """ Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado """
         async with Session() as session:  # VS Code reconhece AsyncSession

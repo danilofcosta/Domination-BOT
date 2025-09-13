@@ -2,10 +2,11 @@ from typing import List
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from sqlalchemy import select
+from DB.database import DATABASE
 from DB.models import PersonagemWaifu, PersonagemHusbando
+from domination.message import MESSAGE
 from uteis import dynamic_command_filter
 from types_ import TipoCategoria,COMMAND_LIST
-from domination.plugins.lang_utils import obter_mensagem_chat
 
 # Dicionários temporários para armazenar estados de callback
 anime_lookup = {}
@@ -30,8 +31,7 @@ async def create_keyboard(
 
     if is_character_list:
         # Para lista de personagens, criar botões com "Ver Personagem"
-        view_text = await obter_mensagem_chat(
-            client, chat_id, "listanime", "view_character"
+        view_text =     MESSAGE.get_text('pt', "listanime", "view_character"
         )
         buttons = []
         for i in items[start:end]:
@@ -51,19 +51,18 @@ async def create_keyboard(
     nav = []
     total_pages = (len(items) + per_page - 1) // per_page
     if page > 1:
-        previous_text = await obter_mensagem_chat(
-            client, chat_id, "listanime", "previous"
+        previous_text =     MESSAGE.get_text('pt',  "listanime", "previous"
         )
         nav.append(
             InlineKeyboardButton(previous_text, callback_data=f"{prefix}_page_{page-1}")
         )
     if page < total_pages:
-        next_text = await obter_mensagem_chat(client, chat_id, "listanime", "next")
+        next_text =    MESSAGE.get_text('pt',  "listanime", "next")
         nav.append(
             InlineKeyboardButton(next_text, callback_data=f"{prefix}_page_{page+1}")
         )
     if back_data:
-        back_text = await obter_mensagem_chat(client, chat_id, "listanime", "back")
+        back_text =    MESSAGE.get_text('pt', "listanime", "back")
         nav.append(InlineKeyboardButton(back_text, callback_data=back_data))
     if nav:
         buttons.append(nav)
@@ -96,8 +95,7 @@ async def list_anime(client: Client, message):
             for row in buttons
         ]
     )
-    select_text = await obter_mensagem_chat(
-        client, message.chat.id, "listanime", "select_letter"
+    select_text =    MESSAGE.get_text('pt',  "listanime", "select_letter"
     )
     await message.reply(select_text, reply_markup=keyboard)
 
@@ -112,20 +110,18 @@ async def anime_letter_callback(client: Client, query: CallbackQuery):
         PersonagemWaifu if client.genero == TipoCategoria.WAIFU else PersonagemHusbando
     )
 
-    async with await client.get_reusable_session() as session:
+    
         # Convert letter to lowercase for case-insensitive search
-        letter_lower = letter.lower()
-        stmt = (
-            select(base_cls.nome_anime)
-            .distinct()
-            .where(base_cls.nome_anime.startswith(letter_lower))
-        )
-        result = await session.execute(stmt)
-        animes = [row[0] for row in result.all()]
+    letter_lower = letter.lower()
+    stmt = (
+        select(base_cls.nome_anime)
+        .distinct()
+        .where(base_cls.nome_anime.startswith(letter_lower))
+    )
+    animes = [row[0] for row in await DATABASE.get_info_all_objects(stmt)]
 
     if not animes:
-        no_anime_text = await obter_mensagem_chat(
-            client, query.message.chat.id, "listanime", "no_anime_found"
+        no_anime_text =     MESSAGE.get_text('pt',  "listanime", "no_anime_found"
         )
         return await query.answer(no_anime_text, show_alert=True)
 
@@ -143,9 +139,7 @@ async def anime_letter_callback(client: Client, query: CallbackQuery):
         prefix=f"anime_{letter}",
         back_data="back_alphabet",
     )
-    animes_text = await obter_mensagem_chat(
-        client,
-        query.message.chat.id,
+    animes_text =    MESSAGE.get_text('pt', 
         "listanime",
         "animes_starting_with",
         letter=letter,
@@ -178,9 +172,7 @@ async def anime_page_callback(client: Client, query: CallbackQuery):
         prefix=f"anime_{letter}",
         back_data="back_alphabet",
     )
-    animes_text = await obter_mensagem_chat(
-        client,
-        query.message.chat.id,
+    animes_text =    MESSAGE.get_text('pt', 
         "listanime",
         "animes_starting_with",
         letter=letter,
@@ -197,8 +189,7 @@ async def anime_select_callback(client: Client, query: CallbackQuery):
     key = query.data.replace("anime_", "")
     anime_name = anime_lookup.get(key[:25])  # corta para lookup
     if not anime_name:
-        anime_not_found_text = await obter_mensagem_chat(
-            client, query.message.chat.id, "listanime", "anime_not_found"
+        anime_not_found_text =     MESSAGE.get_text('pt',  "listanime", "anime_not_found"
         )
         return await query.answer(anime_not_found_text, show_alert=True)
 
@@ -206,14 +197,12 @@ async def anime_select_callback(client: Client, query: CallbackQuery):
         PersonagemWaifu if client.genero == TipoCategoria.WAIFU else PersonagemHusbando
     )
 
-    async with await client.get_reusable_session() as session:
-        stmt = select(base_cls).where(base_cls.nome_anime == anime_name)
-        result = await session.execute(stmt)
-        personagens = result.scalars().all()
+ 
+    stmt = select(base_cls).where(base_cls.nome_anime == anime_name)
+    personagens = await DATABASE.get_info_all(stmt)
 
     if not personagens:
-        no_characters_text = await obter_mensagem_chat(
-            client, query.message.chat.id, "listanime", "no_characters_found"
+        no_characters_text =     MESSAGE.get_text('pt',  "listanime", "no_characters_found"
         )
         return await query.answer(no_characters_text, show_alert=True)
 
@@ -231,9 +220,7 @@ async def anime_select_callback(client: Client, query: CallbackQuery):
         back_data=f"anime_letter_{anime_name[0]}",
         is_character_list=True,
     )
-    characters_text = await obter_mensagem_chat(
-        client,
-        query.message.chat.id,
+    characters_text =    MESSAGE.get_text('pt', 
         "listanime",
         "characters_from_anime",
         anime_name=anime_name,
@@ -267,8 +254,7 @@ async def personagem_page_callback(client: Client, query: CallbackQuery):
         back_data=f"anime_letter_{key[0]}",
         is_character_list=True,
     )
-    selection_text = await obter_mensagem_chat(
-        client, query.message.chat.id, "listanime", "characters_from_selection"
+    selection_text =     MESSAGE.get_text('pt',  "listanime", "characters_from_selection"
     )
     await query.edit_message_text(selection_text, reply_markup=keyboard)
 
@@ -289,7 +275,6 @@ async def back_alphabet_callback(client: Client, query: CallbackQuery):
             for row in buttons
         ]
     )
-    select_text = await obter_mensagem_chat(
-        client, query.message.chat.id, "listanime", "select_letter"
+    select_text =    MESSAGE.get_text('pt',  "listanime", "select_letter"
     )
     await query.edit_message_text(select_text, reply_markup=keyboard)

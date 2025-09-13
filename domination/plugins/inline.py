@@ -153,16 +153,14 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
     if query_text.isdigit():
         personagem_id = int(query_text)
 
-        personagem: PersonagemWaifu | PersonagemHusbando = DATABASE.get_id_primary(
-            base_cls, personagem_id
+        personagem: PersonagemWaifu | PersonagemHusbando = (
+            await DATABASE.get_id_primary(base_cls, personagem_id)
         )
         if personagem:
             results = await create_results(
-                client, inline_query.from_user.id, [personagem], reply_markup=True
+                inline_query.from_user.id, [personagem], reply_markup=True
             )
             await show_result(
-                client,
-                inline_query.from_user.id,
                 inline_query,
                 results,
                 offset=offset,
@@ -211,7 +209,6 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
         user_mention = f'<a href="tg://user?id={user.telegram_id}">{user_name}</a>'
 
         results = await create_results(
-            client,
             inline_query.from_user.id,
             unique_characters,
             offset,
@@ -220,8 +217,6 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
 
         has_more = offset + limite < len(colecoes_ordenadas)
         await show_result(
-            client,
-            inline_query.from_user.id,
             inline_query,
             results=results,
             switch_pm_text=f"{client.genero.capitalize()} {len(colecoes)}",
@@ -237,13 +232,11 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
         pers = await DATABASE.get_info_all(stmt)
 
         results = await create_results(
-            client, inline_query.from_user.id, pers, offset, reply_markup=False
+            inline_query.from_user.id, pers, offset, reply_markup=False
         )
 
         has_more = len(pers) == limite
         await show_result(
-            client,
-            inline_query.from_user.id,
             inline_query,
             results=results,
             offset=offset,
@@ -252,26 +245,29 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
         )
         return
 
-    # Busca por anime
-    if query_text.startswith("list_anime_"):
+    elif query_text.startswith("list_anime_"):
+        search_condition = base_cls.nome_anime.ilike(
+            f"%{query_text.replace('list_anime_', '')}%"
+        )
+
         personagens: list[PersonagemWaifu | PersonagemHusbando] = (
             await DATABASE.get_info_all(
-                base_cls.nome_anime.ilike(f"%{query_text.replace('list_anime_','')}%")
+                select(base_cls).where(search_condition)
             )
         )
+    # Busca por anime
+
         if not personagens:
             return await inline_query.answer([], cache_time=5)
 
         paginated = personagens[offset : offset + limite]
 
         results = await create_results(
-            client, inline_query.from_user.id, paginated, offset, reply_markup=True
+            inline_query.from_user.id, paginated, offset, reply_markup=True
         )
 
         has_more = offset + limite < len(personagens)
         await show_result(
-            client,
-            inline_query.from_user.id,
             inline_query,
             results,
             offset=offset,
@@ -294,69 +290,66 @@ async def who_captured_callback(client: Client, query: CallbackQuery):
         else ColecaoUsuarioHusbando
     )
 
-    async with await client.get_reusable_session() as session:
-        # Buscar quem tem o personagem na coleção
-        stmt = select(base_cls).where(base_cls.id_global == int(personagem_id))
-        result = await session.execute(stmt)
-        colecoes = result.scalars().all()
+    # Buscar quem tem o personagem na coleção
+    stmt = select(base_cls).where(base_cls.id_global == int(personagem_id))
+    colecoes = await DATABASE.get_info_all(stmt)
 
-        if not colecoes:
-
-            await query.answer(
-                MESSAGE.get_text("pt", "erros", "error_no_one_captured"),
-                show_alert=True,
-            )
-            return
-
-        # Buscar informações dos usuários
-        user_ids = [c.telegram_id for c in colecoes]
-        stmt_users = select(Usuario).where(Usuario.telegram_id.in_(user_ids))
-
-        usuarios = await DATABASE.get_info_all(stmt_users)
-
-        # Criar dicionário de usuários
-        users_dict = {u.telegram_id: u for u in usuarios}
-
-        # Criar lista de nomes
-        nomes_capturadores = []
-        for colecao in colecoes:
-            user = users_dict.get(colecao.telegram_id)
-            if user:
-                user_name = (
-                    user.telegram_from_user.get("NAME")
-                    or user.telegram_from_user.get("User")
-                    or f"Usuário {user.telegram_id}"
-                )
-                nomes_capturadores.append(
-                    MESSAGE.get_text(
-                        "pt",
-                        "inline",
-                        "who_captured_item",
-                        user_name=user_name,
-                        user_id=user.telegram_id,
-                    )
-                )
-
-        # Criar nova caption com lista de capturadores
-        nova_caption = (
-            MESSAGE.get_text(
-                "pt",
-                "inline",
-                "who_captured_title",
-                user_name=query.from_user.first_name,
-                user_id=query.from_user.id,
-                count=len(nomes_capturadores),
-            )
-            + "\n"
-            + "\n".join(nomes_capturadores)
+    if not colecoes:
+        await query.answer(
+            MESSAGE.get_text("pt", "erros", "error_no_one_captured"),
+            show_alert=True,
         )
-        # Atualizar a mensagem
-        try:
-            await query.edit_message_caption(
-                caption=nova_caption, parse_mode=ParseMode.HTML
+        return
+
+    # Buscar informações dos usuários
+    user_ids = [c.telegram_id for c in colecoes]
+    stmt_users = select(Usuario).where(Usuario.telegram_id.in_(user_ids))
+
+    usuarios = await DATABASE.get_info_all(stmt_users)
+
+    # Criar dicionário de usuários
+    users_dict = {u.telegram_id: u for u in usuarios}
+
+    # Criar lista de nomes
+    nomes_capturadores = []
+    for colecao in colecoes:
+        user = users_dict.get(colecao.telegram_id)
+        if user:
+            user_name = (
+                user.telegram_from_user.get("NAME")
+                or user.telegram_from_user.get("User")
+                or f"Usuário {user.telegram_id}"
             )
-        except Exception as e:
-            await query.answer(
-                MESSAGE.get_text("pt", "erros", "error_update_failed", error=str(e)),
-                show_alert=True,
+            nomes_capturadores.append(
+                MESSAGE.get_text(
+                    "pt",
+                    "inline",
+                    "who_captured_item",
+                    user_name=user_name,
+                    user_id=user.telegram_id,
+                )
             )
+
+    # Criar nova caption com lista de capturadores
+    nova_caption = (
+        MESSAGE.get_text(
+            "pt",
+            "inline",
+            "who_captured_title",
+            user_name=query.from_user.first_name,
+            user_id=query.from_user.id,
+            count=len(nomes_capturadores),
+        )
+        + "\n"
+        + "\n".join(nomes_capturadores)
+    )
+    # Atualizar a mensagem
+    try:
+        await query.edit_message_caption(
+            caption=nova_caption, parse_mode=ParseMode.HTML
+        )
+    except Exception as e:
+        await query.answer(
+            MESSAGE.get_text("pt", "erros", "error_update_failed", error=str(e)),
+            show_alert=True,
+        )
