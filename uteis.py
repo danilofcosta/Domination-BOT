@@ -39,7 +39,7 @@ def format_personagem_caption(
         )
 
     # Evento
-    if personagem.evento_full:
+    if personagem.evento_full and personagem.evento != TipoEvento.SEM_EVENTO :
         evento = f"{personagem.evento_full.emoji or ''} {personagem.evento_full.cod.value.capitalize()} {personagem.evento_full.emoji or ''}"
     else:
         evento = (

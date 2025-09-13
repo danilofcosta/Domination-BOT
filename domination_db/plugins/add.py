@@ -86,7 +86,7 @@ async def addchar_command(client: Client, message: Message):
     
      
         try:
-            pre= await DATABASE.add_object_comit(pre)
+            pre= await DATABASE.add_object_commit(pre)
             await message.reply(
                 f"✅ Personagem '{pre.nome_personagem}' adicionado com sucesso ao banco de dados com ID {pre.id}!"
             )  # Atualiza o objeto com o ID gerado   

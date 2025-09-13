@@ -6,28 +6,28 @@ from domination_db import DominationDB
 
 def main():
     var = Settings()
-    bot = DominationDB(
+    botw = DominationDB(
         name="000000000000",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.WAIFU_TK,
         genero=TipoCategoria.WAIFU,
         group_main=var.GROUP_MAIN,
+    ).start()
+    bot = DominationDB(
+        name="HUS",
+        api_id=var.API_ID,
+        api_hash=var.API_HASH,
+        bot_token=var.HUSBANDO_TK,
+        genero=TipoCategoria.HUSBANDO,
+        group_main=var.GROUP_MAIN,
     )
-    # bot = DominationDB(
-    #     name="HUS",
-    #     api_id=var.API_ID,
-    #     api_hash=var.API_HASH,
-    #     bot_token=var.HUSBANDO_TK,
-    #     genero=TipoCategoria.HUSBANDO,
-    #     group_main=var.GROUP_MAIN,
-    # )
 
     bot.start()
 
     bot.send_message(chat_id="dog244", text="Bot  banco iniciado")
 
-    print("rodando bot")
+    print(f"rodando bot {bot.me.first_name}")
 
     idle()
 

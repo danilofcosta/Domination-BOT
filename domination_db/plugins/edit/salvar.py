@@ -5,7 +5,7 @@ from DB.database import DATABASE
 from DB.models import Evento_Midia, PersonagemHusbando, PersonagemWaifu, Raridade_Midia
 from domination_db.plugins.edit.uteis_edit import bts_edit, create_cap_edit_Show
 from types_ import COMMAND_LIST_DB, TipoEvento, TipoRaridade
-from uteis import re_linhas
+from uteis import format_personagem_caption
 from datetime import datetime
 
 
@@ -44,12 +44,12 @@ async def salvar_edicao(client: Client, callback_query: CallbackQuery):
             await client.edit_message_caption(
                 chat_id=callback_query.message.chat.id,
                 message_id=msg_id,
-                caption="\n".join(create_cap_edit_Show(personagem_data["per_edit"])),
+                caption=f"{format_personagem_caption(personagem_data["per_edit"])}",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                text="🌐",
+                                text="🌐 ✅",
                                 switch_inline_query_current_chat=str(char_id),
                             )
                         ]
