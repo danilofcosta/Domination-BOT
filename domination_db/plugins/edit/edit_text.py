@@ -3,6 +3,7 @@ from pyrogram.types import Message, CallbackQuery, InlineKeyboardMarkup
 from types_ import COMMAND_LIST_DB
 from uteis import create_one_bt
 from domination_db.plugins.edit.uteis_edit import bts_edit, create_cap_edit_Show
+from DB.models import PersonagemHusbando
 
 
 @Client.on_callback_query(
@@ -20,13 +21,13 @@ async def editchar_callback(client: Client, callback_query: CallbackQuery):
     # Puxa do cache
     user_cache = Client.edit_cache.get(user_id, {})
     genero_cache = user_cache.get(client.genero.value, {})
-    personagem_data = genero_cache.get(char_id)
+    personagem_data: PersonagemHusbando = genero_cache.get(char_id)
 
     if not personagem_data:
         return await callback_query.answer(
             "Personagem não encontrado no cache!", show_alert=True
         )
-    
+
     if campo in ["anime", "nome"]:
         # Marca qual campo será editado
         personagem_data["edit"] = campo
@@ -43,13 +44,14 @@ async def editchar_callback(client: Client, callback_query: CallbackQuery):
             ]
         )
         await callback_query.edit_message_caption(
-            f"Envie o novo valor para <b>{campo}</b>:",
+            f"Envie o novo valor  para <b>{campo}</b>:\n anterior {personagem_data.nome_personagem if campo == 'nome' else personagem_data.nome_anime  }\n ",
             reply_markup=reply_markup,
         )
         await callback_query.answer()
 
 
 # ---------------- Handler de texto para atualizar personagem ----------------
+
 
 def waiting_for_input(_, __, message: Message):
     """Filtro para mensagens de usuários que estão no fluxo de edição de texto"""
@@ -136,9 +138,5 @@ async def voltar_edicao(client: Client, callback_query: CallbackQuery):
             caption="\n".join(create_cap_edit_Show(personagem_data["per_edit"])),
             reply_markup=InlineKeyboardMarkup(bts_edit(personagem_data["per_edit"].id)),
         )
-    
+
     await callback_query.answer()
-
-
-
-
