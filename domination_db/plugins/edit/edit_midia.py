@@ -175,3 +175,4 @@ async def midia_invalida(client: Client, message: Message):
     await message.reply("❌ Por favor, envie uma foto ou vídeo para atualizar a mídia do personagem.")
 
 
+
