@@ -9,4 +9,3 @@ def create_prelist(base_enum, key: str) -> dict:
 pre_evento = create_prelist(TipoEvento, "e")
 pre_raridade = create_prelist(TipoRaridade, "r")
 # print(pre_evento)
-print(pre_raridade)

@@ -242,3 +242,7 @@ Traceback (most recent call last):
   File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\pyrogram\methods\advanced\resolve_peer.py", line 125, in resolve_peer
     raise PeerIdInvalid
 pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PEER_ID_INVALID] - The peer id being used is invalid or not known yet. Make sure you meet the peer before interacting with it 
+2025-09-13 17:58:40,876 - domination.contador - INFO - log_info:53 - Personagem saiu: megumi fushiguro
+2025-09-13 17:59:01,463 - domination.contador - INFO - log_info:53 - Personagem saiu: hu tao and xianling
+2025-09-13 18:07:35,252 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 18:07:36,893 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True

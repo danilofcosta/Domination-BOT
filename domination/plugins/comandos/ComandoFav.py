@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import *
-from sqlalchemy import  select
+from sqlalchemy import select
 
 from DB.database import DATABASE
 from DB.models import (
@@ -16,8 +16,10 @@ from uteis import (
     send_media_by_type,
 )
 import logging
-from types_ import TipoCategoria,COMMAND_LIST
+from types_ import TipoCategoria, COMMAND_LIST
+
 logger = logging.getLogger(__name__)
+
 
 @Client.on_message(
     filters.create(
@@ -31,7 +33,8 @@ async def ComandoFav(client: Client, message: Message):
 
     if len(message.command) < 2:
         return await message.reply(
-              MESSAGE.get_text('pt', 
+            MESSAGE.get_text(
+                "pt",
                 "erros",
                 "error_id_required",
                 genero=client.genero.value.lower(),
@@ -47,7 +50,6 @@ async def ComandoFav(client: Client, message: Message):
     )
 
     try:
-   
 
         # Buscar o personagem na coleção do usuário
         result = await DATABASE.get_info_one(
@@ -62,8 +64,7 @@ async def ComandoFav(client: Client, message: Message):
         if not colecao:
 
             return await message.reply(
-                    MESSAGE.get_text('pt',  "erros", "error_not_registered"
-                ),
+                MESSAGE.get_text("pt", "erros", "error_not_registered"),
                 quote=True,
             )
 
@@ -72,10 +73,11 @@ async def ComandoFav(client: Client, message: Message):
 
         if not personagem:
             return await message.reply(
-               text=     MESSAGE.get_text('pt', 
-                   categoria= "erros",
-                  chave=  "error_character_not_found_id_fav",
-                    comadoharem=f"{client.genero.value[0].lower()}{COMMAND_LIST.HAREM.value}"
+                text=MESSAGE.get_text(
+                    "pt",
+                    categoria="erros",
+                    chave="error_character_not_found_id_fav",
+                    comadoharem=f"{client.genero.value[0].lower()}{COMMAND_LIST.HAREM.value}",
                 ),
                 quote=True,
             )
@@ -93,10 +95,10 @@ async def ComandoFav(client: Client, message: Message):
         )
 
         await send_media_by_type(
-           
             message=message,
             personagem=personagem,
-            caption=    MESSAGE.get_text('pt', 
+            caption=MESSAGE.get_text(
+                "pt",
                 "favorito",
                 "confirm_favorite",
                 character_info=format_personagem_caption(personagem),
@@ -106,14 +108,12 @@ async def ComandoFav(client: Client, message: Message):
 
     except ValueError:
         await message.reply(
-              MESSAGE.get_text('pt',  "erros", "error_invalid_id"
-            ),
+            MESSAGE.get_text("pt", "erros", "error_invalid_id"),
             quote=True,
         )
     except Exception as e:
         await message.reply(
-             MESSAGE.get_text('pt',  "general", "error", error=str(e)
-            ),
+            MESSAGE.get_text("pt", "general", "error", error=str(e)),
             quote=True,
         )
 
@@ -140,29 +140,41 @@ def parse_callback_data(data: str):
 async def edit_with_error(client, query, category, key, **kwargs):
     """Helper para reduzir repetição de mensagens de erro"""
     return await query.edit_message_caption(
-        caption=    MESSAGE.get_text('pt', category, key, **kwargs)
+        caption=MESSAGE.get_text("pt", category, key, **kwargs)
     )
 
 
-@Client.on_callback_query(filters.create(lambda _, __, q: q.data.startswith(("setfav_", "cancel_"))))
+@Client.on_callback_query(
+    filters.create(lambda _, __, q: q.data.startswith(("setfav_", "cancel_")))
+)
 async def handle_fav_callback(client: Client, query: CallbackQuery):
     try:
         data = parse_callback_data(query.data)
         if not data:
-            return await edit_with_error(client, query, "general", "error", error="Dados inválidos")
+            return await edit_with_error(
+                client, query, "general", "error", error="Dados inválidos"
+            )
 
         # --- Cancelamento ---
         if data["action"] == "cancel":
             if query.from_user.id != data["user_id"]:
-                return await edit_with_error(client, query, "erros", "error_cannot_use_button")
+                return await edit_with_error(
+                    client, query, "erros", "error_cannot_use_button"
+                )
 
-            return await edit_with_error(client, query, "favorito", "operation_cancelled")
+            return await edit_with_error(
+                client, query, "favorito", "operation_cancelled"
+            )
 
         # --- Confirmação ---
         if query.from_user.id != data["user_id"]:
-            return await edit_with_error(client, query, "erros", "error_cannot_use_button")
+            return await edit_with_error(
+                client, query, "erros", "error_cannot_use_button"
+            )
 
-        usuario = await DATABASE.get_info_one(select(Usuario).where(Usuario.telegram_id == data["user_id"]))
+        usuario = await DATABASE.get_info_one(
+            select(Usuario).where(Usuario.telegram_id == data["user_id"])
+        )
         if not usuario:
             return await edit_with_error(client, query, "erros", "error_not_registered")
 
@@ -173,14 +185,18 @@ async def handle_fav_callback(client: Client, query: CallbackQuery):
             usuario.fav_w_id = data["personagem_id"]
             logger.debug(f"Atualizando fav_w_id para {data['personagem_id']}")
         else:
-            return await edit_with_error(client, query, "general", "error", error="Gênero inválido")
+            return await edit_with_error(
+                client, query, "general", "error", error="Gênero inválido"
+            )
 
         # await session.commit()
+        await DATABASE.update_obj(usuario)
 
         # Pega info do personagem do caption antigo (sem a primeira linha)
         character_info = "\n".join(query.message.caption.split("\n")[1:])
         await query.edit_message_caption(
-            caption=    MESSAGE.get_text('pt', 
+            caption=MESSAGE.get_text(
+                "pt",
                 "favorito",
                 "favorite_set_success",
                 info=character_info,
@@ -191,7 +207,9 @@ async def handle_fav_callback(client: Client, query: CallbackQuery):
 
     except ValueError as e:
         logger.warning(f"ValueError em handle_fav_callback: {e}")
-        await edit_with_error(client, query, "general", "error", error=f"Erro de dados: {e}")
+        await edit_with_error(
+            client, query, "general", "error", error=f"Erro de dados: {e}"
+        )
     except Exception as e:
         logger.exception("Erro inesperado em handle_fav_callback")
         await edit_with_error(client, query, "general", "error", error=str(e))

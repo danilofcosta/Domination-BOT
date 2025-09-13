@@ -25,8 +25,8 @@ def format_personagem_caption(
     personagem: PersonagemWaifu | PersonagemHusbando, user=None, mention: str = None
 ):
     """Gera legenda do personagem com limite de 1024 caracteres"""
-    nome: str = personagem.nome_personagem
-    anime: str = personagem.nome_anime
+    nome: str = personagem.nome_personagem.capitalize()
+    anime: str = personagem.nome_anime.capitalize()
 
     # Raridade
     if personagem.raridade_full:
@@ -40,7 +40,7 @@ def format_personagem_caption(
 
     # Evento
     if personagem.evento_full:
-        evento = f"{personagem.evento_full.emoji or ''} {scriptify(personagem.evento_full.cod.value.capitalize())} {personagem.evento_full.emoji or ''}"
+        evento = f"{personagem.evento_full.emoji or ''} {personagem.evento_full.cod.value.capitalize()} {personagem.evento_full.emoji or ''}"
     else:
         evento = (
             personagem.evento.value.capitalize()
@@ -303,7 +303,7 @@ def create_one_bt(
     )
 
 
-async def check_admin_group(client: Client, chat_id, user_id) -> bool:
+async def check_admin_group(client: Client = None, chat_id =None, user_id=None) -> bool:
     if not chat_id:
         try:
             from settings import Settings

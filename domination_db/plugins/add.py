@@ -19,7 +19,7 @@ from uteis import check_admin_group, dynamic_command_filter, format_personagem_c
 )
 @Client.on_message(filters.command(COMMAND_LIST_DB.ADDCHAR.value) & filters.private)
 async def addchar_command(client: Client, message: Message):
-    print( Settings().GROUP_DATABASE_ID)
+   
     base_per: PersonagemHusbando | PersonagemWaifu = (
         PersonagemHusbando
         if client.genero == TipoCategoria.HUSBANDO

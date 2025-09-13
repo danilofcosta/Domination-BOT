@@ -13,8 +13,7 @@ from DB.models import (
 )
 from types_ import COMMAND_LIST_DB, TipoCategoria, TipoEvento, TipoRaridade, TipoMidia
 from uteis import (
-    create_one_bt,
-    create_bt_clear,
+
     dynamic_command_filter,
     send_media_by_chat_id,
     check_admin_group,

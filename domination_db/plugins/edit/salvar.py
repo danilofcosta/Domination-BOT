@@ -8,6 +8,7 @@ from types_ import COMMAND_LIST_DB, TipoEvento, TipoRaridade
 from uteis import re_linhas
 from datetime import datetime
 
+
 @Client.on_callback_query(
     filters.regex(rf"^{COMMAND_LIST_DB.EDITCHAR.value}_salvar_(\d+)$")
 )
@@ -27,10 +28,11 @@ async def salvar_edicao(client: Client, callback_query: CallbackQuery):
 
     try:
         from datetime import datetime
+
         per = personagem_data["per_edit"]
         per.updated_at = datetime.now()
         # Atualiza no banco de dados
-        await DATABASE.update_personagem(per)
+        await DATABASE.update_obj(per)
 
         # Remove do cache (edição concluída)
         del genero_cache[char_id]
@@ -38,7 +40,6 @@ async def salvar_edicao(client: Client, callback_query: CallbackQuery):
         # Atualiza mensagem final com botão de compartilhar
         msg_id = personagem_data.get("id_msg_edit")
         if msg_id:
-        
 
             await client.edit_message_caption(
                 chat_id=callback_query.message.chat.id,

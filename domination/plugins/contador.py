@@ -31,7 +31,7 @@ async def create_secret_caption(
         MESSAGE.get_text("pt", "contador", "add_to_harem"),
         MESSAGE.get_text("pt", "contador", "dominar_command"),
     ]
-    results = await asyncio.gather(*tasks)
+    results = tasks
     return "\n".join(
         [results[0], results[1], f"/{COMMAND_LIST.DOMINAR.value} {results[2]}"]
     )
@@ -75,6 +75,11 @@ async def handle_group_messages(client: Client, message: Message):
             select(base).order_by(func.random()).limit(1)
         )
 
+    print(
+        group_id,
+        message.chat.title,
+        cont,
+    )
     # A cada 100 mensagens, envia personagem
     if cont == 100:
         personagem = await get_random_character()

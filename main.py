@@ -1,12 +1,15 @@
-import asyncio,logging
+import asyncio, logging
 from domination import Domination
 from domination_db import DominationDB
 from settings import Settings
 from pyrogram import idle
 from types_ import TipoCategoria
 
-logging.basicConfig(level=logging.CRITICAL,
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.CRITICAL, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
 def main():
     var = Settings()
     _waifu = Domination(
@@ -42,15 +45,10 @@ def main():
         group_main=var.GROUP_MAIN,
     ).start()
 
-
-
-
     print("rodando bot")
 
     idle()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
-    
     main()
