@@ -5,7 +5,7 @@ from settings import Settings
 from pyrogram import idle
 from types_ import TipoCategoria
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.CRITICAL,
                     format="%(asctime)s - %(levelname)s - %(message)s")
 def main():
     var = Settings()
@@ -26,7 +26,7 @@ def main():
         group_main=var.GROUP_MAIN,
     ).start()
     bot_db = DominationDB(
-        name="HUSdv",
+        name="HUS_db",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.HUSBANDO_TK,
