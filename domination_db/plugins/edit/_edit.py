@@ -33,7 +33,7 @@ if not hasattr(Client, "edit_cache"):
     filters.create(
         name=f"comand{' '.join(COMMAND_LIST_DB.EDITCHAR.value)}",
         func=dynamic_command_filter,
-        command=COMMAND_LIST_DB.ADDCHAR.value,
+        command=COMMAND_LIST_DB.EDITCHAR.value,
     )
 )
 @Client.on_message(filters.command(COMMAND_LIST_DB.EDITCHAR.value)& filters.private)

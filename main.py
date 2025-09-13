@@ -1,15 +1,16 @@
-import asyncio
+import asyncio,logging
 from domination import Domination
 from domination_db import DominationDB
 from settings import Settings
 from pyrogram import idle
 from types_ import TipoCategoria
 
-
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s - %(levelname)s - %(message)s")
 def main():
     var = Settings()
     _waifu = Domination(
-        name="WAIFUpa",
+        name="WA",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.WAIFU_TK,
@@ -25,7 +26,7 @@ def main():
         group_main=var.GROUP_MAIN,
     ).start()
     bot_db = DominationDB(
-        name="HUS",
+        name="HUSdv",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.HUSBANDO_TK,
@@ -33,7 +34,7 @@ def main():
         group_main=var.GROUP_MAIN,
     ).start()
     bot_db2 = DominationDB(
-        name="waifu db",
+        name="waifudb",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.WAIFU_TK,
