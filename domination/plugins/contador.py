@@ -60,7 +60,7 @@ async def handle_group_messages(client: Client, message: Message):
         cont = grp_counter["cont"] = 98
 
     log_debug(f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador")
-    print(group_id, message.chat.title, cont, cont % 100 == 0)
+    print(g,group_id, message.chat.title, cont, cont % 100 == 0)
 
     # A cada 100 mensagens, envia personagem
     if cont % 100 == 0:
@@ -82,29 +82,31 @@ async def handle_group_messages(client: Client, message: Message):
             "datetime": datetime.now(),
         }
         log_info(f"Personagem saiu: {personagem.nome_personagem}", "contador")
+   
 
+    elif grp_counter["id_mens"] and cont >= 120:
     # 20 mensagens depois, deleta personagem
-    elif grp_counter["id_mens"] and cont == grp_counter["cont"] + 20:
+    #elif grp_counter["id_mens"] and cont == grp_counter["cont"] + 20:
         try:
             per = grp_counter["per"]
             if not per:
-                return
+                return print("sem personagens")
 
-            view_text = await MESSAGE.get_text("pt", "contador", "view_character")
+            view_text =  MESSAGE.get_text("pt", "contador", "view_character")
             keyboard = InlineKeyboardMarkup(
                 [[InlineKeyboardButton(view_text, callback_data=f"view_character_{per.id}")]]
             )
 
             await client.delete_messages(group_id, grp_counter["id_mens"])
 
-            caption = await MESSAGE.get_text(
+            caption =  MESSAGE.get_text(
                 "pt", "contador", "caption",
                 nome=per.nome_personagem, anime=per.nome_anime,
             )
             await client.send_message(group_id, caption, reply_markup=keyboard)
 
             # Limpa estado
-            message_counter[g][group_id] = {"cont": cont, "id_mens": None, "per": None, "datetime": None}
+            message_counter[g][group_id] = {"cont": None, "id_mens": None, "per": None, "datetime": None}
 
         except Exception as e:
             log_error(f"Erro ao deletar mensagem: {e}", "contador", exc_info=True)
