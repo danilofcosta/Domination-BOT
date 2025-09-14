@@ -11,9 +11,9 @@
       "previous": "⬅️ Anterior",
       "next": "➡️ Próxima",
       "back": "🔙 Voltar",
-      "character_clicked_by": "👤 <b>Clique de:</b> {user_mention}\n\n{character_info}",
+      "character_clicked_by": "👤 <b>Clique:</b> {user_mention}\n\n{character_info}",
       "character_info": "📝 <b>Nome:</b> {character_name}\n🎌 <b>Anime:</b> {anime_name}\n⭐ <b>Raridade:</b> {rarity}",
-      "view_character": "👁️ Ver Personagem"
+      "view_character": "🔎"
     },
     "erros": {
       "error_command_welcome": "❌ Ocorreu um erro ao processar o comando de boas-vindas.",
@@ -128,7 +128,7 @@
       "refresh_text": "..."
     },
     "contador": {
-      "caption":"{nome} - {anime} escapou\n lembre do seu nome da proxima vez ",
+      "caption":"<code>{nome} - {anime} escapou</code>\n lembre do seu nome da proxima vez ",
       "character_appeared": "{raridade} {genero} apareceu!",
       "add_to_harem": "Adicione-o ao seu harém enviando:",
       "dominar_command": "<code>nome</code>",
@@ -141,9 +141,9 @@
       "wrong_character": "❌ Esse não é o personagem correto. Tente novamente!",
       "inline_button": "🌐",
       "no_active_character": "❌ Não há nenhum personagem ativo para dominar agora!",
-      "character_clicked_by": "👤 <b>Clique de:</b> {user_mention}\n\n{character_info}",
+      "character_clicked_by": "👤 <b>Clique:</b> {user_mention}\n\n{character_info}",
       "character_info": "📝 <b>Nome:</b> {character_name}\n🎌 <b>Anime:</b> {anime_name}\n⭐ <b>Raridade:</b> {rarity}",
-      "view_character": "👁️ Ver Personagem"
+      "view_character": "🔎"
     },
     "harem_mode": {
       "choose_option": "escolha uma das opções para ordenar o seu harem",
