@@ -106,7 +106,7 @@ async def handle_group_messages(client: Client, message: Message):
             await client.send_message(group_id, caption, reply_markup=keyboard)
 
             # Limpa estado
-            message_counter[g][group_id] = {"cont": None, "id_mens": None, "per": None, "datetime": None}
+            message_counter[g][group_id] = {"cont": 0, "id_mens": None, "per": None, "datetime": None}
 
         except Exception as e:
             log_error(f"Erro ao deletar mensagem: {e}", "contador", exc_info=True)
@@ -123,7 +123,7 @@ async def view_character_callback(client: Client, query: CallbackQuery):
         if not personagem:
             return await query.answer("❌ Personagem não encontrado!", show_alert=True)
 
-        character_info, clicked_text = await asyncio.gather(
+        character_info, clicked_text = (
             MESSAGE.get_text(
                 "pt", "contador", "character_info",
                 character_name=personagem.nome_personagem,
