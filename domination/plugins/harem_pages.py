@@ -55,7 +55,7 @@ async def create_harem_pages_ref(colecoes, genero):
     for anime in sorted_animes:
         anime_data = anime_groups[anime]
         header = (
-            f"☛ {anime} {anime_data['total_colecao']}/{anime_data['total_banco']}\n"
+            f"☛ {anime.capitalize()} {anime_data['total_colecao']}/{anime_data['total_banco']}\n"
             + "✧" * 16
             + "\n"
         )

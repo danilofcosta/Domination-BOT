@@ -112,7 +112,7 @@ async def setmodoharem(client: Client, query: CallbackQuery):
     ):
         buttons = []
         event = await DATABASE.get_info_all(select(Evento_Midia))
-        rar = await DATABASE.get_info_one(select(Raridade_Midia))
+        rar = await DATABASE.get_info_all(select(Raridade_Midia))
 
         # Buscar do banco para ter emojis dos modelos
         if modo_selecionado == ModoHarem.EVENTO.value:

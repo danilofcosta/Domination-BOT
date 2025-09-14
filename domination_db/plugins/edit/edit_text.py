@@ -21,7 +21,7 @@ async def editchar_callback(client: Client, callback_query: CallbackQuery):
     # Puxa do cache
     user_cache = Client.edit_cache.get(user_id, {})
     genero_cache = user_cache.get(client.genero.value, {})
-    personagem_data: PersonagemHusbando = genero_cache.get(char_id)
+    personagem_data = genero_cache.get(char_id)
 
     if not personagem_data:
         return await callback_query.answer(
@@ -44,7 +44,7 @@ async def editchar_callback(client: Client, callback_query: CallbackQuery):
             ]
         )
         await callback_query.edit_message_caption(
-            f"Envie o novo valor  para <b>{campo}</b>:\n anterior {personagem_data.nome_personagem if campo == 'nome' else personagem_data.nome_anime  }\n ",
+            f"Envie o novo valor  para <b>{campo}</b>:\n anterior:<code> {personagem_data['per_edit'].nome_personagem if campo == 'nome' else personagem_data['per_edit'].nome_anime  }</code>\n ",
             reply_markup=reply_markup,
         )
         await callback_query.answer()

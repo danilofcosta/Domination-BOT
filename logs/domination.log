@@ -272,3 +272,15 @@ pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PE
 2025-09-13 20:29:11,712 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-13 20:29:22,385 - domination.contador - INFO - log_info:53 - Personagem saiu: madara uchiha
 2025-09-13 20:29:23,255 - domination.contador - INFO - log_info:53 - Personagem saiu: hitori gotou
+2025-09-13 21:02:32,811 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:02:35,022 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:05:35,485 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:05:37,687 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:05:50,690 - domination.harem_mode - INFO - log_info:53 - Modo harém atualizado para: ANIME
+2025-09-13 21:05:50,843 - domination.harem_mode - INFO - log_info:53 - Botões inline atualizados com sucesso
+2025-09-13 21:06:08,437 - domination.harem_mode - INFO - log_info:53 - Modo harém atualizado para: RARIDADE_ESPECTRAL
+2025-09-13 21:06:08,593 - domination.harem_mode - INFO - log_info:53 - Botões inline atualizados com sucesso
+2025-09-13 21:10:58,724 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:11:00,737 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:12:46,786 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-13 21:12:48,947 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
