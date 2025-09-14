@@ -1,13 +1,17 @@
 from pyrogram import *
 from pyrogram.types import *
+from pyrogram.enums import ChatType
 from DB.models import PersonagemHusbando, PersonagemWaifu
 from DB.database import DATABASE, Session
 from settings import Settings
 from teste import create_prelist
 from types_ import COMMAND_LIST_DB, TipoCategoria, TipoEvento, TipoMidia, TipoRaridade
-from uteis import check_admin_group, dynamic_command_filter, format_personagem_caption, send_media_by_chat_id
-
-
+from uteis import (
+    check_admin_group,
+    dynamic_command_filter,
+    format_personagem_caption,
+    send_media_by_chat_id,
+)
 
 
 @Client.on_message(
@@ -19,14 +23,14 @@ from uteis import check_admin_group, dynamic_command_filter, format_personagem_c
 )
 @Client.on_message(filters.command(COMMAND_LIST_DB.ADDCHAR.value) & filters.private)
 async def addchar_command(client: Client, message: Message):
-    print('ok')
-   
+    print("ok")
+
     base_per: PersonagemHusbando | PersonagemWaifu = (
         PersonagemHusbando
         if client.genero == TipoCategoria.HUSBANDO
         else PersonagemWaifu
     )
-    if await check_admin_group(client,user_id= message.from_user.id)==False:
+    if await check_admin_group(client, user_id=message.from_user.id) == False:
         await message.reply("❌ Comando disponível apenas em chats admin .", quote=True)
         return
 
@@ -83,24 +87,31 @@ async def addchar_command(client: Client, message: Message):
         )
 
         # Salvar no banco de dados primeiro para obter o ID
-    
-     
+
         try:
-            pre= await DATABASE.add_object_commit(pre)
+            pre = await DATABASE.add_object_commit(pre)
             await message.reply(
                 f"✅ Personagem '{pre.nome_personagem}' adicionado com sucesso ao banco de dados com ID {pre.id}!"
-            )  # Atualiza o objeto com o ID gerado   
-                        
+            )  # Atualiza o objeto com o ID gerado
+
             await send_media_by_chat_id(
                 client=client,
                 chat_id=Settings().GROUP_DATABASE_ID,
                 personagem=pre,
-                caption=format_personagem_caption(pre,mention=message.from_user.mention),
+                caption=format_personagem_caption(
+                    pre, mention=message.from_user.mention
+                ),
                 reply_markup=None,
             )
 
         except Exception as e:
             await message.reply_text(f"❌ Erro ao adicionar personagem: {e}")
+
+    elif message.caption and message.chat.type == ChatType.PRIVATE and (
+        message.reply_to_message.photo or message.reply_to_message.video
+    ):
+        ...
+
     else:
         rs = []
         es = []

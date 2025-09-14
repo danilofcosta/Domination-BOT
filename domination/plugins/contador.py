@@ -115,6 +115,7 @@ async def handle_group_messages(client: Client, message: Message):
 @Client.on_callback_query(filters.regex(r"^view_character_\d+$"))
 async def view_character_callback(client: Client, query: CallbackQuery):
     try:
+        await query.message.delete()
         character_id = int(query.data.split("_")[-1])
         base = PersonagemHusbando if client.genero == TipoCategoria.HUSBANDO else PersonagemWaifu
         stmt = select(base).where(base.id == character_id)
@@ -144,7 +145,7 @@ async def view_character_callback(client: Client, query: CallbackQuery):
             caption=clicked_text,
             reply_to_message_id=query.message.id,
         )
-        await query.message.delete()
+        
         await query.answer("✅ Personagem enviado!")
 
     except Exception as e:
