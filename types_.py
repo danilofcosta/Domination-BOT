@@ -122,9 +122,9 @@ COMMAND_LIST_MIN_DESC_PUBLIC[COMMAND_LIST.TRADE.value] = (
     "Troca personagens com outro usuário"
 )
 COMMAND_LIST_MIN_DESC_ADMIN = COMMAND_LIST_MIN_DESC_PUBLIC.copy()
-COMMAND_LIST_MIN_DESC_ADMIN = {
+COMMAND_LIST_MIN_DESC_ADMIN.update( {
     COMMAND_LIST.SETPROFILE.value: "Define foto de perfil do bot",
-}
+})
 
 
 class COMMAND_LIST_DB(PyEnum):

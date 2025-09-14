@@ -139,10 +139,10 @@ def build_recent_pages(colecoes_sorted_desc):
             c.character.raridade_full.emoji if c.character.raridade_full else ""
         )
         return (
-            f"{raridade_emoji} Nome: {c.character.nome_personagem}\n"
+            f"{raridade_emoji} Nome: {c.character.nome_personagem}.capitalize()\n"
             f"🆔 ID: {c.character.id}\n"
-            f"⭐ Raridade: {c.character.raridade.value}\n"
-            f"🈯️ Anime: {c.character.nome_anime}\n"
+            f"📑 Raridade: {c.character.raridade.value.capitalize()}\n"
+            f"🧧 Anime: {c.character.nome_anime.capitalize()}\n"
             f"{evento_emoji} Evento: {c.character.evento.value.capitalize()}\n"
         )
 
