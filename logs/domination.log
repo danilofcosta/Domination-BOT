@@ -367,3 +367,7 @@ sqlalchemy.orm.exc.UnmappedInstanceError: Class 'builtins.list' is not mapped
 2025-09-16 20:52:43,027 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-16 21:12:57,069 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-16 21:14:05,448 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 21:20:45,130 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 21:20:46,888 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 21:22:03,256 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 21:22:05,420 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True

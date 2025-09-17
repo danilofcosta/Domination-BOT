@@ -66,13 +66,13 @@ async def handle_group_messages(client: Client, message: Message):
     cont = grp_counter["cont"]
 
     # Forçar contador inicial em grupo específico
-    if group_id in [-1001528803759, -1001659176163] and cont < 98:
+    if group_id in [-1001528803759] and cont < 98:
         cont = grp_counter["cont"] = 98
 
     log_debug(
         f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador"
     )
-    print(g, group_id, message.chat.title, cont, cont % 100 == 0)
+    #print(g, group_id, message.chat.title, cont, cont % 100 == 0)
     
     # if group_id not in [-1001528803759, -1001659176163]:
     #     return print(" not")

@@ -4,10 +4,11 @@ from pyrogram.enums import ChatType
 from DB.models import PersonagemHusbando, PersonagemWaifu
 from DB.database import DATABASE, Session
 from settings import Settings
-from teste import create_prelist
+
 from types_ import COMMAND_LIST_DB, TipoCategoria, TipoEvento, TipoMidia, TipoRaridade
 from uteis import (
     check_admin_group,
+    create_prelist,
     dynamic_command_filter,
     format_personagem_caption,
     send_media_by_chat_id,
