@@ -65,14 +65,17 @@ async def handle_dominar(client: Client, message: Message):
     from domination.plugins.contador import message_counter
 
     group_id = message.chat.id
-    g = client.genero.value  # husbando ou waifu
+    g = client.genero.value.lower()  # "waifu" ou "husbando" (minúsculas)
+
+    log_debug(f"Dominar: g={g}, group_id={group_id}", "dominar")
 
     # Verifica personagem ativo
     if (
         g not in message_counter
         or group_id not in message_counter[g]
-        or not message_counter[g][group_id]["per"]
+        or not message_counter[g][group_id].get("per")
     ):
+        log_debug(f"Dominar: Nenhum personagem ativo no grupo {group_id}", "dominar")
         return
 
     if len(message.command) < 2:
@@ -83,8 +86,17 @@ async def handle_dominar(client: Client, message: Message):
     per = message_counter[g][group_id]["per"]
     per_n: str = per.nome_personagem
 
+    log_debug(
+        f"Dominar: Tentativa de {message.from_user.id} para '{nome_user}' vs '{per_n}'",
+        "dominar",
+    )
+
     # Valida o nome
     if not _validar_nome_personagem(per_n, nome_user.split()):
+        log_debug(
+            f"Dominar: Nome inválido - '{nome_user}' não corresponde a '{per_n}'",
+            "dominar",
+        )
         msg = await message.reply(MESSAGE.get_text("pt", "contador", "wrong_character"))
         await asyncio.sleep(20)
 
@@ -132,16 +144,14 @@ async def handle_dominar(client: Client, message: Message):
     cap = "\n".join([f"{cabeçario}\n", name_text, source_text, rarity_text, time_text])
 
     # Serializa usuário Telegram
-    telegram_from_user_json = json.dumps(
-        {
-            "id": message.from_user.id,
-            "first_name": message.from_user.first_name,
-            "last_name": message.from_user.last_name,
-            "username": message.from_user.username,
-            "is_bot": message.from_user.is_bot,
-        },
-        ensure_ascii=False,
-    )
+    telegram_from_user_dict = {
+        "id": message.from_user.id,
+        "NAME": message.from_user.first_name,
+        "first_name": message.from_user.first_name,
+        "last_name": message.from_user.last_name,
+        "username": message.from_user.username,
+        "is_bot": message.from_user.is_bot,
+    }
 
     # ==============================
     # Salva usuário/coleção no banco
@@ -149,10 +159,9 @@ async def handle_dominar(client: Client, message: Message):
     fav_id = per.id
     user = Usuario(
         telegram_id=message.from_user.id,
-        telegram_from_user=telegram_from_user_json,
+        telegram_from_user=telegram_from_user_dict,
         fav_h_id=fav_id if client.genero == TipoCategoria.HUSBANDO else None,
         fav_w_id=fav_id if client.genero == TipoCategoria.WAIFU else None,
-        perfil_status=TipoPerfil.USUARIO,
     )
 
     if not await add_per_coletion(
@@ -165,7 +174,16 @@ async def handle_dominar(client: Client, message: Message):
         ),
         user=user,
     ):
-        return message.reply("erro ao add per ")
+        log_error(
+            f"Dominar: Erro ao adicionar personagem {fav_id} para usuário {user.telegram_id}",
+            "dominar",
+        )
+        return await message.reply("❌ Erro ao adicionar personagem à coleção")
+
+    log_info(
+        f"Dominar: Sucesso! Usuário {user.telegram_id} dominou {per_n} (ID: {fav_id})",
+        "dominar",
+    )
 
     # ==============================
     # Envia mensagem com botão inline
@@ -192,5 +210,4 @@ async def handle_dominar(client: Client, message: Message):
         "id_mens": None,
         "per": None,
         "datetime": None,
-        "keyboard": None,
     }

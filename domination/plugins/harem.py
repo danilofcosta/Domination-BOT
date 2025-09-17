@@ -81,7 +81,7 @@ def build_harem_keyboard(user_id, genero, current_page, total_pages):
     )
 )
 @Client.on_message(filters.command(COMMAND_LIST.HAREM.value) & filters.private)
-async def harem(client: Client, message: Message,user_id):
+async def harem(client: Client, message: Message,user_id=None):
     user_id =user_id or  message.from_user.id
     genero = client.genero
 

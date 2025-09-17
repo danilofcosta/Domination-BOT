@@ -177,13 +177,12 @@ class Usuario:
     )
 
     # Agora com valor default no JSON
-    configs_w: Mapped[Optional[dict]] = mapped_column(
-        JSON, nullable=True, default=lambda: {"modo_harem": ModoHarem.PADRAO.value}
+    configs_w: Mapped[dict] = mapped_column(
+        JSON, nullable=False, default_factory=lambda: {"modo_harem": ModoHarem.PADRAO.value}
     )
-    configs_h: Mapped[Optional[dict]] = mapped_column(
-        JSON, nullable=True, default=lambda: {"modo_harem": ModoHarem.PADRAO.value}
+    configs_h: Mapped[dict] = mapped_column(
+        JSON, nullable=False, default_factory=lambda: {"modo_harem": ModoHarem.PADRAO.value}
     )
-    
     # Campo para idioma preferido do usuário
     idioma_preferido: Mapped[Optional[Idioma]] = mapped_column(
         Enum(Idioma), nullable=True, default=Idioma.PT
