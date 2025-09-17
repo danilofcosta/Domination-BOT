@@ -72,7 +72,7 @@ async def handle_group_messages(client: Client, message: Message):
     log_debug(
         f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador"
     )
-    #print(g, group_id, message.chat.title, cont, cont % 100 == 0)
+    print(g, group_id, message.chat.title, cont, cont % 100 == 0)
     
     # if group_id not in [-1001528803759, -1001659176163]:
     #     return print(" not")
