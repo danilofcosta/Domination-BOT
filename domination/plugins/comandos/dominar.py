@@ -151,6 +151,7 @@ async def handle_dominar(client: Client, message: Message):
         "last_name": message.from_user.last_name,
         "username": message.from_user.username,
         "is_bot": message.from_user.is_bot,
+        "metion":message.from_user.mention,
     }
 
     # ==============================
