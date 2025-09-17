@@ -1,8 +1,12 @@
 from ctypes import Union
+import json
+from typing import Optional
 from pyrogram.types import *
 from pyrogram import Client, filters
-from pyrogram.enums import ChatType, ChatMemberStatus
-from DB.models import PersonagemHusbando, PersonagemWaifu
+from pyrogram.enums import *
+from sqlalchemy import select
+from DB.database import DATABASE
+from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu, PersonagemHusbando, PersonagemWaifu, Usuario
 from types_ import TipoCategoria, TipoEvento, TipoMidia
 from enum import Enum as PyEnum
 from domination.logger import log_info, log_error, log_debug
@@ -388,3 +392,63 @@ def scriptify(text: str):
 
     # Converte o texto para estilo manuscrito Unicode
     return "".join(script_map.get(char, char) for char in text)
+
+async def check_mentions(client: Client, message: Message) -> Optional[List[int]]:
+    if not message.entities:
+        return None
+
+    user_ids: List[int] = []
+
+    for entity in message.entities:
+        if entity.type == MessageEntityType.MENTION:  # @username
+            username = message.text[entity.offset : entity.offset + entity.length]
+            try:
+                user = await client.get_users(username)
+                user_ids.append(user.id)
+            except Exception:
+                continue
+
+        elif entity.type == MessageEntityType.TEXT_MENTION:  # [Nome](tg://user?id=...)
+            if entity.user:
+                user_ids.append(entity.user.id)
+
+    return user_ids if user_ids else None
+
+
+async def add_per_coletion(
+    from_user_id: int,
+    id_char: int,
+    colecao_class: ColecaoUsuarioHusbando | ColecaoUsuarioWaifu,
+    user: Usuario | None = None,
+):
+    objs = []
+    # Verifica se usuário existe
+    result = select(Usuario).where(Usuario.telegram_id == from_user_id)
+    user_exist = await DATABASE.get_info_one(result)
+    if not user_exist:
+        objs.append(user)
+
+        # await DATABASE.add_object(user)
+
+    objs.append(colecao_class(telegram_id=from_user_id, id_global=id_char))
+
+    try:
+        return await DATABASE.add_object_commit(objs)
+
+    except Exception as e:
+        log_error(f"Erro ao salvar usuário/coleção: {e}", "dominar", exc_info=True)
+        return None
+
+
+
+def create_telegram_from_user_json(message:Message) -> dict:
+    return  json.dumps(
+        {
+            "id": message.from_user.id,
+            "first_name": message.from_user.first_name,
+            "last_name": message.from_user.last_name,
+            "username": message.from_user.username,
+            "is_bot": message.from_user.is_bot,
+        },
+        ensure_ascii=False,
+    )

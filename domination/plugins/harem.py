@@ -81,11 +81,11 @@ def build_harem_keyboard(user_id, genero, current_page, total_pages):
     )
 )
 @Client.on_message(filters.command(COMMAND_LIST.HAREM.value) & filters.private)
-async def harem(client: Client, message: Message):
-    user_id = message.from_user.id
+async def harem(client: Client, message: Message,user_id):
+    user_id =user_id or  message.from_user.id
     genero = client.genero
 
-    stmt = select(Usuario).where(Usuario.telegram_id == user_id)
+    stmt = select(Usuario).where(Usuario.telegram_id == message.from_user.id)
     usuario: Usuario = await DATABASE.get_info_one(stmt)
 
     if not usuario:

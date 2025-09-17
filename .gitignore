@@ -105,3 +105,6 @@ alembic/versions/__pycache__/ce685350e1d5_sync_enum_values_with_python_code.cpyt
 logs/domination.log
 logs/domination.log
 domination/plugins/__pycache__/comodos_extras.cpython-313.pyc
+domination/plugins/commands_adms.py
+domination/plugins/__pycache__/admin_bot.cpython-313.pyc
+domination/plugins/__pycache__/commands_adms.cpython-313.pyc

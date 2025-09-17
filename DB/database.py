@@ -1,3 +1,4 @@
+import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import sessionmaker, declarative_base
 from settings import Settings
@@ -41,13 +42,18 @@ class DATABASE:
         async with Session() as session:
             if isinstance(obj, list):
                 session.add_all(obj)
+                await session.commit() 
+
+                await asyncio.gather(*(session.refresh(o) for o in obj))
             else:
                 session.add(obj)
+                await session.commit() 
+                await session.refresh(obj)
 
-            await session.commit()   # garante ID gerado
-            await session.refresh(obj)  # atualiza atributos (ex: id)
+            # atualiza atributos (ex: id)
 
         return obj
+
     @staticmethod
     async def add_object(obj: object) -> object:
         """Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado"""
@@ -63,6 +69,7 @@ class DATABASE:
             async with session.begin():  # commit automático
                 session.delete(obj)
         return obj  # Retorna o objeto com ID atualizado
+
     @staticmethod
     async def delete_object_by_id(model, obj_id: int):
         """Deleta um objeto do banco pelo ID"""
@@ -73,6 +80,7 @@ class DATABASE:
                     await session.delete(obj)  # deleta
                     return obj
             return None
+
     @staticmethod
     async def get_info_one(search_query: object) -> object | None:
         async with Session() as session:
@@ -82,7 +90,7 @@ class DATABASE:
     @staticmethod
     async def get_id_primary(model_class, id_value) -> object | None:
         async with Session() as session:
-            result = await session.get(model_class, id_value)
+            result = await session.get(model_class, int(id_value))
             return result
 
     @staticmethod

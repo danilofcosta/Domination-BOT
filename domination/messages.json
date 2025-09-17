@@ -16,6 +16,7 @@
       "view_character": "🔎"
     },
     "erros": {
+      "not_admin_bot":"❌ Apenas administradores do bot podem usar este comando!",
       "error_command_welcome": "❌ Ocorreu um erro ao processar o comando de boas-vindas.",
       "error_command_gift": "❌ Ocorreu um erro ao processar o comando de presente.",
       "error_command_harem": "❌ Ocorreu um erro ao processar o comando de harém.",

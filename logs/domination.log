@@ -310,3 +310,60 @@ pyrogram.errors.exceptions.bad_request_400.PeerIdInvalid: Telegram says: [400 PE
 2025-09-14 19:30:21,876 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-14 19:32:44,665 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-14 19:34:22,785 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:35:22,827 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:38:33,995 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:40:21,630 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:44:22,742 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:44:48,802 - domination.dominar - ERROR - log_error:57 - Erro ao salvar usuário/coleção: Class 'builtins.list' is not mapped
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 3143, in refresh
+    state = attributes.instance_state(instance)
+AttributeError: 'list' object has no attribute '_sa_instance_state'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\ryo\Documents\Domination BOT\uteis.py", line 436, in add_per_coletion
+    return await DATABASE.add_object_commit(objs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\ryo\Documents\Domination BOT\DB\database.py", line 48, in add_object_commit
+    await session.refresh(obj)  # atualiza atributos (ex: id)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\ext\asyncio\session.py", line 331, in refresh
+    await greenlet_spawn(
+    ...<4 lines>...
+    )
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 190, in greenlet_spawn
+    result = context.switch(*args, **kwargs)
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 3145, in refresh
+    raise exc.UnmappedInstanceError(instance) from err
+sqlalchemy.orm.exc.UnmappedInstanceError: Class 'builtins.list' is not mapped
+2025-09-16 20:45:05,678 - domination.dominar - ERROR - log_error:57 - Erro ao salvar usuário/coleção: Class 'builtins.list' is not mapped
+Traceback (most recent call last):
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 3143, in refresh
+    state = attributes.instance_state(instance)
+AttributeError: 'list' object has no attribute '_sa_instance_state'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\ryo\Documents\Domination BOT\uteis.py", line 436, in add_per_coletion
+    return await DATABASE.add_object_commit(objs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\ryo\Documents\Domination BOT\DB\database.py", line 48, in add_object_commit
+    await session.refresh(obj)  # atualiza atributos (ex: id)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\ext\asyncio\session.py", line 331, in refresh
+    await greenlet_spawn(
+    ...<4 lines>...
+    )
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 190, in greenlet_spawn
+    result = context.switch(*args, **kwargs)
+  File "C:\Users\ryo\Documents\Domination BOT\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 3145, in refresh
+    raise exc.UnmappedInstanceError(instance) from err
+sqlalchemy.orm.exc.UnmappedInstanceError: Class 'builtins.list' is not mapped
+2025-09-16 20:45:36,571 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:47:36,848 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 20:52:43,027 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 21:12:57,069 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-16 21:14:05,448 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
