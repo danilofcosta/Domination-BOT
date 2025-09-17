@@ -108,3 +108,4 @@ domination/plugins/__pycache__/comodos_extras.cpython-313.pyc
 domination/plugins/commands_adms.py
 domination/plugins/__pycache__/admin_bot.cpython-313.pyc
 domination/plugins/__pycache__/commands_adms.cpython-313.pyc
+logs/domination.log
