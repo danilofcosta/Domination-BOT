@@ -108,3 +108,17 @@ domination/plugins/__pycache__/comodos_extras.cpython-313.pyc
 domination/plugins/__pycache__/admin_bot.cpython-313.pyc
 domination/plugins/__pycache__/commands_adms.cpython-313.pyc
 logs/domination.log
+domination/plugins/comandos_users/__pycache__/ComandoFav.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/contador.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/delete_user.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/dominar.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/gift.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/lang.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/listar_anime.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/myinfos.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/top.cpython-313.pyc
+domination/plugins/comandos_users/__pycache__/trade.cpython-313.pyc
+domination/plugins/comandos_adms_bot/__pycache__/add_char_in_profile.cpython-313.pyc
+domination/plugins/comandos_adms_bot/__pycache__/delete_profile.cpython-313.pyc
+domination/plugins/comandos_adms_bot/__pycache__/open_profile.cpython-313.pyc
+logs/domination.log

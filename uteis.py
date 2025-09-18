@@ -6,7 +6,13 @@ from pyrogram import Client, filters
 from pyrogram.enums import *
 from sqlalchemy import select
 from DB.database import DATABASE
-from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu, PersonagemHusbando, PersonagemWaifu, Usuario
+from DB.models import (
+    ColecaoUsuarioHusbando,
+    ColecaoUsuarioWaifu,
+    PersonagemHusbando,
+    PersonagemWaifu,
+    Usuario,
+)
 from types_ import TipoCategoria, TipoEvento, TipoMidia
 from enum import Enum as PyEnum
 from domination.logger import log_info, log_error, log_debug
@@ -15,11 +21,21 @@ from pyrogram.enums import ChatType, ChatMemberStatus
 PREXIFOS = ["/", ".", "!"]
 
 
-def create_bts_y_or_n(prefix: str, callback_data_true: str, callback_data_false: str):
+def create_bts_y_or_n(
+    prefix: str,
+    callback_data_true: str,
+    callback_data_false: str,
+    text_tru="✅",
+    text_false="❌",
+):
     keyboard = [
         [
-            InlineKeyboardButton("✅", callback_data=f"{prefix}_{callback_data_true}"),
-            InlineKeyboardButton("❌", callback_data=f"{prefix}_{callback_data_false}"),
+            InlineKeyboardButton(
+                text_tru, callback_data=f"{prefix}_{callback_data_true}"
+            ),
+            InlineKeyboardButton(
+                text_false, callback_data=f"{prefix}_{callback_data_false}"
+            ),
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -43,7 +59,7 @@ def format_personagem_caption(
         )
 
     # Evento
-    if personagem.evento_full and personagem.evento != TipoEvento.SEM_EVENTO :
+    if personagem.evento_full and personagem.evento != TipoEvento.SEM_EVENTO:
         evento = f"{personagem.evento_full.emoji or ''} {personagem.evento_full.cod.value.capitalize()} {personagem.evento_full.emoji or ''}"
     else:
         evento = (
@@ -234,7 +250,7 @@ async def send_media_by_chat_id(
 
 
 def dynamic_command_filter(filter, client: Client, message: Message) -> bool:
-  
+
     comandos_esperados = []
     if not message.text:
         return False
@@ -306,7 +322,7 @@ def create_one_bt(
     )
 
 
-async def check_admin_group(client: Client = None, chat_id =None, user_id=None) -> bool:
+async def check_admin_group(client: Client = None, chat_id=None, user_id=None) -> bool:
     if not chat_id:
         try:
             from settings import Settings
@@ -393,6 +409,7 @@ def scriptify(text: str):
     # Converte o texto para estilo manuscrito Unicode
     return "".join(script_map.get(char, char) for char in text)
 
+
 async def check_mentions(client: Client, message: Message) -> Optional[List[int]]:
     if not message.entities:
         return None
@@ -440,9 +457,8 @@ async def add_per_coletion(
         return None
 
 
-
-def create_telegram_from_user_json(message:Message) -> dict:
-    return  json.dumps(
+def create_telegram_from_user_json(message: Message) -> dict:
+    return json.dumps(
         {
             "id": message.from_user.id,
             "first_name": message.from_user.first_name,

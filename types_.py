@@ -104,7 +104,9 @@ class COMMAND_LIST(PyEnum):
 
 class COMMAND_LIST_ADMIN(PyEnum):
     ADD_CHAR="adcharem"
-    OPEN_COLETUON="open"
+    OPEN_PROFILE="open"
+    DELETE_PROFILE="delprofile"
+
 
 COMMAND_LIST_MIN_DESC_PV = {
     COMMAND_LIST.FAV.value: "Adiciona ou remove um personagem dos favoritos",

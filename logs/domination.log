@@ -1000,3 +1000,10 @@ sqlalchemy.exc.StatementError: (builtins.TypeError) Object of type function is n
 2025-09-17 01:02:14,739 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-17 01:02:33,282 - domination.contador - INFO - log_info:53 - Personagem saiu: venti
 2025-09-17 01:02:53,967 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 422779743 dominou venti (ID: 593)
+2025-09-17 20:07:20,820 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-17 20:08:52,955 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-17 20:10:20,976 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-17 20:11:13,225 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-17 20:52:51,241 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-17 21:01:00,780 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-17 21:07:19,587 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True

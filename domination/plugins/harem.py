@@ -89,9 +89,7 @@ async def harem(client: Client, message: Message,user_id=None):
     usuario: Usuario = await DATABASE.get_info_one(stmt)
 
     if not usuario:
-        await message.reply_text(
-            "❌ Você ainda não está registrado!\nUse o comando /myinfos para se registrar."
-        )
+        await message.reply_text(MESSAGE.get_text("pt", "alerts", "not_profile"))
         return
 
     configs = (

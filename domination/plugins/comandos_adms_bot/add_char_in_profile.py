@@ -1,29 +1,10 @@
-import json
+from DB.database import DATABASE
+from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu, PersonagemHusbando, PersonagemWaifu, Usuario
+from domination.message import MESSAGE
+from types_ import COMMAND_LIST_ADMIN, TipoCategoria
+from uteis import add_per_coletion, check_admin_group, check_mentions, create_bts_y_or_n, dynamic_command_filter, format_personagem_caption, send_media_by_chat_id
 from pyrogram import Client, filters
 from pyrogram.types import *
-from pyrogram.types import MessageEntity
-from pyrogram.enums import MessageEntityType
-from DB.database import DATABASE
-from DB.models import (
-    ColecaoUsuarioHusbando,
-    ColecaoUsuarioWaifu,
-    PersonagemHusbando,
-    PersonagemWaifu,
-    Usuario,
-)
-from types_ import COMMAND_LIST_ADMIN, TipoCategoria, TipoPerfil
-from uteis import (
-    add_per_coletion,
-    check_admin_group,
-    check_mentions,
-    dynamic_command_filter,
-    send_media_by_chat_id,
-    create_bts_y_or_n,
-    format_personagem_caption,
-)
-from domination.message import MESSAGE
-from domination.plugins.harem import harem
-
 
 @Client.on_message(
     filters.create(
@@ -135,6 +116,10 @@ async def call_add_char(client: Client, query: CallbackQuery):
                     "is_bot": user_info.is_bot,
                     'metion':user_info.mention
                 },
+                fav_h_id=   None
+                    if client.genero == TipoCategoria.WAIFU else id_chat
+                ,fav_w_id=   None
+                    if client.genero == TipoCategoria.HUSBANDO else id_chat
             )
             # Adiciona o personagem para o usuário correto
             if not await add_per_coletion(
@@ -161,28 +146,3 @@ async def call_add_char(client: Client, query: CallbackQuery):
         except:
             pass
 
-
-@Client.on_message(
-    filters.create(
-        name=f"comand{' '.join(COMMAND_LIST_ADMIN.OPEN_COLETUON.value)}",
-        func=dynamic_command_filter,
-        command=COMMAND_LIST_ADMIN.OPEN_COLETUON.value,
-    )
-)
-async def open(client: Client, message: Message):
-    if await check_admin_group(client, user_id=message.from_user.id) == False:
-        return await message.reply(
-            MESSAGE.get_text("pt", "erros", "not_admin_bot"), quote=True
-        )
-
-    else:
-        if message.reply_to_message:
-
-            await harem(
-                client=client,
-                message=message.reply_to_message,
-                user_id=message.from_user.id,
-            )
-
-        else:
-            message.reply(" use em resposta a um user")

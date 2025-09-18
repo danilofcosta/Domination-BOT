@@ -1,5 +1,12 @@
 {
+
+
   "pt": {
+
+    "alerts":{
+      "reply_to_message":"Responda a uma mensagem",
+      "not_profile":"você nao tem um harem",      "not_profile_adm":"o user  nao tem um harem"
+    },
     "listanime": {
       "select_letter": "Selecione a letra inicial do anime:",
       "animes_starting_with": "Animes que começam com '{letter}': {cont}",
