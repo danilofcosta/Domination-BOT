@@ -1,42 +1,47 @@
-# #!/usr/bin/env python3
-# import os
-# from pyrogram import Client, filters
-# from settings import Settings
-# from pyrogram.types import MessageEntity
-# from pyrogram.enums import MessageEntityType
-# var = Settings()
+#!/usr/bin/env python3
+import asyncio
+from pyrogram import Client
+from settings import Settings
+from pyrogram.types import Message
 
-# API_ID = var.API_ID
-# API_HASH = var.API_HASH
-# BOT_TOKEN = var.BOT_TOKEN_TESTE  # pegue do settings.py
+var = Settings()
 
-# app = Client(
-#     "echo-bot",
-#     api_id=API_ID,
-#     api_hash=API_HASH,
-#     bot_token=BOT_TOKEN,
-#     workdir="sessions",
-# )
+API_ID = var.API_ID
+API_HASH = var.API_HASH
+BOT_TOKEN = var.BOT_TOKEN_TESTE  # pegue do settings.py
 
+app = Client(
+    "ryo",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    workdir="sessions",
+)
 
-# # Echo de mensagens de texto
-# @app.on_message(filters.text)
-# async def echo_text(client, message):
-#     print("ddddddddddddddddddd")
-#     for entitie in message.entities:
-#         entitie: MessageEntity = entitie
-#         if entitie.type == MessageEntityType.MENTION:
-
-#     await message.reply_text(message.text)
+chat_id = "gods_gods"  # username ou ID do grupo
 
 
-# # Echo de qualquer outra mídia
-# @app.on_message(filters.media | filters.sticker)
-# async def echo_media(client, message):
+async def main():
+    await app.start()
+    msgs = []
+    async for msg in app.get_chat_history(chat_id):
+        msg: Message = msg
+        msgs.append(msg.id)
 
-#     await message.copy(message.chat.id)
+    print(f"Total de mensagens encontradas: {len(msgs)}")
+
+    if msgs:
+        total = len(msgs)
+        for i in range(0, total, 100):
+            batch = msgs[i : i + 100]
+            await app.delete_messages(chat_id=chat_id, message_ids=batch)
+
+            # Barra de progresso simples
+            progresso = int((i + len(batch)) / total * 50)  # tamanho da barra
+            barra = "█" * progresso + "-" * (50 - progresso)
+            print(f"\r[{barra}] {((i+len(batch))/total*100):.1f}%", end="")
 
 
-# if __name__ == "__main__":
-#     print("🤖 Bot iniciado. Ctrl+C para parar.")
-#     app.run()
+
+if __name__ == "__main__":
+
+    asyncio.run(main())

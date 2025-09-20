@@ -92,7 +92,7 @@ async def get_random_character(client):
 async def handle_group_messages(client: Client, message: Message):
     g = client.genero.value.lower()  # "waifu" ou "husbando"
     group_id = message.chat.id
-    print(f"Debug: g={g}, group_id={group_id}")
+    # print(f"Debug: g={g}, group_id={group_id}")
 
     # Opcional: processa apenas grupos ativos, se configurado
     if ACTIVE_GROUPS is not None and group_id not in ACTIVE_GROUPS:
