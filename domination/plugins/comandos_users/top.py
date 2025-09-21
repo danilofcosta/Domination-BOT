@@ -28,7 +28,7 @@ def format_user(info: dict | None) -> str:
     if username := info.get("username"):
         return f"@{username}"
      
-    m=f'<a href="tg://user?id={info.get('ID',)}">{info.get("NAME", "Desconhecido")}</a>'
+    m=f'<a href="tg://user?id={info.get('ID',0)}">{info.get("NAME", "Desconhecido")}</a>'
     return m
 
 
