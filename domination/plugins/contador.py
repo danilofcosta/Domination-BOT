@@ -85,7 +85,7 @@ async def get_random_character(client):
 
 @Client.on_message(
     filters.group
-    & (filters.all)
+    & (filters.media|filters.text)
     & ~(filters.text & filters.regex(r"^[/!.]")),
     group=1,
 )
@@ -131,7 +131,8 @@ async def handle_group_messages(client: Client, message: Message):
     #     return print(" not")
     # A cada 100 mensagens, envia personagem
     if cont % 100 == 0:
-        print(f"Debug: {g}, {group_id}, {message.chat.title}, cont={cont}, mod100={cont % 100 == 0}")
+        deb=f"Debug: {g}, {group_id}, {message.chat.title}, cont={cont}, mod100={cont % 100 == 0}"
+        client.send_message(Settings().GROUP_ADDMS_ID,deb)
         personagem = await get_random_character(client)
         if not personagem:
             return
@@ -154,6 +155,8 @@ async def handle_group_messages(client: Client, message: Message):
         log_info(f"Personagem saiu: {personagem.nome_personagem}", "contador")
 
     elif grp_counter["id_mens"] and cont >= 140:
+        deb=f"Debug: {g}, {group_id}, {message.chat.title},apgar ?{cont >= 140}, cont={cont}, mod100={cont % 100 == 0}"
+        client.send_message(Settings().GROUP_ADDMS_ID,deb)
         # 20 mensagens depois, deleta personagem
         # elif grp_counter["id_mens"] and cont == grp_counter["cont"] + 20:
         try:
@@ -171,7 +174,7 @@ async def handle_group_messages(client: Client, message: Message):
                     ]
                 ]
             )
-
+            client.send_message(Settings().GROUP_ADDMS_ID,'apagando drope')
             await client.delete_messages(group_id, grp_counter["id_mens"])
 
             caption = MESSAGE.get_text(
@@ -181,6 +184,8 @@ async def handle_group_messages(client: Client, message: Message):
                 nome=per.nome_personagem,
                 anime=per.nome_anime,
             )
+            client.send_message(Settings().GROUP_ADDMS_ID,'enviando mensagem de escape')
+
             await client.send_message(group_id, caption, reply_markup=keyboard)
 
             # Limpa estado no cache
