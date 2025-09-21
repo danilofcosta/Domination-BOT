@@ -63,7 +63,7 @@ def format_personagem_caption(
         evento = f"{personagem.evento_full.emoji or ''} {personagem.evento_full.cod.value.capitalize()} {personagem.evento_full.emoji or ''}"
     else:
         evento = (
-            personagem.evento.value.capitalize()
+            scriptify(personagem.evento.value.capitalize())
             if personagem.evento and personagem.evento != TipoEvento.SEM_EVENTO
             else ""
         )
