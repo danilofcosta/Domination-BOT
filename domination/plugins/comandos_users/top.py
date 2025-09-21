@@ -27,7 +27,9 @@ def format_user(info: dict | None) -> str:
         return "Desconhecido"
     if username := info.get("username"):
         return f"@{username}"
-    return info.get("NAME", "Desconhecido")
+     
+    m=f'<a href="tg://user?id={info['ID']}">{info.get("NAME", "Desconhecido")}</a>'
+    return m
 
 
 async def build_top_text(base, ids: list[int] | None, limit: int = 10):

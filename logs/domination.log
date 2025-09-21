@@ -1031,3 +1031,7 @@ sqlalchemy.exc.StatementError: (builtins.TypeError) Object of type function is n
 2025-09-21 16:17:01,001 - domination.contador - INFO - log_info:53 - Personagem saiu: clube de ocultismo
 2025-09-21 16:17:53,463 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 6874062454 dominou clube de ocultismo (ID: 357)
 2025-09-21 16:18:11,891 - domination.contador - INFO - log_info:53 - Personagem saiu: hilda
+2025-09-21 18:51:25,604 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 18:52:14,159 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 18:55:50,633 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 19:04:03,981 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
