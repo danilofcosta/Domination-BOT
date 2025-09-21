@@ -132,7 +132,7 @@ async def handle_group_messages(client: Client, message: Message):
     # A cada 100 mensagens, envia personagem
     if cont % 100 == 0:
         deb=f"Debug: {g}, {group_id}, {message.chat.title}, cont={cont}, mod100={cont % 100 == 0}"
-        client.send_message(Settings().GROUP_ADDMS_ID,deb)
+        await client.send_message(Settings().GROUP_ADDMS_ID,deb)
         personagem = await get_random_character(client)
         if not personagem:
             return
@@ -174,7 +174,7 @@ async def handle_group_messages(client: Client, message: Message):
                     ]
                 ]
             )
-            client.send_message(Settings().GROUP_ADDMS_ID,'apagando drope')
+            await client.send_message(Settings().GROUP_ADDMS_ID,'apagando drope')
             await client.delete_messages(group_id, grp_counter["id_mens"])
 
             caption = MESSAGE.get_text(
@@ -184,7 +184,7 @@ async def handle_group_messages(client: Client, message: Message):
                 nome=per.nome_personagem,
                 anime=per.nome_anime,
             )
-            client.send_message(Settings().GROUP_ADDMS_ID,'enviando mensagem de escape')
+            await client.send_message(Settings().GROUP_ADDMS_ID,'enviando mensagem de escape')
 
             await client.send_message(group_id, caption, reply_markup=keyboard)
 
@@ -198,6 +198,7 @@ async def handle_group_messages(client: Client, message: Message):
 
         except Exception as e:
             log_error(f"Erro ao deletar mensagem: {e}", "contador", exc_info=True)
+            await client.send_message(Settings().GROUP_ADDMS_ID,f'{e}')
 
 
 @Client.on_callback_query(filters.regex(r"^view_character_\d+$"))
