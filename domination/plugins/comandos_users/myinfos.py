@@ -12,7 +12,7 @@ from DB.database import DATABASE
 from domination.message import MESSAGE
 from types_ import TipoCategoria
 from sqlalchemy import select, func, desc
-from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu
+from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu,PersonagemWaifu,PersonagemHusbando
 from uteis import dynamic_command_filter, get_first_photo_file_id, send_media_by_type
 from types_ import COMMAND_LIST
 
@@ -38,6 +38,7 @@ async def myinfos(client: Client, message:Message):
 
     # Seleciona a tabela correta
     base = ColecaoUsuarioWaifu if client.genero == TipoCategoria.WAIFU else ColecaoUsuarioHusbando
+    all_per = PersonagemWaifu if client.genero == TipoCategoria.WAIFU else PersonagemHusbando
 
     # Pega membros do grupo se for grupo
     membros = (
@@ -68,7 +69,7 @@ async def myinfos(client: Client, message:Message):
     total_dominados = (await DATABASE.get_info_one(
             select(func.count(base.id_local)).where(base.telegram_id == user_id)
         )) or 0
-    total_geral = (await DATABASE.get_info_one(select(func.count(base.id_local)))) or 1
+    total_geral = (await DATABASE.get_info_one(select(func.count(all_per.id)))) or 1
 
     # Barra de progresso
     porcentagem_harem = (total_dominados / total_geral) * 100

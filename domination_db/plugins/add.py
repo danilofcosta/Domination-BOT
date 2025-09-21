@@ -2,7 +2,7 @@ from pyrogram import *
 from pyrogram.types import *
 from pyrogram.enums import ChatType
 from DB.models import PersonagemHusbando, PersonagemWaifu
-from DB.database import DATABASE, Session
+from DB.database import DATABASE
 from settings import Settings
 
 from types_ import COMMAND_LIST_DB, TipoCategoria, TipoEvento, TipoMidia, TipoRaridade
@@ -24,111 +24,97 @@ from uteis import (
 )
 @Client.on_message(filters.command(COMMAND_LIST_DB.ADDCHAR.value) & filters.private)
 async def addchar_command(client: Client, message: Message):
-    print("ok")
-
     base_per: PersonagemHusbando | PersonagemWaifu = (
         PersonagemHusbando
-        if client.genero == TipoCategoria.HUSBANDO
+        if getattr(client, "genero", TipoCategoria.HUSBANDO) == TipoCategoria.HUSBANDO
         else PersonagemWaifu
     )
-    if await check_admin_group(client, user_id=message.from_user.id) == False:
-        await message.reply("❌ Comando disponível apenas em chats admin .", quote=True)
+
+    if not await check_admin_group(client, user_id=message.from_user.id):
+        await message.reply("❌ Comando disponível apenas em chats admin.", quote=True)
         return
 
-    if message.reply_to_message and (
-        message.reply_to_message.photo or message.reply_to_message.video
-    ):
-        fileid = (
-            message.reply_to_message.photo.file_id
-            if message.reply_to_message.photo
-            else message.reply_to_message.video.file_id
-        )
-        tipo_midia: TipoMidia = (
-            TipoMidia.IMAGEM_FILEID
-            if message.reply_to_message.photo
-            else TipoMidia.VIDEO_FILEID
-        )
-        nome, anime, *res = (
-            message.text.strip().replace(f"{message.text.split()[0]}", "").split(",")
-        )
-        # nome  obrigatorio
-        # anime  obrigatorio
-        # raridade  esperada e r0, r1, r2, r3, r4, r5, r6
-        # evento  esperada e e0, e1, e2, e3, e4, e5, e6 or null
-        pre_evento = create_prelist(TipoEvento, "e")
-        pre_raridade = create_prelist(TipoRaridade, "r")
-        enum_evento: TipoEvento | None = None
-        enum_raridade: TipoRaridade | None = None
-        for t in res:
-            if t.lower().startswith("e"):
-                enum_evento: TipoEvento = pre_evento.get(
-                    t.lower(), TipoEvento.SEM_EVENTO
-                )
-            elif t.lower().startswith("r"):
-                enum_raridade: TipoRaridade = pre_raridade.get(t.lower())
-
-        pre = base_per(
-            nome_personagem=nome.strip(),
-            nome_anime=anime.strip(),
-            evento=enum_evento or TipoEvento.SEM_EVENTO,
-            raridade=enum_raridade or TipoRaridade.COMUM,
-            data=fileid,
-            tipo_midia=tipo_midia,
-            extras={
-                "file_id": fileid,
-                "restrito": {
-                    "id": message.from_user.id,
-                    "first_name": message.from_user.first_name,
-                    "username": message.from_user.username,
-                    "mention": message.from_user.mention,
-                },
-                "request": {"chat_id": message.chat.id, "message_id": message.id},
-                "comand": message.command,
-            },
-        )
-
-        # Salvar no banco de dados primeiro para obter o ID
-
-        try:
-            pre = await DATABASE.add_object_commit(pre)
-            await message.reply(
-                f"✅ Personagem '{pre.nome_personagem}' adicionado com sucesso ao banco de dados com ID {pre.id}!"
-            )  # Atualiza o objeto com o ID gerado
-
-            await send_media_by_chat_id(
-                client=client,
-                chat_id=Settings().GROUP_DATABASE_ID,
-                personagem=pre,
-                caption=format_personagem_caption(
-                    pre, mention=message.from_user.mention
-                ),
-                reply_markup=None,
-            )
-
-        except Exception as e:
-            await message.reply_text(f"❌ Erro ao adicionar personagem: {e}")
-
-    elif message.caption and message.chat.type == ChatType.PRIVATE and (
-        message.reply_to_message.photo or message.reply_to_message.video
-    ):
-        ...
-
+    # 🔹 Detectar mídia
+    media_msg = message.reply_to_message or message
+    if media_msg.photo:
+        fileid = media_msg.photo.file_id
+        tipo_midia = TipoMidia.IMAGEM_FILEID
+    elif media_msg.video:
+        fileid = media_msg.video.file_id
+        tipo_midia = TipoMidia.VIDEO_FILEID
     else:
-        rs = []
-        es = []
-
-        for key, value in create_prelist(TipoRaridade, "r").items():
-            rs.append(f"{key} ({value.name})")
-        for key, value in create_prelist(TipoEvento, "e").items():
-            es.append(f"{key} ({value.name})")
-
-        raridades = "\n".join(rs)
-        eventos = "\n".join(es)
-
+        # Nenhuma mídia → mostra ajuda
+        rs = [f"{k} ({v.name})" for k, v in create_prelist(TipoRaridade, "r").items()]
+        es = [f"{k} ({v.name})" for k, v in create_prelist(TipoEvento, "e").items()]
         await message.reply_text(
-            f"❌ Por favor, responda a uma foto ou vídeo com o comando no formato: "
-            f"/addchar nome, anime, r-<raridade>, e-<evento> "
-            f"<exemplo: /addchar Rem, Re:Zero, r5, e2>,\n"
-            f"Raridades disponíveis:\n{raridades}\n"
-            f"Eventos disponíveis:\n{eventos}"
+            f"❌ Por favor, envie uma foto ou vídeo junto com o comando no formato:\n"
+            f"`/addchar Nome, Anime, r-<raridade>, e-<evento>`\n\n"
+            f"Exemplo:\n`/addchar Rem, Re:Zero, r5, e2`\n\n"
+            f"*Raridades disponíveis:*\n" + "\n".join(rs) + "\n\n"
+            f"*Eventos disponíveis:*\n" + "\n".join(es),
         )
+        return
+
+    # 🔹 Parsing do texto / legenda
+    text = message.caption or message.text
+    try:
+        _, args = text.split(maxsplit=1)  # remove o comando /addchar
+        parts = [x.strip() for x in args.split(",")]
+        nome = parts[0]
+        anime = parts[1] if len(parts) > 1 else ""
+        res = parts[2:] if len(parts) > 2 else []
+    except ValueError:
+        await message.reply("❌ Formato inválido. Use: `/addchar Nome, Anime, rX, eY`", parse_mode="Markdown")
+        return
+
+    # 🔹 Criar enums
+    pre_evento = create_prelist(TipoEvento, "e")
+    pre_raridade = create_prelist(TipoRaridade, "r")
+    enum_evento = TipoEvento.SEM_EVENTO
+    enum_raridade = TipoRaridade.COMUM  # default se não informado
+
+    for t in res:
+        t_lower = t.lower()
+        if t_lower.startswith("e"):
+            enum_evento = pre_evento.get(t_lower, TipoEvento.SEM_EVENTO)
+        elif t_lower.startswith("r"):
+            enum_raridade = pre_raridade.get(t_lower, TipoRaridade.COMUM)
+
+    # 🔹 Criar objeto do personagem
+    pre = base_per(
+        nome_personagem=nome,
+        nome_anime=anime,
+        evento=enum_evento,
+        raridade=enum_raridade,
+        data=fileid,
+        tipo_midia=tipo_midia,
+        extras={
+            "file_id": fileid,
+            "restrito": {
+                "id": message.from_user.id,
+                "first_name": message.from_user.first_name,
+                "username": message.from_user.username,
+                "mention": message.from_user.mention,
+            },
+            "request": {"chat_id": message.chat.id, "message_id": message.id},
+            "comand": message.command,
+        },
+    )
+
+    # 🔹 Salvar no banco
+    try:
+        pre = await DATABASE.add_object_commit(pre)
+        await message.reply(
+            f"✅ Personagem '{pre.nome_personagem}' adicionado com sucesso ao banco de dados com ID {pre.id}!"
+        )
+        await send_media_by_chat_id(
+            client=client,
+            chat_id=Settings().GROUP_DATABASE_ID,
+            personagem=pre,
+            caption=format_personagem_caption(pre, mention=message.from_user.mention),
+            reply_markup=None,
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        await message.reply_text(f"❌ Erro ao adicionar personagem: {e}")

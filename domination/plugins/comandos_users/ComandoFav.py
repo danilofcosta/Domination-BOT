@@ -8,6 +8,8 @@ from DB.models import (
     ColecaoUsuarioHusbando,
     ColecaoUsuarioWaifu,
 )
+from domination.logger import log_info, log_error, log_debug
+
 from domination.message import MESSAGE
 from uteis import (
     dynamic_command_filter,
@@ -17,8 +19,6 @@ from uteis import (
 )
 import logging
 from types_ import TipoCategoria, COMMAND_LIST
-
-logger = logging.getLogger(__name__)
 
 
 @Client.on_message(
@@ -180,10 +180,10 @@ async def handle_fav_callback(client: Client, query: CallbackQuery):
 
         if data["genero"] == TipoCategoria.HUSBANDO.value:
             usuario.fav_h_id = data["personagem_id"]
-            logger.debug(f"Atualizando fav_h_id para {data['personagem_id']}")
+            log_info(f"Atualizando fav_h_id para {data['personagem_id']}")
         elif data["genero"] == TipoCategoria.WAIFU.value:
             usuario.fav_w_id = data["personagem_id"]
-            logger.debug(f"Atualizando fav_w_id para {data['personagem_id']}")
+            log_debug(f"Atualizando fav_w_id para {data['personagem_id']}")
         else:
             return await edit_with_error(
                 client, query, "general", "error", error="Gênero inválido"
@@ -206,10 +206,10 @@ async def handle_fav_callback(client: Client, query: CallbackQuery):
         )
 
     except ValueError as e:
-        logger.warning(f"ValueError em handle_fav_callback: {e}")
+        log_error(f"ValueError em handle_fav_callback: {e}")
         await edit_with_error(
             client, query, "general", "error", error=f"Erro de dados: {e}"
         )
     except Exception as e:
-        logger.exception("Erro inesperado em handle_fav_callback")
+        log_error("Erro inesperado em handle_fav_callback")
         await edit_with_error(client, query, "general", "error", error=str(e))

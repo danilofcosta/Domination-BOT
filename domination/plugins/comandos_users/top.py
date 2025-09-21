@@ -7,7 +7,7 @@ from pyrogram.types import (
     CallbackQuery,
 )
 from pyrogram import errors
-from types_ import TipoCategoria, TipoMidia
+from types_ import TipoCategoria
 from sqlalchemy import select, func, desc
 from DB.models import (
     ColecaoUsuarioHusbando,
@@ -49,7 +49,9 @@ async def build_top_text(base, ids: list[int] | None, limit: int = 10):
         Usuario.telegram_id.in_(telegram_ids)
     )
 
-    users_dict = {tid: info for tid, info in await DATABASE.get_info_all_objects(users_stmt)}
+    users_dict = {
+        tid: info for tid, info in await DATABASE.get_info_all_objects(users_stmt)
+    }
 
     top_text = "\n".join(
         f"{i+1}. {format_user(users_dict.get(tid))} — {quantidade}"
@@ -63,7 +65,7 @@ async def get_random_personagem(genero: TipoCategoria):
         smtr = select(PersonagemHusbando).order_by(func.random()).limit(1)
 
     else:
-        smtr = select(PersonagemHusbando).order_by(func.random()).limit(1)
+        smtr = select(PersonagemWaifu).order_by(func.random()).limit(1)
 
     return await DATABASE.get_info_one(smtr)
 
@@ -164,7 +166,7 @@ async def ComandoTop_chat(client: Client, message: Message):
     try:
         membros = [m.user.id async for m in client.get_chat_members(group_id)]
     except:
-        membros=None
+        membros = None
     if not membros:
         await message.reply_text(
             MESSAGE.get_text("pt", "top", "no_members"),
@@ -210,10 +212,9 @@ async def callback_posicao(client: Client, query: CallbackQuery):
         membros = [m.user.id async for m in client.get_chat_members(chat_id)]
     except:
         return await query.answer(
-            show_alert=True,
-          text=  'não conseguir achar sua posiçao'
+            show_alert=True, text="não conseguir achar sua posiçao"
         )
-  
+
     stmt = (
         select(base.telegram_id, func.count(base.id_local).label("quantidade"))
         .where(base.telegram_id.in_(membros))
@@ -252,11 +253,8 @@ async def call_ranking_chat(client: Client, query: CallbackQuery):
     group_id = query.message.chat.id
     try:
         membros = [m.user.id async for m in client.get_chat_members(group_id)]
-    except errors.ChannelInvalid :
-        return await query.answer(
-            'comando apenas para grupo',show_alert=True
-        )
-
+    except errors.ChannelInvalid:
+        return await query.answer("comando apenas para grupo", show_alert=True)
 
     top_list, top_text = await build_top_text(base, ids=membros)
     if not top_list:

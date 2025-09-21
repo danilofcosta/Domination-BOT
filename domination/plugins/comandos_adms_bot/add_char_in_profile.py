@@ -1,10 +1,25 @@
 from DB.database import DATABASE
-from DB.models import ColecaoUsuarioHusbando, ColecaoUsuarioWaifu, PersonagemHusbando, PersonagemWaifu, Usuario
+from DB.models import (
+    ColecaoUsuarioHusbando,
+    ColecaoUsuarioWaifu,
+    PersonagemHusbando,
+    PersonagemWaifu,
+    Usuario,
+)
 from domination.message import MESSAGE
 from types_ import COMMAND_LIST_ADMIN, TipoCategoria
-from uteis import add_per_coletion, check_admin_group, check_mentions, create_bts_y_or_n, dynamic_command_filter, format_personagem_caption, send_media_by_chat_id
+from uteis import (
+    add_per_coletion,
+    check_admin_group,
+    check_mentions,
+    create_bts_y_or_n,
+    dynamic_command_filter,
+    format_personagem_caption,
+    send_media_by_chat_id,
+)
 from pyrogram import Client, filters
 from pyrogram.types import *
+
 
 @Client.on_message(
     filters.create(
@@ -114,12 +129,10 @@ async def call_add_char(client: Client, query: CallbackQuery):
                     "last_name": user_info.last_name,
                     "username": user_info.username,
                     "is_bot": user_info.is_bot,
-                    'metion':user_info.mention
+                    "metion": user_info.mention,
                 },
-                fav_h_id=   None
-                    if client.genero == TipoCategoria.WAIFU else id_chat
-                ,fav_w_id=   None
-                    if client.genero == TipoCategoria.HUSBANDO else id_chat
+                fav_h_id=None if client.genero == TipoCategoria.WAIFU else id_chat,
+                fav_w_id=None if client.genero == TipoCategoria.HUSBANDO else id_chat,
             )
             # Adiciona o personagem para o usuário correto
             if not await add_per_coletion(
@@ -145,4 +158,3 @@ async def call_add_char(client: Client, query: CallbackQuery):
             await query.message.delete()
         except:
             pass
-

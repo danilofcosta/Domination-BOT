@@ -32,9 +32,7 @@ from uteis import (
 )
 async def gift_personagem(client: Client, message: Message):
     if message.chat.type == ChatType.PRIVATE:
-        return await message.reply(
-            MESSAGE.get_text('pt', "gift", "not_group")
-        )
+        return await message.reply(MESSAGE.get_text("pt", "gift", "not_group"))
 
     base = (
         ColecaoUsuarioWaifu
@@ -51,15 +49,15 @@ async def gift_personagem(client: Client, message: Message):
         or message.reply_to_message.from_user.id == message.from_user.id
     ):
         return await message.reply(
-              MESSAGE.get_text('pt',  "gift", "reply_required"
-            ),
+            MESSAGE.get_text("pt", "gift", "reply_required"),
             quote=True,
         )
 
     # Verifica se o ID do personagem foi enviado
     if len(message.command) < 2:
         return await message.reply(
-            MESSAGE.get_text('pt', 
+            MESSAGE.get_text(
+                "pt",
                 "gift",
                 "id_required",
                 genero=client.genero.value,
@@ -71,17 +69,16 @@ async def gift_personagem(client: Client, message: Message):
         personagem_id = int(message.command[1])
     except ValueError:
         return await message.reply(
-            MESSAGE.get_text('pt',  "erros", "error_invalid_id"
-            ),
+            MESSAGE.get_text("pt", "erros", "error_invalid_id"),
             quote=True,
         )
 
-    
         # Checa se o personagem existe
     personagem = await DATABASE.get_id_primary(personagem_cls, personagem_id)
     if not personagem:
         return await message.reply(
-               MESSAGE.get_text('pt', 
+            MESSAGE.get_text(
+                "pt",
                 "erros",
                 "error_character_not_found_id",
                 genero=client.genero.value,
@@ -97,13 +94,13 @@ async def gift_personagem(client: Client, message: Message):
     colecao = await DATABASE.get_info_one(stmt)
     if not colecao:
         return await message.reply(
-              MESSAGE.get_text('pt', "erros", "error_character_not_owned"
-            ),
+            MESSAGE.get_text("pt", "erros", "error_character_not_owned"),
             quote=True,
         )
 
     # Mensagem de confirmação para o doador enviar
-    caption =     MESSAGE.get_text('pt', 
+    caption = MESSAGE.get_text(
+        "pt",
         "gift",
         "confirmation_message",
         giver_mention=message.from_user.mention,
@@ -111,7 +108,6 @@ async def gift_personagem(client: Client, message: Message):
         receiver_mention=message.reply_to_message.from_user.mention,
     )
     await send_media_by_type(
-       
         message=message,
         personagem=personagem,
         caption=caption,
@@ -136,8 +132,7 @@ async def gift_callback(client: Client, query: CallbackQuery):
     if query.from_user.id not in [giver_id, receiver_id]:
 
         return await query.answer(
-                MESSAGE.get_text('pt',  "erros", "error_only_giver_confirm"
-            ),
+            MESSAGE.get_text("pt", "erros", "error_only_giver_confirm"),
             show_alert=True,
         )
 
@@ -153,17 +148,16 @@ async def gift_callback(client: Client, query: CallbackQuery):
     personagem = await DATABASE.get_id_primary(personagem_cls, personagem_id)
     if not personagem:
         return await query.answer(
-               MESSAGE.get_text('pt',  "erros", "error_character_not_found"
-            ),
+            MESSAGE.get_text("pt", "erros", "error_character_not_found"),
             show_alert=True,
         )
 
-        if action == "send":
+    elif action == "send":
             # Remove da coleção do doador
             stmt_remove = select(base).where(
                 base.telegram_id == giver_id, base.id_global == personagem_id
             )
-    
+
             item = await DATABASE.get_info_one(stmt_remove)
             if item:
                 await DATABASE.delete_object(item)
@@ -184,9 +178,9 @@ async def gift_callback(client: Client, query: CallbackQuery):
             nova_entrada = base(telegram_id=receiver_id, id_global=personagem_id)
             await DATABASE.add_object(nova_entrada)
 
-
             await query.edit_message_caption(
-                  MESSAGE.get_text('pt', 
+                MESSAGE.get_text(
+                    "pt",
                     "gift",
                     "success_sent",
                     character_name=personagem.nome_personagem,
@@ -195,8 +189,7 @@ async def gift_callback(client: Client, query: CallbackQuery):
                 )
             )
 
-        else:
+    else:
             await query.edit_message_caption(
-                   MESSAGE.get_text('pt',  "gift", "cancelled"
-                )
+                MESSAGE.get_text("pt", "gift", "cancelled")
             )

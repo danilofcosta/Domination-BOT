@@ -74,7 +74,6 @@ async def call_add_char(client: Client, query: CallbackQuery):
             text=MESSAGE.get_text("pt", "erros", "not_admin_bot"), show_alert=True
         )
 
-
     if ation == "y":
 
         stmt = select(Usuario).where(Usuario.telegram_id == int(iddele))
@@ -91,7 +90,6 @@ async def call_add_char(client: Client, query: CallbackQuery):
                 text="Apenas administradores do grupo podem apagar perfis"
             )
             return
-
 
         await DATABASE.delete_object(usuario)
         await query.edit_message_text(

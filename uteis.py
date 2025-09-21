@@ -69,16 +69,16 @@ def format_personagem_caption(
         )
     e = "essa" if personagem.genero == TipoCategoria.WAIFU else "esse"
     head = (
-        f"Wow veja {e} {personagem.genero.value.capitalize()}\n\n"
+        f"Wow! veja {e} {personagem.genero.value.capitalize()}\n\n"
         if not user
         else f"Wow! Confira {e}  {personagem.genero.value.capitalize()} de {user}\n\n"
     )
-    mention = f"\n📎 ADD: {mention}" if mention else ""
+    mention = f"\n➼ ᴀᴅᴅ: {mention}" if mention else ""
     caption = (
         f"{head}"
         f"<b>{anime.capitalize()}</b>\n"
         f"<b>{personagem.id}</b> : {nome.capitalize()}\n"
-        f"<b>{raridade.capitalize()}</b>\n\n"
+        f"<b>{raridade}</b>\n\n"
         f"{evento}"
         f"{mention}"
     )

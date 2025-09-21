@@ -4,7 +4,7 @@ from types_ import COMMAND_LIST_DB
 from uteis import create_one_bt
 from domination_db.plugins.edit.uteis_edit import bts_edit, create_cap_edit_Show
 from DB.models import PersonagemHusbando
-
+from domination.logger import log_error
 
 @Client.on_callback_query(
     filters.regex(rf"^{COMMAND_LIST_DB.EDITCHAR.value}_(nome|anime)_(\d+)$")
@@ -55,13 +55,16 @@ async def editchar_callback(client: Client, callback_query: CallbackQuery):
 
 def waiting_for_input(_, __, message: Message):
     """Filtro para mensagens de usuários que estão no fluxo de edição de texto"""
-    user_cache = getattr(Client, "edit_cache", {}).get(message.from_user.id, {})
-    for gen_cache in user_cache.values():
-        for per_cache in gen_cache.values():
-            if per_cache.get("edit") in ["nome", "anime"]:
-                return True
-    return False
-
+    try:
+        user_cache = getattr(Client, "edit_cache", {}).get(message.from_user.id, {})
+        for gen_cache in user_cache.values():
+            for per_cache in gen_cache.values():
+                if per_cache.get("edit") in ["nome", "anime"]:
+                    return True
+        return False
+    except Exception as e:
+        log_error(e)
+        
 
 @Client.on_message(filters.create(waiting_for_input) & filters.text)
 async def edit_text(client: Client, message: Message):

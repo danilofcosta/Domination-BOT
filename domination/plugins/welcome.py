@@ -10,6 +10,7 @@ from domination.logger import log_info, log_error, log_debug
 from domination.message import MESSAGE
 from DB.database import DATABASE
 
+
 # @Client.on_message(filters.command("w") & filters.private)
 @Client.on_message(filters.private & filters.command(COMMAND_LIST.START.value))
 @Client.on_callback_query(filters.regex(r"welcome"))
@@ -25,7 +26,6 @@ async def welcome(client: object, message: Message | CallbackQuery):
             bot_name=client.me.first_name,
             genero=client.genero.value.capitalize(),
         )
-
 
         buttons = MESSAGE.get_text("pt", "welcome", "buttons")
         keyboard = InlineKeyboardMarkup(
@@ -49,11 +49,10 @@ async def welcome(client: object, message: Message | CallbackQuery):
                 caption=response_text, reply_markup=keyboard
             )
         loading_ms: Message = await message.reply_text(
-             MESSAGE.get_text("pt", "general", "loading")
+            MESSAGE.get_text("pt", "general", "loading")
         )
 
         # Obter uma sessão reutilizável
-     
 
         if client.genero == TipoCategoria.HUSBANDO:
             result = select(PersonagemHusbando).order_by(func.random()).limit(1)
@@ -61,10 +60,7 @@ async def welcome(client: object, message: Message | CallbackQuery):
         else:
             result = select(PersonagemWaifu).order_by(func.random()).limit(1)
 
-
-        personagem = await DATABASE.get_info_one(
-          result
-        )
+        personagem = await DATABASE.get_info_one(result)
 
         await loading_ms.delete()
 
@@ -72,9 +68,8 @@ async def welcome(client: object, message: Message | CallbackQuery):
             TipoMidia.IMAGEM_FILEID,
             TipoMidia.IMAGEM_URL,
         ]:
-       
+
             await send_media_by_type(
-               
                 message=message,
                 personagem=personagem,
                 caption=response_text,
@@ -89,14 +84,12 @@ async def welcome(client: object, message: Message | CallbackQuery):
     except Exception as e:
         log_error(f"Erro no comando welcome: {e}", "welcome", exc_info=True)
         await message.reply_text(
-
             MESSAGE.get_text("pt", "erros", "error_command_welcome")
         )
 
 
 @Client.on_callback_query(filters.regex(r"help_bot"))
 async def help_bot(client: Client, callback_query: CallbackQuery):
-
 
     help_text = MESSAGE.get_text(
         "pt",
@@ -109,7 +102,6 @@ async def help_bot(client: Client, callback_query: CallbackQuery):
         [
             [
                 InlineKeyboardButton(
-       
                     MESSAGE.get_text("pt", "commands", "user_commands_button"),
                     callback_data="commadsUser",
                 ),
@@ -117,8 +109,7 @@ async def help_bot(client: Client, callback_query: CallbackQuery):
             ],
             [
                 InlineKeyboardButton(
-                  
-MESSAGE.get_text("pt", "commands", "back_button"),
+                    MESSAGE.get_text("pt", "commands", "back_button"),
                     callback_data="welcome",
                 )
             ],
@@ -132,44 +123,33 @@ MESSAGE.get_text("pt", "commands", "back_button"),
 @Client.on_callback_query(filters.regex(r"commadsUser"))
 async def help_bot_commadsUser(client: Client, callback_query: CallbackQuery):
     linhas = [
-        MESSAGE.get_text(
-            "pt", "commands", "commands_header"
-        ),
-        MESSAGE.get_text(
-            "pt", "commands", "user_commands"
-        ),
-        MESSAGE.get_text(
-            "pt", "commands", "commands_footer"
-        ),
+        MESSAGE.get_text("pt", "commands", "commands_header"),
+        MESSAGE.get_text("pt", "commands", "user_commands"),
+        MESSAGE.get_text("pt", "commands", "commands_footer"),
     ]
 
     for cmd in COMMAND_LIST:
         if cmd in [COMMAND_LIST.START]:
             continue
-        
-        linhas.append(MESSAGE.get_text(
-            "pt","commands", "command_line",
-            prefixo=client.genero.value[0].lower(),
-            command=cmd.value,
-            description=MESSAGE.get_text("pt", "commads", cmd.value),
-        ))
 
+        linhas.append(
+            MESSAGE.get_text(
+                "pt",
+                "commands",
+                "command_line",
+                prefixo=client.genero.value[0].lower(),
+                command=cmd.value,
+                description=MESSAGE.get_text("pt", "commads", cmd.value),
+            )
+        )
 
-
-
-
-    linhas.append(
-    
-        MESSAGE.get_text("pt", "commands", "commands_footer")
-    )
+    linhas.append(MESSAGE.get_text("pt", "commands", "commands_footer"))
 
     reply_markup = InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
-
-
-                  MESSAGE.get_text("pt", "commands", "back_button"),
+                    MESSAGE.get_text("pt", "commands", "back_button"),
                     callback_data="help_bot",
                 )
             ]

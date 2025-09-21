@@ -251,11 +251,9 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
         )
 
         personagens: list[PersonagemWaifu | PersonagemHusbando] = (
-            await DATABASE.get_info_all(
-                select(base_cls).where(search_condition)
-            )
+            await DATABASE.get_info_all(select(base_cls).where(search_condition))
         )
-    # Busca por anime
+        # Busca por anime
 
         if not personagens:
             return await inline_query.answer([], cache_time=5)
