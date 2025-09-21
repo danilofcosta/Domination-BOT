@@ -1024,3 +1024,10 @@ sqlalchemy.exc.StatementError: (builtins.TypeError) Object of type function is n
 2025-09-21 15:57:30,544 - domination.contador - INFO - log_info:53 - Personagem saiu: asta
 2025-09-21 15:58:36,703 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 6874062454 dominou asta (ID: 1048)
 2025-09-21 16:07:40,357 - domination.contador - INFO - log_info:53 - Personagem saiu: sasuke uchiha
+2025-09-21 16:16:09,220 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 16:16:11,112 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 16:17:00,336 - domination.contador - INFO - log_info:53 - Personagem saiu: : kenta yumiya
+(
+2025-09-21 16:17:01,001 - domination.contador - INFO - log_info:53 - Personagem saiu: clube de ocultismo
+2025-09-21 16:17:53,463 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 6874062454 dominou clube de ocultismo (ID: 357)
+2025-09-21 16:18:11,891 - domination.contador - INFO - log_info:53 - Personagem saiu: hilda
