@@ -25,6 +25,8 @@ character_cache: LRUCache[str, int] = LRUCache(maxsize=100)
 
 # Configurações de execução
 ACTIVE_GROUPS: set[int] | None = None
+DROP = 100
+UNDROP = DROP + 40
 
 
 def clear_expired_caches():
@@ -62,10 +64,10 @@ async def get_random_character(client):
         if client.genero == TipoCategoria.HUSBANDO
         else PersonagemWaifu
     )
-    
+
     # Cache key baseado no tipo de personagem
     cache_key = f"{base.__tablename__}_total"
-    
+
     # Verifica cache para total de personagens
     if cache_key in character_cache:
         total = character_cache[cache_key]
@@ -74,10 +76,10 @@ async def get_random_character(client):
         if not total:
             return None
         character_cache[cache_key] = total
-    
+
     # Gera offset aleatório
     random_offset = random.randint(0, max(int(total) - 1, 0))
-    
+
     # Busca personagem específico
     per = await DATABASE.get_info_one(select(base).offset(random_offset).limit(1))
     return per
@@ -85,57 +87,48 @@ async def get_random_character(client):
 
 @Client.on_message(
     filters.group
-    & (filters.media|filters.text)
+    & (filters.media | filters.text)
     & ~(filters.text & filters.regex(r"^[/!.]")),
     group=1,
 )
 async def handle_group_messages(client: Client, message: Message):
     g = client.genero.value.lower()  # "waifu" ou "husbando"
     group_id = message.chat.id
-    # print(f"Debug: g={g}, group_id={group_id}")
-
-    # Opcional: processa apenas grupos ativos, se configurado
-    if ACTIVE_GROUPS is not None and group_id not in ACTIVE_GROUPS:
-        pass
-
-    # Obtém contador do grupo (TTLCache gerencia TTL automaticamente)
     grp_counter = message_counter[g].get(group_id)
-    
+
     if grp_counter is None:
         # Inicializa contador para novo grupo
-        grp_counter = {
-            "cont": 0, 
-            "id_mens": None, 
-            "per": None, 
-            "datetime": None
-        }
+        grp_counter = {"cont": 0, "id_mens": None, "per": None, "datetime": None}
         message_counter[g][group_id] = grp_counter
 
     grp_counter["cont"] += 1
     cont = grp_counter["cont"]
-    
+
     # Salva o contador atualizado de volta no cache
     message_counter[g][group_id] = grp_counter
 
     # Forçar contador inicial para grupos específicos (mantenha se necessário)
-    if group_id in [-1001528803759,] and cont < 98:
+    if (
+        group_id
+        in [
+            -1001528803759,
+        ]
+        and cont < 97
+    ):
         cont = grp_counter["cont"] = 98
         message_counter[g][group_id] = grp_counter
 
     log_debug(
         f"Contador: {cont}, Grupo: {group_id}, Título: {message.chat.title}", "contador"
     )
-    #print(f"Debug: {g}, {group_id}, {message.chat.title}, cont={cont}, mod100={cont % 100 == 0}")
-    
-    # if group_id not in [-1001528803759, -1001659176163]:
-    #     return print(" not")
-    # A cada 100 mensagens, envia personagem
-    if cont % 100 == 0:
-        deb=f"Debug: {g}, {group_id}, {message.chat.title}, cont={cont}, mod100={cont % 100 == 0}"
-        await client.send_message(Settings().GROUP_ADDMS_ID,deb)
+    if cont == DROP:
+        deb = f"Debug: {g}, {group_id}, {message.chat.title}, cont={cont}, mod100={cont % 100 == 0}"
+        # await client.send_message(Settings().GROUP_ADDMS_ID, deb)
+        log_info(deb)
         personagem = await get_random_character(client)
         if not personagem:
-            return
+            grp_counter["cont"] = 80
+            return print("personagem n encontado")
 
         msg_res: Message = await send_media_by_type(
             message,
@@ -146,59 +139,42 @@ async def handle_group_messages(client: Client, message: Message):
         )
 
         # Atualiza estado do grupo no cache
-        message_counter[g][group_id] = {
-            "cont": cont,
-            "id_mens": msg_res.id,
-            "per": personagem,
-            "datetime": datetime.now(),
-        }
+        grp_counter["id_mens"] = msg_res.id
+        grp_counter["per"] = personagem
+        grp_counter["datetime"] = datetime.now()
+
         log_info(f"Personagem saiu: {personagem.nome_personagem}", "contador")
 
-    elif grp_counter["id_mens"] and cont >= 140:
-        deb=f"Debug: {g}, {group_id}, {message.chat.title},apgar ?{cont >= 140}, cont={cont}, mod100={cont % 100 == 0}"
-        client.send_message(Settings().GROUP_ADDMS_ID,deb)
-        # 20 mensagens depois, deleta personagem
-        # elif grp_counter["id_mens"] and cont == grp_counter["cont"] + 20:
+    # Quando o contador chega em 140, apaga a mensagem do personagem
+    elif cont == UNDROP and grp_counter["id_mens"]:
         try:
             per = grp_counter["per"]
-            if not per:
-                return print("sem personagens")
-
-            view_text = MESSAGE.get_text("pt", "contador", "view_character")
-            keyboard = InlineKeyboardMarkup(
-                [
+            if per:
+                await client.delete_messages(group_id, grp_counter["id_mens"])
+                view_text = MESSAGE.get_text("pt", "contador", "view_character")
+                keyboard = InlineKeyboardMarkup(
                     [
-                        InlineKeyboardButton(
-                            view_text, callback_data=f"view_character_{per.id}"
-                        )
+                        [
+                            InlineKeyboardButton(
+                                view_text, callback_data=f"view_character_{per.id}"
+                            )
+                        ]
                     ]
-                ]
-            )
-            await client.send_message(Settings().GROUP_ADDMS_ID,'apagando drope')
-            await client.delete_messages(group_id, grp_counter["id_mens"])
-
-            caption = MESSAGE.get_text(
-                "pt",
-                "contador",
-                "caption",
-                nome=per.nome_personagem,
-                anime=per.nome_anime,
-            )
-            await client.send_message(Settings().GROUP_ADDMS_ID,'enviando mensagem de escape')
-
-            await client.send_message(group_id, caption, reply_markup=keyboard)
-
-            # Limpa estado no cache
-            message_counter[g][group_id] = {
-                "cont": 0,
-                "id_mens": None,
-                "per": None,
-                "datetime": None,
-            }
-
-        except Exception as e:
-            log_error(f"Erro ao deletar mensagem: {e}", "contador", exc_info=True)
-            await client.send_message(Settings().GROUP_ADDMS_ID,f'{e}')
+                )
+                caption = MESSAGE.get_text(
+                    "pt",
+                    "contador",
+                    "caption",
+                    nome=per.nome_personagem,
+                    anime=per.nome_anime,
+                )
+                await client.send_message(group_id, caption, reply_markup=keyboard)
+        finally:
+            # Limpa estado do grupo após apagar
+            grp_counter["cont"] = 0
+            grp_counter["id_mens"] = None
+            grp_counter["per"] = None
+            grp_counter["datetime"] = None
 
 
 @Client.on_callback_query(filters.regex(r"^view_character_\d+$"))

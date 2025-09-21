@@ -113,3 +113,19 @@ class DATABASE:
                 # Merge atualiza o objeto se ele já existe, ou cria se não existe
                 updated_personagem = await session.merge(obj)
                 return updated_personagem
+    @staticmethod
+    async def update_obj(obj: object) -> object:
+        """
+        Atualiza ou cria um objeto no banco de dados.
+        - Se o objeto existe (mesma PK), será atualizado.
+        - Se não existe, será inserido.
+        Retorna o objeto atualizado.
+        """
+        async with Session() as session:
+            async with session.begin():
+                try:
+                    updated_obj = await session.merge(obj)
+                    return updated_obj
+                except Exception as e:
+                    # Aqui você pode logar ou levantar exceção customizada
+                    raise RuntimeError(f"Erro ao atualizar objeto {obj}: {e}")

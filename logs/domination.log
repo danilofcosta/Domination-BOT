@@ -1009,3 +1009,18 @@ sqlalchemy.exc.StatementError: (builtins.TypeError) Object of type function is n
 2025-09-17 21:07:19,587 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-21 12:05:58,788 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-21 12:06:02,142 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:30:35,190 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:30:37,069 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:35:12,779 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:35:15,040 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:36:53,157 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:36:55,318 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:39:37,713 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:39:39,639 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:56:42,193 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:56:44,486 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-09-21 15:57:29,811 - domination.contador - INFO - log_info:53 - Personagem saiu: : hanabishi haruka
+(
+2025-09-21 15:57:30,544 - domination.contador - INFO - log_info:53 - Personagem saiu: asta
+2025-09-21 15:58:36,703 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 6874062454 dominou asta (ID: 1048)
+2025-09-21 16:07:40,357 - domination.contador - INFO - log_info:53 - Personagem saiu: sasuke uchiha

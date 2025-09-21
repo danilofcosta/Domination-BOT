@@ -2,6 +2,7 @@ import asyncio
 import json
 from datetime import datetime
 from typing import List
+from domination.plugins.contador import message_counter
 
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
@@ -9,6 +10,7 @@ from sqlalchemy import select
 
 from DB.database import DATABASE
 from DB.models import (
+    ChatTG,
     PersonagemHusbando,
     PersonagemWaifu,
     Usuario,
@@ -31,7 +33,7 @@ def _validar_nome_personagem(nome_personagem: str, argumentos: List[str]) -> boo
     Comparação case-insensitive.
     """
     nome_lower = nome_personagem.casefold().split()
-    argumentos_validos = [arg.casefold() for arg in argumentos if len(arg) >= 3]
+    argumentos_validos = [arg.casefold() for arg in argumentos if len(arg) > 3]
 
     if not argumentos_validos:
         return False
@@ -62,7 +64,6 @@ def tempo_gasto(start_time: datetime) -> str:
 # ==============================
 @Client.on_message(filters.group & filters.command(COMMAND_LIST.DOMINAR.value))
 async def handle_dominar(client: Client, message: Message):
-    from domination.plugins.contador import message_counter
 
     group_id = message.chat.id
     g = client.genero.value.lower()  # "waifu" ou "husbando" (minúsculas)
@@ -99,10 +100,12 @@ async def handle_dominar(client: Client, message: Message):
         )
         msg = await message.reply(MESSAGE.get_text("pt", "contador", "wrong_character"))
         await asyncio.sleep(20)
-
-        # deleta a mensagem de aviso
-        await msg.delete()
-        return
+        try:
+            # deleta a mensagem de aviso
+            await msg.delete()
+            return
+        except Exception as e:
+            return log_error(e)
 
     # Cabeçalho e infos do personagem
     genero_texto = client.genero.value.capitalize()
@@ -151,7 +154,7 @@ async def handle_dominar(client: Client, message: Message):
         "last_name": message.from_user.last_name,
         "username": message.from_user.username,
         "is_bot": message.from_user.is_bot,
-        "metion":message.from_user.mention,
+        "metion": message.from_user.mention,
     }
 
     # ==============================
@@ -190,6 +193,16 @@ async def handle_dominar(client: Client, message: Message):
     # Envia mensagem com botão inline
     # ==============================
     inline_button_text = MESSAGE.get_text("pt", "contador", "inline_button")
+    # Reseta contador de forma segura
+    message_counter[g][group_id].update(
+        {
+            "cont": 0,
+            "id_mens": None,
+            "per": None,
+            "datetime": None,
+        }
+    )
+
     await message.reply(
         cap,
         quote=True,
@@ -204,11 +217,17 @@ async def handle_dominar(client: Client, message: Message):
             ]
         ),
     )
-
-    # Reseta contador de forma segura
-    message_counter[g][group_id] = {
-        "cont": 0,
-        "id_mens": None,
-        "per": None,
-        "datetime": None,
-    }
+    try:
+        grp = ChatTG(
+            id_grupo=group_id,
+            configs={
+                "title": message.chat.title,
+                "bio": message.chat.bio,
+                "has_protected_content": message.chat.has_protected_content,
+                "type": message.chat.type,
+                "type": message.chat.username,
+            },
+        )
+        g = await DATABASE.update_obj(grp)
+    except:
+        pass
