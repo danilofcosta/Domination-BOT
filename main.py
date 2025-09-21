@@ -52,7 +52,7 @@ def main():
 
 
 
-    _husbando.send_message(Settings().GROUP_ADDMS_ID,'debug drop')
+    #_husbando.send_message(Settings().GROUP_ADDMS_ID,'debug drop')
 
 
     print("rodando bots")

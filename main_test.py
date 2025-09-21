@@ -12,11 +12,11 @@ def main():
 
     # Inicializa bots
     _waifu = Domination(
-        name="HUuu",
+        name="l",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
-        bot_token=var.HUSBANDO_TK,
-        genero=TipoCategoria.HUSBANDO,
+        bot_token=var.WAIFU_TK,
+        genero=TipoCategoria.WAIFU,
         group_main=var.GROUP_MAIN,
     ).start()
     _waifu.send_message("dog244", "WAIFU testandp 🚀")
