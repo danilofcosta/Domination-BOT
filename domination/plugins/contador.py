@@ -167,6 +167,7 @@ async def handle_group_messages(client: Client, message: Message):
                     "caption",
                     nome=per.nome_personagem,
                     anime=per.nome_anime,
+                    genero= g.capitalize()
                 )
                 await client.send_message(group_id, caption, reply_markup=keyboard)
         finally:

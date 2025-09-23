@@ -136,7 +136,7 @@
       "refresh_text": "..."
     },
     "contador": {
-      "caption":"Opa, a waifu já fugiu…\nO nome  é <code>{nome}</code> (<code>{anime}</code>), lembre-se disso da próxima vez!",
+      "caption":"Opa, a {genero} já fugiu…\nO nome  é <code>{nome}</code> (<code>{anime}</code>), lembre-se disso da próxima vez!",
       "character_appeared": "{raridade} {genero} apareceu!",
       "add_to_harem": "Adicione-o ao seu harém enviando:",
       "dominar_command": "<code>nome</code>",
