@@ -208,7 +208,7 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
             or "Usuário"
         )
      
-        user_mention=f'<a href="tg://user?id={int(user.telegram_id)}">{user_name}/a>'
+        user_mention=f'<a href="tg://user?id={int(user.telegram_id)}">{user_name} </a>'
 
         results = await create_results(
             inline_query.from_user.id,
