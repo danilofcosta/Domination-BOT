@@ -8,10 +8,10 @@ engine = create_async_engine(
     Settings().DATABASE_URL,
     echo=False,  # deixe True só para debug
     future=True,
-    pool_size=5,  # conexões simultâneas
-    max_overflow=10,  # conexões extras se precisar
-    pool_timeout=30,  # tempo máximo para esperar conexão
-    pool_recycle=1800,  # recicla conexões a cada 30min
+   # pool_size=5,  # conexões simultâneas
+  #  max_overflow=10,  # conexões extras se precisar
+ #   pool_timeout=30,  # tempo máximo para esperar conexão
+  #  pool_recycle=1800,  # recicla conexões a cada 30min
 )
 # Cria sessões assíncronas
 AsyncSessionLocal = sessionmaker(
