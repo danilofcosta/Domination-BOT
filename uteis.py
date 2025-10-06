@@ -227,6 +227,7 @@ async def send_media_by_chat_id(
                 chat_id=chat_id,
                 video=personagem.data,
                 caption=caption,
+                
                 reply_markup=reply_markup,
                 **kwargs,
             )

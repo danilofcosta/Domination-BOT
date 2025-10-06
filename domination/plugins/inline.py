@@ -1,5 +1,6 @@
 from pyrogram import Client, filters
-from pyrogram.enums import ParseMode
+from pyrogram.enums import *
+import pyrogram
 from pyrogram.types import *
 from sqlalchemy import select, desc
 from DB.models import (
@@ -9,6 +10,7 @@ from DB.models import (
     PersonagemHusbando,
     Usuario,
 )
+from domination.logger import log_error
 from uteis import format_personagem_caption, send_media_by_type
 from types_ import TipoCategoria, TipoMidia
 from domination.message import MESSAGE
@@ -128,16 +130,19 @@ async def show_result(
         switch_pm_text = MESSAGE.get_text("pt", "inline", "switch_pm_text")
 
     next_offset = str(offset + limit) if has_more else ""
+    try:
+        await inline_query.answer(
+            results=results,
+            next_offset=next_offset,
+            is_gallery=True,
+            cache_time=5,
+            is_personal=is_personal,
+            switch_pm_text=switch_pm_text,
+            switch_pm_parameter="start",
+        )
 
-    await inline_query.answer(
-        results=results,
-        next_offset=next_offset,
-        is_gallery=True,
-        cache_time=5,
-        is_personal=is_personal,
-        switch_pm_text=switch_pm_text,
-        switch_pm_parameter="start",
-    )
+    except Exception as e:
+        log_error(f"Erro ao responder inline query: {e}", module="inline", exc_info=True)
 
 
 @Client.on_inline_query()
@@ -207,8 +212,10 @@ async def inline_personagem_search(client: Client, inline_query, limite: int = 1
             or user.telegram_from_user.get("first_name")
             or "Usuário"
         )
-     
-        user_mention=f'<a href="tg://user?id={int(user.telegram_id)}">{user_name} </a>'
+
+        user_mention = (
+            f'<a href="tg://user?id={int(user.telegram_id)}">{user_name} </a>'
+        )
 
         results = await create_results(
             inline_query.from_user.id,

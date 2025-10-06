@@ -1038,3 +1038,16 @@ sqlalchemy.exc.StatementError: (builtins.TypeError) Object of type function is n
 2025-09-21 19:22:43,777 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-21 19:23:23,200 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-09-21 19:25:58,267 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 19:58:44,265 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:09:34,420 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:09:43,447 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:27:49,313 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:27:52,094 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:29:48,706 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:34:11,292 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:34:56,142 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:40:13,394 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:44:00,757 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:46:11,174 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:49:18,848 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-10-06 20:51:57,381 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True

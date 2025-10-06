@@ -228,6 +228,7 @@ async def handle_dominar(client: Client, message: Message):
                 "type": message.chat.username,
             },
         )
+        print(f"Grupo atualizado: {grp}")
         g = await DATABASE.update_obj(grp)
     except:
         pass
