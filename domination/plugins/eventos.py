@@ -7,6 +7,7 @@ from domination.message import MESSAGE
 from DB.database import DATABASE
 from settings import Settings
 
+
 async def is_small_group(client: Client, chat_id: int, min_members: int = 20) -> bool:
     """Verifica se o grupo tem menos membros que o mínimo necessário."""
     count = await client.get_chat_members_count(chat_id)
@@ -46,7 +47,7 @@ async def bot_added_to_group(client: Client, message: Message):
             idioma=Idioma.PT,
             configs={
                 "chat_id": message.chat.id,
-                "chat_type": str(message.chat.type),
+                "chat_type": message.chat.type.value,
                 "chat_title": message.chat.title,
                 "chat_username": getattr(message.chat, "username", None),
                 "chat_description": getattr(message.chat, "description", None),
@@ -55,7 +56,12 @@ async def bot_added_to_group(client: Client, message: Message):
         try:
             await DATABASE.add_object(chat_obj)
         except Exception as e:
-            log_error(f"Erro ao adicionar objeto ao banco: {e}", module="eventos", exc_info=True)
+            print(f"Erro ao adicionar grupo ao banco: {e}")
+            log_error(
+                f"Erro ao adicionar objeto ao banco: {e}",
+                module="eventos",
+                exc_info=True,
+            )
 
         # Monta a mensagem de log
         log_msg = MESSAGE.get_text(
@@ -69,8 +75,8 @@ async def bot_added_to_group(client: Client, message: Message):
         )
 
         # Envia para o grupo de logs
-        if getattr(client, "group_main", None):
-            try:
-                await client.send_message(Settings().GROUP_ADDMS_ID, log_msg)
-            except Exception as e:
-                print(f"Erro ao enviar log para grupo principal: {e}")
+
+        try:
+            await client.send_message(Settings().GROUP_ADDMS_ID, log_msg)
+        except Exception as e:
+            print(f"Erro ao enviar log para grupo principal: {e}")
