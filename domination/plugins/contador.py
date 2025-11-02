@@ -107,7 +107,7 @@ async def handle_group_messages(client: Client, message: Message):
 
     # Salva o contador atualizado de volta no cache
     message_counter[g][group_id] = grp_counter
-    add_group_in_db(message=message)
+   # add_group_in_db(message=message)
 
     # Forçar contador inicial para grupos específicos (mantenha se necessário)
     if (
