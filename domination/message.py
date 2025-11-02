@@ -1,4 +1,3 @@
-from translate import Translator
 import re
 import json
 import os
@@ -73,47 +72,7 @@ class MESSAGE:
         texto = comandos.get(key, "Texto não encontrado.")
         log_debug(f"Kwargs para formatação: {kwargs}", "message")
         # Traduz apenas se não for português
-        if Idioma != "pt":
-            try:
-
-                translator = Translator(
-                    provider="mymemory", from_lang="pt", to_lang=Idioma
-                )
-                if len(kwargs) == 0:
-                    return  translator.translate(texto)
-                return  translator.translate(texto.format(**kwargs))
-
-                
-
-                # # Protege placeholders antes da tradução
-                # texto_protegido, placeholders = MESSAGE._protect_placeholders(texto)
-
-                # # Tenta primeiro com MyMemory (mais confiável)
-
-                # texto_traduzido = translator.translate(texto_protegido)
-
-                # if texto_traduzido and isinstance(texto_traduzido, str):
-                #     # Restaura placeholders após a tradução
-                #     texto = MESSAGE._restore_placeholders(texto_traduzido, placeholders)
-            except Exception as e:
-                log_error(f"Erro na tradução com MyMemory: {e}", "message", exc_info=True)
-                # try:
-                #     # Fallback para Microsoft se MyMemory falhar
-                #     translator = Translator(
-                #         provider="microsoft", from_lang="pt", to_lang=Idioma
-                #     )
-                #     texto_traduzido = translator.translate(texto_protegido)
-
-                #     if texto_traduzido and isinstance(texto_traduzido, str):
-                #         # Restaura placeholders após a tradução
-                #         texto = MESSAGE._restore_placeholders(
-                #             texto_traduzido, placeholders
-                #         )
-                # except Exception as e2:
-                #     print(f"Erro na tradução com Microsoft: {e2}")
-                #     # Se ambos falharem, mantém o texto original em português
-                #     pass
-
+        
         try:
             if len(kwargs) == 0:
                 return texto

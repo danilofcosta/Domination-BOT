@@ -1,4 +1,3 @@
-translate
 pyrogram
 alembic
 pydantic_settings

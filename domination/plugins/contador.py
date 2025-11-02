@@ -6,7 +6,8 @@ from pyrogram import Client, filters
 from pyrogram.types import *
 from sqlalchemy import func, select
 from datetime import datetime
-from DB.models import PersonagemHusbando, PersonagemWaifu
+from DB.models import ChatTG, PersonagemHusbando, PersonagemWaifu
+from domination.uteis.add_group_in_db import add_group_in_db
 from types_ import TipoCategoria, COMMAND_LIST
 from uteis import format_personagem_caption, send_media_by_type, send_media_by_chat_id
 from domination.logger import log_info, log_error, log_debug
@@ -106,6 +107,7 @@ async def handle_group_messages(client: Client, message: Message):
 
     # Salva o contador atualizado de volta no cache
     message_counter[g][group_id] = grp_counter
+    add_group_in_db(message=message)
 
     # Forçar contador inicial para grupos específicos (mantenha se necessário)
     if (
@@ -167,7 +169,7 @@ async def handle_group_messages(client: Client, message: Message):
                     "caption",
                     nome=per.nome_personagem,
                     anime=per.nome_anime,
-                    genero= g.capitalize()
+                    genero=g.capitalize(),
                 )
                 await client.send_message(group_id, caption, reply_markup=keyboard)
         finally:

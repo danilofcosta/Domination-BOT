@@ -4,30 +4,31 @@ from pyrogram import idle
 from types_ import TipoCategoria
 from domination_db import DominationDB
 
+
 def main():
     var = Settings()
     botw = DominationDB(
-        name="000000000000",
+        name=f"{TipoCategoria.WAIFU.value}_test_db",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.WAIFU_TK,
         genero=TipoCategoria.WAIFU,
         group_main=var.GROUP_MAIN,
     ).start()
-    bot = DominationDB(
-        name="HUS",
+    both = DominationDB(
+        name=f"{TipoCategoria.HUSBANDO.value}_test_db",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
         bot_token=var.HUSBANDO_TK,
         genero=TipoCategoria.HUSBANDO,
         group_main=var.GROUP_MAIN,
-    )
+    ).start()
 
-    bot.start()
 
-    bot.send_message(chat_id="dog244", text="Bot  banco iniciado")
 
-    print(f"rodando bot {bot.me.first_name}")
+   # bot.send_message(chat_id="dog244", text="Bot  banco iniciado")
+
+    #print(f"rodando bot {bot.me.first_name}")
 
     idle()
 

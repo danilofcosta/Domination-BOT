@@ -217,18 +217,4 @@ async def handle_dominar(client: Client, message: Message):
             ]
         ),
     )
-    try:
-        grp = ChatTG(
-            id_grupo=group_id,
-            configs={
-                "title": message.chat.title,
-                "bio": message.chat.bio,
-                "has_protected_content": message.chat.has_protected_content,
-                "type": message.chat.type,
-                "type": message.chat.username,
-            },
-        )
-        print(f"Grupo atualizado: {grp}")
-        g = await DATABASE.update_obj(grp)
-    except:
-        pass
+    

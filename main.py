@@ -39,7 +39,7 @@ def main():
         genero=TipoCategoria.HUSBANDO,
         group_main=var.GROUP_MAIN,
     ).start()
-    bot_db.send_message("dog244", "HUSBANDO DB iniciado 📚")
+   # bot_db.send_message("dog244", "HUSBANDO DB iniciado 📚")
 
     bot_db2 = DominationDB(
         name="waifudb",
@@ -49,9 +49,6 @@ def main():
         genero=TipoCategoria.WAIFU,
         group_main=var.GROUP_MAIN,
     ).start()
-
-
-
     #_husbando.send_message(Settings().GROUP_ADDMS_ID,'debug drop')
 
 

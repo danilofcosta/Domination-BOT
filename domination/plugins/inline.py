@@ -142,7 +142,9 @@ async def show_result(
         )
 
     except Exception as e:
-        log_error(f"Erro ao responder inline query: {e}", module="inline", exc_info=True)
+        log_error(
+            f"Erro ao responder inline query: {e}", module="inline", exc_info=True
+        )
 
 
 @Client.on_inline_query()

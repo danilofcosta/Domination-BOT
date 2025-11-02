@@ -2,6 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import *
 from DB.models import ChatTG
 from domination.logger import log_error
+from domination.uteis.add_group_in_db import add_group_in_db
 from types_ import Idioma
 from domination.message import MESSAGE
 from DB.database import DATABASE
@@ -54,7 +55,7 @@ async def bot_added_to_group(client: Client, message: Message):
             },
         )
         try:
-            await DATABASE.add_object(chat_obj)
+            add_group_in_db(chat_obj)
         except Exception as e:
             print(f"Erro ao adicionar grupo ao banco: {e}")
             log_error(
