@@ -1,4 +1,3 @@
-from click import command
 from sqlalchemy.ext.asyncio import AsyncSession
 from pyrogram import Client
 from types_ import TipoCategoria
