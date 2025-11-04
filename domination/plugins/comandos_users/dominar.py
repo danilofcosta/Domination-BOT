@@ -32,8 +32,13 @@ def _validar_nome_personagem(nome_personagem: str, argumentos: List[str]) -> boo
     Retorna True se todos os argumentos válidos (>=3 caracteres) estiverem presentes no nome do personagem.
     Comparação case-insensitive.
     """
+    palavras_ignoradas = {
+        "de", "da", "do", "das", "dos", "a", "o", "as", "os", "em", "no", "na", "nos", "nas",
+        "por", "para", "e", "com", "sem", "ao"
+    }
+    
     nome_lower = nome_personagem.casefold().split()
-    argumentos_validos = [arg.casefold() for arg in argumentos if len(arg) > 3]
+    argumentos_validos = [arg.casefold() for arg in argumentos if agr not in palavras_ignoradas]
 
     if not argumentos_validos:
         return False
@@ -43,7 +48,7 @@ def _validar_nome_personagem(nome_personagem: str, argumentos: List[str]) -> boo
 
 # ==============================
 # Função auxiliar: calcula tempo
-# ==============================
+# =====================
 def tempo_gasto(start_time: datetime) -> str:
     if not isinstance(start_time, datetime):
         return "0s"
