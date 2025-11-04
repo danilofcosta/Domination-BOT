@@ -34,11 +34,11 @@ def _validar_nome_personagem(nome_personagem: str, argumentos: List[str]) -> boo
     """
     palavras_ignoradas = {
         "de", "da", "do", "das", "dos", "a", "o", "as", "os", "em", "no", "na", "nos", "nas",
-        "por", "para", "e", "com", "sem", "ao"
+        "por", "para", "e", "com", "sem", "ao","x"
     }
     
     nome_lower = nome_personagem.casefold().split()
-    argumentos_validos = [arg.casefold() for arg in argumentos if agr not in palavras_ignoradas]
+    argumentos_validos = [arg.casefold() for arg in argumentos if arg.lower() not in palavras_ignoradas]
 
     if not argumentos_validos:
         return False
