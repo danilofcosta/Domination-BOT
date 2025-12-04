@@ -122,3 +122,6 @@ domination/plugins/comandos_adms_bot/__pycache__/add_char_in_profile.cpython-313
 domination/plugins/comandos_adms_bot/__pycache__/delete_profile.cpython-313.pyc
 domination/plugins/comandos_adms_bot/__pycache__/open_profile.cpython-313.pyc
 logs/domination.log
+test.py
+domination/uteis/__pycache__/add_group_in_db.cpython-313.pyc
+logs/domination.log

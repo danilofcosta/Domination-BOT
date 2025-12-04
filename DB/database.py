@@ -6,16 +6,14 @@ engine = create_async_engine(
     Settings().DATABASE_URL,
     echo=False,
     future=True,
-    pool_size=5,
-    max_overflow=10,
-    pool_timeout=30,
-    pool_recycle=1800,
     pool_pre_ping=True,
 )
 
-Session = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-
-
+Session = async_sessionmaker(
+    bind=engine,
+    expire_on_commit=False,
+    class_=AsyncSession
+)
 
 
 class DATABASE:
@@ -27,72 +25,68 @@ class DATABASE:
                     session.add_all(obj)
                 else:
                     session.add(obj)
+
             if isinstance(obj, list):
                 await asyncio.gather(*(session.refresh(o) for o in obj))
             else:
                 await session.refresh(obj)
+
         return obj
+
     @staticmethod
     async def add_object(obj: object) -> object:
         try:
-            """Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado"""
-            async with Session() as session:  # VS Code reconhece AsyncSession
-                async with session.begin():  # commit automático
+            async with Session() as session:
+                async with session.begin():
                     session.add(obj)
-            return obj  # Retorna o objeto com ID atualizado
+            return obj
         except Exception as e:
             print(f"Erro ao adicionar objeto ao banco: {e}")
             return None
 
     @staticmethod
-    async def delete_object(obj: object) -> object:
-        """Adiciona um objeto ao banco de dados e retorna o objeto com ID atualizado"""
-        async with Session() as session:  # VS Code reconhece AsyncSession
-            async with session.begin():  # commit automático
-                session.delete(obj)
-        return obj  # Retorna o objeto com ID atualizado
+    async def delete_object(obj: object):
+        async with Session() as session:
+            async with session.begin():
+                await session.delete(obj)
+        return obj
 
     @staticmethod
     async def delete_object_by_id(model, obj_id: int):
-        """Deleta um objeto do banco pelo ID"""
         async with Session() as session:
             async with session.begin():
-                obj = await session.get(model, obj_id)  # busca o objeto
+                obj = await session.get(model, obj_id)
                 if obj:
-                    await session.delete(obj)  # deleta
+                    await session.delete(obj)
                     return obj
             return None
 
     @staticmethod
-    async def get_info_one(search_query: object) -> object | None:
+    async def get_info_one(search_query):
         async with Session() as session:
             result = await session.execute(search_query)
             return result.scalar_one_or_none()
 
     @staticmethod
-    async def get_id_primary(model_class, id_value) -> object | None:
+    async def get_id_primary(model_class, id_value):
         async with Session() as session:
-            result = await session.get(model_class, int(id_value))
-            return result
+            return await session.get(model_class, int(id_value))
 
     @staticmethod
-    async def get_info_all(search_query: object) -> list[object]:
+    async def get_info_all(search_query):
         async with Session() as session:
             result = await session.execute(search_query)
             return result.scalars().all()
 
     @staticmethod
-    async def get_info_all_objects(search_query: object) -> list[object]:
+    async def get_info_all_objects(search_query):
         async with Session() as session:
             result = await session.execute(search_query)
             return result.all()
 
     @staticmethod
-    async def update_obj(obj: object) -> object:
-        """Atualiza um personagem no banco de dados"""
+    async def update_obj(obj: object):
         async with Session() as session:
             async with session.begin():
-                # Merge atualiza o objeto se ele já existe, ou cria se não existe
-                updated_personagem = await session.merge(obj)
-                return updated_personagem
-        return obj  # Retorna o objeto atualizado
+                updated = await session.merge(obj)
+                return updated
