@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    container_name: BOT-DOMINATION
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"

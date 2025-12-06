@@ -5,7 +5,7 @@ from settings import Settings
 from pyrogram import idle
 from types_ import TipoCategoria
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.FATAL,
                     format="%(asctime)s - %(levelname)s - %(message)s")
 def main():
     var = Settings()

@@ -309,3 +309,71 @@ Traceback (most recent call last):
 TypeError: connect() got an unexpected keyword argument 'sslmode'
 2025-12-04 18:22:27,861 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
 2025-12-04 18:22:30,360 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 18:27:04,909 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 18:27:06,749 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 18:38:13,818 - domination.main - ERROR - log_error:57 - 'NoneType' object has no attribute 'id'
+2025-12-04 22:02:28,338 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 22:02:30,561 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 22:10:36,751 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 22:10:38,778 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 22:15:44,004 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 22:15:47,693 - domination.commands - INFO - log_info:53 - Comandos definidos - Privados: True, Grupos: True, Admin: True
+2025-12-04 22:24:55,144 - domination.main - INFO - log_info:53 - Debug: husbando, -1001956089456, ❄️ ғʀɪᴏ ᴅᴇ ᴊᴀɴᴇɪʀᴏ ❄️, cont=100, mod100=True
+2025-12-04 22:25:04,343 - domination.contador - INFO - log_info:53 - Personagem saiu: boruto & kawaki
+2025-12-04 22:25:20,292 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 5428481912 dominou boruto & kawaki (ID: 325)
+2025-12-04 22:25:30,401 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 5884934237 dominou boruto & kawaki (ID: 325)
+2025-12-04 22:32:02,985 - domination.main - INFO - log_info:53 - Debug: husbando, -1001956089456, ❄️ ғʀɪᴏ ᴅᴇ ᴊᴀɴᴇɪʀᴏ ❄️, cont=100, mod100=True
+2025-12-04 22:32:08,820 - domination.contador - INFO - log_info:53 - Personagem saiu: naruto uzumaki
+2025-12-04 22:32:34,145 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 7025687279 dominou naruto uzumaki (ID: 841)
+2025-12-04 22:32:36,336 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 7025687279 dominou naruto uzumaki (ID: 841)
+2025-12-04 22:39:41,762 - domination.main - INFO - log_info:53 - Debug: husbando, -1001956089456, ❄️ ғʀɪᴏ ᴅᴇ ᴊᴀɴᴇɪʀᴏ ❄️, cont=100, mod100=True
+2025-12-04 22:39:46,156 - domination.contador - INFO - log_info:53 - Personagem saiu: son goku & freiza
+2025-12-04 22:40:19,961 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 1976550045 dominou son goku & freiza (ID: 801)
+2025-12-04 22:47:33,760 - domination.main - INFO - log_info:53 - Debug: husbando, -1001956089456, ❄️ ғʀɪᴏ ᴅᴇ ᴊᴀɴᴇɪʀᴏ ❄️, cont=100, mod100=True
+2025-12-04 22:47:38,459 - domination.contador - INFO - log_info:53 - Personagem saiu: kurogiri
+2025-12-04 22:51:24,085 - domination.main - INFO - log_info:53 - Debug: husbando, -1001528803759, Cobaias, cont=100, mod100=True
+2025-12-04 22:51:24,091 - domination.main - INFO - log_info:53 - Debug: waifu, -1001528803759, Cobaias, cont=100, mod100=True
+2025-12-04 22:51:28,253 - domination.contador - INFO - log_info:53 - Personagem saiu: : ichigo kurosaki x guts
+(
+2025-12-04 22:51:29,894 - domination.contador - INFO - log_info:53 - Personagem saiu: itsuki nakano
+2025-12-04 23:01:08,618 - domination.inline - ERROR - log_error:57 - Erro ao responder inline query: Telegram says: [400 QUERY_ID_INVALID] - The callback query id is invalid (caused by "messages.SetInlineBotResults")
+Traceback (most recent call last):
+  File "/app/domination/plugins/inline.py", line 134, in show_result
+    await inline_query.answer(
+    ...<7 lines>...
+    )
+  File "/usr/local/lib/python3.13/site-packages/pyrogram/types/inline_mode/inline_query.py", line 172, in answer
+    return await self._client.answer_inline_query(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pyrogram/methods/bots/answer_inline_query.py", line 99, in answer_inline_query
+    return await self.invoke(
+           ^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pyrogram/methods/advanced/invoke.py", line 79, in invoke
+    r = await self.session.invoke(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "/usr/local/lib/python3.13/site-packages/pyrogram/session/session.py", line 389, in invoke
+    return await self.send(query, timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pyrogram/session/session.py", line 357, in send
+    RPCError.raise_it(result, type(data))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/pyrogram/errors/rpc_error.py", line 91, in raise_it
+    raise getattr(
+    ...<5 lines>...
+      is_signed=is_signed)
+pyrogram.errors.exceptions.bad_request_400.QueryIdInvalid: Telegram says: [400 QUERY_ID_INVALID] - The callback query id is invalid (caused by "messages.SetInlineBotResults")
+2025-12-04 23:04:00,790 - domination.main - INFO - log_info:53 - Debug: husbando, -1001956089456, ❄️ ғʀɪᴏ ᴅᴇ ᴊᴀɴᴇɪʀᴏ ❄️, cont=100, mod100=True
+2025-12-04 23:04:05,885 - domination.contador - INFO - log_info:53 - Personagem saiu: : masamune kadoya
+(
+2025-12-04 23:18:11,580 - domination.main - INFO - log_info:53 - Debug: husbando, -1001956089456, ❄️ ғʀɪᴏ ᴅᴇ ᴊᴀɴᴇɪʀᴏ ❄️, cont=100, mod100=True
+2025-12-04 23:18:16,415 - domination.contador - INFO - log_info:53 - Personagem saiu: kyojuro rengoku
+2025-12-04 23:18:43,119 - domination.dominar - INFO - log_info:53 - Dominar: Sucesso! Usuário 7025687279 dominou kyojuro rengoku (ID: 744)
