@@ -2,8 +2,8 @@ services:
   app:
     build: .
     container_name: BOT-DOMINATION
-    env_file:
-      - .env
+    #env_file:
+    #  - .env
     volumes:
       - .:/app
     ports:
