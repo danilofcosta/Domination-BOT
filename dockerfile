@@ -1,15 +1,17 @@
-# Definir a imagem base a partir da qual a nova imagem será construída
+# Imagem base
 FROM python:3.13.9
 
-# Definir o diretório de trabalho
+# Diretório de trabalho
 WORKDIR /app
 
+# Copiar apenas requirements primeiro (melhora cache)
+COPY requirements.txt .
 
-# Copiar os arquivos de trabalho para o container
-COPY . /app
+# Instalar dependências
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Instalar as dependências do projeto
-RUN pip install -r requirements.txt
+# Copiar restante dos arquivos
+COPY . .
 
-# Executar app
+# Comando para rodar o app
 CMD ["python", "main.py"]

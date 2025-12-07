@@ -1,12 +1,15 @@
-version: '3.8'
+version: "3.9"
 
 services:
   app:
     build: .
-    container_name: BOT-DOMINATION
+    container_name: bots
+    command: python main.py
     env_file:
-      - .env     
+      - .env
     volumes:
       - .:/app
     ports:
       - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: "1"
