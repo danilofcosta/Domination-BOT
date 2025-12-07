@@ -48,12 +48,19 @@ def main():
         bot_token=var.WAIFU_TK,
         genero=TipoCategoria.WAIFU,
         group_main=var.GROUP_MAIN,
-    ).start()
+    ).start(
+
+    )
     #_husbando.send_message(Settings().GROUP_ADDMS_ID,'debug drop')
 
 
     print("rodando bots")
-    idle()  # Mantém os bots ativos
+    idle(
+
+    )  # Mantém os bots ativos
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except:
+        main()
