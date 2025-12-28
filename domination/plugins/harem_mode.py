@@ -35,65 +35,65 @@ async def harem_mode(client: Client, message: Message):
     user_id = message.from_user.id
 
     # Força uma nova sessão para garantir dados frescos
-    async with await client.get_session() as session:
+    
         # Força leitura direta do banco com uma nova query
-        stmt = select(Usuario).where(Usuario.telegram_id == user_id)
+    stmt = select(Usuario).where(Usuario.telegram_id == user_id)
 
-        result = await DATABASE.get_info_one(stmt)
-        usuario: Usuario = result
-        if not usuario:
-            await message.reply_text(
-                MESSAGE.get_text("pt", "erros", "error_not_registered"),
+    result = await DATABASE.get_info_one(stmt)
+    usuario: Usuario = result
+    if not usuario:
+        await message.reply_text(
+            MESSAGE.get_text("pt", "erros", "error_not_registered"),
+        )
+        return
+
+    # Configurações do usuário
+    configs = (
+        usuario.configs_h
+        if client.genero == TipoCategoria.HUSBANDO
+        else usuario.configs_w
+    )
+    log_debug(
+        f"Configs lidos do banco na função harem_mode: {configs}", "harem_mode"
+    )
+    modo_harem = (
+        configs.get("modo_harem", ModoHarem.PADRAO.value)
+        if configs
+        else ModoHarem.PADRAO.value
+    )
+    log_debug(f"Modo harém detectado: {modo_harem}", "harem_mode")
+
+    # Cria botões inline (cada botão em uma linha)
+    bts = []
+    for cmd in ModoHarem:
+        check = (
+            MESSAGE.get_text("pt", "harem_mode", "check_mark")
+            if modo_harem.split("_")[0] == cmd.value
+            else ""
+        )
+        bts.append(
+            InlineKeyboardButton(
+                f"{cmd.value} {check}",
+                callback_data=f"setmodoharem_{cmd.value if check == '' else modo_harem}",
             )
-            return
-
-        # Configurações do usuário
-        configs = (
-            usuario.configs_h
-            if client.genero == TipoCategoria.HUSBANDO
-            else usuario.configs_w
         )
-        log_debug(
-            f"Configs lidos do banco na função harem_mode: {configs}", "harem_mode"
-        )
-        modo_harem = (
-            configs.get("modo_harem", ModoHarem.PADRAO.value)
-            if configs
-            else ModoHarem.PADRAO.value
-        )
-        log_debug(f"Modo harém detectado: {modo_harem}", "harem_mode")
 
-        # Cria botões inline (cada botão em uma linha)
-        bts = []
-        for cmd in ModoHarem:
-            check = (
-                MESSAGE.get_text("pt", "harem_mode", "check_mark")
-                if modo_harem.split("_")[0] == cmd.value
-                else ""
-            )
-            bts.append(
-                InlineKeyboardButton(
-                    f"{cmd.value} {check}",
-                    callback_data=f"setmodoharem_{cmd.value if check == '' else modo_harem}",
-                )
-            )
+    # Seleciona personagem aleatório
+    if client.genero == TipoCategoria.HUSBANDO:
+        stmt = select(PersonagemHusbando).order_by(func.random()).limit(1)
+    else:
+        stmt = select(PersonagemWaifu).order_by(func.random()).limit(1)
 
-        # Seleciona personagem aleatório
-        if client.genero == TipoCategoria.HUSBANDO:
-            stmt = select(PersonagemHusbando).order_by(func.random()).limit(1)
-        else:
-            stmt = select(PersonagemWaifu).order_by(func.random()).limit(1)
+    personagem = await DATABASE.get_info_one(stmt)
 
-        personagem = await DATABASE.get_info_one(stmt)
+    response_text = MESSAGE.get_text("pt", "harem_mode", "choose_option")
 
-        response_text = MESSAGE.get_text("pt", "harem_mode", "choose_option")
-
-        await send_media_by_type(
-            message=message,
-            personagem=personagem,
-            caption=response_text,
-            reply_markup=InlineKeyboardMarkup(re_linhas(bts)),
-        )
+    await send_media_by_type(
+        message=message,
+        personagem=personagem,
+        caption=response_text,
+        reply_markup=InlineKeyboardMarkup(re_linhas(bts)),
+    )
 
 
 # -----------------------------

@@ -15,7 +15,7 @@ def main():
         name="tete",
         api_id=var.API_ID,
         api_hash=var.API_HASH,
-        bot_token=var.WAIFU_TK,
+        bot_token=var.BOT_TOKEN_TESTE,
         genero=TipoCategoria.WAIFU,
         group_main=var.GROUP_MAIN,
     ).start()

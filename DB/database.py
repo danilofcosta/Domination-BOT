@@ -4,15 +4,17 @@ from settings import Settings
 
 engine = create_async_engine(
     Settings().DATABASE_URL,
-    echo=False,
-    future=True,
-    pool_pre_ping=True,
+    echo=False,                 
+    pool_size=10,               # conexões base
+    max_overflow=20,            # picos
+    pool_timeout=30,
+    pool_pre_ping=True,         # evita conexões mortas
 )
 
 Session = async_sessionmaker(
     bind=engine,
     expire_on_commit=False,
-    class_=AsyncSession
+    class_=AsyncSession,
 )
 
 
@@ -27,7 +29,8 @@ class DATABASE:
                     session.add(obj)
 
             if isinstance(obj, list):
-                await asyncio.gather(*(session.refresh(o) for o in obj))
+                for o in obj:
+                    await session.refresh(o)
             else:
                 await session.refresh(obj)
 
@@ -59,7 +62,7 @@ class DATABASE:
                 if obj:
                     await session.delete(obj)
                     return obj
-            return None
+        return None
 
     @staticmethod
     async def get_info_one(search_query):
@@ -88,5 +91,4 @@ class DATABASE:
     async def update_obj(obj: object):
         async with Session() as session:
             async with session.begin():
-                updated = await session.merge(obj)
-                return updated
+                return await session.merge(obj)

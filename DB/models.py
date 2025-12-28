@@ -42,7 +42,8 @@ class BasePersonagem:
 
     id: Mapped[int] = mapped_column(primary_key=True, init=False, autoincrement=True)
     nome_personagem: Mapped[str] = mapped_column(String, nullable=False)
-    nome_anime: Mapped[str] = mapped_column(String, nullable=False)
+    nome_anime: Mapped[str] = mapped_column(String, nullable=False, index=True)
+
     evento: Mapped[TipoEvento] = mapped_column(
         Enum(TipoEvento), ForeignKey("e_eventos.cod"), nullable=False, index=True
     )
