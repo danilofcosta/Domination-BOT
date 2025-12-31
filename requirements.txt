@@ -1,8 +1,0 @@
-pyrogram
-alembic
-pydantic_settings
-asyncpg
-#psycopg2-binary
-TgCrypto
-aiohttp
-cachetools

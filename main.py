@@ -1,66 +1,42 @@
-import asyncio,logging
-from domination import Domination
-from domination_db import DominationDB
-from settings import Settings
-from pyrogram import idle
-from types_ import TipoCategoria
+from database.session import get_session
+from database.models.base import create_tables
+from database.models.Character import *
 
-logging.basicConfig(level=logging.FATAL,
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+
 def main():
-    var = Settings()
+    create_tables()
 
-    # Inicializa bots
-    _waifu = Domination(
-        name="WA",
-        api_id=var.API_ID,
-        api_hash=var.API_HASH,
-        bot_token=var.WAIFU_TK,
-        genero=TipoCategoria.WAIFU,
-        group_main=var.GROUP_MAIN,
-    ).start()
-    _waifu.send_message("dog244", "WAIFU bot iniciado 🚀")
+    session = get_session()
 
-    _husbando = Domination(
-        name="HUS",
-        api_id=var.API_ID,
-        api_hash=var.API_HASH,
-        bot_token=var.HUSBANDO_TK,
-        genero=TipoCategoria.HUSBANDO,
-        group_main=var.GROUP_MAIN,
-    ).start()
-    _husbando.send_message("dog244", "HUSBANDO bot iniciado 🚀")
-
-    bot_db = DominationDB(
-        name="HUS_db",
-        api_id=var.API_ID,
-        api_hash=var.API_HASH,
-        bot_token=var.HUSBANDO_TK,
-        genero=TipoCategoria.HUSBANDO,
-        group_main=var.GROUP_MAIN,
-    ).start()
-   # bot_db.send_message("dog244", "HUSBANDO DB iniciado 📚")
-
-    bot_db2 = DominationDB(
-        name="waifudb",
-        api_id=var.API_ID,
-        api_hash=var.API_HASH,
-        bot_token=var.WAIFU_TK,
-        genero=TipoCategoria.WAIFU,
-        group_main=var.GROUP_MAIN,
-    ).start(
-
+    # teste: criar usuário fake
+    waifu = CharactersWaifu(
+        nome="Rem",
+        origem="Re:Zero",
+        raridade_cod="SSR",
+        tema_cod="anime",
+        tema="fantasia",
+        tipo_midia="file_id",
+        data="AgACAgQAAxkBAA..."
     )
-    #_husbando.send_message(Settings().GROUP_ADDMS_ID,'debug drop')
 
+    husbando = CharactersHusbando(
+        nome="Levi",
+        origem="Attack on Titan",
+        raridade_cod="SSR",
+        tema_cod="anime",
+        tema="militar",
+        tipo_midia="url",
+        data="https://..."
+    )
 
-    print("rodando bots")
-    idle(
+    session.add_all([waifu,husbando])
+    session.commit()
+    session.refresh(husbando)
 
-    )  # Mantém os bots ativos
+    print(f"{husbando.id} criado com sucesso!")
+
+    session.close()
+
 
 if __name__ == "__main__":
-    try:
-        main()
-    except:
-        main()
+    main()
