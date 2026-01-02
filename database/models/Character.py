@@ -11,7 +11,6 @@ from .base import Base
 
 
 
-# 🔹 Classe base ABSTRATA (não vira tabela)
 class CharacterBase(Base):
     __abstract__ = True
 
@@ -41,12 +40,10 @@ class CharacterBase(Base):
     )
 
 
-# 🔸 Tabela WAIFU
 class CharactersWaifu(CharacterBase):
     __tablename__ = "characters_waifu"
 
 
-# 🔸 Tabela HUSBANDO
 class CharactersHusbando(CharacterBase):
     __tablename__ = "characters_husbando"
 
