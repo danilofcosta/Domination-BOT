@@ -6,6 +6,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ._types import ProfileType, HaremMode, Language
 from .base import table_registry
 from .Character.Character import CharacterHusbando, CharacterWaifu
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .Colecao import WaifuCollection, HusbandoCollection
 
 
 @table_registry.mapped_as_dataclass
@@ -19,25 +23,25 @@ class User:
     telegram_user_data: Mapped[dict] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(init=False, server_default=func.now())
 
-    waifu_collection: Mapped[list["CharacterWaifu"]] = relationship(
+    waifu_collection: Mapped[list["WaifuCollection"]] = relationship(
         back_populates="user",
         init=False,
         cascade="all, delete-orphan",
     )
     favorite_waifu_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey(f"{CharacterWaifu.__tablename__}.id"), nullable=True, index=True
+        ForeignKey(f"{CharacterWaifu.__tablename__}.id"), nullable=True, index=True, init=False
     )
     favorite_waifu: Mapped[Optional["CharacterWaifu"]] = relationship(
         foreign_keys=[favorite_waifu_id], init=False, lazy="selectin"
     )
 
-    husbando_collection: Mapped[list["CharacterHusbando"]] = relationship(
+    husbando_collection: Mapped[list["HusbandoCollection"]] = relationship(
         back_populates="user",
         init=False,
         cascade="all, delete-orphan",
     )
     favorite_husbando_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("characters_husbando.id"), nullable=True, index=True
+        ForeignKey("characters_husbando.id"), nullable=True, index=True, init=False
     )
     favorite_husbando: Mapped[Optional["CharacterHusbando"]] = relationship(
         foreign_keys=[favorite_husbando_id], init=False, lazy="selectin"

@@ -1,9 +1,13 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from sqlalchemy import BigInteger, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import table_registry
 from .Character.Character import CharacterHusbando, CharacterWaifu
+
+if TYPE_CHECKING:
+    from .user import User
 
 
 @table_registry.mapped_as_dataclass

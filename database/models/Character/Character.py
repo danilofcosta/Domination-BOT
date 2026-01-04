@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import Enum, ForeignKey, JSON, String, func
+from sqlalchemy import Enum, ForeignKey, JSON, String, func,BINARY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
 from .._types import EventType, RarityType, MediaType
@@ -14,15 +14,17 @@ class BaseCharacter:
     __abstract__ = True
 
     id: Mapped[int] = mapped_column(primary_key=True, init=False, autoincrement=True)
-    character_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    anime_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    character_name: Mapped[str] = mapped_column(String(100), nullable=False) # nome do personagem
+    origem: Mapped[str] = mapped_column(String(100), nullable=False)# o nome do anime,game,manga,etc...
+    tipo_fonte: Mapped[str] = mapped_column(String(500), nullable=False) #anime ,game ,manga ,etc...
+    
     event_code: Mapped[EventType] = mapped_column(
         Enum(EventType), ForeignKey("events.code"), nullable=False, index=True
     )
     rarity_code: Mapped[RarityType] = mapped_column(
         Enum(RarityType), ForeignKey("rarities.code"), nullable=False, index=True
     )
-
+    
     @declared_attr
     def event(cls) -> Mapped[Event]:
         return relationship(
@@ -35,9 +37,10 @@ class BaseCharacter:
             Rarity, foreign_keys=[cls.rarity_code], init=False, lazy="selectin"
         )
 
-    date_added: Mapped[str] = mapped_column(nullable=False, unique=True)
-    media_type: Mapped[MediaType] = mapped_column(Enum(MediaType), nullable=False)
-    extras: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    data: Mapped[str] = mapped_column(nullable=False, unique=True) # dados do personagem (url da imagem, video, etc...)
+  #  bytes: Mapped[BINARY] = mapped_column(nullable=True) # bytes da midia (imagem, video, gif, etc...)
+    media_type: Mapped[MediaType] = mapped_column(Enum(MediaType), nullable=False) # tipo de midia (imagem, video, gif, etc...)
+    extras: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True) # campo para dados extras em formato JSON
 
     created_at: Mapped[datetime] = mapped_column(init=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

@@ -10,16 +10,16 @@ async def main():
     # await list_databases()
     
     # print("\n[3] Dropping 'teste' database if exists...")
-    try:
-        await drop_database('teste')
-    except Exception as e:
-        print(f"    (Database doesn't exist or error: {type(e).__name__})")
-    
-    print("\n[4] Creating 'teste' database...")
     # try:
-    #     await create_database('domination_db_teste')
+    #     await drop_database('domination_db_teste')
     # except Exception as e:
-    #     print(f"    (Error: {type(e).__name__}: {str(e)[:100]})")
+    #     print(f"    (Database doesn't exist or error: {type(e).__name__})")
+    
+    # print("\n[4] Creating 'teste' database...")
+    try:
+        await create_database('domination_db_teste')
+    except Exception as e:
+        print(f"    (Error: {type(e).__name__}: {str(e)[:100]})")
     
     print("\n[5] Final database list...")
     await list_databases()
