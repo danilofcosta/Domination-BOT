@@ -1,42 +1,21 @@
-from database.session import get_session
-from database.models.base import create_tables
-from database.models.Character import *
+import asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.connection import engine
+from database.models.base import table_registry
+from database.models import CharacterWaifu, CharacterHusbando, User, Event, Rarity
 
 
-def main():
-    create_tables()
+async def create_tables():
+    """Create all tables in the database"""
+    async with engine.begin() as conn:
+        await conn.run_sync(table_registry.metadata.create_all)
+    print("[OK] All tables created successfully")
 
-    # session = get_session()
 
-    # # teste: criar usuário fake
-    # waifu = CharactersWaifu(
-    #     nome="Rem",
-    #     origem="Re:Zero",
-    #     raridade_cod="SSR",
-    #     tema_cod="anime",
-    #     tema="fantasia",
-    #     tipo_midia="file_id",
-    #     data="AgACAgQAAxkBAA..."
-    # )
-
-    # husbando = CharactersHusbando(
-    #     nome="Levi",
-    #     origem="Attack on Titan",
-    #     raridade_cod="SSR",
-    #     tema_cod="anime",
-    #     tema="militar",
-    #     tipo_midia="url",
-    #     data="https://..."
-    # )
-
-    # session.add_all([waifu,husbando])
-    # session.commit()
-    # session.refresh(husbando)
-
-    # print(f"{husbando.id} criado com sucesso!")
-
-    # session.close()
+async def main():
+    await create_tables()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
