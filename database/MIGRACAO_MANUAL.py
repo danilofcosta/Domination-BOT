@@ -385,6 +385,10 @@ async def migrate_users(session):
                 )
                 husbando_config["harem_mode"] = harem_mode.value
 
+            print(f"    [DEBUG] Migrando usuario TG ID {item['fav_w_id']}")
+            print(f"    [DEBUG] Migrando usuario TG ID {telegram_id}")
+
+
             user = User(
                 telegram_id=int(telegram_id),
                 telegram_user_data=item.get("telegram_from_user") or {},
@@ -392,11 +396,16 @@ async def migrate_users(session):
                 waifu_config=waifu_config or {"harem_mode": HaremMode.DEFAULT.value},
                 husbando_config=husbando_config or {"harem_mode": HaremMode.DEFAULT.value},
                 preferred_language=language,
+                # favorite_waifu_id=item['fav_w_id'] or None,
+                # favorite_husbando_id=item['fav_h_id'] or None,
             )
+            user.favorite_waifu_id = item['fav_w_id'] or None
+            user.favorite_husbando_id = item['fav_h_id'] or None
             session.add(user)
             inserted += 1
             
         except ValueError as e:
+
             skipped += 1
             errors.append({"id": item.get("telegram_id", "UNKNOWN"), "reason": f"Erro de tipo de dados: {e}"})
         except Exception as e:
@@ -600,25 +609,25 @@ async def main():
             total_inserted = 0
             total_skipped = 0
 
-            ins, skp = await migrate_events(session)
-            total_inserted += ins
-            total_skipped += skp
+            # ins, skp = await migrate_events(session)
+            # total_inserted += ins
+            # total_skipped += skp
 
-            ins, skp = await migrate_rarities(session)
-            total_inserted += ins
-            total_skipped += skp
+            # ins, skp = await migrate_rarities(session)
+            # total_inserted += ins
+            # total_skipped += skp
 
-            ins, skp = await migrate_characters_waifu(session)
-            total_inserted += ins
-            total_skipped += skp
+            # ins, skp = await migrate_characters_waifu(session)
+            # total_inserted += ins
+            # total_skipped += skp
 
-            ins, skp = await migrate_characters_husbando(session)
-            total_inserted += ins
-            total_skipped += skp
+            # ins, skp = await migrate_characters_husbando(session)
+            # total_inserted += ins
+            # total_skipped += skp
 
-            ins, skp = await migrate_users(session)
-            total_inserted += ins
-            total_skipped += skp
+            # ins, skp = await migrate_users(session)
+            # total_inserted += ins
+            # total_skipped += skp
 
             ins, skp = await migrate_waifu_collections(session)
             total_inserted += ins
@@ -632,17 +641,17 @@ async def main():
             total_inserted += ins
             total_skipped += skp
 
-            print("\n" + "=" * 70)
-            print("[SUMMARY] RESUMO DA MIGRACAO")
-            print("=" * 70)
-            print(f"   Total Inseridos: {total_inserted}")
-            print(f"   Total Erros: {total_skipped}")
-            if (total_inserted + total_skipped) > 0:
-                taxa = (total_inserted / (total_inserted + total_skipped) * 100)
-                print(f"   Taxa Sucesso: {taxa:.1f}%")
-            else:
-                print(f"   Taxa Sucesso: N/A")
-            print("=" * 70)
+            # print("\n" + "=" * 70)
+            # print("[SUMMARY] RESUMO DA MIGRACAO")
+            # print("=" * 70)
+            # print(f"   Total Inseridos: {total_inserted}")
+            # print(f"   Total Erros: {total_skipped}")
+            # if (total_inserted + total_skipped) > 0:
+            #     taxa = (total_inserted / (total_inserted + total_skipped) * 100)
+            #     print(f"   Taxa Sucesso: {taxa:.1f}%")
+            # else:
+            #     print(f"   Taxa Sucesso: N/A")
+            # print("=" * 70)
 
         except Exception as e:
             print(f"\n[ERROR] Erro critico durante migracao: {str(e)[:100]}")

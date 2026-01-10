@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from .connection import engine
 from sqlalchemy.ext.asyncio import    AsyncSession
-AsyncSessionLocal = sessionmaker(
+AsyncSessionLocal: AsyncSession = sessionmaker(
     bind=engine,
     class_=AsyncSession,
     expire_on_commit=False,
@@ -10,4 +10,8 @@ AsyncSessionLocal = sessionmaker(
 
 async def get_session() :
     async with AsyncSessionLocal() as session:
+        yield session
+
+async def get_session():
+    async with AsyncSession(engine, expire_on_commit=False) as session:
         yield session
