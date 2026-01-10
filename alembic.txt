@@ -1,0 +1,2 @@
+alembic revision -m "criar tabela usuarios"
+alembic upgrade head

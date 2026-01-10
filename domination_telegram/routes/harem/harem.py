@@ -9,47 +9,52 @@ from database.models.user import User
 from database.session import AsyncSessionLocal
 from domination_telegram.uteis.send_media import send_media
 
-router = Router(name="harem")
 
 
-@router.message(Command("harem"))
-async def start_cmd(message: Message):
-    genero = message.bot.genero
-    user_id = message.from_user.id
 
-    collection_attr = (
-        "husbando_collection"
-        if genero == GeneroEnum.Husbando.value
-        else "waifu_collection"
-    )
+def get_router():
+    router = Router(name=__name__)
 
-    favorite_attr = (
-        "favorite_husbando"
-        if genero == GeneroEnum.Husbando.value
-        else "favorite_waifu"
-    )
+    @router.message(Command("harem"))
+    async def start_cmd(message: Message):
+        genero = message.bot.genero
+        user_id = message.from_user.id
 
-    async with AsyncSessionLocal() as session:
-        result = await session.execute(
-            select(User)
-            .options(selectinload(getattr(User, collection_attr)))
-            .where(User.telegram_id == user_id)
+        collection_attr = (
+            "husbando_collection"
+            if genero == GeneroEnum.Husbando.value
+            else "waifu_collection"
         )
-        user = result.scalars().first()
 
-    if not user:
-        await message.answer("vc ainda nao esta registrado. Use /start para conhecer o bot.")
-        return
+        favorite_attr = (
+            "favorite_husbando"
+            if genero == GeneroEnum.Husbando.value
+            else "favorite_waifu"
+        )
 
-    favorite = getattr(user, favorite_attr)
-    collection: list = getattr(user, collection_attr)
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(User)
+                .options(selectinload(getattr(User, collection_attr)))
+                .where(User.telegram_id == user_id)
+            )
+            user = result.scalars().first()
 
-    if not collection:
-        await message.answer("vc nao tem nenhum personagem na colecao. Use /add para adicionar um personagem.")
-        return
+        if not user:
+            await message.answer("vc ainda nao esta registrado. Use /start para conhecer o bot.")
+            return
 
-    if not favorite:
-        await message.answer("vc nao tem um favorito ainda. Use /add_favorite ou /fav para adicionar um favorito.")
-        return
+        favorite = getattr(user, favorite_attr)
+        collection: list = getattr(user, collection_attr)
 
-    await send_media(Character=favorite, message=message, caption=f"Your favorite character is {favorite.character_name}! vc tem {len(collection)} personagens na sua coleção .")
+        if not collection:
+            await message.answer("vc nao tem nenhum personagem na colecao. Use /add para adicionar um personagem.")
+            return
+
+        if not favorite:
+            await message.answer("vc nao tem um favorito ainda. Use /add_favorite ou /fav para adicionar um favorito.")
+            return
+
+        await send_media(character=favorite, message=message, caption=f"Your favorite character is {favorite.character_name}! vc tem {len(collection)} personagens na sua coleção .")
+
+    return router   

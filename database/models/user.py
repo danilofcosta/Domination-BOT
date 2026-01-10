@@ -30,7 +30,7 @@ class User:
     )
     favorite_waifu_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey(f"{CharacterWaifu.__tablename__}.id"), nullable=True, index=True,
-          init=False
+          init=True
     )
     favorite_waifu: Mapped[Optional["CharacterWaifu"]] = relationship(
         foreign_keys=[favorite_waifu_id], init=False, lazy="selectin"
@@ -42,7 +42,7 @@ class User:
         cascade="all, delete-orphan",
     )
     favorite_husbando_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("characters_husbando.id"), nullable=True, index=True, init=False
+        ForeignKey("characters_husbando.id"), nullable=True, index=True, init=True
     )
     favorite_husbando: Mapped[Optional["CharacterHusbando"]] = relationship(
         foreign_keys=[favorite_husbando_id], init=False, lazy="selectin"

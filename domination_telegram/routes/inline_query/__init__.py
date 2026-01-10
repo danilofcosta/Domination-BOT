@@ -1,0 +1,1 @@
+from .on_inline_query import get_router
