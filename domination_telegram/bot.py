@@ -20,7 +20,7 @@ async def main():
         genero=GeneroEnum.Husbando,
     )
 
-    chat_id = -1001528803759
+    chat_id = os.getenv('GROUP_TEST')
 
    # Envia mensagem com os dois bots quase ao mesmo tempo
     await asyncio.gather(
@@ -39,7 +39,7 @@ async def main():
     # Se seus bots precisarem rodar continuamente (polling, webhook, etc),
     # você provavelmente precisa de algo assim:
     await asyncio.gather(
-        bot1.start( ),   # ou bot1.run(), depende da sua implementação
+        bot1.start(),   # ou bot1.run(), depende da sua implementação
         bot2.start()
     )
 
