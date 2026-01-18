@@ -18,3 +18,4 @@ web/dominarions_web/src/pages/Home/services/api.js
 database/__pycache__/connection.cpython-313.pyc
 database/__pycache__/session.cpython-313.pyc
 database/models/__pycache__/user.cpython-313.pyc
+database/models/__pycache__/user.cpython-313.pyc

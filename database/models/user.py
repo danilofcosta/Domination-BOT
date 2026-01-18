@@ -7,7 +7,7 @@ from ._types import ProfileType, HaremMode, Language
 from .base import table_registry
 from .Character.Character import CharacterHusbando, CharacterWaifu
 from typing import TYPE_CHECKING
-
+from sqlalchemy.dialects.postgresql import JSONB
 if TYPE_CHECKING:
     from .Colecao import WaifuCollection, HusbandoCollection
 
@@ -53,12 +53,12 @@ class User:
     )
 
     waifu_config: Mapped[dict] = mapped_column(
-        JSON,
+        JSONB,
         nullable=False,
         default_factory=lambda: {"harem_mode": HaremMode.DEFAULT.value},
     )
     husbando_config: Mapped[dict] = mapped_column(
-        JSON,
+        JSONB,
         nullable=False,
         default_factory=lambda: {"harem_mode": HaremMode.DEFAULT.value},
     )
