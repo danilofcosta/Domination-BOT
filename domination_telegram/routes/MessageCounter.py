@@ -61,7 +61,7 @@ def get_router():
         # Se quiser travar em apenas um grupo específico:
         
 
-        genero = message.bot.genero.name.lower()
+        genero = message.bot.genero.value.lower()
         lock = get_lock(group_id)
 
         async with lock:
