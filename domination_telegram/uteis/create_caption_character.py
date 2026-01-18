@@ -20,24 +20,40 @@ def tempo_gasto(start_time: datetime) -> str:
         return f"{segundos}s"
 
 
-def create_caption_check_true_character(character: CharacterHusbando | CharacterWaifu, message, genero, start_time):
-    genero = f'um nova waifu ' if genero == GeneroEnum.Waifu.name.lower(
-    ) else 'um novo husbando '
-    cap = {
-        "mgs": f"{metion_user.metion_user(message.from_user.first_name, message.from_user.id)} você {genero} ",
-        "nome": f"{character.character_name}",
-        "origem": f"{character.origem}",
-        "raridae": f"{character.rarity.name}",
+def create_caption_check_true_character(
+    character: CharacterHusbando | CharacterWaifu,
+    message,
+    genero: GeneroEnum,
+    start_time
+):
+    # Texto do gênero
+    texto_genero = "uma nova waifu" if genero == GeneroEnum.Waifu else "um novo husbando"
 
-        "event": f"{character.event.emoji} {character.event.name} {character.event.emoji}", }
+    # Emojis por gênero
+    emojis = {
+        GeneroEnum.Waifu: {
+            "nome": "✨",
+            "raridade": "🏆",
+            "origem": "📜",
+            "tempo": "⏳"
+        },
+        GeneroEnum.Husbando: {
+            "nome": "💛",
+            "raridade": "🏆",
+            "origem": "📜",
+            "tempo": "⏳"
+        }
+    }
 
-    base = f"""✅ {cap['mgs']}
+    base = f"""✅ {metion_user.metion_user(message.from_user.first_name, message.from_user.id)} você conseguiu {texto_genero}
 
-🌸 NOME: {character.character_name}
-🔴 RARIDADE:  {character.rarity.name}
-❇️ FONTE: {character.origem}
+{emojis[genero]['nome']} NOME: {character.character_name}
+{emojis[genero]['raridade']} RARIDADE: {character.rarity.name}
+{emojis[genero]['origem']} FONTE: {character.origem}
+{character.event.emoji} {character.event.name} {character.event.emoji}
 
-⌛️ Tempo gasto: {tempo_gasto(start_time)}"""
+{emojis[genero]['tempo']} Tempo gasto: {tempo_gasto(start_time)}"""
+
     return base
 
 
@@ -60,18 +76,16 @@ def create_secret_caption(Character: CharacterWaifu | CharacterHusbando, genero=
 
 
 def create_caption_show_character(character: CharacterWaifu | CharacterHusbando,
-                                  genero):
-    print( character.event_code == EventType.NONE.value)
-    print( character.event_code)
-    print(type(genero))
+                                  genero, user: tuple = None, cont: int = None):
+
     genero = f'essa waifu' if genero == GeneroEnum.Waifu.name.lower(
     ) else 'um husbando'
     event = f" {character.event.emoji} {character.event.name} {character.event.emoji}" if character.event != None and character.event_code != EventType.NONE.value else ''
     base = f"""
-Wow! Veja  {genero}!
+Wow! Veja  {genero} {'' if not user else f'de {metion_user.metion_user(username=user[0], id=user[1])}'}!
 
-{character.origem}
-{character.id} : {character.character_name} {f'[{character.event.emoji}]' if character.event != None and character.event_code != EventType.NONE.value  else ''}
+{character.origem} {''if not cont else f'x{cont}'}
+{character.id} : {character.character_name} {f'[{character.event.emoji}]' if character.event != None and character.event_code != EventType.NONE.value else ''}
 ({character.rarity.emoji} 𝙍𝘼𝙍𝙄𝙏𝙔:  {character.rarity.name})
 
 {event}

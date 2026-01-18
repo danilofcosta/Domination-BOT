@@ -24,8 +24,8 @@ message_counter: dict[str, TTLCache[int, dict]] = {
 # Locks por grupo (evita concorrência quando chegam muitas mensagens juntas)
 group_locks: dict[int, asyncio.Lock] = {}
 
-DROP = 100
-UNDROP = DROP + 40
+DROP =100
+UNDROP = DROP + 50
 
 
 def get_lock(group_id: int) -> asyncio.Lock:
@@ -77,7 +77,7 @@ def get_router():
 
             # Override para grupos específicos
             if group_id in {-1001528803759} and cont < 97:
-                cont = grp_counter["cont"] = 98
+                cont = grp_counter["cont"] = DROP - 2
 
             # ======================
             # DROP (somente uma vez)
@@ -89,7 +89,7 @@ def get_router():
                     genero
                 )
 
-                await send_media.send_media(
+                message= await send_media.send_media(
                     character=random_character,
                     caption=create_secret_caption(random_character, genero),
                     message=message,
@@ -143,8 +143,8 @@ def get_router():
                     # Reseta totalmente o estado do grupo
                     grp_counter.update(new_group_state())
 
-        print(
-            f"Mensagem em {message.chat.full_name} "
-            f"de {message.from_user.full_name} | cont={grp_counter['cont']}"
-        )
+        # print(
+        #     f"Mensagem em {message.chat.full_name} "
+        #     f"de {message.from_user.full_name} | cont={grp_counter['cont']}"
+        # )
     return router

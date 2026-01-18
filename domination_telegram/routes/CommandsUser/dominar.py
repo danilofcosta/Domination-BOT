@@ -12,10 +12,9 @@ from database.session import AsyncSessionLocal
 from domination_telegram.enuns import GeneroEnum
 from domination_telegram.routes.MessageCounter import message_counter
 from domination_telegram.routes.MessageCounter import group_locks
-from domination_telegram.uteis import send_media, metion_user  
-from domination_telegram.uteis.create_bt_iniline import switch_inline_query_chosen_chat
+from domination_telegram.uteis import send_media, metion_user
+from domination_telegram.uteis.create_bt import bt_url, switch_inline_query_chosen_chat
 from domination_telegram.uteis.create_caption_character import create_caption_check_true_character
-router =  Router(name=__name__)
 
 
 def get_lock(group_id: int) -> asyncio.Lock:
@@ -78,6 +77,7 @@ async def add_character_to_user_collection(user_id: int, character, message: Mes
 
 def get_router():
     router = Router(name=__name__)
+
     @router.message(
         Command("dominar"),
         F.chat.type.in_({"group", "supergroup"})
@@ -162,6 +162,9 @@ def get_router():
                     }
                 )
             else:
-                await message.reply("Esse nome não corresponde à personagem atual.")
+                Idchat =str( message.chat.id).replace('-100','')
+                id_msg = grp_counter.get('id_mens')
+                url = f'https://t.me/c/{Idchat}/{id_msg}'  # Idchat sem -100
+                await message.reply(" ❌ Esse nome não corresponde à personagem atual.", reply_markup=bt_url('↗️', url))
 
     return router

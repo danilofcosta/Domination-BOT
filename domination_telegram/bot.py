@@ -39,7 +39,7 @@ async def main():
     # Se seus bots precisarem rodar continuamente (polling, webhook, etc),
     # você provavelmente precisa de algo assim:
     await asyncio.gather(
-        bot1.start(),   # ou bot1.run(), depende da sua implementação
+        bot1.start( ),   # ou bot1.run(), depende da sua implementação
         bot2.start()
     )
 

@@ -26,19 +26,19 @@ class Domination:
         self.bot.genero = genero
 
         self.dp = Dispatcher()
-        self.include_routers()
+        self.include_routers(genero= self.genero)
 
     async def start(self):
         self.me = await self.bot.get_me()
         print(f"🤖 Bot iniciado: @{self.me.username}")
+        await self.dp.start_polling(self.bot, skip_updates=True)
 
-        await self.dp.start_polling(self.bot)
-
-    def include_routers(self):
-        self.dp.include_router(start.get_router())
+    def include_routers(self,genero:GeneroEnum):
+        self.dp.include_router(start.get_router( ))
         self.dp.include_router(MessageCounter.get_router())
-        self.dp.include_router(harem.get_router())
-        self.dp.include_router(CommandsUser.dominar.get_router())
-        self.dp.include_router(inline_query.get_router())    
+        self.dp.include_router(harem.get_router(genero=genero.value))
+        self.dp.include_router(inline_query.get_router())
+        CommandsUser.include_router_all(self.dp,genero=genero.value)
+          
 
 

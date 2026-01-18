@@ -8,7 +8,7 @@ from database.session import AsyncSessionLocal
 from domination_telegram.enuns import GeneroEnum
 from domination_telegram.routes.inline_query.create_result import create_results
 
-LIMIT = 5
+LIMIT = 15
 
 
 def get_router():
@@ -19,6 +19,7 @@ def get_router():
         query_text = inline_query.query.strip()
         genero = inline_query.bot.genero
         offset = int(inline_query.offset) if inline_query.offset else 0
+        user = None
 
         # Modelo principal (Character)
         Model = (
@@ -42,7 +43,26 @@ def get_router():
             stmt = (
                 select(Model)
                 .join(collection_attr)
+                .distinct(Model.id)
                 .where(collection_attr.telegram_id == id_user)
+                .limit(LIMIT)
+                .offset(offset)
+            )
+
+            count_stmt = (
+                select(func.count(func.distinct(Model.id)))
+                .select_from(Model)
+                .join(collection_attr)
+                .where(collection_attr.telegram_id == id_user)
+            )
+            user = (inline_query.from_user.first_name,
+                    inline_query.from_user.first_name)
+        elif query_text.startswith("character:"):
+            personagem = query_text.replace("character:", "").strip()
+
+            stmt = (
+                select(Model)
+                .where(Model.character_name.ilike(f"%{personagem}%"))
                 .limit(LIMIT)
                 .offset(offset)
             )
@@ -50,8 +70,22 @@ def get_router():
             count_stmt = (
                 select(func.count())
                 .select_from(Model)
-                .join(collection_attr)
-                .where(collection_attr.telegram_id == id_user)
+                .where(Model.character_name.ilike(f"%{personagem}%"))
+            )
+        elif query_text.startswith("anime:"):
+            origem = query_text.replace("anime:", "").strip()
+
+            stmt = (
+                select(Model)
+                .where(Model.origem.ilike(f"%{origem}%"))
+                .limit(LIMIT)
+                .offset(offset)
+            )
+
+            count_stmt = (
+                select(func.count())
+                .select_from(Model)
+                .where(Model.origem.ilike(f"%{origem}%"))
             )
 
         elif query_text.isdigit():
@@ -98,7 +132,7 @@ def get_router():
         )
 
         # transforma em InlineQueryResult
-        results = create_results(characters, genero=genero)
+        results = create_results(characters, genero=genero, user=user)
 
         await showresults(
             inline_query=inline_query,
@@ -113,7 +147,7 @@ def get_router():
 
 async def showresults(
     inline_query: InlineQuery,
-    results: list ,
+    results: list,
     next_offset: str | None = None,
     switch_pm_text: str = "𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾"
 ):

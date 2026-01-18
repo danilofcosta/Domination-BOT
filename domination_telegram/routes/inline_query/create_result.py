@@ -4,11 +4,12 @@ from database.models._types import MediaType
 from domination_telegram.uteis.create_caption_character import create_caption_show_character
 
 
-def create_results(list_of_results: list[CharacterWaifu | CharacterHusbando],genero):
+def create_results(list_of_results: list[CharacterWaifu | CharacterHusbando],genero,user:tuple = None):
 
     results = []
-
+    last = None
     for i in list_of_results:
+        
         if i.media_type in [MediaType.IMAGE_URL]:
             results.append(
                 InlineQueryResultPhoto(
@@ -16,7 +17,7 @@ def create_results(list_of_results: list[CharacterWaifu | CharacterHusbando],gen
                     photo_url=i.data,
                     thumbnail_url=i.data,
                     title=f"{i.character_name}",
-                    caption=create_caption_show_character(character=i,genero=genero),
+                    caption=create_caption_show_character(character=i,genero=genero,user=user),
                     #  reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton("Add to favorites",callback_data="favorite")))
                 )
             )
@@ -27,7 +28,7 @@ def create_results(list_of_results: list[CharacterWaifu | CharacterHusbando],gen
                     id=str(i.id),
                     photo_file_id=i.data,
                     title=f"{i.character_name}",
-                    caption=create_caption_show_character(character=i,genero=genero),
+                    caption=create_caption_show_character(character=i,genero=genero,user=user),
                    # reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton("Add to favorites", callback_data="favorite"))
                 )
             )
@@ -37,7 +38,7 @@ def create_results(list_of_results: list[CharacterWaifu | CharacterHusbando],gen
                     id=str(i.id),
                     video_file_id=i.data,
                     title=f"{i.character_name}",
-                    caption=create_caption_show_character(character=i,genero=genero),
+                    caption=create_caption_show_character(character=i,genero=genero,user=user),
                   #  reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton("Add to favorites", callback_data="favorite"))
                 )
             )
@@ -49,7 +50,7 @@ def create_results(list_of_results: list[CharacterWaifu | CharacterHusbando],gen
                     thumbnail_url=i.data,
                     mime_type='video/mp4',
                     title=f"{i.character_name}",
-                    caption=create_caption_show_character(character=i,genero=genero),
+                    caption=create_caption_show_character(character=i,genero=genero,user=user),
                  #   reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton("Add to favorites", callback_data="favorite"))
                 )
             )

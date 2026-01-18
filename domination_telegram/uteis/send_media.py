@@ -24,23 +24,23 @@ async def send_media(
     if not character:
         if caption:
             if message:
-                await message.answer(caption)
+               return await message.answer(caption)
             else:
-                await bot.send_message(chat_id=chat_id, text=caption, reply_markup=reply_markup)
+              return  await bot.send_message(chat_id=chat_id, text=caption, reply_markup=reply_markup)
         return
 
     # Funções auxiliares para evitar duplicação
     async def send_photo():
         if message:
-            await message.answer_photo(photo=character.data, caption=caption, reply_markup=reply_markup)
+          return  await message.answer_photo(photo=character.data, caption=caption, reply_markup=reply_markup)
         else:
-            await bot.send_photo(chat_id=chat_id, photo=character.data, caption=caption, reply_markup=reply_markup)
+           return await bot.send_photo(chat_id=chat_id, photo=character.data, caption=caption, reply_markup=reply_markup)
 
     async def send_video():
         if message:
-            await message.answer_video(video=character.data, caption=caption, reply_markup=reply_markup)
+            return await message.answer_video(video=character.data, caption=caption, reply_markup=reply_markup)
         else:
-            await bot.send_video(chat_id=chat_id, video=character.data, caption=caption, reply_markup=reply_markup)
+            return    await bot.send_video(chat_id=chat_id, video=character.data, caption=caption, reply_markup=reply_markup)
 
     # Envio conforme tipo de mídia
     if character.media_type in [
@@ -49,7 +49,7 @@ async def send_media(
         MediaType.IMAGE_BYTES,
         MediaType.IMAGE_FILE
     ]:
-        await send_photo()
+      return  await send_photo()
 
     elif character.media_type in [
         MediaType.VIDEO_BYTES,
@@ -57,4 +57,4 @@ async def send_media(
         MediaType.VIDEO_URL,
         MediaType.VIDEO_FILEID
     ]:
-        await send_video()
+      return  await send_video()
