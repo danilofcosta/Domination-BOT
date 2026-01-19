@@ -1,7 +1,7 @@
 name: Build e Push para o GitHub
 on:
   push:
-    branches: [ "main" ] # Toda vez que você der push na main
+    branches: [ "dev" ] # Toda vez que você der push na main
 
 jobs:
   build:
