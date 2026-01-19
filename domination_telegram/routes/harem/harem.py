@@ -45,7 +45,7 @@ message_counter: dict[str, TTLCache[int, dict]] = {
 # ==========================================================
 # TECLADO DE PAGINAÇÃO
 # ==========================================================
-def get_pagination_keyboard(genero: str, user_id: int):
+def get_pagination_keyboard(genero: str, user_id: int, label: str = "Harem"):
     return InlineKeyboardMarkup(
         inline_keyboard=[
 
@@ -54,6 +54,9 @@ def get_pagination_keyboard(genero: str, user_id: int):
                 InlineKeyboardButton(
                     text="⬅️",
                     callback_data=f"harem_prev:{genero}:{user_id}"
+                ), InlineKeyboardButton(
+                    text=label,
+
                 ),
                 InlineKeyboardButton(
                     text="➡️",
@@ -61,7 +64,7 @@ def get_pagination_keyboard(genero: str, user_id: int):
                 )
             ],
             [
-                  InlineKeyboardButton(
+                InlineKeyboardButton(
                     text="🌐",
                     switch_inline_query_current_chat=f"User_harem_{user_id}"
                 )
@@ -121,7 +124,7 @@ def get_router(genero: str):
             return
 
         dados = classificar_personagens(collection)
-        pages =  create_harem_pages_ref(dados)
+        pages = create_harem_pages_ref(dados)
 
         message_counter[genero_local.value][user_id] = {
             "pages": pages,
@@ -132,7 +135,8 @@ def get_router(genero: str):
             character=favorite,
             message=message,
             caption=pages[0],
-            reply_markup=get_pagination_keyboard(genero_local.value, user_id,)
+            reply_markup=get_pagination_keyboard(
+                genero_local.value, user_id,   f'{1}/{len(pages)}')
         )
 
     # ---------------------------
@@ -142,7 +146,6 @@ def get_router(genero: str):
     async def next_page(callback: CallbackQuery):
         _, genero_local, user_id = callback.data.split(":")
         user_id = int(user_id)
-        
 
         data = message_counter[genero_local].get(user_id)
         if not data:
@@ -154,7 +157,8 @@ def get_router(genero: str):
 
         await callback.message.edit_caption(
             caption=pages[data["index"]],
-            reply_markup=get_pagination_keyboard(genero_local, user_id)
+            reply_markup=get_pagination_keyboard(
+                genero_local, user_id, f'{data["index"] }/{len(pages)}')
         )
         await callback.answer()
 
@@ -176,7 +180,8 @@ def get_router(genero: str):
 
         await callback.message.edit_caption(
             caption=pages[data["index"]],
-            reply_markup=get_pagination_keyboard(genero_local, user_id)
+            reply_markup=get_pagination_keyboard(
+                genero_local, user_id, f'{data["index"]}/{len(pages)}')
         )
         await callback.answer()
 
