@@ -153,18 +153,30 @@ def get_router(genero: str):
             return
 
         pages = data["pages"]
-        data["index"] = (data["index"] + 1) % len(pages)
+        old_index = data["index"]
+        data["index"] = (old_index + 1) % len(pages)
 
-        await callback.message.edit_caption(
-            caption=pages[data["index"]],
-            reply_markup=get_pagination_keyboard(
-                genero_local, user_id, f'{data["index"] }/{len(pages)}')
+        new_caption = pages[data["index"]]
+        new_markup = get_pagination_keyboard(
+            genero_local,
+            user_id,
+            f'{data["index"] + 1}/{len(pages)}'
         )
+
+        # evita o erro "message is not modified"
+        if (callback.message.caption != new_caption or
+                callback.message.reply_markup != new_markup):
+            await callback.message.edit_caption(
+                caption=new_caption,
+                reply_markup=new_markup
+            )
+
         await callback.answer()
 
     # ---------------------------
     # CALLBACK PREV
     # ---------------------------
+
     @router.callback_query(F.data.startswith("harem_prev"))
     async def prev_page(callback: CallbackQuery):
         _, genero_local, user_id = callback.data.split(":")
@@ -176,13 +188,21 @@ def get_router(genero: str):
             return
 
         pages = data["pages"]
-        data["index"] = (data["index"] - 1) % len(pages)
+        old_index = data["index"]
+        data["index"] = (old_index - 1) % len(pages)
 
-        await callback.message.edit_caption(
-            caption=pages[data["index"]],
-            reply_markup=get_pagination_keyboard(
-                genero_local, user_id, f'{data["index"]}/{len(pages)}')
+        new_caption = pages[data["index"]]
+        new_markup = get_pagination_keyboard(
+            genero_local,
+            user_id,
+            f'{data["index"] + 1}/{len(pages)}'
         )
-        await callback.answer()
 
-    return router
+        if (callback.message.caption != new_caption or
+                callback.message.reply_markup != new_markup):
+            await callback.message.edit_caption(
+                caption=new_caption,
+                reply_markup=new_markup
+            )
+
+        await callback.answer()
