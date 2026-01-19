@@ -206,3 +206,5 @@ def get_router(genero: str):
             )
 
         await callback.answer()
+    return router
+
