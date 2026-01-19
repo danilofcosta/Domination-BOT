@@ -62,7 +62,7 @@ def get_pagination_keyboard(genero: str, user_id: int):
             ],
             [
                   InlineKeyboardButton(
-                    text=" x",
+                    text="🌐",
                     switch_inline_query_current_chat=f"User_harem_{user_id}"
                 )
             ]
@@ -132,7 +132,7 @@ def get_router(genero: str):
             character=favorite,
             message=message,
             caption=pages[0],
-            reply_markup=get_pagination_keyboard(genero_local.value, user_id)
+            reply_markup=get_pagination_keyboard(genero_local.value, user_id,)
         )
 
     # ---------------------------
