@@ -17,5 +17,5 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - WATCHTOWER_POLL_INTERVAL=20# Verifica atualizações a cada 1 minuto
+      - WATCHTOWER_POLL_INTERVAL=20 # Verifica atualizações a cada 20 segundos
       - WATCHTOWER_CLEANUP=true     # Apaga a imagem antiga para não encher o disco
