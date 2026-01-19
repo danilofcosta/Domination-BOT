@@ -1,0 +1,5 @@
+services:
+  domination-auto-update:
+    build: .
+    container_name: domination-auto-update
+    restart: always
