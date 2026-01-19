@@ -6,7 +6,7 @@ from domination_telegram import bot
 
 
 import os, logging
-#logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 
 if __name__ == "__main__":
