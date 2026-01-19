@@ -25,7 +25,7 @@ async def main():
    # Envia mensagem com os dois bots quase ao mesmo tempo
     await asyncio.gather(
         send_media.send_media(
-            caption="Bot Waifu iniciado",
+            caption="Bot Waifu iniciado d",
             bot=bot1.bot,
             chat_id=chat_id
         ),
