@@ -1,5 +1,10 @@
 services:
   domination-auto-update:
     build: .
-    container_name: domination-auto-update
+    container_name: ${CONTAINER_NAME:-domination-auto-update} 
+    command: python run.py
     restart: always
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-8000}:8000"
