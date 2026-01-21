@@ -132,12 +132,14 @@ def get_router():
                     )
 
                     await send_media.send_media(
-                        caption=(
-                            f"Opa, {genero_txt} já fugiu…\n"
-                            f"O nome é <code>{nome}</code> (<code>{anime}</code>)"
-                        ),
-                        message=message,
-                    )
+                    caption=(
+                        f" {genero_txt} já fugiu…\n"
+                        f"O nome é `{nome}` (`{anime}`)"
+                    ),
+                    message=message,
+              
+                )
+
 
                 finally:
                     # Reseta totalmente o estado do grupo
