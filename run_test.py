@@ -20,7 +20,7 @@ async def main():
 
   
     await  send_media.send_media(
-            caption="Bot test oo",
+            caption=f"Bot test {bot1.genero.value}",
             bot=bot1.bot,
             chat_id=chat_id
         )

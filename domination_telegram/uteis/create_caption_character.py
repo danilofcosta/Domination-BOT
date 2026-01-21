@@ -32,13 +32,13 @@ def create_caption_check_true_character(
     # Emojis por gênero
     emojis = {
         GeneroEnum.Waifu: {
-            "nome": "✨",
+            "nome": "📜",
             "raridade": "🏆",
             "origem": "📜",
             "tempo": "⏳"
         },
         GeneroEnum.Husbando: {
-            "nome": "💛",
+            "nome": "📜",
             "raridade": "🏆",
             "origem": "📜",
             "tempo": "⏳"

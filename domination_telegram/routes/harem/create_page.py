@@ -65,7 +65,7 @@ def classificar_personagens(
     return resultado
 
 
-def create_harem_pages_ref(dados):
+def create_harem_default(dados):
     """
     Cria páginas do harém usando a estrutura gerada por classificar_personagens
     """
@@ -77,7 +77,7 @@ def create_harem_pages_ref(dados):
 
     for origem_nome, origem_data in dados["origens"].items():
         header = (
-            f"☛ {origem_nome.capitalize()} {origem_data['total']}/N\n"
+            f"☛ {origem_nome.capitalize()} {origem_data['total']}\n"
             + "✧" * 16
             + "\n"
         )

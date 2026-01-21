@@ -91,11 +91,13 @@ def get_router():
             grp_counter = message_counter[genero].get(group_id)
 
             if not grp_counter:
-                await message.reply(
-                    "Nenhuma personagem disponível para dominar no momento. "
-                    "Espere até que uma apareça!"
-                )
                 return
+                # await message.reply(
+                
+                #     "Nenhuma personagem disponível para dominar no momento. "
+                #     "Espere até que uma apareça!"
+                # )
+                # return
 
             character = grp_counter.get("per")
 

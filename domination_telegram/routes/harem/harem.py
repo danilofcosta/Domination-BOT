@@ -7,11 +7,10 @@ from aiogram.types import Message
 from domination_telegram.enuns import Commands_Bot, GeneroEnum
 from database.models.user import User
 from database.session import AsyncSessionLocal
-from domination_telegram.routes.harem.create_page import classificar_personagens, create_harem_pages_ref
+from domination_telegram.routes.harem.create_page import classificar_personagens, create_harem_default
+from domination_telegram.uteis import metion_user
 from domination_telegram.uteis.send_media import send_media
 
-from collections import defaultdict
-from typing import List, Union
 from cachetools import TTLCache
 
 from aiogram import Router, F
@@ -29,7 +28,6 @@ from sqlalchemy.orm import selectinload
 from domination_telegram.enuns import Commands_Bot, GeneroEnum
 from database.models.user import User
 from database.session import AsyncSessionLocal
-from database.models.Colecao import WaifuCollection, HusbandoCollection
 from domination_telegram.uteis.send_media import send_media
 
 
@@ -55,7 +53,7 @@ def get_pagination_keyboard(genero: str, user_id: int, label: str = "Harem"):
                     text="⬅️",
                     callback_data=f"harem_prev:{genero}:{user_id}"
                 ), InlineKeyboardButton(
-                    text=label,
+                    text=label, callback_data='none'
 
                 ),
                 InlineKeyboardButton(
@@ -67,6 +65,11 @@ def get_pagination_keyboard(genero: str, user_id: int, label: str = "Harem"):
                 InlineKeyboardButton(
                     text="🌐",
                     switch_inline_query_current_chat=f"User_harem_{user_id}"
+                )
+            ], [
+                InlineKeyboardButton(
+                    text="✖️",
+                    callback_data=f"harem_close:{genero}:{user_id}"
                 )
             ]
         ]
@@ -124,17 +127,19 @@ def get_router(genero: str):
             return
 
         dados = classificar_personagens(collection)
-        pages = create_harem_pages_ref(dados)
+        pages = create_harem_default(dados)
 
         message_counter[genero_local.value][user_id] = {
             "pages": pages,
             "index": 0
         }
 
+        capion = f'{metion_user.metion_user(message.from_user.first_name, message.from_user.id)} ๛Harem ツ\n\n{pages[0]}'
+
         await send_media(
             character=favorite,
             message=message,
-            caption=pages[0],
+            caption=capion,
             reply_markup=get_pagination_keyboard(
                 genero_local.value, user_id,   f'{1}/{len(pages)}')
         )
@@ -206,5 +211,20 @@ def get_router(genero: str):
             )
 
         await callback.answer()
-    return router
 
+    @router.callback_query(F.data.startswith("harem_close"))
+    async def close_page(callback: CallbackQuery):
+        _, genero_local, user_id = callback.data.split(":")
+        user_id = int(user_id)
+
+        if user_id != callback.from_user.id:
+            await callback.answer("Você não tem permissão para isso.")
+            return
+        try:
+            del message_counter[genero_local][user_id]
+        except Exception as e:
+            print(e)
+            pass
+        await callback.message.delete()
+        await callback.answer()
+    return router
