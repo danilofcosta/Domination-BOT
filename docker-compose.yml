@@ -11,11 +11,7 @@ services:
       - stack.env
     ports:
       - "3000:3000"
-    networks:
-      - domination-net
-    deploy:
-      restart_policy:
-        condition: on-failure
+
 
   frontend:
     build:
@@ -27,12 +23,5 @@ services:
       - stack.env
     ports:
       - "5173:5173"
-    networks:
-      - domination-net
-    deploy:
-      restart_policy:
-        condition: on-failure
 
-networks:
-  domination-net:
-    driver: overlay
+
