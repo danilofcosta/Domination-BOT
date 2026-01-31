@@ -1,10 +1,36 @@
+version: "3.8"
+
 services:
-  domination-auto-update:
-    build: .
-    container_name: ${CONTAINER_NAME:-domination-auto-update} 
-    command: python run.py
-    restart: always
-    env_file:
-      - stack.env
+  backend:
+    image: domination-backend:latest
+    build:
+      context: ./backend
+    command: uvicorn main_back:app --host 0.0.0.0 --port 3000
+    environment:
+      - PYTHONUNBUFFERED=1
     ports:
-      - "${PORT:-8000}:8000"
+      - "3000:3000"
+    networks:
+      - domination-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  frontend:
+    image: domination-frontend:latest
+    build:
+      context: ./web/mywebapp
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "5173:5173"
+    networks:
+      - domination-net
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  domination-net:
+    driver: overlay
