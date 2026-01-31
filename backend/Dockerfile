@@ -2,13 +2,11 @@ FROM python:3.11
 
 WORKDIR /app
 
-# Copia primeiro o requirements para aproveitar cache
-COPY ../requirements.txt .
+COPY ../requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Agora copia o código do backend para dentro da imagem
-COPY . .
+COPY . /app
 
 EXPOSE 3000
 

@@ -2,32 +2,34 @@ version: "3.8"
 
 services:
   backend:
-    image: domination-backend:latest
     build:
       context: ./backend
+      dockerfile: dockerfile
+    image: domination-backend:latest
     command: uvicorn main_back:app --host 0.0.0.0 --port 3000
-    environment:
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - stack.env
     ports:
       - "3000:3000"
     networks:
       - domination-net
     deploy:
-      replicas: 1
       restart_policy:
         condition: on-failure
 
   frontend:
-    image: domination-frontend:latest
     build:
       context: ./web/mywebapp
+      dockerfile: dockerfile
+    image: domination-frontend:latest
     command: npm run dev -- --host 0.0.0.0
+    env_file:
+      - stack.env
     ports:
       - "5173:5173"
     networks:
       - domination-net
     deploy:
-      replicas: 1
       restart_policy:
         condition: on-failure
 
