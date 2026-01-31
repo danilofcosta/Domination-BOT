@@ -12,7 +12,7 @@ from domination_telegram import Domination
 from domination_telegram.enuns import GeneroEnum
 
 #rotas
-from api.routes import users
+from backend.routes import users
 
 load_dotenv()
 
