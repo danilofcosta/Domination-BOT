@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.engine import URL
 from dotenv import load_dotenv
 import os
+import re
+import ssl
 
 load_dotenv()
 
@@ -23,18 +25,35 @@ else:
     except ValueError:
         final_port = None
 
-DATABASE_URL = URL.create(
-    drivername="postgresql+asyncpg",
-    username=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST,
-    port=final_port,
-    database=DB_NAME,
-)
+# DATABASE_URL = URL.create(
+#     drivername="postgresql+asyncpg",
+#     username=DB_USER,
+#     password=DB_PASSWORD,
+#     host=DB_HOST,
+#     port=final_port,
+#     database=DB_NAME,
+# )
 
-engine: AsyncEngine = create_async_engine(
-    DATABASE_URL,
+
+# engine: AsyncEngine = create_async_engine(
+#     DATABASE_URL,
+#     echo=False,
+#     pool_size=10,
+#     max_overflow=20,
+# )][]
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+database_url = re.sub(r"^postgresql:", "postgresql+asyncpg:", DATABASE_URL)
+
+database_url = re.sub(r"[?&](sslmode|channel_binding)=[^&]+", "", database_url)
+
+ssl_context = ssl.create_default_context()
+
+engine = create_async_engine(
+    database_url,
     echo=False,
     pool_size=10,
     max_overflow=20,
+    connect_args={"ssl": ssl_context}
 )

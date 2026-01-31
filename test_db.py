@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from database.models.Character.Character import CharacterHusbando
 from database.session import AsyncSessionLocal
 from database.teste import test_connection, create_database, drop_database, list_databases
-
+from database import MIGRACAO_MANUAL
 
 async def main():
     # print("[1] Testing database connection...")
@@ -27,15 +27,16 @@ async def main():
     
     print("\n[5] Final database list...")
     await list_databases()
-    g=select(CharacterHusbando).order_by(
-                func.random()).limit(1)
+    # g=select(CharacterHusbando).order_by(
+    #             func.random()).limit(1)
 
-    async with AsyncSessionLocal() as session:
-        async with session.begin():
-            result = await session.execute(g)
-            character = result.scalars()
-            print(character.all())
+    # async with AsyncSessionLocal() as session:
+        # async with session.begin():
+        #     result = await session.execute(g)
+        #     character = result.scalars()
+        #     print(character.all())
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+     asyncio.run(MIGRACAO_MANUAL.main_migracao_manual())
+    #asyncio.run(main())

@@ -21,7 +21,7 @@ EVENT_MAP = {
     "OUTONO": EventType.AUTUMN,
     "ANO_NOVO": EventType.NEW_YEAR,
     "NATAL": EventType.CHRISTMAS,
-    "DIAS_DOS_NAMORADOS": EventType.VALENTINE,
+   
     "INFANTIL": EventType.CHILDREN,
     "CARNAVAL": EventType.CARNIVAL,
     "EMPREGADA": EventType.MAID,
@@ -129,13 +129,15 @@ async def migrate_events(session):
     """Migra eventos - DEVE SER EXECUTADO PRIMEIRO"""
     print("\n[EVENTS] Migrando eventos...")
     data = load_json("e_eventos.json")
-    
+
     if not data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     inserted = 0
     skipped = 0
+    OBGS = []
+    
 
     for item in data:
         try:
@@ -150,17 +152,21 @@ async def migrate_events(session):
                 emoji=item.get("emoji"),
                 description=item.get("descricao"),
             )
-            session.add(event)
+         
+            OBGS.append(event)
+           # session.add(event)
             inserted += 1
         except Exception as e:
             skipped += 1
 
     try:
+        session.add_all(OBGS)
         await session.commit()
+
         print(f"  [OK] Eventos: {inserted} inseridos, {skipped} erros")
         return inserted, skipped
     except Exception as e:
-        await session.rollback()
+       # await session.rollback()
         print(f"  [ERROR] Erro ao salvar eventos: {e}")
         return 0, len(data)
 
@@ -169,13 +175,14 @@ async def migrate_rarities(session):
     """Migra raridades - DEVE SER EXECUTADO PRIMEIRO"""
     print("\n[RARITIES] Migrando raridades...")
     data = load_json("e_raridade.json")
-    
+
     if not data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     inserted = 0
     skipped = 0
+    OBGS = []
 
     for item in data:
         try:
@@ -190,13 +197,16 @@ async def migrate_rarities(session):
                 emoji=item.get("emoji"),
                 description=item.get("descricao"),
             )
-            session.add(rarity)
+           # session.add(rarity)
+            OBGS.append(rarity)
             inserted += 1
         except Exception as e:
             skipped += 1
 
     try:
+        session.add_all(OBGS)
         await session.commit()
+
         print(f"  [OK] Raridades: {inserted} inseridos, {skipped} erros")
         return inserted, skipped
     except Exception as e:
@@ -209,30 +219,35 @@ async def migrate_characters_waifu(session):
     """Migra personagens waifus com tipo_fonte='ANIME'"""
     print("\n[WAIFU] Migrando characters waifu...")
     data = load_json("characters_w.json")
-    
+
     if not data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     inserted = 0
     skipped = 0
     errors = []
-
+    OBGS=[]
     for item in data:
         try:
             if not item.get("nome_personagem") or not item.get("nome_anime"):
                 skipped += 1
-                errors.append({"name": "UNKNOWN", "reason": "Nome do personagem ou anime ausente"})
+                errors.append(
+                    {"name": "UNKNOWN", "reason": "Nome do personagem ou anime ausente"})
                 continue
-
-            event_code = EVENT_MAP.get(item.get("evento", "SEM_EVENTO"), EventType.NONE)
-            rarity_code = RARITY_MAP.get(item.get("raridade", "COMUM"), RarityType.COMMON)
-            media_type = MEDIA_TYPE_MAP.get(item.get("tipo_midia", "IMAGEM_URL"), MediaType.IMAGE_URL)
             
+            event_code = EVENT_MAP.get(
+                item.get("evento", "SEM_EVENTO"), EventType.NONE)
+            rarity_code = RARITY_MAP.get(
+                item.get("raridade", "COMUM"), RarityType.COMMON)
+            media_type = MEDIA_TYPE_MAP.get(
+                item.get("tipo_midia", "IMAGEM_URL"), MediaType.IMAGE_URL)
+
             data_value = item.get("data")
             if not data_value:
                 skipped += 1
-                errors.append({"name": item["nome_personagem"], "reason": "Dados (URL/ID) ausentes"})
+                errors.append(
+                    {"name": item["nome_personagem"], "reason": "Dados (URL/ID) ausentes"})
                 continue
 
             character = CharacterWaifu(
@@ -245,19 +260,24 @@ async def migrate_characters_waifu(session):
                 media_type=media_type,
                 extras=item.get("extras") or {},
             )
-            session.add(character)
+            # session.add(character)
+            OBGS.append(character)
             inserted += 1
-            
+
         except KeyError as e:
             skipped += 1
-            errors.append({"name": item.get("nome_personagem", "UNKNOWN"), "reason": f"Campo ausente: {e}"})
+            errors.append({"name": item.get("nome_personagem",
+                          "UNKNOWN"), "reason": f"Campo ausente: {e}"})
         except Exception as e:
             skipped += 1
-            errors.append({"name": item.get("nome_personagem", "UNKNOWN"), "reason": str(e)})
+            errors.append(
+                {"name": item.get("nome_personagem", "UNKNOWN"), "reason": str(e)})
 
     try:
+        session.add_all(OBGS)
         await session.commit()
-        print(f"  [OK] Characters Waifu: {inserted} inseridos, {skipped} erros")
+        print(
+            f"  [OK] Characters Waifu: {inserted} inseridos, {skipped} erros")
         if errors and len(errors) <= 5:
             for err in errors:
                 print(f"     - {err['name']}: {err['reason']}")
@@ -267,7 +287,7 @@ async def migrate_characters_waifu(session):
             print(f"     ... e mais {len(errors) - 3} erros")
         return inserted, skipped
     except Exception as e:
-        await session.rollback()
+     #   await session.rollback()
         print(f"  [ERROR] Erro ao salvar Waifu no banco de dados: {e}")
         return 0, len(data)
 
@@ -276,30 +296,36 @@ async def migrate_characters_husbando(session):
     """Migra personagens husbandos com tipo_fonte='ANIME'"""
     print("\n[HUSBANDO] Migrando characters husbando...")
     data = load_json("characters_h.json")
-    
+
     if not data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     inserted = 0
     skipped = 0
     errors = []
+    OBGS=[]
 
     for item in data:
         try:
             if not item.get("nome_personagem") or not item.get("nome_anime"):
                 skipped += 1
-                errors.append({"name": "UNKNOWN", "reason": "Nome do personagem ou anime ausente"})
+                errors.append(
+                    {"name": "UNKNOWN", "reason": "Nome do personagem ou anime ausente"})
                 continue
 
-            event_code = EVENT_MAP.get(item.get("evento", "SEM_EVENTO"), EventType.NONE)
-            rarity_code = RARITY_MAP.get(item.get("raridade", "COMUM"), RarityType.COMMON)
-            media_type = MEDIA_TYPE_MAP.get(item.get("tipo_midia", "IMAGEM_URL"), MediaType.IMAGE_URL)
-            
+            event_code = EVENT_MAP.get(
+                item.get("evento", "SEM_EVENTO"), EventType.NONE)
+            rarity_code = RARITY_MAP.get(
+                item.get("raridade", "COMUM"), RarityType.COMMON)
+            media_type = MEDIA_TYPE_MAP.get(
+                item.get("tipo_midia", "IMAGEM_URL"), MediaType.IMAGE_URL)
+
             data_value = item.get("data")
             if not data_value:
                 skipped += 1
-                errors.append({"name": item["nome_personagem"], "reason": "Dados (URL/ID) ausentes"})
+                errors.append(
+                    {"name": item["nome_personagem"], "reason": "Dados (URL/ID) ausentes"})
                 continue
 
             character = CharacterHusbando(
@@ -312,19 +338,24 @@ async def migrate_characters_husbando(session):
                 media_type=media_type,
                 extras=item.get("extras") or {},
             )
-            session.add(character)
+           # session.add(character)
+            OBGS.append(character)
             inserted += 1
-            
+
         except KeyError as e:
             skipped += 1
-            errors.append({"name": item.get("nome_personagem", "UNKNOWN"), "reason": f"Campo ausente: {e}"})
+            errors.append({"name": item.get("nome_personagem",
+                          "UNKNOWN"), "reason": f"Campo ausente: {e}"})
         except Exception as e:
             skipped += 1
-            errors.append({"name": item.get("nome_personagem", "UNKNOWN"), "reason": str(e)})
+            errors.append(
+                {"name": item.get("nome_personagem", "UNKNOWN"), "reason": str(e)})
 
     try:
+        session.add_all(OBGS)
         await session.commit()
-        print(f"  [OK] Characters Husbando: {inserted} inseridos, {skipped} erros")
+        print(
+            f"  [OK] Characters Husbando: {inserted} inseridos, {skipped} erros")
         if errors and len(errors) <= 5:
             for err in errors:
                 print(f"     - {err['name']}: {err['reason']}")
@@ -343,21 +374,23 @@ async def migrate_users(session):
     """Migra usuários com suas configurações"""
     print("\n[USERS] Migrando usuários...")
     data = load_json("usuarios.json")
-    
+
     if not data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     inserted = 0
     skipped = 0
     errors = []
+    OBGS=[]
 
     for item in data:
         try:
             telegram_id = item.get("telegram_id")
             if not telegram_id:
                 skipped += 1
-                errors.append({"id": "UNKNOWN", "reason": "telegram_id ausente"})
+                errors.append(
+                    {"id": "UNKNOWN", "reason": "telegram_id ausente"})
                 continue
 
             profile_status = PROFILE_STATUS_MAP.get(
@@ -369,7 +402,8 @@ async def migrate_users(session):
                 Language.PT
             )
 
-            waifu_config = item.get("configs_w", {}).copy() if item.get("configs_w") else {}
+            waifu_config = item.get("configs_w", {}).copy(
+            ) if item.get("configs_w") else {}
             if "modo_harem" in waifu_config:
                 harem_mode = HAREM_MODE_MAP.get(
                     waifu_config.pop("modo_harem", "PADRAO"),
@@ -377,7 +411,8 @@ async def migrate_users(session):
                 )
                 waifu_config["harem_mode"] = harem_mode.value
 
-            husbando_config = item.get("configs_h", {}).copy() if item.get("configs_h") else {}
+            husbando_config = item.get(
+                "configs_h", {}).copy() if item.get("configs_h") else {}
             if "modo_harem" in husbando_config:
                 harem_mode = HAREM_MODE_MAP.get(
                     husbando_config.pop("modo_harem", "PADRAO"),
@@ -385,34 +420,38 @@ async def migrate_users(session):
                 )
                 husbando_config["harem_mode"] = harem_mode.value
 
-            print(f"    [DEBUG] Migrando usuario TG ID {item['fav_w_id']}")
-            print(f"    [DEBUG] Migrando usuario TG ID {telegram_id}")
-
+            # print(f"    [DEBUG] Migrando usuario TG ID {item['fav_w_id']}")
+            # print(f"    [DEBUG] Migrando usuario TG ID {telegram_id}")
 
             user = User(
-                telegram_id=int(telegram_id),
-                telegram_user_data=item.get("telegram_from_user") or {},
-                profile_status=profile_status,
-                waifu_config=waifu_config or {"harem_mode": HaremMode.DEFAULT.value},
-                husbando_config=husbando_config or {"harem_mode": HaremMode.DEFAULT.value},
-                preferred_language=language,
-                # favorite_waifu_id=item['fav_w_id'] or None,
-                # favorite_husbando_id=item['fav_h_id'] or None,
-            )
-            user.favorite_waifu_id = item['fav_w_id'] or None
-            user.favorite_husbando_id = item['fav_h_id'] or None
-            session.add(user)
+            telegram_id=int(telegram_id),
+            telegram_user_data=item.get("telegram_from_user") or {},
+            profile_status=profile_status,
+            waifu_config=waifu_config or {"harem_mode": HaremMode.DEFAULT.value},
+            husbando_config=husbando_config or {"harem_mode": HaremMode.DEFAULT.value},
+            preferred_language=language,
+            favorite_waifu_id=item.get("fav_w_id"),
+            favorite_husbando_id=item.get("fav_h_id"),
+        )
+
+            # user.favorite_waifu_id = item.get('fav_w_id',None) or None
+            # user.favorite_husbando_id = item.get ('fav_h_id',None)or None
+           # session.add(user)
+            OBGS.append(user)
             inserted += 1
-            
+
         except ValueError as e:
 
             skipped += 1
-            errors.append({"id": item.get("telegram_id", "UNKNOWN"), "reason": f"Erro de tipo de dados: {e}"})
+            errors.append({"id": item.get("telegram_id", "UNKNOWN"),
+                          "reason": f"Erro de tipo de dados: {e}"})
         except Exception as e:
             skipped += 1
-            errors.append({"id": item.get("telegram_id", "UNKNOWN"), "reason": str(e)})
+            errors.append(
+                {"id": item.get("telegram_id", "UNKNOWN"), "reason": str(e)})
 
     try:
+        session.add_all(OBGS)
         await session.commit()
         print(f"  [OK] Usuarios: {inserted} inseridos, {skipped} erros")
         if errors and len(errors) <= 5:
@@ -434,21 +473,22 @@ async def migrate_waifu_collections(session):
     print("\n[WAIFU_COL] Migrando colecoes waifu...")
     char_data = load_json("characters_w.json")
     col_data = load_json("colecao_w.json")
-    
+
     if not col_data or not char_data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     char_map = {int(c.get("id")): c for c in char_data}
-    
+
     inserted = 0
     skipped = 0
+    OBGS=[]
 
     for item in col_data:
         try:
             telegram_id = item.get("telegram_id")
             old_character_id = int(item.get("id_global", 0))
-            
+
             if not telegram_id or old_character_id == 0:
                 skipped += 1
                 continue
@@ -464,7 +504,7 @@ async def migrate_waifu_collections(session):
             )
             result = await session.execute(stmt)
             character_id = result.scalar()
-            
+
             if not character_id:
                 skipped += 1
                 continue
@@ -473,13 +513,15 @@ async def migrate_waifu_collections(session):
                 telegram_id=int(telegram_id),
                 character_id=character_id,
             )
-            session.add(collection)
+          #  session.add(collection)
+            OBGS.append(collection)
             inserted += 1
-            
+
         except Exception as e:
             skipped += 1
 
     try:
+        session.add_all(OBGS)
         await session.commit()
         print(f"  [OK] Colecoes Waifu: {inserted} inseridos, {skipped} erros")
         return inserted, skipped
@@ -494,21 +536,21 @@ async def migrate_husbando_collections(session):
     print("\n[HUSBANDO_COL] Migrando colecoes husbando...")
     char_data = load_json("characters_h.json")
     col_data = load_json("colecao_h.json")
-    
+
     if not col_data or not char_data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     char_map = {int(c.get("id")): c for c in char_data}
-    
+
     inserted = 0
     skipped = 0
-
+    OBGS=[]
     for item in col_data:
         try:
             telegram_id = item.get("telegram_id")
             old_character_id = int(item.get("id_global", 0))
-            
+
             if not telegram_id or old_character_id == 0:
                 skipped += 1
                 continue
@@ -524,7 +566,7 @@ async def migrate_husbando_collections(session):
             )
             result = await session.execute(stmt)
             character_id = result.scalar()
-            
+
             if not character_id:
                 skipped += 1
                 continue
@@ -533,15 +575,18 @@ async def migrate_husbando_collections(session):
                 telegram_id=int(telegram_id),
                 character_id=character_id,
             )
-            session.add(collection)
+          #  session.add(collection)
+            OBGS.append(collection)
             inserted += 1
-            
+
         except Exception as e:
             skipped += 1
 
     try:
+        session.add_all(OBGS)
         await session.commit()
-        print(f"  [OK] Colecoes Husbando: {inserted} inseridos, {skipped} erros")
+        print(
+            f"  [OK] Colecoes Husbando: {inserted} inseridos, {skipped} erros")
         return inserted, skipped
     except Exception as e:
         await session.rollback()
@@ -553,13 +598,14 @@ async def migrate_telegram_groups(session):
     """Migra grupos do telegram com suas configurações"""
     print("\n[GROUPS] Migrando grupos telegram...")
     data = load_json("chats_tg.json")
-    
+
     if not data:
         print("  [WARN] Nenhum dado carregado")
         return 0, 0
-    
+
     inserted = 0
     skipped = 0
+    OBGS=[]
 
     for item in data:
         try:
@@ -579,13 +625,15 @@ async def migrate_telegram_groups(session):
                 configuration=item.get("configs") or {},
                 language=language,
             )
-            session.add(group)
+          #  session.add(group)
+            OBGS.append(group)
             inserted += 1
-            
+
         except Exception as e:
             skipped += 1
 
     try:
+        session.add_all(OBGS)
         await session.commit()
         print(f"  [OK] Grupos Telegram: {inserted} inseridos, {skipped} erros")
         return inserted, skipped
@@ -595,7 +643,7 @@ async def migrate_telegram_groups(session):
         return 0, len(data)
 
 
-async def main():
+async def main_migracao_manual():
     """Executa a migração completa do banco antigo"""
     print("=" * 70)
     print("[START] INICIANDO MIGRACAO MANUAL DO BANCO DE DADOS ANTIGO")
@@ -609,25 +657,25 @@ async def main():
             total_inserted = 0
             total_skipped = 0
 
-            # ins, skp = await migrate_events(session)
-            # total_inserted += ins
-            # total_skipped += skp
+            ins, skp = await migrate_events(session)
+            total_inserted += ins
+            total_skipped += skp
 
-            # ins, skp = await migrate_rarities(session)
-            # total_inserted += ins
-            # total_skipped += skp
+            ins, skp = await migrate_rarities(session)
+            total_inserted += ins
+            total_skipped += skp
 
-            # ins, skp = await migrate_characters_waifu(session)
-            # total_inserted += ins
-            # total_skipped += skp
+            ins, skp = await migrate_characters_waifu(session)
+            total_inserted += ins
+            total_skipped += skp
 
-            # ins, skp = await migrate_characters_husbando(session)
-            # total_inserted += ins
-            # total_skipped += skp
+            ins, skp = await migrate_characters_husbando(session)
+            total_inserted += ins
+            total_skipped += skp
 
-            # ins, skp = await migrate_users(session)
-            # total_inserted += ins
-            # total_skipped += skp
+            ins, skp = await migrate_users(session)
+            total_inserted += ins
+            total_skipped += skp
 
             ins, skp = await migrate_waifu_collections(session)
             total_inserted += ins
@@ -636,6 +684,8 @@ async def main():
             ins, skp = await migrate_husbando_collections(session)
             total_inserted += ins
             total_skipped += skp
+
+   
 
             ins, skp = await migrate_telegram_groups(session)
             total_inserted += ins
@@ -661,7 +711,7 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(main_migracao_manual())
     except KeyboardInterrupt:
         print("\n\n[WARN] Migracao interrompida pelo usuario")
     except Exception as e:
