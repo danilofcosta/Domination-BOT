@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     running_bots["Waifu"] = bot1
     running_bots["Husbando"] = bot2
 
-    # Inicia os bots em background
+    
     asyncio.create_task(bot1.start())
     asyncio.create_task(bot2.start())
     
@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permite qualquer origem (React, etc)
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
