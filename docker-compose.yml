@@ -3,10 +3,10 @@ version: "3.8"
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: dockerfile
     image: domination-backend:latest
-    command: uvicorn backend.main_backend:app --host 0.0.0.0 --port 3000
+    command: uvicorn backend.main_backend:app  --port 3000
     env_file:
       - stack.env
     ports:
@@ -18,7 +18,7 @@ services:
       context: ./web/mywebapp
       dockerfile: dockerfile
     image: domination-frontend:latest
-    command: npm run dev -- --host 0.0.0.0
+    command: npm run dev  
     env_file:
       - stack.env
     ports:
