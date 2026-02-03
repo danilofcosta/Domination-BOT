@@ -1,13 +1,4 @@
-# from api.app import app
 import asyncio
-import sys
-
-from domination_telegram import bot
-
-
-import os, logging
-logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-
-
+from domination_telegram import bots_run
 if __name__ == "__main__":
-   asyncio.run(bot.main())
+   asyncio.run(bots_run.main())

@@ -41,6 +41,14 @@ def get_keyboard(username
 
 def get_router():
     router = Router(name=__name__)
+    @router.callback_query(lambda c: c.data == "main_menu")
+    async  def callback_query_start(callback: CallbackQuery):
+        await callback.message.delete()
+        await start_cmd(callback.message)
+
+
+
+
 
     @router.message(CommandStart())
     async def start_cmd(message: Message):

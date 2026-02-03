@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+WORKDIR /domination_telegram
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY domination_telegram domination_telegram
+COPY database database
+COPY run.py run.py
+
+
+CMD ["python", "run.py"]

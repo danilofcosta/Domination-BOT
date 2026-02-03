@@ -18,4 +18,10 @@ class Commands_Bot(str, Enum):
         print(command,prefix_str[0].lower()+command)
         return (command,prefix_str[0].lower()+command)
 
-    
+commands_description = {
+    Commands_Bot.Harem: "Mostra seu harém atual.",
+    Commands_Bot.fav: "Define um personagem favorito.",
+    Commands_Bot.gift: "Envia um presente para outro usuário.",
+    Commands_Bot.list_annime: "Lista personagens de um anime.",
+    Commands_Bot.top: "Mostra o ranking do servidor."
+}

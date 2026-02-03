@@ -22,7 +22,6 @@ async def main():
 
     chat_id = os.getenv('GROUP_TEST')
 
-   # Envia mensagem com os dois bots quase ao mesmo tempo
     await asyncio.gather(
         send_media.send_media(
             caption="Bot Waifu iniciado ",
@@ -36,10 +35,9 @@ async def main():
         )
     )
 
-    # Se seus bots precisarem rodar continuamente (polling, webhook, etc),
-    # você provavelmente precisa de algo assim:
+
     await asyncio.gather(
-        bot1.start(),   # ou bot1.run(), depende da sua implementação
+        bot1.start(),  
         bot2.start()
     )
 

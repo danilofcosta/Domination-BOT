@@ -6,10 +6,9 @@ COPY ../requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./backend /app/backend
-COPY ./database /app/database
-COPY ./domination_telegram /app/domination_telegram
+COPY backend /app/backend
+COPY database /app/database
 
-# EXPOSE 3000
+EXPOSE 3000
 
-# CMD ["uvicorn", "backend.main_backend:app", "--host","--port", "3000"]
+CMD ["uvicorn", "backend.main_backend:app", "--host","--port", "3000"]

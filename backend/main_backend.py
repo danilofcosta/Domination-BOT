@@ -16,26 +16,6 @@ from backend.routes import users
 
 load_dotenv()
 
-# # Dicionário global para acessar os bots na interface web
-# running_bots = {}
-
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     # Inicialização dos Bots
-#     bot1 = Domination(bot_token=os.getenv("BOT_TOKEN_WAIFU"), genero=GeneroEnum.Waifu)
-#     bot2 = Domination(bot_token=os.getenv("BOT_TOKEN_HUSBANDO"), genero=GeneroEnum.Husbando)
-    
-#     running_bots["Waifu"] = bot1
-#     running_bots["Husbando"] = bot2
-
-    
-#     asyncio.create_task(bot1.start())
-#     asyncio.create_task(bot2.start())
-    
-#     yield
-#     running_bots.clear()
-
-#app = FastAPI(lifespan=lifespan)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -49,7 +29,13 @@ app.add_middleware(
 app.include_router(users.router)
 
 templates = Jinja2Templates(directory=f"backend/templates")
-
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {
+        "request": request, 
+       
+        "status": "Online"
+    })
 @app.get("/web", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {

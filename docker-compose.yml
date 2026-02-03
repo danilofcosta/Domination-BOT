@@ -4,24 +4,28 @@ services:
   backend:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: backend/dockerfile
     image: domination-backend:latest
-    command: uvicorn backend.main_backend:app  --port 3000
-    env_file:
-      - stack.env
+    command: uvicorn backend.main_backend:app --port 3000
     ports:
       - "3000:3000"
 
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: dockerfile
+  #   image: domination-frontend:latest
+  #   command: npm run dev
+  #   ports:
+  #     - "5173:5173"
 
-  frontend:
+  bot_telegram:
     build:
-      context: ./frontend
-      dockerfile: dockerfile
-    image: domination-frontend:latest
-    command: npm run dev  
+      context: .
+      dockerfile: domination_telegram/dockerfile
+    image: domination-bot_telegram:latest
+    
     env_file:
-      - stack.env
-    ports:
-      - "5173:5173"
+      - .env   
 
-
+    command: python run.py
