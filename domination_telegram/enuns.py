@@ -18,6 +18,20 @@ class Commands_Bot(str, Enum):
         print(command,prefix_str[0].lower()+command)
         return (command,prefix_str[0].lower()+command)
 
+class Commands_adm_super(str, Enum):
+    prefixs='/.!'
+    add_character='add_character'
+
+    @staticmethod
+    def create_dynamic_command( command:str,prefix_str:str) -> tuple:
+        print(command,prefix_str[0].lower()+command)
+        return (command,prefix_str[0].lower()+command)
+
+
+
+
+
+
 commands_description = {
     Commands_Bot.Harem: "Mostra seu harém atual.",
     Commands_Bot.fav: "Define um personagem favorito.",

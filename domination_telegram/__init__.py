@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 
 from domination_telegram.enuns import GeneroEnum
-from domination_telegram.routes import start, MessageCounter, harem, CommandsUser, inline_query, bot_added_to_group, help
+from domination_telegram.routes import start, MessageCounter, harem, CommandsUser, inline_query, bot_added_to_group, help, commandsAminSuper 
 load_dotenv()
 
 
@@ -43,3 +43,4 @@ class Domination:
         self.dp.include_router(harem.get_router(genero=genero.value))
         self.dp.include_router(inline_query.get_router())
         CommandsUser.include_router_all(self.dp, genero=genero.value)
+        commandsAminSuper.include_router_all(self.dp, genero=genero.value)

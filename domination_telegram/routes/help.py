@@ -58,7 +58,18 @@ def get_router():
 
         reply_markup = InlineKeyboardMarkup(
             inline_keyboard=[
+              
+                [
 
+                    InlineKeyboardButton(
+                        text="ʙᴜsᴄᴀʀ ᴘᴇʀsᴏɴᴀɢᴇᴍ",
+                   switch_inline_query_current_chat= 'character: sakura'
+                    ),
+                    InlineKeyboardButton(
+                        text="ʙᴜsᴄᴀʀ ᴀɴɪᴍᴇ",
+                   switch_inline_query_current_chat= 'anime: naruto'
+                    ),
+                ],
               
                 [
 
@@ -74,7 +85,6 @@ def get_router():
 
         await callback.message.edit_caption(caption=caption)
         await callback.message.edit_reply_markup(reply_markup=reply_markup )
-
 
 
     # Botão Help → edita a mensagem
