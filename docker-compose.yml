@@ -26,6 +26,6 @@ services:
     image: domination-bot_telegram:latest
     
     env_file:
-      - .env   
+      - stack.env 
 
     command: python run.py
