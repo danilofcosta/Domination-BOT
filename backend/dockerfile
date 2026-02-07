@@ -11,4 +11,4 @@ COPY database /app/database
 
 EXPOSE 3000
 
-CMD ["uvicorn", "backend.main_backend:app", "--host","--port", "3000"]
+CMD ["uvicorn", "backend.main_backend:app", "--host", "0.0.0.0", "--port", "3000"]

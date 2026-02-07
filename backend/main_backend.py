@@ -12,7 +12,7 @@ from domination_telegram import Domination
 from domination_telegram.enuns import GeneroEnum
 
 #rotas
-from backend.routes import users
+from backend.routes import users, add_caracter
 
 load_dotenv()
 
@@ -27,6 +27,7 @@ app.add_middleware(
 
 
 app.include_router(users.router)
+app.include_router(add_caracter.router)
 
 templates = Jinja2Templates(directory=f"backend/templates")
 @app.get("/", response_class=HTMLResponse)

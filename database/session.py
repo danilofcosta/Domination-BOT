@@ -8,9 +8,7 @@ AsyncSessionLocal: AsyncSession = sessionmaker(
 )
 
 
-async def get_session() :
-    async with AsyncSessionLocal() as session:
-        yield session
+
 
 async def get_session():
     async with AsyncSession(engine, expire_on_commit=False) as session:
