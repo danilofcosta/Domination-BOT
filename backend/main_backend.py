@@ -8,8 +8,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 
-from domination_telegram import Domination
-from domination_telegram.enuns import GeneroEnum
+
 
 #rotas
 from backend.routes import users, add_caracter
