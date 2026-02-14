@@ -15,7 +15,7 @@ class Commands_Bot(str, Enum):
 
     @staticmethod
     def create_dynamic_command( command:str,prefix_str:str) -> tuple:
-        print(command,prefix_str[0].lower()+command)
+        # print(command,prefix_str[0].lower()+command)
         return (command,prefix_str[0].lower()+command)
 
 class Commands_adm_super(str, Enum):

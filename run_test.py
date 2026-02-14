@@ -33,4 +33,13 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # asyncio.run(main())
+    from backend.main_backend import app
+    import uvicorn
+
+    uvicorn.run(
+        "backend.main_backend:app",
+        host="localhost",
+        port=8000,
+        reload=True
+    )

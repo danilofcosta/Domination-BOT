@@ -80,10 +80,14 @@ def get_router(genero: str):
                 )
             )
         )
+        try:
 
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(stmt)
-            character = result.scalars().first()
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(stmt)
+                character = result.scalars().first()
+        except Exception as e:
+            print(f"Erro ao buscar personagem: {e}")
+            return await message.answer("Ocorreu um erro ao acessar o banco de dados.")
 
         if not character:
             return await message.answer("Não encontrei esse ID no seu harem.")

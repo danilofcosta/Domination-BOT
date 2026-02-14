@@ -78,6 +78,8 @@ def get_router():
             # Override para grupos específicos
             if group_id in {-1001528803759} and cont < 97:
                 cont = grp_counter["cont"] = DROP - 2
+            else:
+                return
 
             # ======================
             # DROP (somente uma vez)

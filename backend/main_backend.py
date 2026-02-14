@@ -1,21 +1,67 @@
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from contextlib import asynccontextmanager
-from fastapi.middleware.cors import CORSMiddleware
-
-import asyncio
 import os
+import asyncio
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-
-
-
-#rotas
-from backend.routes import users, add_caracter
-
 load_dotenv()
 
-app = FastAPI()
+from domination_telegram import Domination
+from domination_telegram.enuns import GeneroEnum
+from domination_telegram.uteis import send_media
+
+
+# Inicializa bots fora do lifespan (evita recriar em reloads)
+bot1 = Domination(
+    bot_token=os.getenv("BOT_TOKEN_WAIFU"),
+    genero=GeneroEnum.Waifu,
+)
+
+bot2 = Domination(
+    bot_token=os.getenv("BOT_TOKEN_HUSBANDO"),
+    genero=GeneroEnum.Husbando,
+)
+
+chat_id = os.getenv("GROUP_TEST")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print(" → Iniciando aplicação FastAPI + BOTS…")
+
+    # Envia mensagens iniciais
+    await asyncio.gather(
+        send_media.send_media(
+            caption="Bot Waifu iniciado",
+            bot=bot1.bot,
+            chat_id=chat_id
+        ),
+        send_media.send_media(
+            caption="Bot Husbando iniciado",
+            bot=bot2.bot,
+            chat_id=chat_id
+        )
+    )
+
+    # Inicia bots em background
+    task1 = asyncio.create_task(bot1.start())
+    task2 = asyncio.create_task(bot2.start())
+
+    print(" → Bots iniciados!")
+
+    # Entrega o controle ao FastAPI
+    yield
+
+    print(" → Encerrando bots…")
+
+    # Cancela corretamente no shutdown
+    task1.cancel()
+    task2.cancel()
+
+    print(" → Bots finalizados. Encerrando API…")
+
+
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -25,30 +71,12 @@ app.add_middleware(
 )
 
 
-app.include_router(users.router)
-app.include_router(add_caracter.router)
 
-templates = Jinja2Templates(directory=f"backend/templates")
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {
-        "request": request, 
-       
-        "status": "Online"
-    })
-@app.get("/web", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {
-        "request": request, 
-       # "bots": running_bots.keys(),
-        "status": "Online"
-    })
+@app.get("/")
+async def root():
 
-@app.post("/send")
-async def send_test_message(bot_name: str = Form(...), message: str = Form(...)):
-    bot_obj = running_bots.get(bot_name)
-    if bot_obj:
-        chat_id = os.getenv('GROUP_TEST')
-        await bot_obj.bot.send_message(chat_id=chat_id, text=f"[Painel Web]: {message}")
-        return {"status": "Enviado com sucesso!"}
-    return {"status": "Bot não encontrado"}
+    return {"status": "Bots rodando com Lifespan!"}
+
+@app.get("/status")
+async def status():
+    return {"status": "Bots rodando com Lifespan!"}
