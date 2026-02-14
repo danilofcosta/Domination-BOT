@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/dockerfile
-    image: domination-backend:latest
-    command: uvicorn backend.main_backend:app --port 3000
-    ports:
-      - "3000:3000"
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: backend/dockerfile
+  #   image: domination-backend:latest
+  #   command: uvicorn backend.main_backend:app --port 3000
+  #   ports:
+  #     - "3000:3000"
 
   # frontend:
   #   build:
@@ -19,13 +19,13 @@ services:
   #   ports:
   #     - "5173:5173"
 
-  # bot_telegram:
-  #   build:
-  #     context: .
-  #     dockerfile: domination_telegram/dockerfile
-  #   image: domination-bot_telegram:latest
+  bot_telegram:
+    build:
+      context: .
+      dockerfile: domination_telegram/dockerfile
+    image: domination-bot_telegram:latest
     
-  #   env_file:
-  #     - stack.env 
+    env_file:
+      - stack.env 
 
-  #   command: python run.py
+    command: python run.py
