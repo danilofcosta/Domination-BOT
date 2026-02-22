@@ -29,3 +29,4 @@ services:
       - stack.env 
 
     command: python run.py
+ restart: unless-stopped
