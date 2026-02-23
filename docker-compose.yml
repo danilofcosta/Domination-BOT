@@ -24,9 +24,9 @@ services:
       context: .
       dockerfile: domination_telegram/dockerfile
     image: domination-bot_telegram:latest
-    
+
     env_file:
-      - stack.env 
+      - stack.env
 
     command: python run.py
- restart: unless-stopped
+    restart: unless-stopped
