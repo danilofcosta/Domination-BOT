@@ -8,7 +8,7 @@ services:
     container_name: waifu_bot
     restart: always
     env_file:
-      - .env
+      - stack.env
     environment:
       TYPE_BOT: waifu
 
@@ -19,7 +19,7 @@ services:
     container_name: husbando_bot
     restart: always
     env_file:
-      - .env
+      - stack.env
     environment:
       TYPE_BOT: husbando
 
@@ -32,4 +32,4 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - stack.env
