@@ -16,11 +16,17 @@ export async function getCharacters(ctx: MyContext) {
     _chatType === ChatType.HUSBANDO
       ? await prisma.characterHusbando.findFirst({
           where: { id: Number(query) },
-          include: { rarities: true, events: true },
+          include: {
+            events: { include: { event: true } }, // HusbandoEvent[]
+            rarities: { include: { rarity: true } }, // HusbandoRarity[]
+          },
         })
       : await prisma.characterWaifu.findFirst({
           where: { id: Number(query) },
-          include: { rarities: true, events: true },
+          include: {
+            events: { include: { event: true } }, // HusbandoEvent[]
+            rarities: { include: { rarity: true } }, // HusbandoRarity[]
+          },
         });
   // console.log("Result:", per);
   if (!per) return;

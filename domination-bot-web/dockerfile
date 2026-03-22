@@ -1,32 +1,24 @@
-# ---------- BUILD ----------
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
+# Diretório de trabalho
 WORKDIR /app
 
+# Copia apenas package.json e package-lock.json antes para cache de npm install
 COPY package*.json ./
-RUN apk add --no-cache openssl
 RUN npm install
 
+# Copia o prisma primeiro e gera o client
+COPY prisma ./prisma
+RUN npx prisma generate
+
+# Copia o restante do código
 COPY . .
 
-RUN npx prisma generate
+# Build do projeto (Next.js, TypeScript)
 RUN npm run build
 
-# ---------- RUN ----------
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-RUN apk add --no-cache openssl
-
-ENV NODE_ENV=production
-
-COPY --from=builder /app/package*.json ./
-RUN npm install --omit=dev
-
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/prisma ./prisma
-
+# Porta que o container vai expor
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+# Comando para rodar o app quando o container iniciar
+CMD ["npm", "start"]

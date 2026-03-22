@@ -1,11 +1,8 @@
-import { json } from "node:stream/consumers";
-import { Language } from "../../../../generated/prisma/enums.js";
 import { prisma } from "../../../../lib/prisma.js";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/metion_user.js";
 import { ChatType } from "../../../utils/types.js";
 import { extrair_emojis } from "../../inline_query/create_caption.js";
-import { use } from "react";
 import { LinkMsg } from "../../../utils/link_msg.js";
 
 function verificarNome(personagem: string, tentativa: string) {

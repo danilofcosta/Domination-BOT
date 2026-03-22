@@ -12,9 +12,10 @@ export async function Ramdon_Character(ctx: MyContext) {
       ctx: ctx,
       character: Random_Character,
       chatType: ctx.session.settings.genero ,
-      noformat: false,
+    noformat:true
    
     });
+    console.log(capiton)
     Sendmedia({ ctx: ctx, per: Random_Character, caption: capiton });
   } catch (error) {
     console.log(error);

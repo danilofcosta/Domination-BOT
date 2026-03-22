@@ -31,6 +31,13 @@ export async function add_evento(ctx: MyContext) {
   }
 }
 
+export function testeemoj(ctx: MyContext){
+const rarity_emoji_local='<tg-emoji emoji-id="5325547803936572038">✨</tg-emoji>'
+const rarity_emoji_globalapis='<tg-emoji emoji-id="5395444784611480792">✏️</tg-emoji>'
+
+ctx.reply(rarity_emoji_local,{parse_mode: 'HTML'})
+ctx.reply(rarity_emoji_globalapis ,{parse_mode: 'HTML'})
+}
 
 
 export async function teste(ctx: MyContext) {

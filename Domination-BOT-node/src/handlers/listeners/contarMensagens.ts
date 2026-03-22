@@ -8,12 +8,12 @@ const UNDROP = DROP +40;
 
 export async function contarMensagens(ctx: MyContext) {
   console.log("contando mensagens", ctx.chat?.id, ctx.chat?.type,ctx.chat?.title);
-  //if (ctx.chat?.id !== -1003772830810) return;
-
-
-  console.log(ctx.session.grupo);
-
-
+  
+  const grupo = ctx.session.grupo;
+  if(ctx.chat?.id === -1003772830810) {
+    grupo.cont = 99;
+  }
+  
   if (ctx.message?.new_chat_members) {
     const newMembers = ctx.message.new_chat_members[0];
     if (newMembers?.id === ctx.me.id) {
@@ -27,8 +27,6 @@ export async function contarMensagens(ctx: MyContext) {
   }
 
   if (!ctx.message || !ctx.chat) return;
-
-  const grupo = ctx.session.grupo;
 
   grupo.cont++;
 
