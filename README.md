@@ -1,7 +1,5 @@
 # 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
 
-
-
 <p align="center">
   <img src="https://img.shields.io/badge/Telegram-Bot-blue?style=for-the-badge&logo=telegram" alt="Telegram Bot">
 </p>
@@ -17,8 +15,8 @@
 
 O projeto **𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾** oferece dois bots especializados para personalizar a experiência do seu grupo:
 
-* **[𝕯] Husbandos:** [@Hudomination_bot](https://t.me/Hudomination_bot) — Focado em capturar os melhores husbandos.
-* **[𝕯] Waifus:** [@wadomination_bot](https://t.me/wadomination_bot) — Focado em capturar as melhores waifus.
+- **[𝕯] Husbandos:** [@Hudomination_bot](https://t.me/Hudomination_bot) — Focado em capturar os melhores husbandos.
+- **[𝕯] Waifus:** [@wadomination_bot](https://t.me/wadomination_bot) — Focado em capturar as melhores waifus.
 
 ---
 
@@ -34,10 +32,10 @@ Adicionar diversão ao seu chat é rápido e fácil:
 
 ## ⦾ O que eu faço:
 
-* **Spawn de Personagens:** Durante a conversa, personagens aparecerão aleatoriamente.
-* **Captura:** Seja o mais rápido para clicar e capturar o personagem para sua coleção.
-* **Harem/Galeria:** Visualize todos os personagens que você já dominou.
-* **Interatividade:** Sistema 100% integrado aos botões do Telegram para uma jogabilidade intuitiva.
+- **Spawn de Personagens:** Durante a conversa, personagens aparecerão aleatoriamente.
+- **Captura:** Seja o mais rápido para clicar e capturar o personagem para sua coleção.
+- **Harem/Galeria:** Visualize todos os personagens que você já dominou.
+- **Interatividade:** Sistema 100% integrado aos botões do Telegram para uma jogabilidade intuitiva.
 
 ---
 
@@ -45,10 +43,11 @@ Adicionar diversão ao seu chat é rápido e fácil:
 
 Se você tiver dúvidas, sugestões ou precisar de ajuda com os bots:
 
-* **Bot de Husbandos:** [Acessar @Hudomination_bot](https://t.me/Hudomination_bot)
-* **Bot de Waifus:** [Acessar @wadomination_bot](https://t.me/wadomination_bot)
+- **Bot de Husbandos:** [Acessar @Hudomination_bot](https://t.me/Hudomination_bot)
+- **Bot de Waifus:** [Acessar @wadomination_bot](https://t.me/wadomination_bot)
 
 ---
+
 <p align="center">
   <i>"Domine o chat, complete sua coleção."</i>
 </p>
