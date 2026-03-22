@@ -1,24 +1,20 @@
-FROM node:20-alpine
+FROM node:20
 
-# Diretório de trabalho
 WORKDIR /app
 
-# Copia apenas package.json e package-lock.json antes para cache de npm install
 COPY package*.json ./
 RUN npm install
 
-# Copia o prisma primeiro e gera o client
-COPY prisma ./prisma
-RUN npx prisma generate
-
-# Copia o restante do código
 COPY . .
 
-# Build do projeto (Next.js, TypeScript)
+
+RUN npx prisma generate
+
+
+RUN ls -la node_modules/@prisma/client
+
 RUN npm run build
 
-# Porta que o container vai expor
 EXPOSE 3000
 
-# Comando para rodar o app quando o container iniciar
 CMD ["npm", "start"]
