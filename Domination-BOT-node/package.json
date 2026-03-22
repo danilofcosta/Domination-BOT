@@ -1,0 +1,41 @@
+{
+  "name": "dominarbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "addEvent": "tsx src/handlers/Comandos/admin/add_event.ts",
+    "addRarity": "tsx src/handlers/Comandos/admin/add_rarity.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "@types/pg": "^8.18.0",
+    "prisma": "^7.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@grammyjs/auto-retry": "^1.1.1",
+    "@grammyjs/commands": "^1.2.0",
+    "@grammyjs/i18n": "^1.1.2",
+    "@grammyjs/menu": "^1.2.0",
+    "@grammyjs/ratelimiter": "^1.2.1",
+    "@grammyjs/runner": "^1.0.4",
+    "@grammyjs/storage-prisma": "^2.5.1",
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.5.0",
+    "dayjs": "^1.11.9",
+    "dotenv": "^17.3.1",
+    "grammy": "^1.41.0",
+    "kysely": "^0.28.8",
+    "lru-cache": "^11.2.6",
+    "pg": "^8.19.0",
+    "reflect-metadata": "^0.1.13"
+  }
+}

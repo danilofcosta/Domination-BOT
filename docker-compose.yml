@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  waifu_bot:
+    build:
+      context: ./Domination-BOT-node
+      dockerfile: Dockerfile
+    container_name: waifu_bot
+    restart: always
+
+    environment:
+      TYPE_BOT: waifu
+
+    env_file:
+      - stack.env
+
+  husbando_bot:
+    build:
+      context: ./Domination-BOT-node
+      dockerfile: Dockerfile
+    container_name: husbando_bot
+    restart: always
+
+    environment:
+      TYPE_BOT: husbando
+
+    env_file:
+      - stack.env
+
+  web:
+    image: domination_web
+    build:
+      context: ./Domination-BOT-web
+      dockerfile: Dockerfile
+    container_name: web
+    restart: always
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - stack.env
+
