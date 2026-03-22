@@ -30,7 +30,7 @@ services:
   web:
     image: domination_web
     build:
-      context: ./Domination-BOT-web
+      context: ./domination-bot-web
       dockerfile: Dockerfile
     container_name: web
     restart: always
