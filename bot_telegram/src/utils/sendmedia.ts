@@ -1,0 +1,79 @@
+import type { MyContext } from "./customTypes.js";
+
+import { InputFile, InlineKeyboard } from "grammy";
+import type { Character } from "./types.js";
+import { MediaType } from "../../generated/prisma/client.js";
+interface ParamsSendMedia {
+  chat_id?: string | number | undefined;
+  ctx: MyContext | null | undefined;
+  per?: Character | null;
+  caption?: string;
+  reply_markup?: InlineKeyboard;
+}
+
+export async function Sendmedia(params: ParamsSendMedia) {
+  const { chat_id, ctx, per, caption, reply_markup } = params;
+
+  if (!ctx) {
+    throw new Error("ctx é obrigatório");
+  }
+
+  const api = ctx.api;
+  const targetChatId = chat_id ?? ctx.chat?.id;
+
+  if (!targetChatId) {
+    throw new Error("chat_id não fornecido e ctx.chat.id não disponível");
+  }
+
+  const options = {
+    parse_mode: "HTML" as const,
+    ...(caption !== undefined && { caption }),
+    ...(reply_markup && { reply_markup }),
+  };
+
+  // 🔥 helpers seguros
+  const sendPhoto = async (photo: any) => {
+    if (chat_id) {
+      return api.sendPhoto(targetChatId, photo, options);
+    }
+    return ctx.replyWithPhoto(photo, options);
+  };
+
+  const sendVideo = async (video: any) => {
+    if (chat_id) {
+      return api.sendVideo(targetChatId, video, options);
+    }
+    return ctx.replyWithVideo(video, options);
+  };
+
+  const sendText = async (text: string) => {
+    if (chat_id) {
+      return api.sendMessage(targetChatId, text, options);
+    }
+    return ctx.reply(text, options);
+  };
+
+  // 📌 fallback sem mídia
+  if (!per) {
+    return sendText(caption ?? "");
+  }
+
+  const { mediaType: type, media } = per;
+
+  try {
+    // 🖼 IMAGEM
+    if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID) {
+      return await sendPhoto(media);
+    }
+
+    // 🎥 VÍDEO
+    if (type === MediaType.VIDEO_URL || type === MediaType.VIDEO_FILEID) {
+      return await sendVideo(media);
+    }
+
+    return sendText("Tipo de mídia não suportado.");
+  } catch (err) {
+    console.error("Erro ao enviar mídia:", err);
+    return sendText(caption ?? "");
+  }
+}

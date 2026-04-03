@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CharacterHusbando {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(100)
+  origem             String               @db.VarChar(100)
+  mediaType          MediaType?
+  media              String?
+  slug               String               @unique
+  extras             Json?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @default(now())
+  popularity         Int                  @default(0)
+  sourceType         SourceType           @default(ANIME)
+  linkweb            String?
+  linkwebExpiresAt   DateTime?
+  HusbandoCollection HusbandoCollection[]
+  HusbandoEvent      HusbandoEvent[]
+  HusbandoRarity     HusbandoRarity[]
+  User               User[]
+
+  @@index([name, origem])
+}
+
+model CharacterWaifu {
+  id               Int               @id @default(autoincrement())
+  name             String            @db.VarChar(100)
+  origem           String            @db.VarChar(100)
+  mediaType        MediaType?
+  media            String?
+  extras           Json?
+  slug             String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now())
+  popularity       Int               @default(0)
+  sourceType       SourceType        @default(ANIME)
+  linkweb          String?
+  linkwebExpiresAt DateTime?
+  User             User[]
+  WaifuCollection  WaifuCollection[]
+  WaifuEvent       WaifuEvent[]
+  WaifuRarity      WaifuRarity[]
+
+  @@index([name, origem])
+}
+
+model Event {
+  id            Int             @id @default(autoincrement())
+  code          String          @unique
+  name          String
+  emoji         String
+  description   String?
+  emoji_id      String?
+  HusbandoEvent HusbandoEvent[]
+  WaifuEvent    WaifuEvent[]
+}
+
+model HusbandoCollection {
+  id          Int               @id @default(autoincrement())
+  userId      BigInt
+  characterId Int
+  count       Int               @default(1)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now())
+  Character   CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  User        User              @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([userId])
+}
+
+model HusbandoEvent {
+  characterId       Int
+  eventId           Int
+  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Event             Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, eventId])
+}
+
+model HusbandoRarity {
+  characterId       Int
+  rarityId          Int
+  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Rarity            Rarity            @relation(fields: [rarityId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, rarityId])
+}
+
+model Rarity {
+  id             Int              @id @default(autoincrement())
+  code           String           @unique
+  name           String
+  emoji          String
+  description    String?
+  emoji_id       String?
+  HusbandoRarity HusbandoRarity[]
+  WaifuRarity    WaifuRarity[]
+}
+
+model Session {
+  key  String @id
+  data Json
+}
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  favoriteWaifuId    Int?
+  favoriteHusbandoId Int?
+  waifuConfig        Json?
+  husbandoConfig     Json?
+  telegramData       Json?
+  coins              Int                  @default(0)
+  profileType        ProfileType          @default(USER)
+  language           Language             @default(PT)
+  telegramId         BigInt               @unique
+  HusbandoCollection HusbandoCollection[]
+  CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
+  CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])
+  WaifuCollection    WaifuCollection[]
+}
+
+model WaifuCollection {
+  id          Int            @id @default(autoincrement())
+  userId      BigInt
+  characterId Int
+  count       Int            @default(1)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @default(now())
+  Character   CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  User        User           @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([userId])
+}
+
+model WaifuEvent {
+  characterId    Int
+  eventId        Int
+  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Event          Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, eventId])
+}
+
+model WaifuRarity {
+  characterId    Int
+  rarityId       Int
+  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Rarity         Rarity         @relation(fields: [rarityId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, rarityId])
+}
+
+enum Language {
+  PT
+  EN
+}
+
+enum MediaType {
+  IMAGE_URL
+  IMAGE_FILEID
+  VIDEO_URL
+  VIDEO_FILEID
+}
+
+enum ProfileType {
+  USER
+  MOD
+  ADMIN
+  OWNER
+}
+
+enum SourceType {
+  ANIME
+  GAME
+  MANGA
+  MOVIE
+}
