@@ -2,7 +2,7 @@
 
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
-import { StartGreetings } from "../handlers/Comandos/globais/start.js";
+import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
 import { options } from "./ini.js";
 import { helpCommand } from "../handlers/Comandos/globais/help.js";
 
