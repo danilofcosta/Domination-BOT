@@ -37,7 +37,12 @@ export async function StartGreetings(ctx: MyContext) {
       ctx.t("start-btn-database"),
       process.env.DATABASE_TELEGRAM_LINK ||
         `https://t.me/${ctx.me.username}?startgroup=true`,
+    ).url(
+      ctx.t("start-btn-colaboradores"),
+      process.env.DATABASE_TELEGRAM_LINK ||
+        `https://telegra.ph/Colaboradores-04-04`,
     );
+
 
   if (!character)
     return ctx.reply(greeting, {

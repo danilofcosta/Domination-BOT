@@ -33,6 +33,7 @@ start-greeting-extra-body= Como me usar:Adicione-me ao seu grupo
 start-btn-add=Aᴅᴅ+
 start-btn-help=Hᴇʟᴘ
 start-btn-database = ᴅᴀᴛᴀʙᴀsᴇ
+start-btn-colaboradores = colaboradores
 
 ###############
 ## HELP ##
