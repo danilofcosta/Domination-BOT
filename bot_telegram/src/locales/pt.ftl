@@ -126,9 +126,9 @@ myinfo-end      = ─────────────
 ###############
 
 add_bot_new_group =✅ Fui adicionado a um novo grupo!
-🏷 Nome do grupo: { $name }
-🆔 ID do grupo: { $id }
-👤 Adicionado por: { $user }
+    🏷 Nome do grupo: { $name }
+    🆔 ID do grupo: { $id }
+    👤 Adicionado por: { $user }
 
 
 ###############
