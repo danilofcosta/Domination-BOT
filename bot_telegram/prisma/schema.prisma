@@ -159,6 +159,16 @@ model WaifuRarity {
   @@id([characterId, rarityId])
 }
 
+model TelegramGroup {
+  id        Int      @id @default(autoincrement())
+  groupId   BigInt   @unique
+  groupName String
+  configuration Json?
+  addedBy Json? // informações do usuário que adicionou o bot, como telegramId, username, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
 enum Language {
   PT
   EN
