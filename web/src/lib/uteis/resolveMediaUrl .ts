@@ -1,15 +1,11 @@
 import { getTelegramImageUrl } from "@/lib/telegram";
 import { MediaType } from "../../../generated/prisma/client";
 import { Characterdb, Genero } from "../types";
+import { es } from "zod/v4/locales";
 
-
-export async function resolveMediaUrl(
-  character: Characterdb,
-  type: Genero,
-) {
+export async function resolveMediaUrl(character: Characterdb, type: Genero) {
   let displayUrl: string | null = null;
 
-  // 🔹 prioridade: linkweb válido
   if (
     character.linkweb &&
     character.linkwebExpiresAt &&
@@ -25,16 +21,18 @@ export async function resolveMediaUrl(
     displayUrl = character.media || null;
   }
   // 🔹 Telegram
-  else {
-    displayUrl = await getTelegramImageUrl(
-      character.media || "",
-      type,
-    );
+  else if (
+    character.mediaType === MediaType.IMAGE_FILEID ||
+    character.mediaType === MediaType.VIDEO_FILEID
+  ) {
+    displayUrl = await getTelegramImageUrl(character.media || "", type);
+  } else {
+    displayUrl = "/placeholder.png";
   }
-
   const isVideo =
     character.mediaType === MediaType.VIDEO_URL ||
-    character.mediaType === MediaType.VIDEO_FILEID;
+    character.mediaType === MediaType.VIDEO_FILEID ||
+    character.mediaType === MediaType.VIDEO_LOCAL;
 
   return {
     displayUrl,

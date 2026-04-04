@@ -21,6 +21,7 @@ export function CharacterMedia({ item, type, className, priority, fill }: Charac
   const mediaType = item?.mediaType || MediaType.IMAGE_URL;
   const isVideo = mediaType === MediaType.VIDEO_URL || mediaType === MediaType.VIDEO_FILEID;
   const isFileId = mediaType === MediaType.IMAGE_FILEID || mediaType === MediaType.VIDEO_FILEID;
+  const islocal = mediaType === MediaType.IMAGE_LOCAL || mediaType === MediaType.VIDEO_LOCAL;
 
   React.useEffect(() => {
     let isMounted = true;
@@ -65,6 +66,7 @@ export function CharacterMedia({ item, type, className, priority, fill }: Charac
       </div>
     );
   }
+  
 
   // Fallback visual
   const finalUrl = url || "/placeholder.png";

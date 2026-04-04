@@ -17,7 +17,8 @@ export async function Ramdon_Character_Handler(ctx: MyContext) {
       noformat: false,
     });
     // console.log(capiton);
-    Sendmedia({ ctx: ctx, per: Random_Character, caption: capiton });
+  return  Sendmedia({ ctx: ctx, per: Random_Character, caption: capiton });
+
   } catch (error) {
     console.log(error);
     ctx.reply(ctx.t("random-character-error"));

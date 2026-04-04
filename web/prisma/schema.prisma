@@ -21,6 +21,9 @@ model CharacterHusbando {
   sourceType         SourceType           @default(ANIME)
   linkweb            String?
   linkwebExpiresAt   DateTime?
+  dislikes           Int                  @default(0)
+  likes              Int                  @default(0)
+  addby              Json?
   HusbandoCollection HusbandoCollection[]
   HusbandoEvent      HusbandoEvent[]
   HusbandoRarity     HusbandoRarity[]
@@ -43,6 +46,9 @@ model CharacterWaifu {
   sourceType       SourceType        @default(ANIME)
   linkweb          String?
   linkwebExpiresAt DateTime?
+  addby            Json?
+  dislikes         Int               @default(0)
+  likes            Int               @default(0)
   User             User[]
   WaifuCollection  WaifuCollection[]
   WaifuEvent       WaifuEvent[]
@@ -159,6 +165,16 @@ model Session {
   data Json
 }
 
+model TelegramGroup {
+  id            Int      @id @default(autoincrement())
+  groupId       BigInt   @unique
+  groupName     String
+  configuration Json?
+  addedBy       Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+}
+
 enum Language {
   PT
   EN
@@ -169,6 +185,8 @@ enum MediaType {
   IMAGE_FILEID
   VIDEO_URL
   VIDEO_FILEID
+  VIDEO_LOCAL
+  IMAGE_LOCAL
 }
 
 enum ProfileType {

@@ -14,7 +14,7 @@ import { adminCommands } from "./CommandesManage/adminCommands.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const localesDir = path.join(__dirname, "locales");
+export const localesDir = path.join(__dirname, "locales");
 
 export default async function initializeBot(
   ChatTypeBot: ChatType,

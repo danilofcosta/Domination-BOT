@@ -13,7 +13,7 @@ import { MediaType } from "../../../generated/prisma/client.js";
 import type { Character, ChatType, Collection } from "../../utils/types.js";
 
 export interface Params {
-  ctx: MyContext;
+  ctx: MyContext | any;
   chatType: ChatType;
   character: Character | Collection;
   noformat: boolean | undefined | null;

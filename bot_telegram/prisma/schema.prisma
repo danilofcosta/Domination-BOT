@@ -19,12 +19,15 @@ model CharacterHusbando {
   updatedAt          DateTime             @default(now())
   popularity         Int                  @default(0)
   sourceType         SourceType           @default(ANIME)
+  likes              Int                  @default(0)
+  dislikes           Int                  @default(0)
   linkweb            String?
   linkwebExpiresAt   DateTime?
   HusbandoCollection HusbandoCollection[]
   HusbandoEvent      HusbandoEvent[]
   HusbandoRarity     HusbandoRarity[]
   User               User[]
+  addby Json? // informações do usuário que adicionou o personagem, como telegramId, username, etc.
 
   @@index([name, origem])
 }
@@ -41,12 +44,16 @@ model CharacterWaifu {
   updatedAt        DateTime          @default(now())
   popularity       Int               @default(0)
   sourceType       SourceType        @default(ANIME)
+  likes            Int               @default(0)
+  dislikes         Int               @default(0)
   linkweb          String?
   linkwebExpiresAt DateTime?
   User             User[]
   WaifuCollection  WaifuCollection[]
   WaifuEvent       WaifuEvent[]
   WaifuRarity      WaifuRarity[]
+
+  addby Json? // informações do usuário que adicionou o personagem, como telegramId, username, etc. 
 
   @@index([name, origem])
 }
@@ -179,6 +186,8 @@ enum MediaType {
   IMAGE_FILEID
   VIDEO_URL
   VIDEO_FILEID
+  VIDEO_LOCAL
+  IMAGE_LOCAL
 }
 
 enum ProfileType {

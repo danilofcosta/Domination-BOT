@@ -64,6 +64,7 @@ adminCommands.command(
   delRarityComposer,
 );
 
+
 // We can add more admin commands here following the same pattern
 // adminCommands.command(
 //   `manageuser${botPrefix}`,

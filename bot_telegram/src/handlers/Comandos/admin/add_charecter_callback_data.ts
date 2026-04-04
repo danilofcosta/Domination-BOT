@@ -107,7 +107,7 @@ export async function addCharacterCallbackData(ctx: MyContext) {
         character: character_db,
         chatType: ctx.session.settings.genero,
         ctx,
-        noformat: true,
+        noformat: false,
       });
 
       caption += `\n\n${ctx.t("add_character_confirm", {

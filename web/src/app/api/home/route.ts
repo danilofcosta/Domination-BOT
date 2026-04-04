@@ -29,15 +29,14 @@ async function mapWithDisplay<T extends Characterdb>(
   );
 }
 
-
 export async function GET() {
   const [waifusRaw, husbandosRaw] = await Promise.all([
     prisma.characterWaifu.findMany({
-      take: 12,
+      take: 50,
       orderBy: { createdAt: "desc" },
     }),
     prisma.characterHusbando.findMany({
-      take: 12,
+      take: 50,
       orderBy: { createdAt: "desc" },
     }),
   ]);

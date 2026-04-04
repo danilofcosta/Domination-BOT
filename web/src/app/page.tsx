@@ -78,7 +78,7 @@ export default function Home() {
       </header> */}
 
       {/* 🖼️ MASONRY FEED */}
-      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-10 bg ">
+      <main className=" mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-10 bg ">
         <div className="flex items-end justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function Home() {
         </div>
 
         {loading ? (
-          <div className="columns-2 md:columns-4 lg:columns-6 gap-6 space-y-6 px-2">
+          <div className="columns-2 md:columns-6 lg:columns-8 gap-2 space-y-6 px-2">
             {[...Array(12)].map((_, i) => (
               <div
                 key={i}

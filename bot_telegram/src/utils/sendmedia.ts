@@ -61,15 +61,27 @@ export async function Sendmedia(params: ParamsSendMedia) {
   const { mediaType: type, media } = per;
 
   try {
+    if (!media) {
+      return sendText(caption ?? "");
+    }
+
     // 🖼 IMAGEM
     if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID) {
       return await sendPhoto(media);
     }
-
     // 🎥 VÍDEO
     if (type === MediaType.VIDEO_URL || type === MediaType.VIDEO_FILEID) {
       return await sendVideo(media);
     }
+
+    if (type === MediaType.IMAGE_LOCAL) {
+      return await sendPhoto(new InputFile(`D/${media}`));
+    }
+    if (type === MediaType.VIDEO_LOCAL) {
+      return await sendVideo(new InputFile( `D/${media}`));
+    }
+
+
 
     return sendText("Tipo de mídia não suportado.");
   } catch (err) {

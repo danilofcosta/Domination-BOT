@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
-    "local": "tsx watch src/teste.ts",
+    "local": "tsx watch src/testes/up.ts",
+    "clean": "tsx  src/testes/clean.ts",
     "addEvent": "tsx src/handlers/Comandos/admin/add_event.ts",
     "addRarity": "tsx src/handlers/Comandos/admin/add_rarity.ts"
   },
