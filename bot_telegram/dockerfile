@@ -1,39 +1,12 @@
-# --- ESTÁGIO 1: Build ---
-FROM node:22-alpine AS builder
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
 
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm ci
+FROM node:22-alpine
+
+WORKDIR /app
 
 COPY . .
+RUN  npm install --omit dev
+RUN   npx tsc    
+COPY src/locales dist/src/locales
+# RUN npx prisma generate
 
-# 1. Gera o Prisma Client
-# 2. Compila o TypeScript para JavaScript (pasta /dist)
-RUN npx prisma generate
-RUN npx tsc
-
-# Limpa o lixo (remove tsx, typescript, prisma CLI)
-RUN npm prune --production
-
-# --- ESTÁGIO 2: Runner (Imagem Leve) ---
-FROM node:22-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Copia apenas o necessário do estágio de build
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
-
-# --- O PULO DO GATO PARA I18N ---
-# Ajuste o caminho abaixo para onde estão seus arquivos .ftl (ex: locales)
-COPY --from=builder /app/locales ./locales 
-
-USER node
-
-# Rodando o JS puro com Node (baixo consumo de RAM e espaço)
-CMD ["node", "dist/index.js"]
+CMD ["npm", "start"]

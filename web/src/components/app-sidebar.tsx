@@ -44,38 +44,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     navMain: [
       {
-        title: "Painel de Controle",
+        title: "Dashboard",
         url: "/admin",
         icon: <LayoutDashboardIcon className="size-4 text-primary" />,
         isActive: pathname === "/admin" && !searchParams.get("tab"),
       },
-       {
+      {
+        title: "Repositório",
+        url: "#",
+        icon: <DatabaseIcon className="size-4" />,
+        items: [
+          {
+            title: "Personagens",
+            url: "/admin?tab=characters",
+            icon: <SparklesIcon className="size-4" />,
+            isActive: currentTab === "characters",
+          },
+          {
             title: "Usuários",
-            url: "/admin/users",
+            url: "/admin?tab=users",
             icon: <UsersIcon className="size-4" />,
             isActive: currentTab === "users",
           },
-      
-      // {
-      //   title: "Repositório",
-      //   url: "#",
-      //   icon: <DatabaseIcon className="size-4" />,
-      //   isActive: true,
-      //   items: [
-      //     {
-      //       title: "Personagens",
-      //       url: "/admin?tab=characters",
-      //       icon: <SparklesIcon className="size-4" />,
-      //       isActive: currentTab === "characters",
-      //     },
-      //     {
-      //       title: "Usuários",
-      //       url: "/admin/users",
-      //       icon: <UsersIcon className="size-4" />,
-      //       isActive: currentTab === "users",
-      //     },
-      //   ],
-      // },
+        ],
+      },
       {
         title: "Sistema e Regras",
         url: "#",
@@ -84,7 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Eventos Ativos",
             url: "/admin?tab=events",
-            icon: <CalendarIcon className="size-4" />,
+            icon: <CalendarIcon className="size-4 text-blue-400" />,
             isActive: currentTab === "events",
           },
           {
@@ -93,21 +85,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: <StarIcon className="size-4 text-yellow-500" />,
             isActive: currentTab === "rarities",
           },
+          {
+            title: "Grupos do Telegram",
+            url: "/admin?tab=groups",
+            icon: <HomeIcon className="size-4 text-emerald-500" />,
+            isActive: currentTab === "groups",
+          },
         ],
-      }, { title: "Ir para Início", url: "/" },
-      // {
-      //   title: "Navegação Geral",
-      //   url: "#",
-      //   icon: <HomeIcon className="size-4" />,
-      //   items: [
-      //     { title: "Ir para Início", url: "/" },
-      //     {
-      //       title: "Logs do Sistema",
-      //       url: "/admin?tab=logs",
-      //       icon: <HistoryIcon className="size-4" />,
-      //     },
-      //   ],
-      // },
+      },
+      {
+        title: "Navegação",
+        url: "#",
+        icon: <HomeIcon className="size-4" />,
+        items: [
+          { title: "Voltar ao Início", url: "/", icon: <HomeIcon className="size-4" /> },
+          {
+            title: "Logs do Sistema",
+            url: "/admin?tab=logs",
+            icon: <HistoryIcon className="size-4" />,
+            isActive: currentTab === "logs",
+          },
+        ],
+      },
     ],
   };
 

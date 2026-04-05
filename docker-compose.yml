@@ -70,14 +70,3 @@ volumes:
 
 
 
-
-  # web:
-  #   build:
-  #     context: ./web
-  #     dockerfile: Dockerfile
-  #   container_name: web
-  #   restart: always
-  #   ports:
-  #     - "5000:3000"
-  #   env_file:
-  #     - stack.env

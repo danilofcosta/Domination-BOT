@@ -377,6 +377,53 @@ export async function getCharacters(type: "waifu" | "husbando", search?: string)
   }
 }
 
+
+export async function linkCharacter(
+  id: number,
+  type: "waifu" | "husbando",
+  slug?: string
+) {
+  try {
+    if (type === "waifu") {
+      await prisma.characterWaifu.update({
+        where: { id },
+        data: {
+          likes: {
+            increment: 1,
+          },
+        },
+      });
+    } else {
+      await prisma.characterHusbando.update({
+        where: { id },
+        data: {
+          likes: {
+            increment: 1,
+          },
+        },
+      });
+    }
+
+    if (slug) {
+      revalidatePath(`/characters/${slug}`);
+    }
+    revalidatePath("/");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao linkar personagem:", error);
+    return { success: false, error: String(error) };
+  }
+}
+
+
+
+
+
+
+
+
+
 // --- Telegram Media Resolution ---
 
 export async function resolveTelegramMedia(fileId: string, type: "waifu" | "husbando" = "waifu") {
@@ -422,4 +469,52 @@ export async function resolveTelegramMedia(fileId: string, type: "waifu" | "husb
   }
 
   return "";
+}
+
+// --- Telegram Groups ---
+
+export async function getTelegramGroups() {
+  try {
+    const groups = await prisma.telegramGroup.findMany({
+      orderBy: { updatedAt: "desc" }
+    })
+    
+    // Tratamento de BigInt para JSON
+    return groups.map(g => ({
+      ...g,
+      groupId: g.groupId.toString(),
+    }))
+  } catch (error) {
+    console.error("Erro ao buscar grupos do Telegram:", error)
+    return []
+  }
+}
+
+export async function updateTelegramGroup(id: number, formData: FormData) {
+  try {
+    const groupName = formData.get("groupName") as string
+    const configuration = JSON.parse(formData.get("configuration") as string || "{}")
+
+    await prisma.telegramGroup.update({
+      where: { id },
+      data: { groupName, configuration }
+    })
+
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao atualizar grupo do Telegram:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function deleteTelegramGroup(id: number) {
+  try {
+    await prisma.telegramGroup.delete({ where: { id } })
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao excluir grupo do Telegram:", error)
+    return { success: false, error: String(error) }
+  }
 }

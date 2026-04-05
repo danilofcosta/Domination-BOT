@@ -1,22 +1,88 @@
-{
+ {
+
+  // Visit https://aka.ms/tsconfig to read more about this file
+
   "compilerOptions": {
-    // 1. Defina onde estão seus fontes e onde será a saída
-    "rootDir": "./src",
+
+    // File Layout
+
+    // "rootDir": "./src",
+
+    
     "outDir": "./dist",
 
+
+
+    // Environment Settings
+
+    // See also https://aka.ms/tsconfig/module
+
     "module": "nodenext",
+
     "target": "esnext",
-    
-    // 2. Remova ou comente sourceMap e declaration para produção (opcional)
-    // Isso economiza mais alguns MBs na imagem final
-    "sourceMap": false,
-    "declaration": false,
+
+    "types": [],
+
+    // For nodejs:
+
+    // "lib": ["esnext"],
+
+    // "types": ["node"],
+
+    // and npm install -D @types/node
+
+
+
+    // Other Outputs
+
+    "sourceMap": true,
+
+    "declaration": true,
+
+    "declarationMap": true,
+
+
+
+    // Stricter Typechecking Options
+
+    "noUncheckedIndexedAccess": true,
+
+    "exactOptionalPropertyTypes": true,
+
+
+
+    // Style Options
+
+    // "noImplicitReturns": true,
+
+    // "noImplicitOverride": true,
+
+    // "noUnusedLocals": true,
+
+    // "noUnusedParameters": true,
+
+    // "noFallthroughCasesInSwitch": true,
+
+    // "noPropertyAccessFromIndexSignature": true,
+
+
+
+    // Recommended Options
 
     "strict": true,
-    "skipLibCheck": true,
-    "moduleDetection": "force",
+
+    "jsx": "react-jsx",
+
     "verbatimModuleSyntax": true,
-    "isolatedModules": true
-  },
-  "include": ["src/**/*"]
+
+    "isolatedModules": true,
+
+    "noUncheckedSideEffectImports": true,
+
+    "moduleDetection": "force",
+
+    "skipLibCheck": true,
+
+  }
+
 }

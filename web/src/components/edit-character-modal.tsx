@@ -3,19 +3,19 @@
 import * as React from "react"
 import { updateCharacter, getEvents, getRarities } from "@/app/admin/actions"
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-} from "@/components/ui/sheet"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { PlusIcon, Loader2Icon, LinkIcon, UploadIcon, EditIcon, CheckSquareIcon, SquareIcon } from "lucide-react"
+import { Loader2Icon, LinkIcon, UploadIcon, EditIcon, ImageIcon, SaveIcon } from "lucide-react"
 import { toast } from "sonner"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -24,6 +24,7 @@ export function EditCharacterModal({ character, type, onComplete }: { character:
   const [isOpen, setIsOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [mediaEntry, setMediaEntry] = React.useState<"url" | "upload">(character.media?.startsWith("http") ? "url" : "upload")
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(character.media?.startsWith("http") ? character.media : null)
   
   const [availableEvents, setAvailableEvents] = React.useState<any[]>([])
   const [availableRarities, setAvailableRarities] = React.useState<any[]>([])
@@ -43,6 +44,7 @@ export function EditCharacterModal({ character, type, onComplete }: { character:
       
       setSelectedEvents(currentEvents)
       setSelectedRarities(currentRarities)
+      setPreviewUrl(character.media?.startsWith("http") ? character.media : null)
     }
   }, [isOpen, character, type])
 
@@ -52,6 +54,18 @@ export function EditCharacterModal({ character, type, onComplete }: { character:
 
   const toggleRarity = (id: number) => {
     setSelectedRarities(prev => prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id])
+  }
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPreviewUrl(e.target.value)
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+    }
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -80,103 +94,149 @@ export function EditCharacterModal({ character, type, onComplete }: { character:
   }
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-primary/40 hover:text-primary">
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-primary/40 hover:text-primary transition-colors">
           <EditIcon className="h-4 w-4" />
         </Button>
-      </SheetTrigger>
-      <SheetContent className="sm:max-w-xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Editar Personagem</SheetTitle>
-          <SheetDescription>Modifique os dados de {character.name}.</SheetDescription>
-        </SheetHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 pt-6 pb-20">
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label>Nome</Label>
-              <Input name="name" defaultValue={character.name} required />
-            </div>
-            <div className="grid gap-2">
-              <Label>Origem</Label>
-              <Input name="origem" defaultValue={character.origem} required />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Tipo de Mídia</Label>
-                <Select name="sourceType" defaultValue={character.sourceType}>
-                   <SelectTrigger><SelectValue /></SelectTrigger>
-                   <SelectContent>
-                      <SelectItem value="ANIME">Anime</SelectItem>
-                      <SelectItem value="GAME">Jogo</SelectItem>
-                      <SelectItem value="MANGA">Mangá</SelectItem>
-                      <SelectItem value="MOVIE">Filme</SelectItem>
-                   </SelectContent>
-                </Select>
-              </div>
-            </div>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-8 bg-background/95 backdrop-blur-xl border-primary/10 shadow-2xl rounded-[2rem]">
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-4xl font-black uppercase italic text-primary leading-tight flex items-center gap-3">
+             <EditIcon className="size-8" /> Atualizar Registro
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-[10px]">Modifique os dados de {character.name}.</DialogDescription>
+        </DialogHeader>
 
-            {/* RELAÇÕES M:N */}
-            <div className="grid grid-cols-2 gap-6 p-4 bg-muted/40 rounded-2xl border border-primary/5">
-                <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Eventos</Label>
-                    <ScrollArea className="h-[200px] border rounded-xl p-2 bg-background/50">
-                        <div className="space-y-2">
-                            {availableEvents.map(e => (
-                                <div key={e.id} className="flex items-center gap-2">
-                                    <Checkbox 
-                                       id={`edit-ev-${e.id}`} 
-                                       checked={selectedEvents.includes(e.id)}
-                                       onCheckedChange={() => toggleEvent(e.id)}
-                                    />
-                                    <Label htmlFor={`edit-ev-${e.id}`} className="text-xs cursor-pointer">{e.emoji} {e.name}</Label>
-                                </div>
-                            ))}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col gap-8">
+           <ScrollArea className="flex-1 pr-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* LADO ESQUERDO: INFO & PREVIEW */}
+                <div className="space-y-8">
+                   <div className="space-y-4">
+                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Visual Atualizado</Label>
+                      
+                      {/* PREVIEW BOX */}
+                      <div className="relative aspect-2/3 w-full bg-muted/40 rounded-3xl overflow-hidden border border-primary/10 group flex items-center justify-center shadow-inner">
+                         {previewUrl ? (
+                            <img 
+                               src={previewUrl} 
+                               alt="Preview" 
+                               className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-500"
+                            />
+                         ) : (
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground opacity-20">
+                               <ImageIcon className="size-16" />
+                               <span className="text-[10px] font-black uppercase tracking-widest">Sem Imagem Direta</span>
+                            </div>
+                         )}
+
+                         <div className="absolute top-4 left-4 right-4 flex bg-background/60 backdrop-blur-md p-1 rounded-2xl border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <Button type="button" variant={mediaEntry === "url" ? "secondary" : "ghost"} size="sm" className="flex-1 rounded-xl text-[10px] font-black uppercase" onClick={() => setMediaEntry("url")}>URL</Button>
+                             <Button type="button" variant={mediaEntry === "upload" ? "secondary" : "ghost"} size="sm" className="flex-1 rounded-xl text-[10px] font-black uppercase" onClick={() => setMediaEntry("upload")}>Upload</Button>
+                         </div>
+                      </div>
+
+                      {mediaEntry === "url" ? (
+                        <div className="relative">
+                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground opacity-40 ml-1" />
+                            <Input 
+                                name="mediaUrl" 
+                                defaultValue={character.media}
+                                placeholder="Link HTTPS..." 
+                                className="pl-11 h-12 rounded-xl bg-card/40 border-primary/5 focus:ring-primary/20"
+                                onChange={handleUrlChange}
+                            />
                         </div>
-                    </ScrollArea>
-                </div>
-                <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Raridades</Label>
-                    <ScrollArea className="h-[200px] border rounded-xl p-2 bg-background/50">
-                        <div className="space-y-2">
-                            {availableRarities.map(r => (
-                                <div key={r.id} className="flex items-center gap-2">
-                                    <Checkbox 
-                                       id={`edit-ra-${r.id}`} 
-                                       checked={selectedRarities.includes(r.id)}
-                                       onCheckedChange={() => toggleRarity(r.id)}
-                                    />
-                                    <Label htmlFor={`edit-ra-${r.id}`} className="text-xs cursor-pointer">{r.emoji} {r.name}</Label>
-                                </div>
-                            ))}
+                      ) : (
+                        <div className="relative group">
+                            <UploadIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground opacity-40 ml-1 group-hover:text-primary transition-colors" />
+                            <Input 
+                                type="file" 
+                                name="file" 
+                                accept="image/*" 
+                                className="pl-11 h-12 rounded-xl bg-card/40 border-primary/5 file:bg-primary file:text-primary-foreground file:font-bold file:rounded-lg file:text-xs file:mr-4 file:h-full file:cursor-pointer"
+                                onChange={handleFileChange}
+                            />
                         </div>
-                    </ScrollArea>
+                      )}
+                   </div>
                 </div>
-            </div>
 
-            {/* MÍDIA */}
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Visual</Label>
-              <div className="flex bg-muted p-1 rounded-xl">
-                 <Button type="button" variant={mediaEntry === "url" ? "secondary" : "ghost"} size="sm" className="flex-1 rounded-lg" onClick={() => setMediaEntry("url")}>URL</Button>
-                 <Button type="button" variant={mediaEntry === "upload" ? "secondary" : "ghost"} size="sm" className="flex-1 rounded-lg" onClick={() => setMediaEntry("upload")}>Upload</Button>
+                {/* LADO DIREITO: DADOS E RELAÇÕES */}
+                <div className="space-y-8">
+                    <div className="space-y-6">
+                        <div className="grid gap-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Designação</Label>
+                          <Input name="name" defaultValue={character.name} required className="h-12 text-lg font-bold rounded-xl bg-card/40 border-primary/5" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Fonte de Origem</Label>
+                          <Input name="origem" defaultValue={character.origem} required className="h-12 rounded-xl bg-card/40 border-primary/5" />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="grid gap-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Origem da Mídia</Label>
+                            <Select name="sourceType" defaultValue={character.sourceType}>
+                              <SelectTrigger className="h-12 font-bold rounded-xl bg-card/40 border-primary/5"><SelectValue /></SelectTrigger>
+                              <SelectContent className="rounded-xl border-primary/10">
+                                <SelectItem value="ANIME">Anime</SelectItem>
+                                <SelectItem value="GAME">Jogo</SelectItem>
+                                <SelectItem value="MANGA">Mangá</SelectItem>
+                                <SelectItem value="MOVIE">Filme</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-muted/20 rounded-3xl border border-primary/5">
+                        <div className="space-y-4">
+                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Protocolos de Evento</Label>
+                            <ScrollArea className="h-[220px] border border-primary/5 rounded-2xl p-2 bg-background/40">
+                                <div className="space-y-1.5">
+                                    {availableEvents.map(e => (
+                                        <div key={e.id} className="flex items-center gap-3 p-1.5 hover:bg-primary/5 rounded-lg transition-colors cursor-pointer group" onClick={() => toggleEvent(e.id)}>
+                                            <Checkbox 
+                                               id={`edit-ev-${e.id}`} 
+                                               checked={selectedEvents.includes(e.id)}
+                                               onCheckedChange={() => {}} 
+                                            />
+                                            <span className="text-[11px] font-medium leading-none group-hover:text-primary transition-colors">{e.emoji} {e.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Nível de Raridade</Label>
+                            <ScrollArea className="h-[220px] border border-primary/5 rounded-2xl p-2 bg-background/40">
+                                <div className="space-y-1.5">
+                                    {availableRarities.map(r => (
+                                        <div key={r.id} className="flex items-center gap-3 p-1.5 hover:bg-primary/5 rounded-lg transition-colors cursor-pointer group" onClick={() => toggleRarity(r.id)}>
+                                            <Checkbox 
+                                               id={`edit-ra-${r.id}`} 
+                                               checked={selectedRarities.includes(r.id)}
+                                               onCheckedChange={() => {}} 
+                                            />
+                                            <span className="text-[11px] font-medium leading-none group-hover:text-primary transition-colors">{r.emoji} {r.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        </div>
+                    </div>
+                </div>
               </div>
-              {mediaEntry === "url" ? (
-                 <Input name="mediaUrl" defaultValue={character.media} placeholder="Link HTTPS..." />
-              ) : (
-                 <Input type="file" name="file" accept="image/*" />
-              )}
-            </div>
-          </div>
+           </ScrollArea>
 
-          <SheetFooter className="absolute bottom-0 left-0 w-full p-6 bg-background border-t">
-            <Button type="submit" disabled={isSubmitting} className="w-full h-12 font-bold uppercase tracking-widest">
-                {isSubmitting ? <Loader2Icon className="h-5 w-5 animate-spin" /> : "Salvar Alterações"}
+          <DialogFooter className="mt-8 pt-6 border-t border-primary/5">
+            <Button type="submit" disabled={isSubmitting} className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.4em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm italic">
+              {isSubmitting ? <Loader2Icon className="h-5 w-5 animate-spin" /> : <><SaveIcon className="mr-2 h-5 w-5" /> Confirmar Atualização</>}
             </Button>
-          </SheetFooter>
+          </DialogFooter>
         </form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
-}

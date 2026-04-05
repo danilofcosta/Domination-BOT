@@ -2,12 +2,15 @@
   "name": "dominarbot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-"scripts": {
-  "build": "tsc",
-  "start": "node dist/index.js",
-  "dev": "tsx watch src/index.ts"
-},
+  "main": "index.ts",
+  "scripts": {
+    "start": "node dist/src/index.js ",
+    "dev": "tsx watch src/index.ts",
+    "local": "tsx watch src/testes/up.ts",
+    "clean": "tsx  src/testes/clean.ts",
+    "addEvent": "tsx src/handlers/Comandos/admin/add_event.ts",
+    "addRarity": "tsx src/handlers/Comandos/admin/add_rarity.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,7 +18,6 @@
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
-    "dotenv": "^17.4.0",
     "prisma": "^7.6.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
@@ -35,6 +37,9 @@
     "kysely": "^0.28.8",
     "lru-cache": "^11.2.6",
     "pg": "^8.20.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "dotenv": "^17.4.0"
+
+
   }
 }

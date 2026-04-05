@@ -33,11 +33,11 @@ export async function GET() {
   const [waifusRaw, husbandosRaw] = await Promise.all([
     prisma.characterWaifu.findMany({
       take: 50,
-      orderBy: { createdAt: "desc" },
+      orderBy: { likes: "desc" },
     }),
     prisma.characterHusbando.findMany({
       take: 50,
-      orderBy: { createdAt: "desc" },
+      orderBy: { likes: "desc" },
     }),
   ]);
 
