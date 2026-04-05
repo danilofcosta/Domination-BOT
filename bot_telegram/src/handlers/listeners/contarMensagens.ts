@@ -49,11 +49,14 @@ export async function contarMensagens(ctx: MyContext) {
    * ========================= */
   if (grupo.cont >= DROP && !grupo.dropId) {
     const result = await DropCharacter(ctx);
-    if (!result) return;
+    if (!result) {
+      grupo.cont = DROP - 10;
+      return;
+    }
 
-    grupo.dropId = result.messageId;
-    grupo.character = result.character;
-    grupo.data = new Date();
+   if (result){
+     console.log("dopre com sucesso");
+   }
 
     return;
   }

@@ -6,7 +6,7 @@ import type { Character } from "../../utils/types.js";
 
 export async function DropCharacter(
   ctx: MyContext,
-): Promise<{ messageId: number; character: Character } | null> {
+): Promise<boolean | null> {
   const character = await RandomCharacter(ctx.session.settings.genero);
   if (!character) return null;
 
@@ -20,8 +20,10 @@ export async function DropCharacter(
 
   if (!message) return null;
 
-  return {
-    messageId: message.message_id,
-    character,
-  };
+  const grupo = ctx.session.grupo;
+  grupo.dropId = message.message_id;
+  grupo.character = character;
+  grupo.data = new Date();
+
+  return true
 }

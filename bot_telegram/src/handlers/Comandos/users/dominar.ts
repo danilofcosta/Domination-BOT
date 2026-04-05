@@ -106,8 +106,8 @@ export async function CapturarCharacter(ctx: MyContext) {
     try {
       await ctx.answerCallbackQuery(ctx.t("not-charater-to-dominar"));
       return;
-    } catch {
-      console.error("Erro ao enviar resposta de callback query");
+    } catch (e) {
+      console.error("Erro ao enviar resposta de callback query",e);
       return;
     }
   }

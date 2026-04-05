@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts",
-    "local": "tsx watch src/testes/up.ts",
-    "clean": "tsx  src/testes/clean.ts",
-    "addEvent": "tsx src/handlers/Comandos/admin/add_event.ts",
-    "addRarity": "tsx src/handlers/Comandos/admin/add_rarity.ts"
-  },
+"scripts": {
+  "build": "tsc",
+  "start": "node dist/index.js",
+  "dev": "tsx watch src/index.ts"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
