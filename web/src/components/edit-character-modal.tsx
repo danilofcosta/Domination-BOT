@@ -240,3 +240,4 @@ export function EditCharacterModal({ character, type, onComplete }: { character:
       </DialogContent>
     </Dialog>
   )
+}
