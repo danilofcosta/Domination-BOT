@@ -3,7 +3,7 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
-import { options } from "./ini.js";
+import { options } from "./conts.js";
 import { helpCommand } from "../handlers/Comandos/globais/help.js";
 
 const privateCommands = new CommandGroup<MyContext>();
@@ -14,18 +14,12 @@ privateCommands.command(
   StartGreetings,
   options,
 );
- // O comando 'help' é um comando comum em bots que fornece informações sobre os comandos disponíveis e como usá-los. Ele é registrado com o nome "help" para garantir que seja reconhecido corretamente, e utiliza a função helpCommand para fornecer uma mensagem detalhada sobre os comandos do bot, suas funcionalidades e como os usuários podem interagir com ele de forma eficaz.
+// O comando 'help' é um comando comum em bots que fornece informações sobre os comandos disponíveis e como usá-los. Ele é registrado com o nome "help" para garantir que seja reconhecido corretamente, e utiliza a função helpCommand para fornecer uma mensagem detalhada sobre os comandos do bot, suas funcionalidades e como os usuários podem interagir com ele de forma eficaz.
 privateCommands.command(
   "help",
   "Get help and information about the bot",
   helpCommand,
   options,
 );
-
-
-
-
-
-
 
 export { privateCommands };

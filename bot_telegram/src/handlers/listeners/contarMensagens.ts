@@ -1,7 +1,7 @@
 import type { MyContext } from "../../utils/customTypes.js";
 import { ChatType, NODE_ENV } from "../../utils/types.js";
 import { botNewgroupMember } from "./botNewgroupMember.js";
-import { dropCharacter } from "./doprar_per.js";
+import { DropCharacter } from "./doprar_per.js";
 
 const DROP = 100;
 const UNDROP = DROP + 40;
@@ -31,7 +31,7 @@ export async function contarMensagens(ctx: MyContext) {
     ctx.chat.type,
     ctx.chat.title,
     ctx.message?.text,
-    grupo.cont
+    grupo.cont,
   );
 
   /* =========================
@@ -48,7 +48,7 @@ export async function contarMensagens(ctx: MyContext) {
    * DROP
    * ========================= */
   if (grupo.cont >= DROP && !grupo.dropId) {
-    const result = await dropCharacter(ctx);
+    const result = await DropCharacter(ctx);
     if (!result) return;
 
     grupo.dropId = result.messageId;

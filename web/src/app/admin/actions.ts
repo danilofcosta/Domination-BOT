@@ -68,6 +68,20 @@ export async function getUsers() {
   try {
     const users = await prisma.user.findMany({
       orderBy: { id: "desc" },
+      include: {
+        CharacterWaifu: {
+          include: {
+            WaifuEvent: { include: { Event: true } },
+            WaifuRarity: { include: { Rarity: true } },
+          },
+        },
+        CharacterHusbando: {
+          include: {
+            HusbandoEvent: { include: { Event: true } },
+            HusbandoRarity: { include: { Rarity: true } },
+          },  
+        },
+      },
     })
     
     // Tratamento de BigInt para JSON

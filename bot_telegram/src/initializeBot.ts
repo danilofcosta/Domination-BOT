@@ -11,6 +11,7 @@ import { NODE_ENV, type ChatType } from "./utils/types.js";
 import { privateCommands } from "./CommandesManage/private.js";
 import { botCommands } from "./CommandesManage/User.js";
 import { adminCommands } from "./CommandesManage/adminCommands.js";
+import { devCommands } from "./CommandesManage/devcommands.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,14 +54,14 @@ export default async function initializeBot(
   bot.use(privateCommands);
   bot.use(botCommands);
   bot.use(adminCommands);
-  // bot.use(devCommands);
+  bot.use(devCommands);
 
   //LISTENERS
   bot.use(listeners);
   bot.use(callbacks);
 
   if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-  //  await botCommands.setCommands(bot);
+   await botCommands.setCommands(bot);
  //   await adminCommands.setCommands(bot);
   }
 

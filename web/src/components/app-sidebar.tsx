@@ -49,26 +49,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: <LayoutDashboardIcon className="size-4 text-primary" />,
         isActive: pathname === "/admin" && !searchParams.get("tab"),
       },
-      {
-        title: "Repositório",
-        url: "#",
-        icon: <DatabaseIcon className="size-4" />,
-        isActive: true,
-        items: [
-          {
-            title: "Personagens",
-            url: "/admin?tab=characters",
-            icon: <SparklesIcon className="size-4" />,
-            isActive: currentTab === "characters",
-          },
-          {
+       {
             title: "Usuários",
-            url: "/admin?tab=users",
+            url: "/admin/users",
             icon: <UsersIcon className="size-4" />,
             isActive: currentTab === "users",
           },
-        ],
-      },
+      
+      // {
+      //   title: "Repositório",
+      //   url: "#",
+      //   icon: <DatabaseIcon className="size-4" />,
+      //   isActive: true,
+      //   items: [
+      //     {
+      //       title: "Personagens",
+      //       url: "/admin?tab=characters",
+      //       icon: <SparklesIcon className="size-4" />,
+      //       isActive: currentTab === "characters",
+      //     },
+      //     {
+      //       title: "Usuários",
+      //       url: "/admin/users",
+      //       icon: <UsersIcon className="size-4" />,
+      //       isActive: currentTab === "users",
+      //     },
+      //   ],
+      // },
       {
         title: "Sistema e Regras",
         url: "#",
@@ -87,20 +94,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             isActive: currentTab === "rarities",
           },
         ],
-      },
-      {
-        title: "Navegação Geral",
-        url: "#",
-        icon: <HomeIcon className="size-4" />,
-        items: [
-          { title: "Ir para Início", url: "/" },
-          {
-            title: "Logs do Sistema",
-            url: "/admin?tab=logs",
-            icon: <HistoryIcon className="size-4" />,
-          },
-        ],
-      },
+      }, { title: "Ir para Início", url: "/" },
+      // {
+      //   title: "Navegação Geral",
+      //   url: "#",
+      //   icon: <HomeIcon className="size-4" />,
+      //   items: [
+      //     { title: "Ir para Início", url: "/" },
+      //     {
+      //       title: "Logs do Sistema",
+      //       url: "/admin?tab=logs",
+      //       icon: <HistoryIcon className="size-4" />,
+      //     },
+      //   ],
+      // },
     ],
   };
 
@@ -110,19 +117,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar
       collapsible="icon"
       {...props}
-      className="border-r border-primary/5 "
+      className="border-r border-primary/5 bg-amber-700/20
+      "
     >
    <SidebarMenuButton asChild>
+  
   <button
     onClick={toggleSidebar}
-    className="flex items-center gap-2 w-full"
+    className="flex items-end gap-2  bg-blue-600 "
   >
-    <CommandIcon className="size-8" />
-    <span className="text-lg font-bold">Administração</span>
+    <CommandIcon className="size-8 bg-red-700" />
+    {/* <span className="text-lg font-bold">Administração</span> */}
+    <p className="font-bold">Administração</p>
   </button>
-</SidebarMenuButton>
+  
+</SidebarMenuButton  >
 
-      <SidebarContent className="py-4">
+
+
+      <SidebarContent className="py-4 bg-red-800/20  backdrop-blur-md">
         <NavMain items={data.navMain} />
       </SidebarContent>
 

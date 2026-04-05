@@ -16,6 +16,7 @@ type CharacterMediaProps = {
 
 export function CharacterMedia({ item, type, className, priority, fill }: CharacterMediaProps) {
   const [url, setUrl] = React.useState<string | null>(null);
+
   
   // Extrair tipo de mídia com segurança
   const mediaType = item?.mediaType || MediaType.IMAGE_URL;

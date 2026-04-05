@@ -1,7 +1,7 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { AddCharacterHandler } from "../handlers/Comandos/admin/add_charecter.js";
-import { botPrefix } from "./ini.js";
+import { botPrefix } from "./conts.js";
 import { ProfileType } from "../../generated/prisma/client.js";
 import { onlyRole } from "../utils/permissions.js";
 import { Composer } from "grammy";
@@ -63,7 +63,6 @@ adminCommands.command(
   "Delete a rarity (admin)",
   delRarityComposer,
 );
-
 
 // We can add more admin commands here following the same pattern
 // adminCommands.command(

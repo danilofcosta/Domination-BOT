@@ -1,7 +1,7 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { CapturarCharacter } from "../handlers/Comandos/users/dominar.js";
-import { botPrefix, options, typeBot } from "./ini.js";
+import { botPrefix, options, typeBot } from "./conts.js";
 import { HaremHandler } from "../handlers/Comandos/users/harem.js";
 import { favCharacter } from "../handlers/Comandos/users/fav.js";
 import { Myinfos } from "../handlers/Comandos/users/myinfos.js";
@@ -18,9 +18,6 @@ botCommands.command(
   CapturarCharacter,
   options,
 );
-
-
-
 
 //harem busca a coleção de personagens dominados e favoritos do usuário, mostrando informações como nome, imagem, nível de dominação, etc. O comando é personalizado para cada tipo de bot (waifu ou husbando) usando a variável typeBot para diferenciar as mensagens e informações exibidas.
 botCommands.command(
@@ -59,7 +56,7 @@ botCommands.command(
   options,
 );
 
-// top é um comando que exibe os melhores jogadores do jogo, mostrando informações como nome, nível de dominação, número de personagens dominados, etc. Ele é registrado com o prefixo do bot para garantir que seja reconhecido corretamente, e utiliza a função topHandler para buscar e exibir as informações dos melhores jogadores de forma personalizada. 
+// top é um comando que exibe os melhores jogadores do jogo, mostrando informações como nome, nível de dominação, número de personagens dominados, etc. Ele é registrado com o prefixo do bot para garantir que seja reconhecido corretamente, e utiliza a função topHandler para buscar e exibir as informações dos melhores jogadores de forma personalizada.
 botCommands.command(
   `${botPrefix}top`,
   "Show the top players",
