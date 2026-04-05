@@ -3,32 +3,31 @@
 import * as React from "react"
 import { createCharacter, getEvents, getRarities } from "@/app/admin/actions"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
+  DialogTrigger, DialogFooter, DialogClose
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { PlusIcon, Loader2Icon, LinkIcon, UploadIcon, ImageIcon } from "lucide-react"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from "@/components/ui/select"
+import {
+  PlusIcon, Loader2Icon, LinkIcon, UploadIcon,
+  ImageIcon, XIcon, CheckIcon
+} from "lucide-react"
 import { toast } from "sonner"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Checkbox } from "@/components/ui/checkbox"
+import { cn } from "@/lib/utils"
 
 export function AddCharacterModal({ onComplete }: { onComplete: () => void }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [mediaEntry, setMediaEntry] = React.useState<"url" | "upload">("url")
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
-  
+
   const [availableEvents, setAvailableEvents] = React.useState<any[]>([])
   const [availableRarities, setAvailableRarities] = React.useState<any[]>([])
-  
   const [selectedEvents, setSelectedEvents] = React.useState<number[]>([])
   const [selectedRarities, setSelectedRarities] = React.useState<number[]>([])
 
@@ -42,210 +41,206 @@ export function AddCharacterModal({ onComplete }: { onComplete: () => void }) {
     }
   }, [isOpen])
 
-  const toggleEvent = (id: number) => {
-    setSelectedEvents(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id])
-  }
+  const toggleEvent = (id: number) =>
+    setSelectedEvents(prev => prev.includes(id)
+      ? prev.filter(e => e !== id)
+      : [...prev, id])
 
-  const toggleRarity = (id: number) => {
-    setSelectedRarities(prev => prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id])
-  }
-
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPreviewUrl(e.target.value)
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
-    }
-  }
+  const toggleRarity = (id: number) =>
+    setSelectedRarities(prev => prev.includes(id)
+      ? prev.filter(r => r !== id)
+      : [...prev, id])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsSubmitting(true)
 
     try {
-        const formData = new FormData(event.currentTarget)
-        formData.append("eventIds", JSON.stringify(selectedEvents))
-        formData.append("rarityIds", JSON.stringify(selectedRarities))
-        
-        const res = await createCharacter(formData)
+      const formData = new FormData(event.currentTarget)
+      formData.append("eventIds", JSON.stringify(selectedEvents))
+      formData.append("rarityIds", JSON.stringify(selectedRarities))
 
-        if (res.success) {
-          toast.success("Personagem inicializado com sucesso!")
-          setIsOpen(false)
-          onComplete()
-        } else {
-          toast.error("Falha na implantação: " + res.error)
-        }
-    } catch (e) {
-        toast.error("Erro inesperado")
+      const res = await createCharacter(formData)
+
+      if (res.success) {
+        toast.success("Personagem criado!")
+        setIsOpen(false)
+        onComplete()
+      } else {
+        toast.error(res.error)
+      }
+    } catch {
+      toast.error("Erro inesperado")
     } finally {
-        setIsSubmitting(false)
+      setIsSubmitting(false)
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-105 bg-primary">
+        <Button>
           <PlusIcon className="mr-2 h-5 w-5" />
           Inicializar Entrada
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-8 bg-background/95 backdrop-blur-xl border-primary/10 shadow-2xl rounded-[2rem]">
-        <DialogHeader className="mb-6">
-          <DialogTitle className="text-4xl font-black uppercase italic text-primary leading-tight flex items-center gap-3">
-             <PlusIcon className="size-8" /> Comando do Sistema
+
+      <DialogContent className="sm:max-w-4xl w-[95vw] h-[95vh] flex flex-col overflow-hidden">
+
+        {/* HEADER */}
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+            <PlusIcon /> Criar Personagem
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-[10px]">Inicialize um novo núcleo de personagem.</DialogDescription>
+          <DialogDescription>
+            Configure os dados do personagem
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col gap-8">
-           <ScrollArea className="flex-1 pr-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {/* LADO ESQUERDO: INFO & PREVIEW */}
-                <div className="space-y-8">
-                   <div className="space-y-4">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Protocolo Visual</Label>
-                      
-                      {/* PREVIEW BOX */}
-                      <div className="relative aspect-2/3 w-full bg-muted/40 rounded-3xl overflow-hidden border border-primary/10 group flex items-center justify-center shadow-inner">
-                         {previewUrl ? (
-                            <img 
-                               src={previewUrl} 
-                               alt="Preview" 
-                               className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-500"
-                            />
-                         ) : (
-                            <div className="flex flex-col items-center gap-2 text-muted-foreground opacity-20">
-                               <ImageIcon className="size-16" />
-                               <span className="text-[10px] font-black uppercase tracking-widest">Aguardando Mídia...</span>
-                            </div>
-                         )}
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden gap-6">
 
-                         <div className="absolute top-4 left-4 right-4 flex bg-background/60 backdrop-blur-md p-1 rounded-2xl border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                             <Button type="button" variant={mediaEntry === "url" ? "secondary" : "ghost"} size="sm" className="flex-1 rounded-xl text-[10px] font-black uppercase" onClick={() => setMediaEntry("url")}>Link</Button>
-                             <Button type="button" variant={mediaEntry === "upload" ? "secondary" : "ghost"} size="sm" className="flex-1 rounded-xl text-[10px] font-black uppercase" onClick={() => setMediaEntry("upload")}>Upload</Button>
-                         </div>
-                      </div>
+          {/* SCROLL */}
+          <ScrollArea className="flex-1 min-h-0 pr-2">
 
-                      {mediaEntry === "url" ? (
-                        <div className="relative">
-                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground opacity-40 ml-1" />
-                            <Input 
-                                name="mediaUrl" 
-                                placeholder="URL segura (HTTPS)..." 
-                                required={mediaEntry === "url"} 
-                                className="pl-11 h-12 rounded-xl bg-card/40 border-primary/5 focus:ring-primary/20"
-                                onChange={handleUrlChange}
-                            />
-                        </div>
-                      ) : (
-                        <div className="relative group">
-                            <UploadIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground opacity-40 ml-1 group-hover:text-primary transition-colors" />
-                            <Input 
-                                type="file" 
-                                name="file" 
-                                accept="image/*" 
-                                required={mediaEntry === "upload"} 
-                                className="pl-11 h-12 rounded-xl bg-card/40 border-primary/5 file:bg-primary file:text-primary-foreground file:font-bold file:rounded-lg file:text-xs file:mr-4 file:h-full file:cursor-pointer"
-                                onChange={handleFileChange}
-                            />
-                        </div>
-                      )}
-                   </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-0">
+
+              {/* LEFT - PREVIEW */}
+              <div className="flex flex-col min-h-0 space-y-4 border p-3 rounded-2xl bg-muted/20">
+                <Label className="text-xs font-bold text-center">Preview</Label>
+
+                <div className="relative w-full h-full min-h-[240px] rounded-xl flex items-center justify-center overflow-hidden bg-muted">
+                  {previewUrl ? (
+                    <img
+                      src={previewUrl}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="opacity-20 size-12" />
+                  )}
                 </div>
 
-                {/* LADO DIREITO: DADOS E RELAÇÕES */}
-                <div className="space-y-8">
-                    <div className="space-y-6">
-                        <div className="grid gap-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Designação</Label>
-                          <Input name="name" placeholder="Ex: Jinx" required className="h-12 text-lg font-bold rounded-xl bg-card/40 border-primary/5" />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Fonte de Origem</Label>
-                          <Input name="origem" placeholder="Ex: Arcane" required className="h-12 rounded-xl bg-card/40 border-primary/5" />
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="grid gap-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Variante</Label>
-                            <Select name="type" defaultValue="waifu">
-                              <SelectTrigger className="h-12 font-bold rounded-xl bg-card/40 border-primary/5"><SelectValue /></SelectTrigger>
-                              <SelectContent className="rounded-xl border-primary/10">
-                                <SelectItem value="waifu" className="font-bold">Waifu</SelectItem>
-                                <SelectItem value="husbando" className="font-bold">Husbando</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="grid gap-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Mídia</Label>
-                            <Select name="sourceType" defaultValue="ANIME">
-                              <SelectTrigger className="h-12 font-bold rounded-xl bg-card/40 border-primary/5"><SelectValue /></SelectTrigger>
-                              <SelectContent className="rounded-xl border-primary/10">
-                                <SelectItem value="ANIME">Anime</SelectItem>
-                                <SelectItem value="GAME">Jogo</SelectItem>
-                                <SelectItem value="MANGA">Mangá</SelectItem>
-                                <SelectItem value="MOVIE">Filme</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-muted/20 rounded-3xl border border-primary/5">
-                        <div className="space-y-4">
-                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
-                               <PlusIcon className="size-3" /> Eventos
-                            </Label>
-                            <ScrollArea className="h-[180px] border border-primary/5 rounded-2xl p-2 bg-background/40">
-                                <div className="space-y-1.5">
-                                    {availableEvents.map(e => (
-                                        <div key={e.id} className="flex items-center gap-3 p-1.5 hover:bg-primary/5 rounded-lg transition-colors cursor-pointer group" onClick={() => toggleEvent(e.id)}>
-                                            <Checkbox 
-                                               id={`add-ev-${e.id}`} 
-                                               checked={selectedEvents.includes(e.id)}
-                                               onCheckedChange={() => {}} // Handle through div
-                                            />
-                                            <span className="text-[11px] font-medium leading-none group-hover:text-primary transition-colors">{e.emoji} {e.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
-                        </div>
-                        <div className="space-y-4">
-                            <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
-                               <PlusIcon className="size-3" /> Raridades
-                            </Label>
-                            <ScrollArea className="h-[180px] border border-primary/5 rounded-2xl p-2 bg-background/40">
-                                <div className="space-y-1.5">
-                                    {availableRarities.map(r => (
-                                        <div key={r.id} className="flex items-center gap-3 p-1.5 hover:bg-primary/5 rounded-lg transition-colors cursor-pointer group" onClick={() => toggleRarity(r.id)}>
-                                            <Checkbox 
-                                               id={`add-ra-${r.id}`} 
-                                               checked={selectedRarities.includes(r.id)}
-                                               onCheckedChange={() => {}} // Handle through div
-                                            />
-                                            <span className="text-[11px] font-medium leading-none group-hover:text-primary transition-colors">{r.emoji} {r.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
-                        </div>
-                    </div>
+                <div className="flex gap-2">
+                  <Button type="button" size="sm" onClick={() => setMediaEntry("url")}>
+                    Link
+                  </Button>
+                  <Button type="button" size="sm" onClick={() => setMediaEntry("upload")}>
+                    Upload
+                  </Button>
                 </div>
               </div>
-           </ScrollArea>
 
-          <DialogFooter className="mt-8 pt-6 border-t border-primary/5">
-            <Button type="submit" disabled={isSubmitting} className="w-full h-16 rounded-2xl font-black uppercase tracking-[0.4em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all text-sm italic">
-              {isSubmitting ? <Loader2Icon className="h-5 w-5 animate-spin" /> : "Executar Protocolo de Criação"}
+              {/* RIGHT - FORM */}
+              <div className="flex flex-col min-h-0 space-y-6">
+
+                {/* INPUTS */}
+                <div className="space-y-3">
+                  <Input name="name" placeholder="Nome" required />
+                  <Input name="origem" placeholder="Origem" required />
+
+                  {mediaEntry === "url" ? (
+                    <Input
+                      name="mediaUrl"
+                      placeholder="URL da imagem"
+                      onChange={(e) => setPreviewUrl(e.target.value)}
+                    />
+                  ) : (
+                    <Input
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) setPreviewUrl(URL.createObjectURL(file))
+                      }}
+                    />
+                  )}
+                </div>
+
+                {/* SELECTS */}
+                <div className="flex gap-2">
+                  <Select name="type" defaultValue="waifu">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="waifu">Waifu</SelectItem>
+                      <SelectItem value="husbando">Husbando</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select name="sourceType" defaultValue="ANIME">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ANIME">Anime</SelectItem>
+                      <SelectItem value="GAME">Game</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* EVENTOS */}
+                <div>
+                  <Label>Eventos</Label>
+                  <div className="h-[160px] overflow-auto border rounded-lg p-2 space-y-1">
+                    {availableEvents.map(e => (
+                      <div
+                        key={e.id}
+                        onClick={() => toggleEvent(e.id)}
+                        className={cn(
+                          "p-2 rounded cursor-pointer text-sm",
+                          selectedEvents.includes(e.id)
+                            ? "bg-primary text-white"
+                            : "hover:bg-muted"
+                        )}
+                      >
+                        {e.emoji} {e.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* RARIDADES */}
+                <div>
+                  <Label>Raridades</Label>
+                  <div className="h-[160px] overflow-auto border rounded-lg p-2 space-y-1">
+                    {availableRarities.map(r => (
+                      <div
+                        key={r.id}
+                        onClick={() => toggleRarity(r.id)}
+                        className={cn(
+                          "p-2 rounded cursor-pointer text-sm",
+                          selectedRarities.includes(r.id)
+                            ? "bg-primary text-white"
+                            : "hover:bg-muted"
+                        )}
+                      >
+                        {r.emoji} {r.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </ScrollArea>
+
+          {/* FOOTER */}
+          <DialogFooter className="pt-4 border-t flex gap-2">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                <XIcon className="mr-2 size-4" />
+                Cancelar
+              </Button>
+            </DialogClose>
+
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <>
+                  <CheckIcon className="mr-2 size-4" />
+                  Salvar
+                </>
+              )}
             </Button>
           </DialogFooter>
+
         </form>
       </DialogContent>
     </Dialog>

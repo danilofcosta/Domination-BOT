@@ -16,7 +16,7 @@ type CharacterCardProps = {
 export function CharacterCard({ item, type }: CharacterCardProps) {
   return (
     <Link
-      href={`/characters/${item.slug}`}
+      href={`/characters/${encodeURIComponent(item.slug)}_${type}`}
       className="block break-inside-avoid rounded-2xl overflow-hidden group relative isolate bg-card shadow-sm hover:shadow-xl transition-all duration-500 mb-4"
     >
       <div className="relative aspect-2/3 overflow-hidden">

@@ -60,10 +60,10 @@ export default async function initializeBot(
   bot.use(listeners);
   bot.use(callbacks);
 
-  if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-   await botCommands.setCommands(bot);
- //   await adminCommands.setCommands(bot);
-  }
+//   if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
+//    await botCommands.setCommands(bot);
+//  //   await adminCommands.setCommands(bot);
+//   }
 
   // Error handling
   bot.catch((err) => {

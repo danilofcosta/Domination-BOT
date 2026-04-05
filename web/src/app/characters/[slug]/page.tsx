@@ -15,31 +15,34 @@ import { Footer } from "@/components/home/footer";
 import { ApiCharacter } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { LikeButton } from "./like-button";
+import { ShareButton } from "./share-button";
 
 async function getCharacter(slug: string) {
   // Tentar encontrar o tipo no slug (ex: nome-personagem_waifu)
-  const parts = slug.split("_");
-  const typeHint = parts.at(-1) as "waifu" | "husbando";
-  const mainSlug = parts.length > 1 ? parts.slice(0, -1).join("_") : slug;
+  const typeHint = slug.includes("waifu") ? "waifu" : "husbando";
+  let mainSlug = slug.replace(`_${typeHint}`, "");
+  mainSlug = decodeURIComponent(mainSlug);
+  console.log(mainSlug);
 
   // Se tiver a dica, buscar na tabela certa
   if (typeHint === "waifu" || typeHint === "husbando") {
     const character =
       typeHint === "waifu"
-        ? await prisma.characterWaifu.findFirst({
-            where: { slug: { equals: mainSlug, mode: "insensitive" } },
-            include: {
-              WaifuEvent: { include: { Event: true } },
-              WaifuRarity: { include: { Rarity: true } },
-            },
-          })
-        : await prisma.characterHusbando.findFirst({
-            where: { slug: { equals: mainSlug, mode: "insensitive" } },
-            include: {
-              HusbandoEvent: { include: { Event: true } },
-              HusbandoRarity: { include: { Rarity: true } },
-            },
-          });
+        ? await prisma.characterWaifu.findUnique({
+          where: { slug: mainSlug },
+          include: {
+            WaifuEvent: { include: { Event: true } },
+            WaifuRarity: { include: { Rarity: true } },
+          },
+        })
+        : await prisma.characterHusbando.findUnique({
+          where: { slug: mainSlug },
+          include: {
+            HusbandoEvent: { include: { Event: true } },
+            HusbandoRarity: { include: { Rarity: true } },
+          },
+        })
+
 
     if (character) return { ...character, type: typeHint };
   }
@@ -125,7 +128,7 @@ function CharacterDetailView({ character }: { character: any }) {
               <ArrowLeft className="size-5" />
             </div>
             <span className="font-black uppercase tracking-widest text-[10px] hidden sm:block">
-              Frequência Central
+              Menu Principal
             </span>
           </Link>
 
@@ -182,17 +185,18 @@ function CharacterDetailView({ character }: { character: any }) {
                 {/* <button className="px-10 py-5 bg-primary text-primary-foreground rounded-3xl font-black uppercase italic italic tracking-tighter text-lg flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/30">
                   <SparklesIcon className="size-5" /> Favoritar
                 </button> */}
-<LikeButton
-  characterId={character.id}
-  characterType={character.type}
-  initialLikes={character.likes || 0}
-  slug={character.slug}
-/>
+                <LikeButton
+                  characterId={character.id}
+                  characterType={character.type}
+                  initialLikes={character.likes || 0}
+                  slug={character.slug}
+                />
 
-
-                <button className="p-5 bg-card/40 backdrop-blur-xl border border-primary/10 rounded-3xl hover:bg-primary/5 transition-all group">
-                  <Share2 className="size-6 text-muted-foreground group-hover:text-primary" />
-                </button>
+                <ShareButton
+                  name={character.name}
+                  slug={character.slug}
+                  type={character.type}
+                />
               </div>
             </div>
           </div>
@@ -252,7 +256,7 @@ function CharacterDetailView({ character }: { character: any }) {
                         {e.Event.name}
                       </p>
                       <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest opacity-60">
-                        PROTOCOLO_{e.Event.code}
+                        {e.Event.code}
                       </p>
                     </div>
                   </div>

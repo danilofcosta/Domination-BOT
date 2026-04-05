@@ -107,7 +107,7 @@ export default function Home() {
         ) : filteredCollection.length === 0 ? (
           <div className="py-32 text-center rounded-[3rem] border-2 border-dashed border-primary/5 bg-muted/20">
             <p className="text-muted-foreground font-black uppercase tracking-[0.2em] opacity-40">
-              Nenhuma entidade detectada nesta frequência
+              Nenhuma Personagem Encontrado
             </p>
           </div>
         ) : (
