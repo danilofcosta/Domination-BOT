@@ -113,8 +113,8 @@ model Rarity {
 }
 
 model Session {
-  key  String @id
-  data Json
+  key   String @id
+  value String
 }
 
 model User {

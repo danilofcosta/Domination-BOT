@@ -51,7 +51,7 @@ export default function Home() {
 
   return (
     <div className="bg-linear-to-tl   h-screen ">
-      {/* <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/30 transition-colors">
@@ -75,7 +75,7 @@ export default function Home() {
             <ThemeToggle />
           </nav>
         </div>
-      </header> */}
+      </header>
 
       {/* 🖼️ MASONRY FEED */}
       <main className=" mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 space-y-10 bg ">
@@ -96,7 +96,7 @@ export default function Home() {
         </div>
 
         {loading ? (
-          <div className="columns-2 md:columns-6 lg:columns-8 gap-2 space-y-6 px-2">
+          <div className="columns-5 m-auto md:columns-6 lg:columns-8 gap-2 space-y-6 px-2">
             {[...Array(12)].map((_, i) => (
               <div
                 key={i}
@@ -111,7 +111,7 @@ export default function Home() {
             </p>
           </div>
         ) : (
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4 p-4">
+          <div className="columns-2 md:columns-3 lg:columns-6 gap-4  p-4">
             {filteredCollection.map((item) => (
               <div
                 key={`${item.type}-${item.id}`}

@@ -51,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: "Repositório",
-        url: "#",
+        url: "/admin?tab=characters",
         icon: <DatabaseIcon className="size-4" />,
         items: [
           {
@@ -62,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Usuários",
-            url: "/admin?tab=users",
+            url: "/admin/users",
             icon: <UsersIcon className="size-4" />,
             isActive: currentTab === "users",
           },
@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: "Sistema e Regras",
-        url: "#",
+        url: "/admin?tab=events",
         icon: <Settings2Icon className="size-4" />,
         items: [
           {
@@ -96,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: "Navegação",
         url: "#",
-        icon: <HomeIcon className="size-4" />,
+        icon: <Settings2Icon className="size-4" />,
         items: [
           { title: "Voltar ao Início", url: "/", icon: <HomeIcon className="size-4" /> },
           {
@@ -107,6 +107,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
+
+ {
+        title: "Inicio",
+        url: "/",
+        icon: <HomeIcon className="size-5 bg-amber-300/20 m-5  rounded-full" />,
+      
+      },
+
+
+
     ],
   };
 
@@ -123,9 +133,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   
   <button
     onClick={toggleSidebar}
-    className="flex items-end gap-2  bg-blue-600 "
+    className="flex items-end gap-2 p-2 "
   >
-    <CommandIcon className="size-8 bg-red-700" />
+    <CommandIcon className="size-8" />
     {/* <span className="text-lg font-bold">Administração</span> */}
     <p className="font-bold">Administração</p>
   </button>
@@ -134,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 
 
-      <SidebarContent className="py-4 bg-red-800/20  backdrop-blur-md">
+      <SidebarContent className="py-4  backdrop-blur-md">
         <NavMain items={data.navMain} />
       </SidebarContent>
 

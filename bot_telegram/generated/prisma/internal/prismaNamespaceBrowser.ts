@@ -180,7 +180,7 @@ export type RarityScalarFieldEnum = (typeof RarityScalarFieldEnum)[keyof typeof 
 
 export const SessionScalarFieldEnum = {
   key: 'key',
-  data: 'data'
+  value: 'value'
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
@@ -257,13 +257,6 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

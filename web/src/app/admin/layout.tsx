@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { MenuFloating } from "@/components/home/MenuFloating";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -54,6 +55,8 @@ export default function RootLayout({
               <AppSidebar variant="inset" />
 
               {children}
+
+              <MenuFloating />
             </SidebarProvider>
           </TooltipProvider>
         </ThemeProvider>

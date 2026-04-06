@@ -2,6 +2,8 @@ import { Bot, session } from "grammy";
 import { I18n } from "@grammyjs/i18n";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PrismaAdapter } from "@grammyjs/storage-prisma";
+import { prisma } from "../lib/prisma.js";
 
 import localeNegotiator from "./utils/localeNegotiator.js";
 import { type MyContext, type SessionData } from "./utils/customTypes.js";
@@ -37,6 +39,7 @@ export default async function initializeBot(
           character: null,
         },
       }),
+      storage: new PrismaAdapter(prisma.session),
     }),
   );
 

@@ -26,30 +26,34 @@ export type AggregateSession = {
 
 export type SessionMinAggregateOutputType = {
   key: string | null
+  value: string | null
 }
 
 export type SessionMaxAggregateOutputType = {
   key: string | null
+  value: string | null
 }
 
 export type SessionCountAggregateOutputType = {
   key: number
-  data: number
+  value: number
   _all: number
 }
 
 
 export type SessionMinAggregateInputType = {
   key?: true
+  value?: true
 }
 
 export type SessionMaxAggregateInputType = {
   key?: true
+  value?: true
 }
 
 export type SessionCountAggregateInputType = {
   key?: true
-  data?: true
+  value?: true
   _all?: true
 }
 
@@ -127,7 +131,7 @@ export type SessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type SessionGroupByOutputType = {
   key: string
-  data: runtime.JsonValue
+  value: string
   _count: SessionCountAggregateOutputType | null
   _min: SessionMinAggregateOutputType | null
   _max: SessionMaxAggregateOutputType | null
@@ -153,12 +157,12 @@ export type SessionWhereInput = {
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   key?: Prisma.StringFilter<"Session"> | string
-  data?: Prisma.JsonFilter<"Session">
+  value?: Prisma.StringFilter<"Session"> | string
 }
 
 export type SessionOrderByWithRelationInput = {
   key?: Prisma.SortOrder
-  data?: Prisma.SortOrder
+  value?: Prisma.SortOrder
 }
 
 export type SessionWhereUniqueInput = Prisma.AtLeast<{
@@ -166,12 +170,12 @@ export type SessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
-  data?: Prisma.JsonFilter<"Session">
+  value?: Prisma.StringFilter<"Session"> | string
 }, "key">
 
 export type SessionOrderByWithAggregationInput = {
   key?: Prisma.SortOrder
-  data?: Prisma.SortOrder
+  value?: Prisma.SortOrder
   _count?: Prisma.SessionCountOrderByAggregateInput
   _max?: Prisma.SessionMaxOrderByAggregateInput
   _min?: Prisma.SessionMinOrderByAggregateInput
@@ -182,87 +186,89 @@ export type SessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.SessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SessionScalarWhereWithAggregatesInput | Prisma.SessionScalarWhereWithAggregatesInput[]
   key?: Prisma.StringWithAggregatesFilter<"Session"> | string
-  data?: Prisma.JsonWithAggregatesFilter<"Session">
+  value?: Prisma.StringWithAggregatesFilter<"Session"> | string
 }
 
 export type SessionCreateInput = {
   key: string
-  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value: string
 }
 
 export type SessionUncheckedCreateInput = {
   key: string
-  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value: string
 }
 
 export type SessionUpdateInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionUncheckedUpdateInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionCreateManyInput = {
   key: string
-  data: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value: string
 }
 
 export type SessionUpdateManyMutationInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionUncheckedUpdateManyInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  data?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionCountOrderByAggregateInput = {
   key?: Prisma.SortOrder
-  data?: Prisma.SortOrder
+  value?: Prisma.SortOrder
 }
 
 export type SessionMaxOrderByAggregateInput = {
   key?: Prisma.SortOrder
+  value?: Prisma.SortOrder
 }
 
 export type SessionMinOrderByAggregateInput = {
   key?: Prisma.SortOrder
+  value?: Prisma.SortOrder
 }
 
 
 
 export type SessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   key?: boolean
-  data?: boolean
+  value?: boolean
 }, ExtArgs["result"]["session"]>
 
 export type SessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   key?: boolean
-  data?: boolean
+  value?: boolean
 }, ExtArgs["result"]["session"]>
 
 export type SessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   key?: boolean
-  data?: boolean
+  value?: boolean
 }, ExtArgs["result"]["session"]>
 
 export type SessionSelectScalar = {
   key?: boolean
-  data?: boolean
+  value?: boolean
 }
 
-export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"key" | "data", ExtArgs["result"]["session"]>
+export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"key" | "value", ExtArgs["result"]["session"]>
 
 export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Session"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     key: string
-    data: runtime.JsonValue
+    value: string
   }, ExtArgs["result"]["session"]>
   composites: {}
 }
@@ -687,7 +693,7 @@ export interface Prisma__SessionClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface SessionFieldRefs {
   readonly key: Prisma.FieldRef<"Session", 'String'>
-  readonly data: Prisma.FieldRef<"Session", 'Json'>
+  readonly value: Prisma.FieldRef<"Session", 'String'>
 }
     
 

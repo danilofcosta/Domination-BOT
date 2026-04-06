@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function MenuFloating() {
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full px-4 ">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full px-4 shadow-2xl">
       <div
         className="
         w-full max-w-md mx-auto

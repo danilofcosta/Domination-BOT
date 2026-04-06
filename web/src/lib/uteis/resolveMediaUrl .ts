@@ -1,7 +1,6 @@
 import { getTelegramImageUrl } from "@/lib/telegram";
 import { MediaType } from "../../../generated/prisma/client";
 import { Characterdb, Genero } from "../types";
-import { es } from "zod/v4/locales";
 
 export async function resolveMediaUrl(character: Characterdb, type: Genero) {
   let displayUrl: string | null = null;
