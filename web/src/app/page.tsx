@@ -8,7 +8,7 @@ import { CharacterCard } from "@/components/ui/charaterCard";
 import { ApiCharacter, Character } from "@/lib/types";
 import { CommandIcon } from "lucide-react";
 import Link from "next/link";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useRef, useEffect } from "react";
 function normalizeCharacters(
   waifus: ApiCharacter[],
   husbandos: ApiCharacter[],
@@ -22,26 +22,78 @@ function normalizeCharacters(
 export default function Home() {
   const [collection, setCollection] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [search, setSearch] = useState("");
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const intersectRef = useRef<HTMLDivElement>(null);
+  const take = 20;
+
+  const loadData = async (currentSkip: number, append: boolean) => {
+    try {
+      if (append) setLoadingMore(true);
+      else setLoading(true);
+
+      const res = await fetch(`/api/home?skip=${currentSkip}&take=${take}`);
+      const data = await res.json();
+      const normalized = normalizeCharacters(data.waifus || [], data.husbandos || []);
+      
+      if (normalized.length === 0) {
+        setHasMore(false);
+      } else {
+        setCollection(prev => {
+          let newCollection;
+          if (append) {
+             const existingIds = new Set(prev.map(p => `${p.type}-${p.id}`));
+             const uniqueNew = normalized.filter(n => !existingIds.has(`${n.type}-${n.id}`));
+             newCollection = [...prev, ...uniqueNew];
+          } else {
+             newCollection = normalized;
+          }
+          
+          sessionStorage.setItem("home_scroll_data", JSON.stringify(newCollection));
+          sessionStorage.setItem("home_scroll_skip", currentSkip.toString());
+          return newCollection;
+        });
+      }
+    } catch (err) {
+      console.error("Erro ao carregar:", err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
   useLayoutEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("/api/home");
-        const data = await res.json();
-        const normalized = normalizeCharacters(
-          data.waifus || [],
-          data.husbandos || [],
-        );
-        setCollection(normalized);
-      } catch (err) {
-        console.error("Erro ao carregar:", err);
-      } finally {
-        setLoading(false);
-      }
+    const savedSkip = sessionStorage.getItem("home_scroll_skip");
+    const savedData = sessionStorage.getItem("home_scroll_data");
+
+    if (savedSkip && savedData) {
+      setSkip(parseInt(savedSkip, 10));
+      setCollection(JSON.parse(savedData));
+      setLoading(false);
+    } else {
+      setSkip(0);
+      setHasMore(true);
+      loadData(0, false);
     }
-    load();
   }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !loading && !loadingMore && hasMore && search === "") {
+         const nextSkip = skip + take;
+         setSkip(nextSkip);
+         loadData(nextSkip, true);
+      }
+    }, { threshold: 0.1 });
+
+    if (intersectRef.current) {
+      observer.observe(intersectRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [skip, loading, loadingMore, hasMore, search]);
 
   const filteredCollection = collection.filter(
     (c) =>
@@ -107,20 +159,34 @@ export default function Home() {
         ) : filteredCollection.length === 0 ? (
           <div className="py-32 text-center rounded-[3rem] border-2 border-dashed border-primary/5 bg-muted/20">
             <p className="text-muted-foreground font-black uppercase tracking-[0.2em] opacity-40">
-              Nenhuma Personagem Encontrado
+              Nenhum Personagem Encontrado
             </p>
           </div>
         ) : (
-          <div className="columns-2 md:columns-3 lg:columns-6 gap-4  p-4">
-            {filteredCollection.map((item) => (
-              <div
-                key={`${item.type}-${item.id}`}
-                className="break-inside-avoid mb-6 animate-in fade-in zoom-in duration-700"
-              >
-                <CharacterCard item={item} type={item.type} />
+          <>
+            <div className="columns-2 md:columns-3 lg:columns-6 gap-4  p-4">
+              {filteredCollection.map((item) => (
+                <div
+                  key={`${item.type}-${item.id}`}
+                  className="break-inside-avoid mb-6 animate-in fade-in zoom-in duration-700"
+                >
+                  <CharacterCard item={item} type={item.type} />
+                </div>
+              ))}
+            </div>
+            
+            {/* Infinite Scroll Trigger */}
+            {hasMore && search === "" && (
+              <div ref={intersectRef} className="w-full h-20 flex items-center justify-center">
+                {loadingMore && (
+                  <div className="flex items-center gap-2 text-primary opacity-60">
+                    <div className="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-xs font-bold uppercase tracking-widest">Carregando mais...</span>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
 

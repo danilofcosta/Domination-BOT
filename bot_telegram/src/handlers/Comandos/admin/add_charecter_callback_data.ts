@@ -1,4 +1,5 @@
 import { prisma } from "../../../../lib/prisma.js";
+import { Prisma } from "../../../../generated/prisma/client.js";
 import { getCharacter } from "../../../cache/cache.js";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/metion_user.js";
@@ -37,6 +38,7 @@ export async function addCharacterCallbackData(ctx: MyContext) {
       const isWaifu = ctx.session.settings.genero === "waifu";
 
       const baseData = {
+        addby: (ctx.from as any) ?? Prisma.JsonNull,
         name: character.nome.trim(),
         origem: character.anime.trim(),
         mediaType: character.mediatype,

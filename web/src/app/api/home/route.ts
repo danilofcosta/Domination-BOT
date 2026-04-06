@@ -29,15 +29,21 @@ async function mapWithDisplay<T extends Characterdb>(
   );
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const skip = parseInt(url.searchParams.get("skip") || "0");
+  const take = parseInt(url.searchParams.get("take") || "20");
+
   const [waifusRaw, husbandosRaw] = await Promise.all([
     prisma.characterWaifu.findMany({
-      take: 50,
-      orderBy: { likes: "desc" },
+      skip,
+      take,
+      orderBy: [{ likes: "desc" }, { id: "asc" }],
     }),
     prisma.characterHusbando.findMany({
-      take: 50,
-      orderBy: { likes: "desc" },
+      skip,
+      take,
+      orderBy: [{ likes: "desc" }, { id: "asc" }],
     }),
   ]);
 
@@ -45,5 +51,6 @@ export async function GET() {
     mapWithDisplay(waifusRaw, "waifu"),
     mapWithDisplay(husbandosRaw, "husbando"),
   ]);
+  
   return Response.json({ waifus, husbandos });
 }

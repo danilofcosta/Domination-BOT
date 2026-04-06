@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { getRarities, createRarity, deleteRarity } from "@/app/admin/actions"
+import { getRarities, createRarity, deleteRarity, updateRarity } from "@/app/admin/actions"
 import {
   Table,
   TableBody,
@@ -10,17 +10,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { SearchIcon, Loader2Icon, PlusIcon, Trash2Icon, RefreshCwIcon, StarIcon } from "lucide-react"
+import { SearchIcon, Loader2Icon, PlusIcon, Trash2Icon, RefreshCwIcon, StarIcon, Edit2Icon } from "lucide-react"
 import { toast } from "sonner"
 
 export function RarityManagement() {
   const [rarities, setRarities] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+
+  const [editingRarity, setEditingRarity] = React.useState<any>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
 
   const fetchData = React.useCallback(async () => {
     setIsLoading(true)
@@ -57,6 +68,22 @@ export function RarityManagement() {
     } else {
       toast.error("Erro ao excluir: " + res.error)
     }
+  }
+
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!editingRarity) return
+    setIsSubmitting(true)
+    const formData = new FormData(e.currentTarget)
+    const res = await updateRarity(editingRarity.id, formData)
+    if (res.success) {
+      toast.success("Raridade atualizada!")
+      setIsEditDialogOpen(false)
+      fetchData()
+    } else {
+      toast.error("Erro ao atualizar: " + res.error)
+    }
+    setIsSubmitting(false)
   }
 
   return (
@@ -107,6 +134,7 @@ export function RarityManagement() {
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow className="border-primary/5 hover:bg-transparent">
+                <TableHead>ID</TableHead>
                 <TableHead>Emoji</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Código</TableHead>
@@ -115,16 +143,23 @@ export function RarityManagement() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                 <TableRow><TableCell colSpan={4} className="h-64 text-center">Carregando...</TableCell></TableRow>
+                 <TableRow><TableCell colSpan={5} className="h-64 text-center">Carregando...</TableCell></TableRow>
               ) : rarities.length === 0 ? (
-                 <TableRow><TableCell colSpan={4} className="h-64 text-center text-muted-foreground">Nenhuma raridade registrada.</TableCell></TableRow>
+                 <TableRow><TableCell colSpan={5} className="h-64 text-center text-muted-foreground">Nenhuma raridade registrada.</TableCell></TableRow>
               ) : (
                 rarities.map((rarity) => (
                   <TableRow key={rarity.id} className="border-primary/5 hover:bg-primary/[0.03]">
+                    <TableCell className="font-mono text-muted-foreground">{rarity.id}</TableCell>
                     <TableCell className="text-2xl">{rarity.emoji}</TableCell>
                     <TableCell className="font-bold">{rarity.name}</TableCell>
                     <TableCell className="font-mono text-xs opacity-60 uppercase">{rarity.code}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
+                      <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-600 hover:bg-blue-500/10 rounded-full" onClick={() => {
+                        setEditingRarity(rarity);
+                        setIsEditDialogOpen(true);
+                      }}>
+                        <Edit2Icon className="h-4 w-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-full" onClick={() => handleDelete(rarity.id)}>
                         <Trash2Icon className="h-4 w-4" />
                       </Button>
@@ -136,6 +171,40 @@ export function RarityManagement() {
           </Table>
         </div>
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Editar Raridade</DialogTitle>
+          </DialogHeader>
+          {editingRarity && (
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Nome da Raridade</Label>
+                <Input name="name" defaultValue={editingRarity.name} required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="code">Código Único</Label>
+                <Input name="code" defaultValue={editingRarity.code} required />
+              </div>
+               <div className="grid gap-2">
+                <Label htmlFor="emoji">Emoji</Label>
+                <Input name="emoji" defaultValue={editingRarity.emoji} required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="description">Descrição</Label>
+                <Input name="description" defaultValue={editingRarity.description || ""} />
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancelar</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2Icon className="h-4 w-4 animate-spin mr-2" /> : "Salvar"}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

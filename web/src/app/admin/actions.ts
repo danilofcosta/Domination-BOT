@@ -69,6 +69,12 @@ export async function getUsers() {
     const users = await prisma.user.findMany({
       orderBy: { id: "desc" },
       include: {
+        _count: {
+          select: {
+            WaifuCollection: true,
+            HusbandoCollection: true,
+          }
+        },
         CharacterWaifu: {
           include: {
             WaifuEvent: { include: { Event: true } },
@@ -92,6 +98,17 @@ export async function getUsers() {
   } catch (error) {
     console.error("Erro ao buscar usuários:", error)
     return []
+  }
+}
+
+export async function deleteUser(id: number) {
+  try {
+    await prisma.user.delete({ where: { id } })
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao excluir usuário:", error)
+    return { success: false, error: String(error) }
   }
 }
 
@@ -138,6 +155,26 @@ export async function deleteEvent(id: number) {
   }
 }
 
+export async function updateEvent(id: number, formData: FormData) {
+  try {
+    const name = formData.get("name") as string
+    const code = formData.get("code") as string
+    const emoji = formData.get("emoji") as string
+    const description = formData.get("description") as string
+
+    await prisma.event.update({
+      where: { id },
+      data: { name, code, emoji, description }
+    })
+
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao atualizar evento:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
 // --- Rarities ---
 
 export async function getRarities() {
@@ -177,6 +214,26 @@ export async function deleteRarity(id: number) {
     return { success: true }
   } catch (error) {
     console.error("Erro ao excluir raridade:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function updateRarity(id: number, formData: FormData) {
+  try {
+    const name = formData.get("name") as string
+    const code = formData.get("code") as string
+    const emoji = formData.get("emoji") as string
+    const description = formData.get("description") as string
+
+    await prisma.rarity.update({
+      where: { id },
+      data: { name, code, emoji, description }
+    })
+
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao atualizar raridade:", error)
     return { success: false, error: String(error) }
   }
 }

@@ -13,26 +13,41 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { SearchIcon, Loader2Icon, Trash2Icon, PlusIcon, CalendarIcon, StarIcon } from "lucide-react"
+import { SearchIcon, Loader2Icon, Trash2Icon, PlusIcon, CalendarIcon, StarIcon, HeartIcon, UserIcon } from "lucide-react"
 import { toast } from "sonner"
 import { AddCharacterModal } from "./add-character-modal"
 import { EditCharacterModal } from "./edit-character-modal"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { CharacterMedia } from "./character-media"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
 
 export function CharacterManagementTable() {
   const [type, setType] = React.useState<"waifu" | "husbando">("waifu")
   const [characters, setCharacters] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [search, setSearch] = React.useState("")
+  const [debouncedSearch, setDebouncedSearch] = React.useState("")
   const [isDeleting, setIsDeleting] = React.useState<number | null>(null)
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [search])
 
   const fetchData = React.useCallback(async () => {
     setIsLoading(true)
-    const data = await getCharacters(type, search)
+    const data = await getCharacters(type, debouncedSearch)
     setCharacters(data)
     setIsLoading(false)
-  }, [type, search])
+  }, [type, debouncedSearch])
 
   React.useEffect(() => {
     fetchData()
@@ -83,7 +98,7 @@ export function CharacterManagementTable() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <AddCharacterModal onComplete={() => fetchData()} />
+          <AddCharacterModal onComplete={() => fetchData()} currentType={type} />
         </div>
       </div>
 
@@ -91,21 +106,23 @@ export function CharacterManagementTable() {
         <Table>
           <TableHeader className="bg-muted/40">
             <TableRow className="border-primary/5 hover:bg-transparent">
-              <TableHead className="w-[80px] py-4">Preview</TableHead>
-              <TableHead className="font-bold">Nome / Info</TableHead>
+              <TableHead className="w-[60px] py-4">ID</TableHead>
+              <TableHead className="w-[80px]">Preview</TableHead>
+              <TableHead className="font-bold">Detalhes</TableHead>
               <TableHead className="font-bold">Categorias</TableHead>
-              <TableHead className="font-bold">Origem</TableHead>
-              <TableHead className="text-right font-bold pr-6">Gerenciamento</TableHead>
+              <TableHead className="font-bold">Info</TableHead>
+              <TableHead className="text-right font-bold pr-6">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={5} className="h-64 text-center">Sincronizando...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} className="h-64 text-center">Sincronizando...</TableCell></TableRow>
             ) : characters.length === 0 ? (
-              <TableRow><TableCell colSpan={5} className="h-64 text-center">Nenhum registro.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} className="h-64 text-center">Nenhum registro.</TableCell></TableRow>
             ) : (
               characters.map((char) => (
                 <TableRow key={char.id} className="group border-primary/5 hover:bg-primary/[0.03]">
+                  <TableCell className="font-mono text-muted-foreground">{char.id}</TableCell>
                   <TableCell className="py-3">
                     <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-primary/10 shadow-sm bg-muted">
                         <CharacterMedia item={char} type={type} />
@@ -113,8 +130,13 @@ export function CharacterManagementTable() {
                   </TableCell>
                   <TableCell className="font-bold">
                     <div className="flex flex-col">
-                      <span>{char.name}</span>
-                      <span className="text-[10px] font-normal opacity-40 uppercase tracking-widest">ID #{char.id}</span>
+                      <span className="text-lg">{char.name}</span>
+                      <span className="text-xs font-normal opacity-60 flex items-center gap-2">
+                        {char.origem}
+                        <span className="flex items-center gap-1 text-red-500">
+                          <HeartIcon className="w-3 h-3 fill-current" /> {char.likes || 0}
+                        </span>
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -143,7 +165,29 @@ export function CharacterManagementTable() {
                        ))}
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm italic">{char.origem}</TableCell>
+                  <TableCell>
+                    {char.addby ? (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-6 text-[10px] rounded hover:bg-primary/10">
+                            <UserIcon className="w-3 h-3 mr-1" /> Quem Add
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                           <DialogHeader>
+                             <DialogTitle>Adicionado por:</DialogTitle>
+                           </DialogHeader>
+                           <div className="space-y-4">
+                             <pre className="text-xs bg-muted p-4 rounded-xl overflow-x-auto text-muted-foreground border border-primary/10">
+                               {JSON.stringify(char.addby, null, 2)}
+                             </pre>
+                           </div>
+                        </DialogContent>
+                      </Dialog>
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground italic">Sistema</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right pr-6">
                     <div className="flex justify-end gap-1">
                       <EditCharacterModal character={char} type={type} onComplete={() => fetchData()} />
