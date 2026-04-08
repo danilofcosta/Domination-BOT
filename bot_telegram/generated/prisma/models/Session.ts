@@ -26,10 +26,12 @@ export type AggregateSession = {
 
 export type SessionMinAggregateOutputType = {
   key: string | null
+  value: string | null
 }
 
 export type SessionMaxAggregateOutputType = {
   key: string | null
+  value: string | null
 }
 
 export type SessionCountAggregateOutputType = {
@@ -41,10 +43,12 @@ export type SessionCountAggregateOutputType = {
 
 export type SessionMinAggregateInputType = {
   key?: true
+  value?: true
 }
 
 export type SessionMaxAggregateInputType = {
   key?: true
+  value?: true
 }
 
 export type SessionCountAggregateInputType = {
@@ -127,7 +131,7 @@ export type SessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type SessionGroupByOutputType = {
   key: string
-  value: runtime.JsonValue
+  value: string
   _count: SessionCountAggregateOutputType | null
   _min: SessionMinAggregateOutputType | null
   _max: SessionMaxAggregateOutputType | null
@@ -153,7 +157,7 @@ export type SessionWhereInput = {
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   key?: Prisma.StringFilter<"Session"> | string
-  value?: Prisma.JsonFilter<"Session">
+  value?: Prisma.StringFilter<"Session"> | string
 }
 
 export type SessionOrderByWithRelationInput = {
@@ -166,7 +170,7 @@ export type SessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
-  value?: Prisma.JsonFilter<"Session">
+  value?: Prisma.StringFilter<"Session"> | string
 }, "key">
 
 export type SessionOrderByWithAggregationInput = {
@@ -182,42 +186,42 @@ export type SessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.SessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SessionScalarWhereWithAggregatesInput | Prisma.SessionScalarWhereWithAggregatesInput[]
   key?: Prisma.StringWithAggregatesFilter<"Session"> | string
-  value?: Prisma.JsonWithAggregatesFilter<"Session">
+  value?: Prisma.StringWithAggregatesFilter<"Session"> | string
 }
 
 export type SessionCreateInput = {
   key: string
-  value: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value: string
 }
 
 export type SessionUncheckedCreateInput = {
   key: string
-  value: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value: string
 }
 
 export type SessionUpdateInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionUncheckedUpdateInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionCreateManyInput = {
   key: string
-  value: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value: string
 }
 
 export type SessionUpdateManyMutationInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionUncheckedUpdateManyInput = {
   key?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  value?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SessionCountOrderByAggregateInput = {
@@ -227,10 +231,12 @@ export type SessionCountOrderByAggregateInput = {
 
 export type SessionMaxOrderByAggregateInput = {
   key?: Prisma.SortOrder
+  value?: Prisma.SortOrder
 }
 
 export type SessionMinOrderByAggregateInput = {
   key?: Prisma.SortOrder
+  value?: Prisma.SortOrder
 }
 
 
@@ -262,7 +268,7 @@ export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     key: string
-    value: runtime.JsonValue
+    value: string
   }, ExtArgs["result"]["session"]>
   composites: {}
 }
@@ -687,7 +693,7 @@ export interface Prisma__SessionClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface SessionFieldRefs {
   readonly key: Prisma.FieldRef<"Session", 'String'>
-  readonly value: Prisma.FieldRef<"Session", 'Json'>
+  readonly value: Prisma.FieldRef<"Session", 'String'>
 }
     
 
