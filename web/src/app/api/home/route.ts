@@ -16,7 +16,6 @@ async function resolveDisplayUrl(
   return displayUrl;
 }
 
-// 🔹 Função genérica para mapear qualquer lista
 async function mapWithDisplay<T extends Characterdb>(
   items: T[],
   type: "waifu" | "husbando",
@@ -33,24 +32,35 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const skip = parseInt(url.searchParams.get("skip") || "0");
   const take = parseInt(url.searchParams.get("take") || "20");
+  const sort = url.searchParams.get("sort") || "recent";
+
+  let orderBy: any;
+  if (sort === "likes") {
+    orderBy = [{ likes: "desc" }, { id: "asc" }];
+  } else {
+    orderBy = [{ createdAt: "desc" }, { id: "asc" }];
+  }
 
   const [waifusRaw, husbandosRaw] = await Promise.all([
     prisma.characterWaifu.findMany({
       skip,
       take,
-      orderBy: [{ likes: "desc" }, { id: "asc" }],
+      orderBy,
     }),
     prisma.characterHusbando.findMany({
       skip,
       take,
-      orderBy: [{ likes: "desc" }, { id: "asc" }],
+      orderBy,
     }),
   ]);
 
-  let [waifus, husbandos] = await Promise.all([
+  const [waifus, husbandos] = await Promise.all([
     mapWithDisplay(waifusRaw, "waifu"),
     mapWithDisplay(husbandosRaw, "husbando"),
   ]);
   
-  return Response.json({ waifus, husbandos });
+  return Response.json({ 
+    waifus, 
+    husbandos,
+  });
 }

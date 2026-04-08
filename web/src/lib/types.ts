@@ -1,6 +1,5 @@
-import { SourceType, MediaType, ProfileType, Language } from "../../generated/prisma/client"
+import { SourceType, MediaType, ProfileType, Language, WaifuCollection, WaifuEvent, WaifuRarity, HusbandoEvent, HusbandoRarity, HusbandoCollection } from "../../generated/prisma/client"
 import { CharacterHusbando, CharacterWaifu } from "../../generated/prisma/client";
-
 export interface ApiCharacter {
   id: number;
   name: string;
@@ -29,3 +28,11 @@ export interface User {
   [key: string]: any;
 }
  export type Characterdb = CharacterHusbando | CharacterWaifu;
+
+
+
+export type TypeMidia = MediaType;
+
+export type Collection = WaifuCollection | HusbandoCollection;
+export type EventType = WaifuEvent | HusbandoEvent;
+export type RarityType = WaifuRarity | HusbandoRarity

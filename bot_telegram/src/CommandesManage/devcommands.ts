@@ -2,6 +2,7 @@ import { CommandGroup } from "@grammyjs/commands";
 import { DropCharacter } from "../handlers/listeners/doprar_per.js";
 import type { MyContext } from "../utils/customTypes.js";
 import { options } from "./conts.js";
+import { emoji_id } from "../handlers/Comandos/globais/teste.js";
 
 const devCommands = new CommandGroup<MyContext>();
 function ForceDrop(ctx: MyContext) {
@@ -19,5 +20,14 @@ devCommands.command(
   ForceDrop,
   options,
 );
+devCommands.command(
+  "get",
+  "Start the bot and get a greeting message",
+  emoji_id,
+  options,
+);
+
+
+
 
 export { devCommands };

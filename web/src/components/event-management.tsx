@@ -27,18 +27,35 @@ import { toast } from "sonner"
 
 export function EventManagement() {
   const [events, setEvents] = React.useState<any[]>([])
+  const [filteredEvents, setFilteredEvents] = React.useState<any[]>([])
+  const [searchQuery, setSearchQuery] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(true)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const [editingEvent, setEditingEvent] = React.useState<any>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
+  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false)
 
   const fetchData = React.useCallback(async () => {
     setIsLoading(true)
     const data = await getEvents()
     setEvents(data)
+    setFilteredEvents(data)
     setIsLoading(false)
   }, [])
+
+  React.useEffect(() => {
+    const query = searchQuery.toLowerCase()
+    if (!query) {
+      setFilteredEvents(events)
+    } else {
+      setFilteredEvents(events.filter(e => 
+        e.name?.toLowerCase().includes(query) ||
+        e.code?.toLowerCase().includes(query) ||
+        e.emoji?.includes(query)
+      ))
+    }
+  }, [searchQuery, events])
 
   React.useEffect(() => {
     fetchData()
@@ -52,6 +69,7 @@ export function EventManagement() {
     if (res.success) {
       toast.success("Evento criado com sucesso!")
       e.currentTarget.reset()
+      setIsAddDialogOpen(false)
       fetchData()
     } else {
       toast.error("Erro ao criar evento: " + res.error)
@@ -87,82 +105,109 @@ export function EventManagement() {
   }
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 px-4 lg:px-6">
-      {/* FORMULÁRIO */}
-      <div className="xl:col-span-1">
-        <Card className="bg-card/50 backdrop-blur-md border-primary/10">
-          <CardHeader>
-            <CardTitle className="text-xl font-black uppercase tracking-tighter italic text-primary">Novo Evento</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Nome do Evento</Label>
-                <Input name="name" required placeholder="Ex: Natal 2024" className="bg-muted/20 border-primary/5 rounded-xl" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="code">Código Único (Sem espaços)</Label>
-                <Input name="code" required placeholder="Ex: natal_2024" className="bg-muted/20 border-primary/5 rounded-xl" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="emoji">Emoji</Label>
-                <Input name="emoji" required placeholder="Ex: 🎄" className="bg-muted/20 border-primary/5 rounded-xl" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Descrição (Opcional)</Label>
-                <Input name="description" placeholder="Uma breve descrição..." className="bg-muted/20 border-primary/5 rounded-xl" />
-              </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full rounded-xl font-bold uppercase tracking-widest shadow-lg shadow-primary/10">
-                {isSubmitting ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <><PlusIcon className="mr-2 h-4 w-4" /> Criar Evento</>}
+    <div className="space-y-6 px-4 lg:px-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <CalendarIcon className="h-5 w-5 text-primary" />
+          <h3 className="font-black uppercase tracking-widest text-sm">Eventos Registrados</h3>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="icon" onClick={fetchData} className="rounded-full h-8 w-8">
+            <RefreshCwIcon className={`h-4 w-4 ${isLoading ? 'animate-spin text-primary' : ''}`} />
+          </Button>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="rounded-xl gap-2">
+                <PlusIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Novo Evento</span>
               </Button>
-            </form>
-          </CardContent>
-        </Card>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Novo Evento</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="add-name">Nome do Evento</Label>
+                  <Input id="add-name" name="name" required placeholder="Ex: Natal 2024" className="bg-muted/20 border-primary/5 rounded-xl" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="add-code">Código Único</Label>
+                  <Input id="add-code" name="code" required placeholder="Ex: natal_2024" className="bg-muted/20 border-primary/5 rounded-xl" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="add-emoji">Emoji</Label>
+                  <Input id="add-emoji" name="emoji" required placeholder="Ex: 🎄" className="bg-muted/20 border-primary/5 rounded-xl" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="add-emoji-id">Emoji ID (Opcional)</Label>
+                  <Input id="add-emoji-id" name="emoji_id" placeholder="ID do emoji customizado..." className="bg-muted/20 border-primary/5 rounded-xl" />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="add-desc">Descrição (Opcional)</Label>
+                  <Input id="add-desc" name="description" placeholder="Uma breve descrição..." className="bg-muted/20 border-primary/5 rounded-xl" />
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="ghost" onClick={() => setIsAddDialogOpen(false)}>Cancelar</Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2Icon className="h-4 w-4 animate-spin mr-2" /> : <><PlusIcon className="h-4 w-4 mr-2" /> Criar</>}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      {/* LISTA */}
-      <div className="xl:col-span-2">
-        <div className="rounded-2xl border border-primary/10 bg-card/20 backdrop-blur-md overflow-hidden">
-          <div className="p-4 border-b border-primary/10 flex justify-between items-center bg-muted/20">
-             <h3 className="font-black uppercase tracking-widest text-xs flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-primary" /> Eventos Registrados
-             </h3>
-             <Button variant="ghost" size="icon" onClick={fetchData} className="rounded-full h-8 w-8">
-                <RefreshCwIcon className={`h-4 w-4 ${isLoading ? 'animate-spin text-primary' : ''}`} />
-             </Button>
+      <div className="rounded-2xl border border-primary/10 bg-card/20 backdrop-blur-md overflow-hidden">
+        <div className="p-3 border-b border-primary/10 bg-muted/20">
+          <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Pesquisar eventos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-background/50"
+            />
           </div>
+        </div>
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-muted/40">
               <TableRow className="border-primary/5 hover:bg-transparent">
-                <TableHead>ID</TableHead>
-                <TableHead>Emoji</TableHead>
+                <TableHead className="w-12">ID</TableHead>
+                <TableHead className="w-16">Emoji</TableHead>
                 <TableHead>Nome</TableHead>
-                <TableHead>Código</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="hidden md:table-cell">Código</TableHead>
+                <TableHead className="hidden lg:table-cell">Emoji ID</TableHead>
+                <TableHead className="w-24 text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                 <TableRow><TableCell colSpan={5} className="h-64 text-center">Carregando...</TableCell></TableRow>
-              ) : events.length === 0 ? (
-                 <TableRow><TableCell colSpan={5} className="h-64 text-center text-muted-foreground">Nenhum evento registrado.</TableCell></TableRow>
+                 <TableRow><TableCell colSpan={6} className="h-32 text-center">Carregando...</TableCell></TableRow>
+              ) : filteredEvents.length === 0 ? (
+                  <TableRow><TableCell colSpan={6} className="h-32 text-center text-muted-foreground">Nenhum evento encontrado.</TableCell></TableRow>
               ) : (
-                events.map((event) => (
+                filteredEvents.map((event) => (
                   <TableRow key={event.id} className="border-primary/5 hover:bg-primary/[0.03]">
                     <TableCell className="font-mono text-muted-foreground">{event.id}</TableCell>
                     <TableCell className="text-2xl">{event.emoji}</TableCell>
                     <TableCell className="font-bold">{event.name}</TableCell>
-                    <TableCell className="font-mono text-xs opacity-60 uppercase">{event.code}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-600 hover:bg-blue-500/10 rounded-full" onClick={() => {
-                        setEditingEvent(event);
-                        setIsEditDialogOpen(true);
-                      }}>
-                        <Edit2Icon className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-full" onClick={() => handleDelete(event.id)}>
-                        <Trash2Icon className="h-4 w-4" />
-                      </Button>
+                    <TableCell className="hidden md:table-cell font-mono text-xs opacity-60 uppercase">{event.code}</TableCell>
+                    <TableCell className="hidden lg:table-cell font-mono text-xs text-muted-foreground">{event.emoji_id || "-"}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg" onClick={() => {
+                          setEditingEvent(event);
+                          setIsEditDialogOpen(true);
+                        }}>
+                          <Edit2Icon className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => handleDelete(event.id)}>
+                          <Trash2Icon className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -175,25 +220,29 @@ export function EventManagement() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Editar Evento</DialogTitle>
+            <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Editar Evento</DialogTitle>
           </DialogHeader>
           {editingEvent && (
             <form onSubmit={handleUpdate} className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Nome do Evento</Label>
-                <Input name="name" defaultValue={editingEvent.name} required />
+                <Label htmlFor="edit-name">Nome do Evento</Label>
+                <Input id="edit-name" name="name" defaultValue={editingEvent.name} required />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="code">Código Único</Label>
-                <Input name="code" defaultValue={editingEvent.code} required />
+                <Label htmlFor="edit-code">Código Único</Label>
+                <Input id="edit-code" name="code" defaultValue={editingEvent.code} required />
               </div>
                <div className="grid gap-2">
-                <Label htmlFor="emoji">Emoji</Label>
-                <Input name="emoji" defaultValue={editingEvent.emoji} required />
+                <Label htmlFor="edit-emoji">Emoji</Label>
+                <Input id="edit-emoji" name="emoji" defaultValue={editingEvent.emoji} required />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Input name="description" defaultValue={editingEvent.description || ""} />
+                <Label htmlFor="edit-emoji-id">Emoji ID (Opcional)</Label>
+                <Input id="edit-emoji-id" name="emoji_id" defaultValue={editingEvent.emoji_id || ""} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-desc">Descrição</Label>
+                <Input id="edit-desc" name="description" defaultValue={editingEvent.description || ""} />
               </div>
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancelar</Button>

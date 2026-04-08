@@ -6,6 +6,9 @@ import { slugify } from "@/lib/utils"
 import { revalidatePath } from "next/cache"
 import fs from "fs/promises"
 import path from "path"
+import { notifyDatabaseChannelWithPhoto, notifyDatabaseChannel, notifyDatabaseChannelWithVideo, sendLocalPhotoToTelegram, sendLocalVideoToTelegram } from "@/lib/telegram"
+import { createCaption } from "@/lib/create_caption"
+import { getSession } from "@/lib/auth"
 
 import { LRUCache } from "lru-cache";
 
@@ -26,6 +29,17 @@ export async function getDashboardData() {
       totalCollectionsWaifu,
       totalCollectionsHusbando,
       profileDistribution,
+      totalLikes,
+      totalDislikes,
+      mediaTypeDistribution,
+      sourceTypeDistribution,
+      topEvents,
+      topRarities,
+      recentWaifus,
+      recentHusbandos,
+      totalEvents,
+      totalRarities,
+      totalGroups,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.characterWaifu.count(),
@@ -34,10 +48,95 @@ export async function getDashboardData() {
       prisma.husbandoCollection.count(),
       prisma.user.groupBy({
         by: ['profileType'],
-        _count: {
-          profileType: true,
-        },
+        _count: { profileType: true },
       }),
+      prisma.$queryRaw`SELECT COALESCE(SUM(likes), 0) as total FROM "CharacterWaifu" UNION ALL SELECT COALESCE(SUM(likes), 0) FROM "CharacterHusbando"`.then(r => (r as any[]).reduce((acc: number, row: any) => acc + Number(row.total), 0)),
+      prisma.$queryRaw`SELECT COALESCE(SUM(dislikes), 0) as total FROM "CharacterWaifu" UNION ALL SELECT COALESCE(SUM(dislikes), 0) FROM "CharacterHusbando"`.then(r => (r as any[]).reduce((acc: number, row: any) => acc + Number(row.total), 0)),
+      prisma.$queryRaw`
+        SELECT "mediaType", COUNT(*) as count FROM "CharacterWaifu" GROUP BY "mediaType"
+        UNION ALL
+        SELECT "mediaType", COUNT(*) FROM "CharacterHusbando" GROUP BY "mediaType"
+      `.then(r => {
+        const map = new Map<string, number>();
+        (r as any[]).forEach((row: any) => {
+          const key = row.mediaType || "UNKNOWN";
+          map.set(key, (map.get(key) || 0) + Number(row.count));
+        });
+        return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
+      }),
+      prisma.$queryRaw`
+        SELECT "sourceType", COUNT(*) as count FROM "CharacterWaifu" GROUP BY "sourceType"
+        UNION ALL
+        SELECT "sourceType", COUNT(*) FROM "CharacterHusbando" GROUP BY "sourceType"
+      `.then(r => {
+        const map = new Map<string, number>();
+        (r as any[]).forEach((row: any) => {
+          const key = row.sourceType || "UNKNOWN";
+          map.set(key, (map.get(key) || 0) + Number(row.count));
+        });
+        return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
+      }),
+      prisma.$queryRaw`
+        SELECT e.name, e.emoji, COUNT(*) as count 
+        FROM "WaifuEvent" we
+        JOIN "Event" e ON we."eventId" = e.id
+        GROUP BY e.name, e.emoji
+        UNION ALL
+        SELECT e.name, e.emoji, COUNT(*) as count
+        FROM "HusbandoEvent" he
+        JOIN "Event" e ON he."eventId" = e.id
+        GROUP BY e.name, e.emoji
+        ORDER BY count DESC
+        LIMIT 5
+      `.then(r => {
+        const map = new Map<string, { name: string; emoji: string; count: number }>();
+        (r as any[]).forEach((row: any) => {
+          const existing = map.get(row.name);
+          if (existing) {
+            existing.count += Number(row.count);
+          } else {
+            map.set(row.name, { name: row.name, emoji: row.emoji, count: Number(row.count) });
+          }
+        });
+        return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
+      }),
+      prisma.$queryRaw`
+        SELECT r.name, r.emoji, COUNT(*) as count 
+        FROM "WaifuRarity" wr
+        JOIN "Rarity" r ON wr."rarityId" = r.id
+        GROUP BY r.name, r.emoji
+        UNION ALL
+        SELECT r.name, r.emoji, COUNT(*) as count
+        FROM "HusbandoRarity" hr
+        JOIN "Rarity" r ON hr."rarityId" = r.id
+        GROUP BY r.name, r.emoji
+        ORDER BY count DESC
+        LIMIT 5
+      `.then(r => {
+        const map = new Map<string, { name: string; emoji: string; count: number }>();
+        (r as any[]).forEach((row: any) => {
+          const existing = map.get(row.name);
+          if (existing) {
+            existing.count += Number(row.count);
+          } else {
+            map.set(row.name, { name: row.name, emoji: row.emoji, count: Number(row.count) });
+          }
+        });
+        return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5);
+      }),
+      prisma.characterWaifu.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        select: { id: true, name: true, origem: true, likes: true, createdAt: true },
+      }),
+      prisma.characterHusbando.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        select: { id: true, name: true, origem: true, likes: true, createdAt: true },
+      }),
+      prisma.event.count(),
+      prisma.rarity.count(),
+      prisma.telegramGroup.count(),
     ])
 
     return {
@@ -47,17 +146,39 @@ export async function getDashboardData() {
         totalCollections: Number(totalCollectionsWaifu) + Number(totalCollectionsHusbando),
         totalWaifus,
         totalHusbandos,
+        totalLikes,
+        totalDislikes,
+        totalEvents,
+        totalRarities,
+        totalGroups,
       },
       profileDistribution: profileDistribution.map(d => ({
         name: d.profileType,
         value: d._count.profileType,
       })),
+      mediaTypeDistribution,
+      sourceTypeDistribution,
+      topEvents,
+      topRarities,
+      recentCharacters: {
+        waifus: recentWaifus,
+        husbandos: recentHusbandos,
+      },
     }
   } catch (error) {
     console.error("Erro ao buscar dados do dashboard:", error)
     return {
-      stats: { totalUsers: 0, totalCharacters: 0, totalCollections: 0, totalWaifus: 0, totalHusbandos: 0 },
+      stats: { 
+        totalUsers: 0, totalCharacters: 0, totalCollections: 0, 
+        totalWaifus: 0, totalHusbandos: 0, totalLikes: 0, totalDislikes: 0,
+        totalEvents: 0, totalRarities: 0, totalGroups: 0 
+      },
       profileDistribution: [],
+      mediaTypeDistribution: [],
+      sourceTypeDistribution: [],
+      topEvents: [],
+      topRarities: [],
+      recentCharacters: { waifus: [], husbandos: [] },
     }
   }
 }
@@ -101,13 +222,46 @@ export async function getUsers() {
   }
 }
 
-export async function deleteUser(id: number) {
+export async function deleteUser(id: number, currentUserProfileType?: string, targetUserProfileType?: string) {
+  if (currentUserProfileType !== "OWNER") {
+    return { success: false, error: "Apenas o dono pode excluir usuários" }
+  }
+  
+  if (targetUserProfileType === "OWNER") {
+    return { success: false, error: "Não é possível excluir um usuário com perfil de dono" }
+  }
+  
   try {
     await prisma.user.delete({ where: { id } })
     revalidatePath("/admin")
+    revalidatePath("/admin/users")
     return { success: true }
   } catch (error) {
     console.error("Erro ao excluir usuário:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function updateUserProfileType(id: number, newProfileType: string, currentUserProfileType?: string) {
+  if (currentUserProfileType !== "OWNER") {
+    return { success: false, error: "Apenas o dono pode alterar perfis de usuários" }
+  }
+  
+  const validTypes = ["USER", "MOD", "ADMIN", "OWNER"]
+  if (!validTypes.includes(newProfileType)) {
+    return { success: false, error: "Tipo de perfil inválido" }
+  }
+  
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { profileType: newProfileType as any }
+    })
+    revalidatePath("/admin")
+    revalidatePath("/admin/users")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao atualizar perfil:", error)
     return { success: false, error: String(error) }
   }
 }
@@ -131,9 +285,10 @@ export async function createEvent(formData: FormData) {
     const code = formData.get("code") as string
     const emoji = formData.get("emoji") as string
     const description = formData.get("description") as string
+    const emoji_id = formData.get("emoji_id") as string
 
     await prisma.event.create({
-      data: { name, code, emoji, description }
+      data: { name, code, emoji, description, emoji_id: emoji_id || null }
     })
 
     revalidatePath("/admin")
@@ -161,10 +316,11 @@ export async function updateEvent(id: number, formData: FormData) {
     const code = formData.get("code") as string
     const emoji = formData.get("emoji") as string
     const description = formData.get("description") as string
+    const emoji_id = formData.get("emoji_id") as string
 
     await prisma.event.update({
       where: { id },
-      data: { name, code, emoji, description }
+      data: { name, code, emoji, description, emoji_id: emoji_id || null }
     })
 
     revalidatePath("/admin")
@@ -194,9 +350,10 @@ export async function createRarity(formData: FormData) {
     const code = formData.get("code") as string
     const emoji = formData.get("emoji") as string
     const description = formData.get("description") as string
+    const emoji_id = formData.get("emoji_id") as string
 
     await prisma.rarity.create({
-      data: { name, code, emoji, description }
+      data: { name, code, emoji, description, emoji_id: emoji_id || null }
     })
 
     revalidatePath("/admin")
@@ -224,10 +381,11 @@ export async function updateRarity(id: number, formData: FormData) {
     const code = formData.get("code") as string
     const emoji = formData.get("emoji") as string
     const description = formData.get("description") as string
+    const emoji_id = formData.get("emoji_id") as string
 
     await prisma.rarity.update({
       where: { id },
-      data: { name, code, emoji, description }
+      data: { name, code, emoji, description, emoji_id: emoji_id || null }
     })
 
     revalidatePath("/admin")
@@ -247,12 +405,20 @@ async function handleFileUpload(file: File) {
   const filename = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`
   const uploadDir = path.join(process.cwd(), "public", "uploads")
   
-  // Garantir que a pasta existe
   await fs.mkdir(uploadDir, { recursive: true }).catch(() => {})
   
   const filepath = path.join(uploadDir, filename)
   await fs.writeFile(filepath, buffer)
   return `/uploads/${filename}`
+}
+
+async function deleteLocalFile(filePath: string) {
+  try {
+    const absolutePath = path.join(process.cwd(), "public", filePath)
+    await fs.unlink(absolutePath)
+  } catch (error) {
+    console.error("Erro ao deletar arquivo local:", error)
+  }
 }
 
 export async function createCharacter(formData: FormData) {
@@ -263,23 +429,51 @@ export async function createCharacter(formData: FormData) {
     const sourceType = (formData.get("sourceType") as SourceType) || "ANIME"
     const mediaUrlInput = formData.get("mediaUrl") as string
     const file = formData.get("file") as File | null
+    const mediaTypeInput = formData.get("mediaType") as string | null
     
-    // Relações
     const eventIds = JSON.parse(formData.get("eventIds") as string || "[]") as number[]
     const rarityIds = JSON.parse(formData.get("rarityIds") as string || "[]") as number[]
 
     let finalMedia = mediaUrlInput
-    if (file) {
+    let finalMediaType: "IMAGE_URL" | "VIDEO_URL" | "IMAGE_FILEID" | "VIDEO_FILEID" | "IMAGE_LOCAL" | "VIDEO_LOCAL" = (mediaTypeInput as any) || "IMAGE_URL"
+    let isVideo = finalMediaType.includes("VIDEO")
+    let localFilePath: string | null = null
+
+    if (file && file.size > 0) {
       const uploadedPath = await handleFileUpload(file)
-      if (uploadedPath) finalMedia = uploadedPath
+      if (uploadedPath) {
+        localFilePath = uploadedPath
+        isVideo = file.type.includes("video")
+        finalMediaType = isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL"
+      }
+    } else if (mediaUrlInput) {
+      isVideo = mediaUrlInput.match(/\.(mp4|webm|mov|avi|mkv)$/i) !== null
+      finalMediaType = isVideo ? "VIDEO_URL" : "IMAGE_URL"
     }
 
     const slug = slugify(`${name} ${origem}-${Date.now().toString().slice(-4)}`)
 
+    const session = await getSession();
+
+    let addbyorNull: any = undefined;
+    if (session) {
+      addbyorNull = {
+        text: session.firstName,
+        type: "mention_name",
+        user_id: session.telegramId,
+      };
+    }
+
+    const usermention = session 
+      ? `<a href="tg://user?id=${session.telegramId}"><b>${session.firstName}</b></a>` 
+      : "";
+
+    let characterCreated;
+
     if (type === "waifu") {
-      await prisma.characterWaifu.create({
+      characterCreated = await prisma.characterWaifu.create({
         data: {
-          name, origem, slug, sourceType, media: finalMedia, mediaType: "IMAGE_URL",
+          name, origem, slug, sourceType, media: finalMedia, mediaType: finalMediaType, addby: addbyorNull,
           WaifuEvent: {
             create: eventIds.map(id => ({ eventId: id }))
           },
@@ -287,11 +481,15 @@ export async function createCharacter(formData: FormData) {
             create: rarityIds.map(id => ({ rarityId: id }))
           }
         },
+        include: {
+          WaifuEvent: { include: { Event: true } },
+          WaifuRarity: { include: { Rarity: true } },
+        },
       })
     } else {
-      await prisma.characterHusbando.create({
+      characterCreated = await prisma.characterHusbando.create({
         data: {
-          name, origem, slug, sourceType, media: finalMedia, mediaType: "IMAGE_URL",
+          name, origem, slug, sourceType, media: finalMedia, mediaType: finalMediaType, addby: addbyorNull,
           HusbandoEvent: {
             create: eventIds.map(id => ({ eventId: id }))
           },
@@ -299,7 +497,46 @@ export async function createCharacter(formData: FormData) {
             create: rarityIds.map(id => ({ rarityId: id }))
           }
         },
+        include: {
+          HusbandoEvent: { include: { Event: true } },
+          HusbandoRarity: { include: { Rarity: true } },
+        },
       })
+    }
+
+    const caption = createCaption(characterCreated, type, usermention);
+    
+    if (localFilePath) {
+      const result = isVideo 
+        ? await sendLocalVideoToTelegram(localFilePath, caption, type)
+        : await sendLocalPhotoToTelegram(localFilePath, caption, type);
+      
+      if (result.success && result.fileId) {
+        finalMedia = result.fileId
+        finalMediaType = isVideo ? "VIDEO_FILEID" : "IMAGE_FILEID"
+        
+        if (type === "waifu") {
+          await prisma.characterWaifu.update({
+            where: { id: characterCreated.id },
+            data: { media: result.fileId, mediaType: finalMediaType }
+          })
+        } else {
+          await prisma.characterHusbando.update({
+            where: { id: characterCreated.id },
+            data: { media: result.fileId, mediaType: finalMediaType }
+          })
+        }
+      }
+      
+      await deleteLocalFile(localFilePath)
+    } else if (finalMedia) {
+      if (isVideo) {
+        await notifyDatabaseChannelWithVideo(finalMedia, caption, type);
+      } else {
+        await notifyDatabaseChannelWithPhoto(finalMedia, caption, type);
+      }
+    } else {
+      await notifyDatabaseChannel(caption, type);
     }
 
     revalidatePath("/admin")
@@ -317,31 +554,38 @@ export async function updateCharacter(id: number, type: "waifu" | "husbando", fo
     const sourceType = (formData.get("sourceType") as SourceType) || "ANIME"
     const mediaUrlInput = formData.get("mediaUrl") as string
     const file = formData.get("file") as File | null
+    const mediaTypeInput = formData.get("mediaType") as string | null
     
-    // Relações
     const eventIds = JSON.parse(formData.get("eventIds") as string || "[]") as number[]
     const rarityIds = JSON.parse(formData.get("rarityIds") as string || "[]") as number[]
 
     let finalMedia = mediaUrlInput
+    let finalMediaType: "IMAGE_URL" | "VIDEO_URL" | "IMAGE_FILEID" | "VIDEO_FILEID" | "IMAGE_LOCAL" | "VIDEO_LOCAL" = (mediaTypeInput as any) || "IMAGE_URL"
+    let isVideo = finalMediaType.includes("VIDEO")
+    let localFilePath: string | null = null
+
     if (file && file.size > 0) {
       const uploadedPath = await handleFileUpload(file)
-      if (uploadedPath) finalMedia = uploadedPath
+      if (uploadedPath) {
+        localFilePath = uploadedPath
+        isVideo = file.type.includes("video")
+        finalMediaType = isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL"
+      }
+    } else if (mediaUrlInput) {
+      isVideo = mediaUrlInput.match(/\.(mp4|webm|mov|avi|mkv)$/i) !== null
+      finalMediaType = isVideo ? "VIDEO_URL" : "IMAGE_URL"
     }
 
-    // Se o nome ou origem mudou, talvez queira atualizar o slug? 
-    // Por segurança e SEO, manteremos o original ou geraremos um novo se o usuário desejar.
-    // Aqui manteremos o original para evitar quebrar links, a menos que mude drasticamente.
+    const updateData: any = { name, origem, sourceType, media: finalMedia, mediaType: finalMediaType }
 
     if (type === "waifu") {
       await prisma.$transaction([
-        // Limpar relações antigas
         prisma.waifuEvent.deleteMany({ where: { characterId: id } }),
         prisma.waifuRarity.deleteMany({ where: { characterId: id } }),
-        // Atualizar
         prisma.characterWaifu.update({
           where: { id },
           data: {
-            name, origem, sourceType, media: finalMedia,
+            ...updateData,
             WaifuEvent: { create: eventIds.map(eid => ({ eventId: eid })) },
             WaifuRarity: { create: rarityIds.map(rid => ({ rarityId: rid })) }
           }
@@ -349,19 +593,42 @@ export async function updateCharacter(id: number, type: "waifu" | "husbando", fo
       ])
     } else {
       await prisma.$transaction([
-        // Limpar relações antigas
         prisma.husbandoEvent.deleteMany({ where: { characterId: id } }),
         prisma.husbandoRarity.deleteMany({ where: { characterId: id } }),
-        // Atualizar
         prisma.characterHusbando.update({
           where: { id },
           data: {
-            name, origem, sourceType, media: finalMedia,
+            ...updateData,
             HusbandoEvent: { create: eventIds.map(eid => ({ eventId: eid })) },
             HusbandoRarity: { create: rarityIds.map(rid => ({ rarityId: rid })) }
           }
         })
       ])
+    }
+
+    if (localFilePath) {
+      const result = isVideo 
+        ? await sendLocalVideoToTelegram(localFilePath, "", type)
+        : await sendLocalPhotoToTelegram(localFilePath, "", type);
+      
+      if (result.success && result.fileId) {
+        finalMedia = result.fileId
+        finalMediaType = isVideo ? "VIDEO_FILEID" : "IMAGE_FILEID"
+        
+        if (type === "waifu") {
+          await prisma.characterWaifu.update({
+            where: { id },
+            data: { media: result.fileId, mediaType: finalMediaType }
+          })
+        } else {
+          await prisma.characterHusbando.update({
+            where: { id },
+            data: { media: result.fileId, mediaType: finalMediaType }
+          })
+        }
+      }
+      
+      await deleteLocalFile(localFilePath)
     }
 
     revalidatePath("/admin")

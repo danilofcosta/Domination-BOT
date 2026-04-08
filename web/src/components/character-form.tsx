@@ -26,21 +26,97 @@ interface CharacterFormProps {
   onCancel: () => void
 }
 
+const MEDIA_TYPE_OPTIONS = [
+  { value: "IMAGE_URL", label: "Imagem URL" },
+  { value: "VIDEO_URL", label: "Vídeo URL" },
+  { value: "IMAGE_FILEID", label: "Imagem Telegram" },
+  { value: "VIDEO_FILEID", label: "Vídeo Telegram" },
+  { value: "IMAGE_LOCAL", label: "Imagem Upload" },
+  { value: "VIDEO_LOCAL", label: "Vídeo Upload" },
+] as const
+
+type MediaTypeValue = "IMAGE_URL" | "VIDEO_URL" | "IMAGE_FILEID" | "VIDEO_FILEID" | "IMAGE_LOCAL" | "VIDEO_LOCAL"
+
+function getMediaEntryFromType(mediaType: string | undefined): "url" | "upload" {
+  if (!mediaType) return "upload"
+  if (mediaType.includes("URL")) return "url"
+  return "upload"
+}
+
 export function CharacterForm({ character, currentType, onSubmit, onComplete, onCancel }: CharacterFormProps) {
   const isEditing = !!character
   const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const [mediaEntry, setMediaEntry] = React.useState<"url" | "upload">(isEditing && character.media?.startsWith("http") ? "url" : "upload")
+  const [mediaType, setMediaType] = React.useState<MediaTypeValue>((character?.mediaType as MediaTypeValue) || "IMAGE_URL")
+  const [mediaEntry, setMediaEntry] = React.useState<"url" | "upload">(isEditing ? getMediaEntryFromType(character?.mediaType) : "upload")
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
   const [isVideoPreview, setIsVideoPreview] = React.useState(false)
+  const [currentMediaId, setCurrentMediaId] = React.useState<string | null>(null)
+  const [isResolving, setIsResolving] = React.useState(false)
 
   const [availableEvents, setAvailableEvents] = React.useState<any[]>([])
+  const [filteredEvents, setFilteredEvents] = React.useState<any[]>([])
   const [availableRarities, setAvailableRarities] = React.useState<any[]>([])
+  const [filteredRarities, setFilteredRarities] = React.useState<any[]>([])
   const [selectedEvents, setSelectedEvents] = React.useState<number[]>([])
   const [selectedRarities, setSelectedRarities] = React.useState<number[]>([])
+  const [eventSearch, setEventSearch] = React.useState("")
+  const [raritySearch, setRaritySearch] = React.useState("")
+
+  const handleMediaTypeChange = async (newMediaType: MediaTypeValue) => {
+    setMediaType(newMediaType)
+    setMediaEntry(getMediaEntryFromType(newMediaType))
+    
+    if (isEditing && character?.media && (newMediaType === "IMAGE_FILEID" || newMediaType === "VIDEO_FILEID")) {
+      setIsResolving(true)
+      try {
+        const result = await resolveMediaUrl(character as any, currentType)
+        if (result && result.displayUrl) {
+          setPreviewUrl(result.displayUrl)
+          setIsVideoPreview(result.isVideo)
+        }
+      } finally {
+        setIsResolving(false)
+      }
+    }
+  }
+
+  const filterEvents = React.useCallback((query: string) => {
+    setEventSearch(query)
+    const q = query.toLowerCase()
+    if (!q) {
+      setFilteredEvents(availableEvents)
+    } else {
+      setFilteredEvents(availableEvents.filter(e => 
+        e.name?.toLowerCase().includes(q) ||
+        e.code?.toLowerCase().includes(q) ||
+        e.emoji?.includes(query)
+      ))
+    }
+  }, [availableEvents])
+
+  const filterRarities = React.useCallback((query: string) => {
+    setRaritySearch(query)
+    const q = query.toLowerCase()
+    if (!q) {
+      setFilteredRarities(availableRarities)
+    } else {
+      setFilteredRarities(availableRarities.filter(r => 
+        r.name?.toLowerCase().includes(q) ||
+        r.code?.toLowerCase().includes(q) ||
+        r.emoji?.includes(query)
+      ))
+    }
+  }, [availableRarities])
 
   React.useEffect(() => {
-    getEvents().then(setAvailableEvents)
-    getRarities().then(setAvailableRarities)
+    getEvents().then(data => {
+      setAvailableEvents(data)
+      setFilteredEvents(data)
+    })
+    getRarities().then(data => {
+      setAvailableRarities(data)
+      setFilteredRarities(data)
+    })
 
     if (character) {
       const currentEvents = character[currentType === "waifu" ? "WaifuEvent" : "HusbandoEvent"]?.map((e: any) => e.eventId) || []
@@ -48,12 +124,14 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
       
       setSelectedEvents(currentEvents)
       setSelectedRarities(currentRarities)
+      setMediaType((character.mediaType as MediaTypeValue) || "IMAGE_URL")
+      setMediaEntry(getMediaEntryFromType(character.mediaType))
+      setCurrentMediaId(character.media || null)
       
       if (character.media?.startsWith("http") || character.media?.startsWith("/")) {
         setPreviewUrl(character.media)
         setIsVideoPreview(character.mediaType?.includes("VIDEO") || false)
       } else if (character.media) {
-        // Resolve telegram fileid
         resolveMediaUrl(character as any, currentType).then(result => {
           if (result && result.displayUrl) {
              setPreviewUrl(result.displayUrl)
@@ -66,6 +144,9 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
       setSelectedRarities([])
       setPreviewUrl(null)
       setIsVideoPreview(false)
+      setMediaType("IMAGE_URL")
+      setMediaEntry("upload")
+      setCurrentMediaId(null)
     }
   }, [character, currentType])
 
@@ -78,13 +159,21 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
   }
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPreviewUrl(e.target.value)
-    setIsVideoPreview(false)
+    const url = e.target.value
+    setPreviewUrl(url)
+    setIsVideoPreview(/\.(mp4|webm|mov|avi|mkv)$/i.test(url))
   }
+
+  const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("O arquivo deve ter no máximo 20MB")
+        e.target.value = ""
+        return
+      }
       setPreviewUrl(URL.createObjectURL(file))
       setIsVideoPreview(file.type.includes("video"))
     }
@@ -98,6 +187,7 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
       const formData = new FormData(event.currentTarget)
       formData.append("eventIds", JSON.stringify(selectedEvents))
       formData.append("rarityIds", JSON.stringify(selectedRarities))
+      formData.append("mediaType", mediaType)
       
       const res = await onSubmit(formData)
 
@@ -122,7 +212,7 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
             {/* LADO ESQUERDO: PREVIEW */}
             <div className="flex flex-col min-h-0 space-y-4 border p-3 rounded-2xl bg-muted/20">
                <Label className="text-xs font-bold text-center">Preview</Label>
-               <div className="relative w-full h-full min-h-[240px] rounded-xl flex items-center justify-center overflow-hidden bg-muted sm:max-h-42  ">
+               <div className="relative w-full h-full min-h-60 rounded-xl flex items-center justify-center overflow-hidden bg-muted sm:max-h-42  ">
                   {previewUrl ? (
                      isVideoPreview ? (
                         <video 
@@ -156,6 +246,35 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
                 <div className="space-y-3">
                     <Input name="name" placeholder="Nome" defaultValue={character?.name} required />
                     <Input name="origem" placeholder="Origem" defaultValue={character?.origem} required />
+                    
+                    {isEditing && (
+                      <Select value={mediaType} onValueChange={(v) => handleMediaTypeChange(v as MediaTypeValue)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tipo de Mídia" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MEDIA_TYPE_OPTIONS.map(opt => (
+                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+
+                    {isEditing && currentMediaId && (mediaType === "IMAGE_FILEID" || mediaType === "VIDEO_FILEID") && (
+                      <div className="p-2 bg-muted rounded-lg space-y-1">
+                        <Label className="text-xs text-muted-foreground">Mídia Atual (Telegram)</Label>
+                        <p className="text-xs font-mono break-all">{currentMediaId}</p>
+                        {isResolving ? (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Loader2Icon className="size-3 animate-spin" /> Carregando preview...
+                          </div>
+                        ) : previewUrl ? (
+                          <p className="text-xs text-green-600">Preview disponível</p>
+                        ) : (
+                          <p className="text-xs text-orange-600">Preview não disponível</p>
+                        )}
+                      </div>
+                    )}
 
                     {mediaEntry === "url" ? (
                        <div className="relative">
@@ -205,46 +324,72 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
                 </div>
 
                 <div>
-                    <Label>Eventos</Label>
-                    <div className="h-[160px] overflow-auto border rounded-lg p-2 space-y-1 py-2">
-                        {availableEvents.map(e => (
-                            <div 
-                              key={e.id} 
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                                toggleEvent(e.id);
-                              }}
-                              className={cn(
-                                "p-2 rounded cursor-pointer text-sm flex items-center justify-between",
-                                selectedEvents.includes(e.id) ? "bg-background/60" : "hover:bg-muted"
-                              )}
-                            >
-                                <span>{e.emoji} {e.name}</span>
-                                {selectedEvents.includes(e.id) && <CheckIcon className="size-4" />}
-                            </div>
-                        ))}
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Eventos</Label>
+                      <span className="text-xs text-muted-foreground">{selectedEvents.length} selecionado(s)</span>
+                    </div>
+                    <Input
+                      placeholder="Pesquisar eventos..."
+                      value={eventSearch}
+                      onChange={(e) => filterEvents(e.target.value)}
+                      className="mb-2 h-8 text-xs"
+                    />
+                    <div className="h-40 overflow-auto border rounded-lg p-2 space-y-1 py-2">
+                        {filteredEvents.length === 0 ? (
+                          <p className="text-center text-xs text-muted-foreground py-4">Nenhum evento encontrado</p>
+                        ) : (
+                          filteredEvents.map(e => (
+                              <div 
+                                key={e.id} 
+                                onClick={(ev) => {
+                                  ev.preventDefault();
+                                  toggleEvent(e.id);
+                                }}
+                                className={cn(
+                                  "p-2 rounded cursor-pointer text-sm flex items-center justify-between",
+                                  selectedEvents.includes(e.id) ? "bg-background/60" : "hover:bg-muted"
+                                )}
+                              >
+                                  <span>{e.emoji} {e.name}</span>
+                                  {selectedEvents.includes(e.id) && <CheckIcon className="size-4" />}
+                              </div>
+                          ))
+                        )}
                     </div>
                 </div>
                 
                 <div>
-                    <Label className="text-sm py-3"  >Raridades</Label>
-                    <div className="h-[160px] overflow-auto border rounded-lg p-2 space-y-1">
-                        {availableRarities.map(r => (
-                            <div 
-                              key={r.id} 
-                              onClick={(ev) => {
-                                ev.preventDefault();
-                                toggleRarity(r.id);
-                              }}
-                              className={cn(
-                                "p-2 rounded cursor-pointer text-sm flex items-center justify-between",
-                                selectedRarities.includes(r.id) ? " bg-background/60" : "hover:bg-muted"
-                              )}
-                            >
-                                <span>{r.emoji} {r.name}</span>
-                                {selectedRarities.includes(r.id) && <CheckIcon className="size-4" />}
-                            </div>
-                        ))}
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-sm">Raridades</Label>
+                      <span className="text-xs text-muted-foreground">{selectedRarities.length} selecionado(s)</span>
+                    </div>
+                    <Input
+                      placeholder="Pesquisar raridades..."
+                      value={raritySearch}
+                      onChange={(e) => filterRarities(e.target.value)}
+                      className="mb-2 h-8 text-xs"
+                    />
+                    <div className="h-40 overflow-auto border rounded-lg p-2 space-y-1">
+                        {filteredRarities.length === 0 ? (
+                          <p className="text-center text-xs text-muted-foreground py-4">Nenhuma raridade encontrada</p>
+                        ) : (
+                          filteredRarities.map(r => (
+                              <div 
+                                key={r.id} 
+                                onClick={(ev) => {
+                                  ev.preventDefault();
+                                  toggleRarity(r.id);
+                                }}
+                                className={cn(
+                                  "p-2 rounded cursor-pointer text-sm flex items-center justify-between",
+                                  selectedRarities.includes(r.id) ? " bg-background/60" : "hover:bg-muted"
+                                )}
+                              >
+                                  <span>{r.emoji} {r.name}</span>
+                                  {selectedRarities.includes(r.id) && <CheckIcon className="size-4" />}
+                              </div>
+                          ))
+                        )}
                     </div>
                 </div>
             </div>

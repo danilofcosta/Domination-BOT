@@ -14,17 +14,14 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
 
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import {
   UserDetailsDialog,
-  UserDetailsDialogProps,
 } from "./user/user-details-dialog";
+import { SessionPayload } from "@/lib/auth";
 
-// ✅ Type safety
 type User = {
   id: number;
   telegramId: string;
@@ -32,29 +29,26 @@ type User = {
   profileType: string;
   coins: number;
   avatarUrl?: string;
-  favoriteWaifuId: number | null;
-  favoriteHusbandoId: number | null;
-  waifuConfig: any;
-  husbandoConfig: any;
   language: string;
 };
 
-export function UserManagementTable_page() {
+interface UserManagementTable_pageProps {
+  currentUser?: SessionPayload | null;
+}
+
+export function UserManagementTable_page({ currentUser }: UserManagementTable_pageProps) {
   const [users, setUsers] = React.useState<User[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
 
-  // ✅ Debounce
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search);
     }, 300);
-
     return () => clearTimeout(timeout);
   }, [search]);
 
-  // ✅ Fetch
   const fetchData = React.useCallback(async () => {
     try {
       setIsLoading(true);
@@ -71,10 +65,8 @@ export function UserManagementTable_page() {
     fetchData();
   }, [fetchData]);
 
-  // ✅ Optimized filter
   const filteredUsers = React.useMemo(() => {
     const searchLower = debouncedSearch.toLowerCase();
-
     return users.filter((u) => {
       return (
         (u.telegramId ?? "").includes(debouncedSearch) ||
@@ -84,114 +76,120 @@ export function UserManagementTable_page() {
     });
   }, [users, debouncedSearch]);
 
+  const getProfileBadgeVariant = (type: string) => {
+    switch (type) {
+      case "OWNER": return "default";
+      case "ADMIN": return "secondary";
+      case "MOD": return "outline";
+      default: return "outline";
+    }
+  };
+
   return (
     <div className="space-y-4 px-4 lg:px-6">
-      {/* 🔍 Search */}
-      <div className="flex justify-between items-center bg-background/50 rounded-full mt-5">
-        <div className="relative w-full md:w-80">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="relative w-full sm:w-64 md:w-80">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Pesquisar por ID, nome ou username..."
+            placeholder="Pesquisar..."
             className="pl-9 bg-card/50 border-primary/10 rounded-xl"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <p className="text-xs text-muted-foreground">
+          {filteredUsers.length} usuário(s) encontrado(s)
+        </p>
       </div>
 
-      {/* 📊 Table */}
       <div className="rounded-2xl border border-primary/10 bg-card/20 backdrop-blur-md overflow-hidden">
-        <Table>
-          <TableHeader className="bg-muted/40">
-            <TableRow className="border-primary/5 hover:bg-transparent">
-              <TableHead>ID</TableHead>
-              <TableHead>Avatar</TableHead>
-              <TableHead>Telegram ID</TableHead>
-              <TableHead>Nome</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Moedas</TableHead>
-              <TableHead>Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {/* ⏳ Loading */}
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-64 text-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-muted-foreground">
-                      Carregando usuários...
-                    </p>
-                  </div>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/40">
+              <TableRow className="border-primary/5 hover:bg-transparent">
+                <TableHead className="w-12">#</TableHead>
+                <TableHead className="w-12">Avatar</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead className="hidden sm:table-cell">Tipo</TableHead>
+                <TableHead className="hidden md:table-cell">Moedas</TableHead>
+                <TableHead className="w-12">Ações</TableHead>
               </TableRow>
-            ) : filteredUsers.length === 0 ? (
-              /* ❌ Empty */
-              <TableRow>
-                <TableCell colSpan={7} className="h-64 text-center">
-                  <p className="text-muted-foreground">
-                    Nenhum usuário encontrado
-                    {search && ` para "${search}"`}
-                  </p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              /* ✅ Data */
-              filteredUsers.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className="border-primary/5 hover:bg-primary/5 transition cursor-pointer"
-                >
-                  <TableCell className="font-medium text-muted-foreground">
-                    {user.id}
-                  </TableCell>
+            </TableHeader>
 
-                  {/* 🖼 Avatar */}
-                  <TableCell>
-                    <div className="relative w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                      {user.avatarUrl ? (
-                        <img
-                          src={user.avatarUrl}
-                          alt={user.telegramData?.first_name || "User"}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <UserIcon className="text-primary h-5 w-5" />
-                      )}
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
+                      <p className="text-muted-foreground text-sm">Carregando...</p>
                     </div>
                   </TableCell>
-
-                  <TableCell className="font-mono font-bold">
-                    {user.telegramId}
-                  </TableCell>
-
-                  <TableCell className="font-bold">
-                    {user.telegramData?.first_name || "Desconhecido"}
-                  </TableCell>
-
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="font-black uppercase tracking-tight border-primary/20"
-                    >
-                      {user.profileType}
-                    </Badge>
-                  </TableCell>
-
-                  <TableCell className="font-bold text-yellow-500">
-                    💰 {user.coins.toLocaleString()}
-                  </TableCell>
-
-                  <TableCell>
-                    <UserDetailsDialog user={user as any} />
+                </TableRow>
+              ) : filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center">
+                    <p className="text-muted-foreground">
+                      Nenhum usuário encontrado
+                      {search && ` para "${search}"`}
+                    </p>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                filteredUsers.map((user) => (
+                  <TableRow
+                    key={user.id}
+                    className="border-primary/5 hover:bg-primary/5 transition"
+                  >
+                    <TableCell className="font-mono text-muted-foreground text-xs">
+                      {user.id}
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                        {user.telegramData?.photo_url ? (
+                          <img
+                            src={user.telegramData.photo_url}
+                            alt={user.telegramData?.first_name || "User"}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <UserIcon className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="font-bold">
+                      <div className="flex flex-col">
+                        <span className="text-sm">{user.telegramData?.first_name || "Desconhecido"}</span>
+                        {user.telegramData?.username && (
+                          <span className="text-xs text-muted-foreground">@{user.telegramData.username}</span>
+                        )}
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="hidden sm:table-cell">
+                      <Badge
+                        variant={getProfileBadgeVariant(user.profileType)}
+                        className="font-bold uppercase tracking-tight text-xs"
+                      >
+                        {user.profileType}
+                      </Badge>
+                    </TableCell>
+
+                    <TableCell className="hidden md:table-cell font-bold text-yellow-500 text-sm">
+                      💰 {user.coins.toLocaleString()}
+                    </TableCell>
+
+                    <TableCell>
+                      <UserDetailsDialog user={user as any} currentUser={currentUser} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

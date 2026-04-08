@@ -51,6 +51,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
     <div className=" flex flex-wrap gap-6  justify-center p-4">
       {Object.entries(stats).map(([key, value]) => {
         const config = statConfig[key as keyof typeof statConfig];
+        if (!config) return null;
 
         return (
           <StatCard

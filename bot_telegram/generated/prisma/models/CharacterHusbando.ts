@@ -29,15 +29,15 @@ export type AggregateCharacterHusbando = {
 export type CharacterHusbandoAvgAggregateOutputType = {
   id: number | null
   popularity: number | null
-  likes: number | null
   dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterHusbandoSumAggregateOutputType = {
   id: number | null
   popularity: number | null
-  likes: number | null
   dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterHusbandoMinAggregateOutputType = {
@@ -51,10 +51,10 @@ export type CharacterHusbandoMinAggregateOutputType = {
   updatedAt: Date | null
   popularity: number | null
   sourceType: $Enums.SourceType | null
-  likes: number | null
-  dislikes: number | null
   linkweb: string | null
   linkwebExpiresAt: Date | null
+  dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterHusbandoMaxAggregateOutputType = {
@@ -68,10 +68,10 @@ export type CharacterHusbandoMaxAggregateOutputType = {
   updatedAt: Date | null
   popularity: number | null
   sourceType: $Enums.SourceType | null
-  likes: number | null
-  dislikes: number | null
   linkweb: string | null
   linkwebExpiresAt: Date | null
+  dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterHusbandoCountAggregateOutputType = {
@@ -86,10 +86,10 @@ export type CharacterHusbandoCountAggregateOutputType = {
   updatedAt: number
   popularity: number
   sourceType: number
-  likes: number
-  dislikes: number
   linkweb: number
   linkwebExpiresAt: number
+  dislikes: number
+  likes: number
   addby: number
   _all: number
 }
@@ -98,15 +98,15 @@ export type CharacterHusbandoCountAggregateOutputType = {
 export type CharacterHusbandoAvgAggregateInputType = {
   id?: true
   popularity?: true
-  likes?: true
   dislikes?: true
+  likes?: true
 }
 
 export type CharacterHusbandoSumAggregateInputType = {
   id?: true
   popularity?: true
-  likes?: true
   dislikes?: true
+  likes?: true
 }
 
 export type CharacterHusbandoMinAggregateInputType = {
@@ -120,10 +120,10 @@ export type CharacterHusbandoMinAggregateInputType = {
   updatedAt?: true
   popularity?: true
   sourceType?: true
-  likes?: true
-  dislikes?: true
   linkweb?: true
   linkwebExpiresAt?: true
+  dislikes?: true
+  likes?: true
 }
 
 export type CharacterHusbandoMaxAggregateInputType = {
@@ -137,10 +137,10 @@ export type CharacterHusbandoMaxAggregateInputType = {
   updatedAt?: true
   popularity?: true
   sourceType?: true
-  likes?: true
-  dislikes?: true
   linkweb?: true
   linkwebExpiresAt?: true
+  dislikes?: true
+  likes?: true
 }
 
 export type CharacterHusbandoCountAggregateInputType = {
@@ -155,10 +155,10 @@ export type CharacterHusbandoCountAggregateInputType = {
   updatedAt?: true
   popularity?: true
   sourceType?: true
-  likes?: true
-  dislikes?: true
   linkweb?: true
   linkwebExpiresAt?: true
+  dislikes?: true
+  likes?: true
   addby?: true
   _all?: true
 }
@@ -261,10 +261,10 @@ export type CharacterHusbandoGroupByOutputType = {
   updatedAt: Date
   popularity: number
   sourceType: $Enums.SourceType
-  likes: number
-  dislikes: number
   linkweb: string | null
   linkwebExpiresAt: Date | null
+  dislikes: number
+  likes: number
   addby: runtime.JsonValue | null
   _count: CharacterHusbandoCountAggregateOutputType | null
   _avg: CharacterHusbandoAvgAggregateOutputType | null
@@ -303,10 +303,10 @@ export type CharacterHusbandoWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"CharacterHusbando"> | Date | string
   popularity?: Prisma.IntFilter<"CharacterHusbando"> | number
   sourceType?: Prisma.EnumSourceTypeFilter<"CharacterHusbando"> | $Enums.SourceType
-  likes?: Prisma.IntFilter<"CharacterHusbando"> | number
-  dislikes?: Prisma.IntFilter<"CharacterHusbando"> | number
   linkweb?: Prisma.StringNullableFilter<"CharacterHusbando"> | string | null
   linkwebExpiresAt?: Prisma.DateTimeNullableFilter<"CharacterHusbando"> | Date | string | null
+  dislikes?: Prisma.IntFilter<"CharacterHusbando"> | number
+  likes?: Prisma.IntFilter<"CharacterHusbando"> | number
   addby?: Prisma.JsonNullableFilter<"CharacterHusbando">
   HusbandoCollection?: Prisma.HusbandoCollectionListRelationFilter
   HusbandoEvent?: Prisma.HusbandoEventListRelationFilter
@@ -326,10 +326,10 @@ export type CharacterHusbandoOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrderInput | Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
   addby?: Prisma.SortOrderInput | Prisma.SortOrder
   HusbandoCollection?: Prisma.HusbandoCollectionOrderByRelationAggregateInput
   HusbandoEvent?: Prisma.HusbandoEventOrderByRelationAggregateInput
@@ -352,10 +352,10 @@ export type CharacterHusbandoWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"CharacterHusbando"> | Date | string
   popularity?: Prisma.IntFilter<"CharacterHusbando"> | number
   sourceType?: Prisma.EnumSourceTypeFilter<"CharacterHusbando"> | $Enums.SourceType
-  likes?: Prisma.IntFilter<"CharacterHusbando"> | number
-  dislikes?: Prisma.IntFilter<"CharacterHusbando"> | number
   linkweb?: Prisma.StringNullableFilter<"CharacterHusbando"> | string | null
   linkwebExpiresAt?: Prisma.DateTimeNullableFilter<"CharacterHusbando"> | Date | string | null
+  dislikes?: Prisma.IntFilter<"CharacterHusbando"> | number
+  likes?: Prisma.IntFilter<"CharacterHusbando"> | number
   addby?: Prisma.JsonNullableFilter<"CharacterHusbando">
   HusbandoCollection?: Prisma.HusbandoCollectionListRelationFilter
   HusbandoEvent?: Prisma.HusbandoEventListRelationFilter
@@ -375,10 +375,10 @@ export type CharacterHusbandoOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrderInput | Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
   addby?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CharacterHusbandoCountOrderByAggregateInput
   _avg?: Prisma.CharacterHusbandoAvgOrderByAggregateInput
@@ -402,10 +402,10 @@ export type CharacterHusbandoScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CharacterHusbando"> | Date | string
   popularity?: Prisma.IntWithAggregatesFilter<"CharacterHusbando"> | number
   sourceType?: Prisma.EnumSourceTypeWithAggregatesFilter<"CharacterHusbando"> | $Enums.SourceType
-  likes?: Prisma.IntWithAggregatesFilter<"CharacterHusbando"> | number
-  dislikes?: Prisma.IntWithAggregatesFilter<"CharacterHusbando"> | number
   linkweb?: Prisma.StringNullableWithAggregatesFilter<"CharacterHusbando"> | string | null
   linkwebExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CharacterHusbando"> | Date | string | null
+  dislikes?: Prisma.IntWithAggregatesFilter<"CharacterHusbando"> | number
+  likes?: Prisma.IntWithAggregatesFilter<"CharacterHusbando"> | number
   addby?: Prisma.JsonNullableWithAggregatesFilter<"CharacterHusbando">
 }
 
@@ -420,10 +420,10 @@ export type CharacterHusbandoCreateInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutCharacterInput
   HusbandoEvent?: Prisma.HusbandoEventCreateNestedManyWithoutCharacterHusbandoInput
@@ -443,10 +443,10 @@ export type CharacterHusbandoUncheckedCreateInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutCharacterInput
   HusbandoEvent?: Prisma.HusbandoEventUncheckedCreateNestedManyWithoutCharacterHusbandoInput
@@ -465,10 +465,10 @@ export type CharacterHusbandoUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutCharacterNestedInput
   HusbandoEvent?: Prisma.HusbandoEventUpdateManyWithoutCharacterHusbandoNestedInput
@@ -488,10 +488,10 @@ export type CharacterHusbandoUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   HusbandoEvent?: Prisma.HusbandoEventUncheckedUpdateManyWithoutCharacterHusbandoNestedInput
@@ -511,10 +511,10 @@ export type CharacterHusbandoCreateManyInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -529,10 +529,10 @@ export type CharacterHusbandoUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -548,10 +548,10 @@ export type CharacterHusbandoUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
@@ -567,18 +567,18 @@ export type CharacterHusbandoCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
   addby?: Prisma.SortOrder
 }
 
 export type CharacterHusbandoAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
   dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterHusbandoMaxOrderByAggregateInput = {
@@ -592,10 +592,10 @@ export type CharacterHusbandoMaxOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterHusbandoMinOrderByAggregateInput = {
@@ -609,17 +609,17 @@ export type CharacterHusbandoMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterHusbandoSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
   dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterHusbandoScalarRelationFilter = {
@@ -733,10 +733,10 @@ export type CharacterHusbandoCreateWithoutHusbandoCollectionInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoEvent?: Prisma.HusbandoEventCreateNestedManyWithoutCharacterHusbandoInput
   HusbandoRarity?: Prisma.HusbandoRarityCreateNestedManyWithoutCharacterHusbandoInput
@@ -755,10 +755,10 @@ export type CharacterHusbandoUncheckedCreateWithoutHusbandoCollectionInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoEvent?: Prisma.HusbandoEventUncheckedCreateNestedManyWithoutCharacterHusbandoInput
   HusbandoRarity?: Prisma.HusbandoRarityUncheckedCreateNestedManyWithoutCharacterHusbandoInput
@@ -792,10 +792,10 @@ export type CharacterHusbandoUpdateWithoutHusbandoCollectionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoEvent?: Prisma.HusbandoEventUpdateManyWithoutCharacterHusbandoNestedInput
   HusbandoRarity?: Prisma.HusbandoRarityUpdateManyWithoutCharacterHusbandoNestedInput
@@ -814,10 +814,10 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoCollectionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoEvent?: Prisma.HusbandoEventUncheckedUpdateManyWithoutCharacterHusbandoNestedInput
   HusbandoRarity?: Prisma.HusbandoRarityUncheckedUpdateManyWithoutCharacterHusbandoNestedInput
@@ -835,10 +835,10 @@ export type CharacterHusbandoCreateWithoutHusbandoEventInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutCharacterInput
   HusbandoRarity?: Prisma.HusbandoRarityCreateNestedManyWithoutCharacterHusbandoInput
@@ -857,10 +857,10 @@ export type CharacterHusbandoUncheckedCreateWithoutHusbandoEventInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutCharacterInput
   HusbandoRarity?: Prisma.HusbandoRarityUncheckedCreateNestedManyWithoutCharacterHusbandoInput
@@ -894,10 +894,10 @@ export type CharacterHusbandoUpdateWithoutHusbandoEventInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutCharacterNestedInput
   HusbandoRarity?: Prisma.HusbandoRarityUpdateManyWithoutCharacterHusbandoNestedInput
@@ -916,10 +916,10 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoEventInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   HusbandoRarity?: Prisma.HusbandoRarityUncheckedUpdateManyWithoutCharacterHusbandoNestedInput
@@ -937,10 +937,10 @@ export type CharacterHusbandoCreateWithoutHusbandoRarityInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutCharacterInput
   HusbandoEvent?: Prisma.HusbandoEventCreateNestedManyWithoutCharacterHusbandoInput
@@ -959,10 +959,10 @@ export type CharacterHusbandoUncheckedCreateWithoutHusbandoRarityInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutCharacterInput
   HusbandoEvent?: Prisma.HusbandoEventUncheckedCreateNestedManyWithoutCharacterHusbandoInput
@@ -996,10 +996,10 @@ export type CharacterHusbandoUpdateWithoutHusbandoRarityInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutCharacterNestedInput
   HusbandoEvent?: Prisma.HusbandoEventUpdateManyWithoutCharacterHusbandoNestedInput
@@ -1018,10 +1018,10 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoRarityInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   HusbandoEvent?: Prisma.HusbandoEventUncheckedUpdateManyWithoutCharacterHusbandoNestedInput
@@ -1039,10 +1039,10 @@ export type CharacterHusbandoCreateWithoutUserInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutCharacterInput
   HusbandoEvent?: Prisma.HusbandoEventCreateNestedManyWithoutCharacterHusbandoInput
@@ -1061,10 +1061,10 @@ export type CharacterHusbandoUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
+  dislikes?: number
+  likes?: number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutCharacterInput
   HusbandoEvent?: Prisma.HusbandoEventUncheckedCreateNestedManyWithoutCharacterHusbandoInput
@@ -1098,10 +1098,10 @@ export type CharacterHusbandoUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutCharacterNestedInput
   HusbandoEvent?: Prisma.HusbandoEventUpdateManyWithoutCharacterHusbandoNestedInput
@@ -1120,10 +1120,10 @@ export type CharacterHusbandoUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   HusbandoEvent?: Prisma.HusbandoEventUncheckedUpdateManyWithoutCharacterHusbandoNestedInput
@@ -1200,10 +1200,10 @@ export type CharacterHusbandoSelect<ExtArgs extends runtime.Types.Extensions.Int
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
+  dislikes?: boolean
+  likes?: boolean
   addby?: boolean
   HusbandoCollection?: boolean | Prisma.CharacterHusbando$HusbandoCollectionArgs<ExtArgs>
   HusbandoEvent?: boolean | Prisma.CharacterHusbando$HusbandoEventArgs<ExtArgs>
@@ -1224,10 +1224,10 @@ export type CharacterHusbandoSelectCreateManyAndReturn<ExtArgs extends runtime.T
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
+  dislikes?: boolean
+  likes?: boolean
   addby?: boolean
 }, ExtArgs["result"]["characterHusbando"]>
 
@@ -1243,10 +1243,10 @@ export type CharacterHusbandoSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
+  dislikes?: boolean
+  likes?: boolean
   addby?: boolean
 }, ExtArgs["result"]["characterHusbando"]>
 
@@ -1262,14 +1262,14 @@ export type CharacterHusbandoSelectScalar = {
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
+  dislikes?: boolean
+  likes?: boolean
   addby?: boolean
 }
 
-export type CharacterHusbandoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "origem" | "mediaType" | "media" | "slug" | "extras" | "createdAt" | "updatedAt" | "popularity" | "sourceType" | "likes" | "dislikes" | "linkweb" | "linkwebExpiresAt" | "addby", ExtArgs["result"]["characterHusbando"]>
+export type CharacterHusbandoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "origem" | "mediaType" | "media" | "slug" | "extras" | "createdAt" | "updatedAt" | "popularity" | "sourceType" | "linkweb" | "linkwebExpiresAt" | "dislikes" | "likes" | "addby", ExtArgs["result"]["characterHusbando"]>
 export type CharacterHusbandoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   HusbandoCollection?: boolean | Prisma.CharacterHusbando$HusbandoCollectionArgs<ExtArgs>
   HusbandoEvent?: boolean | Prisma.CharacterHusbando$HusbandoEventArgs<ExtArgs>
@@ -1300,10 +1300,10 @@ export type $CharacterHusbandoPayload<ExtArgs extends runtime.Types.Extensions.I
     updatedAt: Date
     popularity: number
     sourceType: $Enums.SourceType
-    likes: number
-    dislikes: number
     linkweb: string | null
     linkwebExpiresAt: Date | null
+    dislikes: number
+    likes: number
     addby: runtime.JsonValue | null
   }, ExtArgs["result"]["characterHusbando"]>
   composites: {}
@@ -1743,10 +1743,10 @@ export interface CharacterHusbandoFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"CharacterHusbando", 'DateTime'>
   readonly popularity: Prisma.FieldRef<"CharacterHusbando", 'Int'>
   readonly sourceType: Prisma.FieldRef<"CharacterHusbando", 'SourceType'>
-  readonly likes: Prisma.FieldRef<"CharacterHusbando", 'Int'>
-  readonly dislikes: Prisma.FieldRef<"CharacterHusbando", 'Int'>
   readonly linkweb: Prisma.FieldRef<"CharacterHusbando", 'String'>
   readonly linkwebExpiresAt: Prisma.FieldRef<"CharacterHusbando", 'DateTime'>
+  readonly dislikes: Prisma.FieldRef<"CharacterHusbando", 'Int'>
+  readonly likes: Prisma.FieldRef<"CharacterHusbando", 'Int'>
   readonly addby: Prisma.FieldRef<"CharacterHusbando", 'Json'>
 }
     

@@ -1,14 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SessionPayload } from "@/lib/auth";
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  user?: SessionPayload | null;
+}
+
+export function SiteHeader({ user }: SiteHeaderProps) {
   return (
     <header className="flex items-center justify-between p-4 border-b">
-      <h1 className="text-2xl font-bold bg-background/10 shadow border-0.5 p-1 rounded-xl ">{getGreeting()}, Admin</h1>
+      <div className="flex items-center gap-3">
+        {user?.photoUrl && (
+          <img
+            src={user.photoUrl}
+            alt={user.firstName}
+            className="w-10 h-10 rounded-full border-2 border-primary"
+          />
+        )}
+        <div>
+          <h1 className="text-2xl font-bold bg-background/10 shadow border-0.5 p-1 rounded-xl">
+            {getGreeting()}, {user?.firstName || "Admin"}
+          </h1>
+          {user?.profileType && (
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">
+              {user.profileType}
+            </span>
+          )}
+        </div>
+      </div>
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm">
-          Sair
-        </Button>
+        <form action="/api/auth/logout" method="POST">
+          <Button variant="outline" size="sm" type="submit">
+            Sair
+          </Button>
+        </form>
         <SidebarTrigger variant="outline" size="sm">
           Menu
         </SidebarTrigger>

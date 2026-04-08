@@ -18,14 +18,14 @@ export function AddCharacterModal({ onComplete, currentType = "waifu" }: { onCom
       <DialogTrigger asChild>
         <Button>
           <PlusIcon className="mr-2 h-5 w-5" />
-          Inicializar Entrada
+          {currentType === "waifu" ? "add Waifu" : "add Husbando"}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-4xl w-[95vw] h-[95vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-            <PlusIcon /> Criar Personagem
+            <PlusIcon /> Criar {currentType === "waifu" ? "Waifu" : "Husbando"}
           </DialogTitle>
           <DialogDescription>
             Configure os dados do personagem

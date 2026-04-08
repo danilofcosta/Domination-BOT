@@ -106,8 +106,8 @@ export function CharacterManagementTable() {
         <Table>
           <TableHeader className="bg-muted/40">
             <TableRow className="border-primary/5 hover:bg-transparent">
-              <TableHead className="w-[60px] py-4">ID</TableHead>
-              <TableHead className="w-[80px]">Preview</TableHead>
+              <TableHead className="w-15 py-4">ID</TableHead>
+              <TableHead className="w-20">Preview</TableHead>
               <TableHead className="font-bold">Detalhes</TableHead>
               <TableHead className="font-bold">Categorias</TableHead>
               <TableHead className="font-bold">Info</TableHead>
@@ -121,7 +121,7 @@ export function CharacterManagementTable() {
               <TableRow><TableCell colSpan={6} className="h-64 text-center">Nenhum registro.</TableCell></TableRow>
             ) : (
               characters.map((char) => (
-                <TableRow key={char.id} className="group border-primary/5 hover:bg-primary/[0.03]">
+                <TableRow key={char.id} className="group border-primary/5 hover:bg-primary/3">
                   <TableCell className="font-mono text-muted-foreground">{char.id}</TableCell>
                   <TableCell className="py-3">
                     <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-primary/10 shadow-sm bg-muted">

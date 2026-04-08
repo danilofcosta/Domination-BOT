@@ -1,10 +1,14 @@
 import { LRUCache } from "lru-cache";
 import { prisma } from "./prisma";
+import fs from "fs/promises";
+import path from "path";
 
 const tokens = {
   waifu: process.env.BOT_TOKEN_WAIFU,
   husbando: process.env.BOT_TOKEN_HUSBANDO,
 };
+
+const DATABASE_TELEGRAM_ID = process.env.DATABASE_TELEGRAM_ID || "-1002400748069";
 
 // Cache na memória (file_id -> file_path) para acesso ultrarrápido
 const mediaCache = new LRUCache<string, string>({
@@ -85,5 +89,220 @@ async function updatelinkweb(
     }
   } catch (err) {
     console.error(`[Database] Erro ao atualizar o link temporário do ${type}:`, err);
+  }
+}
+
+export async function sendTelegramMessage(
+  chatId: string,
+  text: string,
+  type: "waifu" | "husbando" = "waifu",
+) {
+  const token = tokens[type];
+  if (!token) {
+    console.warn(`Token para ${type} não encontrado.`);
+    return;
+  }
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+      }),
+    });
+  } catch (error) {
+    console.error(`[Telegram API] Erro ao enviar mensagem:`, error);
+  }
+}
+
+export interface TelegramSendResult {
+  success: boolean;
+  fileId?: string;
+  error?: string;
+}
+
+export async function sendTelegramPhoto(
+  chatId: string,
+  photo: string,
+  caption: string,
+  type: "waifu" | "husbando" = "waifu",
+): Promise<TelegramSendResult> {
+  const token = tokens[type];
+  if (!token) {
+    console.warn(`Token para ${type} não encontrado.`);
+    return { success: false, error: "Token não encontrado" };
+  }
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        photo,
+        caption,
+        parse_mode: "HTML",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.ok && data.result?.photo) {
+      const fileId = data.result.photo[data.result.photo.length - 1]?.file_id || data.result.photo[0]?.file_id;
+      return { success: true, fileId };
+    }
+
+    return { success: false, error: data.description || "Erro ao enviar foto" };
+  } catch (error) {
+    console.error(`[Telegram API] Erro ao enviar foto:`, error);
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function sendTelegramVideo(
+  chatId: string,
+  video: string,
+  caption: string,
+  type: "waifu" | "husbando" = "waifu",
+): Promise<TelegramSendResult> {
+  const token = tokens[type];
+  if (!token) {
+    console.warn(`Token para ${type} não encontrado.`);
+    return { success: false, error: "Token não encontrado" };
+  }
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        video,
+        caption,
+        parse_mode: "HTML",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.ok && data.result?.video) {
+      const fileId = data.result.video.file_id;
+      return { success: true, fileId };
+    }
+
+    return { success: false, error: data.description || "Erro ao enviar vídeo" };
+  } catch (error) {
+    console.error(`[Telegram API] Erro ao enviar vídeo:`, error);
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function notifyDatabaseChannel(
+  message: string,
+  type: "waifu" | "husbando" = "waifu",
+) {
+  return sendTelegramMessage(DATABASE_TELEGRAM_ID, message, type);
+}
+
+export async function notifyDatabaseChannelWithPhoto(
+  photo: string,
+  caption: string,
+  type: "waifu" | "husbando" = "waifu",
+): Promise<TelegramSendResult> {
+  return sendTelegramPhoto(DATABASE_TELEGRAM_ID, photo, caption, type);
+}
+
+export async function notifyDatabaseChannelWithVideo(
+  video: string,
+  caption: string,
+  type: "waifu" | "husbando" = "waifu",
+): Promise<TelegramSendResult> {
+  return sendTelegramVideo(DATABASE_TELEGRAM_ID, video, caption, type);
+}
+
+export async function sendLocalPhotoToTelegram(
+  filePath: string,
+  caption: string,
+  type: "waifu" | "husbando" = "waifu",
+): Promise<TelegramSendResult> {
+  const token = tokens[type];
+  if (!token) {
+    console.warn(`Token para ${type} não encontrado.`);
+    return { success: false, error: "Token não encontrado" };
+  }
+
+  try {
+    const absolutePath = filePath.startsWith("/") 
+      ? path.join(process.cwd(), "public", filePath)
+      : filePath;
+    
+    const fileBuffer = await fs.readFile(absolutePath);
+    const formData = new FormData();
+    formData.append("chat_id", DATABASE_TELEGRAM_ID);
+    formData.append("photo", new Blob([fileBuffer]), path.basename(filePath));
+    formData.append("caption", caption);
+    formData.append("parse_mode", "HTML");
+
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (data.ok && data.result?.photo) {
+      const fileId = data.result.photo[data.result.photo.length - 1]?.file_id || data.result.photo[0]?.file_id;
+      return { success: true, fileId };
+    }
+
+    return { success: false, error: data.description || "Erro ao enviar foto local" };
+  } catch (error) {
+    console.error(`[Telegram API] Erro ao enviar foto local:`, error);
+    return { success: false, error: String(error) };
+  }
+}
+
+export async function sendLocalVideoToTelegram(
+  filePath: string,
+  caption: string,
+  type: "waifu" | "husbando" = "waifu",
+): Promise<TelegramSendResult> {
+  const token = tokens[type];
+  if (!token) {
+    console.warn(`Token para ${type} não encontrado.`);
+    return { success: false, error: "Token não encontrado" };
+  }
+
+  try {
+    const absolutePath = filePath.startsWith("/") 
+      ? path.join(process.cwd(), "public", filePath)
+      : filePath;
+    
+    const fileBuffer = await fs.readFile(absolutePath);
+    const formData = new FormData();
+    formData.append("chat_id", DATABASE_TELEGRAM_ID);
+    formData.append("video", new Blob([fileBuffer]), path.basename(filePath));
+    formData.append("caption", caption);
+    formData.append("parse_mode", "HTML");
+
+    const response = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (data.ok && data.result?.video) {
+      const fileId = data.result.video.file_id;
+      return { success: true, fileId };
+    }
+
+    return { success: false, error: data.description || "Erro ao enviar vídeo local" };
+  } catch (error) {
+    console.error(`[Telegram API] Erro ao enviar vídeo local:`, error);
+    return { success: false, error: String(error) };
   }
 }

@@ -29,15 +29,15 @@ export type AggregateCharacterWaifu = {
 export type CharacterWaifuAvgAggregateOutputType = {
   id: number | null
   popularity: number | null
-  likes: number | null
   dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterWaifuSumAggregateOutputType = {
   id: number | null
   popularity: number | null
-  likes: number | null
   dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterWaifuMinAggregateOutputType = {
@@ -51,10 +51,10 @@ export type CharacterWaifuMinAggregateOutputType = {
   updatedAt: Date | null
   popularity: number | null
   sourceType: $Enums.SourceType | null
-  likes: number | null
-  dislikes: number | null
   linkweb: string | null
   linkwebExpiresAt: Date | null
+  dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterWaifuMaxAggregateOutputType = {
@@ -68,10 +68,10 @@ export type CharacterWaifuMaxAggregateOutputType = {
   updatedAt: Date | null
   popularity: number | null
   sourceType: $Enums.SourceType | null
-  likes: number | null
-  dislikes: number | null
   linkweb: string | null
   linkwebExpiresAt: Date | null
+  dislikes: number | null
+  likes: number | null
 }
 
 export type CharacterWaifuCountAggregateOutputType = {
@@ -86,11 +86,11 @@ export type CharacterWaifuCountAggregateOutputType = {
   updatedAt: number
   popularity: number
   sourceType: number
-  likes: number
-  dislikes: number
   linkweb: number
   linkwebExpiresAt: number
   addby: number
+  dislikes: number
+  likes: number
   _all: number
 }
 
@@ -98,15 +98,15 @@ export type CharacterWaifuCountAggregateOutputType = {
 export type CharacterWaifuAvgAggregateInputType = {
   id?: true
   popularity?: true
-  likes?: true
   dislikes?: true
+  likes?: true
 }
 
 export type CharacterWaifuSumAggregateInputType = {
   id?: true
   popularity?: true
-  likes?: true
   dislikes?: true
+  likes?: true
 }
 
 export type CharacterWaifuMinAggregateInputType = {
@@ -120,10 +120,10 @@ export type CharacterWaifuMinAggregateInputType = {
   updatedAt?: true
   popularity?: true
   sourceType?: true
-  likes?: true
-  dislikes?: true
   linkweb?: true
   linkwebExpiresAt?: true
+  dislikes?: true
+  likes?: true
 }
 
 export type CharacterWaifuMaxAggregateInputType = {
@@ -137,10 +137,10 @@ export type CharacterWaifuMaxAggregateInputType = {
   updatedAt?: true
   popularity?: true
   sourceType?: true
-  likes?: true
-  dislikes?: true
   linkweb?: true
   linkwebExpiresAt?: true
+  dislikes?: true
+  likes?: true
 }
 
 export type CharacterWaifuCountAggregateInputType = {
@@ -155,11 +155,11 @@ export type CharacterWaifuCountAggregateInputType = {
   updatedAt?: true
   popularity?: true
   sourceType?: true
-  likes?: true
-  dislikes?: true
   linkweb?: true
   linkwebExpiresAt?: true
   addby?: true
+  dislikes?: true
+  likes?: true
   _all?: true
 }
 
@@ -261,11 +261,11 @@ export type CharacterWaifuGroupByOutputType = {
   updatedAt: Date
   popularity: number
   sourceType: $Enums.SourceType
-  likes: number
-  dislikes: number
   linkweb: string | null
   linkwebExpiresAt: Date | null
   addby: runtime.JsonValue | null
+  dislikes: number
+  likes: number
   _count: CharacterWaifuCountAggregateOutputType | null
   _avg: CharacterWaifuAvgAggregateOutputType | null
   _sum: CharacterWaifuSumAggregateOutputType | null
@@ -303,11 +303,11 @@ export type CharacterWaifuWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"CharacterWaifu"> | Date | string
   popularity?: Prisma.IntFilter<"CharacterWaifu"> | number
   sourceType?: Prisma.EnumSourceTypeFilter<"CharacterWaifu"> | $Enums.SourceType
-  likes?: Prisma.IntFilter<"CharacterWaifu"> | number
-  dislikes?: Prisma.IntFilter<"CharacterWaifu"> | number
   linkweb?: Prisma.StringNullableFilter<"CharacterWaifu"> | string | null
   linkwebExpiresAt?: Prisma.DateTimeNullableFilter<"CharacterWaifu"> | Date | string | null
   addby?: Prisma.JsonNullableFilter<"CharacterWaifu">
+  dislikes?: Prisma.IntFilter<"CharacterWaifu"> | number
+  likes?: Prisma.IntFilter<"CharacterWaifu"> | number
   User?: Prisma.UserListRelationFilter
   WaifuCollection?: Prisma.WaifuCollectionListRelationFilter
   WaifuEvent?: Prisma.WaifuEventListRelationFilter
@@ -326,11 +326,11 @@ export type CharacterWaifuOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrderInput | Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   addby?: Prisma.SortOrderInput | Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
   User?: Prisma.UserOrderByRelationAggregateInput
   WaifuCollection?: Prisma.WaifuCollectionOrderByRelationAggregateInput
   WaifuEvent?: Prisma.WaifuEventOrderByRelationAggregateInput
@@ -352,11 +352,11 @@ export type CharacterWaifuWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"CharacterWaifu"> | Date | string
   popularity?: Prisma.IntFilter<"CharacterWaifu"> | number
   sourceType?: Prisma.EnumSourceTypeFilter<"CharacterWaifu"> | $Enums.SourceType
-  likes?: Prisma.IntFilter<"CharacterWaifu"> | number
-  dislikes?: Prisma.IntFilter<"CharacterWaifu"> | number
   linkweb?: Prisma.StringNullableFilter<"CharacterWaifu"> | string | null
   linkwebExpiresAt?: Prisma.DateTimeNullableFilter<"CharacterWaifu"> | Date | string | null
   addby?: Prisma.JsonNullableFilter<"CharacterWaifu">
+  dislikes?: Prisma.IntFilter<"CharacterWaifu"> | number
+  likes?: Prisma.IntFilter<"CharacterWaifu"> | number
   User?: Prisma.UserListRelationFilter
   WaifuCollection?: Prisma.WaifuCollectionListRelationFilter
   WaifuEvent?: Prisma.WaifuEventListRelationFilter
@@ -375,11 +375,11 @@ export type CharacterWaifuOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrderInput | Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   addby?: Prisma.SortOrderInput | Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
   _count?: Prisma.CharacterWaifuCountOrderByAggregateInput
   _avg?: Prisma.CharacterWaifuAvgOrderByAggregateInput
   _max?: Prisma.CharacterWaifuMaxOrderByAggregateInput
@@ -402,11 +402,11 @@ export type CharacterWaifuScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CharacterWaifu"> | Date | string
   popularity?: Prisma.IntWithAggregatesFilter<"CharacterWaifu"> | number
   sourceType?: Prisma.EnumSourceTypeWithAggregatesFilter<"CharacterWaifu"> | $Enums.SourceType
-  likes?: Prisma.IntWithAggregatesFilter<"CharacterWaifu"> | number
-  dislikes?: Prisma.IntWithAggregatesFilter<"CharacterWaifu"> | number
   linkweb?: Prisma.StringNullableWithAggregatesFilter<"CharacterWaifu"> | string | null
   linkwebExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CharacterWaifu"> | Date | string | null
   addby?: Prisma.JsonNullableWithAggregatesFilter<"CharacterWaifu">
+  dislikes?: Prisma.IntWithAggregatesFilter<"CharacterWaifu"> | number
+  likes?: Prisma.IntWithAggregatesFilter<"CharacterWaifu"> | number
 }
 
 export type CharacterWaifuCreateInput = {
@@ -420,11 +420,11 @@ export type CharacterWaifuCreateInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserCreateNestedManyWithoutCharacterWaifuInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutCharacterInput
   WaifuEvent?: Prisma.WaifuEventCreateNestedManyWithoutCharacterWaifuInput
@@ -443,11 +443,11 @@ export type CharacterWaifuUncheckedCreateInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserUncheckedCreateNestedManyWithoutCharacterWaifuInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutCharacterInput
   WaifuEvent?: Prisma.WaifuEventUncheckedCreateNestedManyWithoutCharacterWaifuInput
@@ -465,11 +465,11 @@ export type CharacterWaifuUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUpdateManyWithoutCharacterWaifuNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutCharacterNestedInput
   WaifuEvent?: Prisma.WaifuEventUpdateManyWithoutCharacterWaifuNestedInput
@@ -488,11 +488,11 @@ export type CharacterWaifuUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUncheckedUpdateManyWithoutCharacterWaifuNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   WaifuEvent?: Prisma.WaifuEventUncheckedUpdateManyWithoutCharacterWaifuNestedInput
@@ -511,11 +511,11 @@ export type CharacterWaifuCreateManyInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
 }
 
 export type CharacterWaifuUpdateManyMutationInput = {
@@ -529,11 +529,11 @@ export type CharacterWaifuUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CharacterWaifuUncheckedUpdateManyInput = {
@@ -548,11 +548,11 @@ export type CharacterWaifuUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CharacterWaifuCountOrderByAggregateInput = {
@@ -567,18 +567,18 @@ export type CharacterWaifuCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrder
   addby?: Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterWaifuAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
   dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterWaifuMaxOrderByAggregateInput = {
@@ -592,10 +592,10 @@ export type CharacterWaifuMaxOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterWaifuMinOrderByAggregateInput = {
@@ -609,17 +609,17 @@ export type CharacterWaifuMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
-  dislikes?: Prisma.SortOrder
   linkweb?: Prisma.SortOrder
   linkwebExpiresAt?: Prisma.SortOrder
+  dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterWaifuSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   popularity?: Prisma.SortOrder
-  likes?: Prisma.SortOrder
   dislikes?: Prisma.SortOrder
+  likes?: Prisma.SortOrder
 }
 
 export type CharacterWaifuNullableScalarRelationFilter = {
@@ -701,11 +701,11 @@ export type CharacterWaifuCreateWithoutUserInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutCharacterInput
   WaifuEvent?: Prisma.WaifuEventCreateNestedManyWithoutCharacterWaifuInput
   WaifuRarity?: Prisma.WaifuRarityCreateNestedManyWithoutCharacterWaifuInput
@@ -723,11 +723,11 @@ export type CharacterWaifuUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutCharacterInput
   WaifuEvent?: Prisma.WaifuEventUncheckedCreateNestedManyWithoutCharacterWaifuInput
   WaifuRarity?: Prisma.WaifuRarityUncheckedCreateNestedManyWithoutCharacterWaifuInput
@@ -760,11 +760,11 @@ export type CharacterWaifuUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutCharacterNestedInput
   WaifuEvent?: Prisma.WaifuEventUpdateManyWithoutCharacterWaifuNestedInput
   WaifuRarity?: Prisma.WaifuRarityUpdateManyWithoutCharacterWaifuNestedInput
@@ -782,11 +782,11 @@ export type CharacterWaifuUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   WaifuEvent?: Prisma.WaifuEventUncheckedUpdateManyWithoutCharacterWaifuNestedInput
   WaifuRarity?: Prisma.WaifuRarityUncheckedUpdateManyWithoutCharacterWaifuNestedInput
@@ -803,11 +803,11 @@ export type CharacterWaifuCreateWithoutWaifuCollectionInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserCreateNestedManyWithoutCharacterWaifuInput
   WaifuEvent?: Prisma.WaifuEventCreateNestedManyWithoutCharacterWaifuInput
   WaifuRarity?: Prisma.WaifuRarityCreateNestedManyWithoutCharacterWaifuInput
@@ -825,11 +825,11 @@ export type CharacterWaifuUncheckedCreateWithoutWaifuCollectionInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserUncheckedCreateNestedManyWithoutCharacterWaifuInput
   WaifuEvent?: Prisma.WaifuEventUncheckedCreateNestedManyWithoutCharacterWaifuInput
   WaifuRarity?: Prisma.WaifuRarityUncheckedCreateNestedManyWithoutCharacterWaifuInput
@@ -862,11 +862,11 @@ export type CharacterWaifuUpdateWithoutWaifuCollectionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUpdateManyWithoutCharacterWaifuNestedInput
   WaifuEvent?: Prisma.WaifuEventUpdateManyWithoutCharacterWaifuNestedInput
   WaifuRarity?: Prisma.WaifuRarityUpdateManyWithoutCharacterWaifuNestedInput
@@ -884,11 +884,11 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuCollectionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUncheckedUpdateManyWithoutCharacterWaifuNestedInput
   WaifuEvent?: Prisma.WaifuEventUncheckedUpdateManyWithoutCharacterWaifuNestedInput
   WaifuRarity?: Prisma.WaifuRarityUncheckedUpdateManyWithoutCharacterWaifuNestedInput
@@ -905,11 +905,11 @@ export type CharacterWaifuCreateWithoutWaifuEventInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserCreateNestedManyWithoutCharacterWaifuInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutCharacterInput
   WaifuRarity?: Prisma.WaifuRarityCreateNestedManyWithoutCharacterWaifuInput
@@ -927,11 +927,11 @@ export type CharacterWaifuUncheckedCreateWithoutWaifuEventInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserUncheckedCreateNestedManyWithoutCharacterWaifuInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutCharacterInput
   WaifuRarity?: Prisma.WaifuRarityUncheckedCreateNestedManyWithoutCharacterWaifuInput
@@ -964,11 +964,11 @@ export type CharacterWaifuUpdateWithoutWaifuEventInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUpdateManyWithoutCharacterWaifuNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutCharacterNestedInput
   WaifuRarity?: Prisma.WaifuRarityUpdateManyWithoutCharacterWaifuNestedInput
@@ -986,11 +986,11 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuEventInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUncheckedUpdateManyWithoutCharacterWaifuNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   WaifuRarity?: Prisma.WaifuRarityUncheckedUpdateManyWithoutCharacterWaifuNestedInput
@@ -1007,11 +1007,11 @@ export type CharacterWaifuCreateWithoutWaifuRarityInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserCreateNestedManyWithoutCharacterWaifuInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutCharacterInput
   WaifuEvent?: Prisma.WaifuEventCreateNestedManyWithoutCharacterWaifuInput
@@ -1029,11 +1029,11 @@ export type CharacterWaifuUncheckedCreateWithoutWaifuRarityInput = {
   updatedAt?: Date | string
   popularity?: number
   sourceType?: $Enums.SourceType
-  likes?: number
-  dislikes?: number
   linkweb?: string | null
   linkwebExpiresAt?: Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: number
+  likes?: number
   User?: Prisma.UserUncheckedCreateNestedManyWithoutCharacterWaifuInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutCharacterInput
   WaifuEvent?: Prisma.WaifuEventUncheckedCreateNestedManyWithoutCharacterWaifuInput
@@ -1066,11 +1066,11 @@ export type CharacterWaifuUpdateWithoutWaifuRarityInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUpdateManyWithoutCharacterWaifuNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutCharacterNestedInput
   WaifuEvent?: Prisma.WaifuEventUpdateManyWithoutCharacterWaifuNestedInput
@@ -1088,11 +1088,11 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuRarityInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   popularity?: Prisma.IntFieldUpdateOperationsInput | number
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
-  likes?: Prisma.IntFieldUpdateOperationsInput | number
-  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
   linkweb?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkwebExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   addby?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  dislikes?: Prisma.IntFieldUpdateOperationsInput | number
+  likes?: Prisma.IntFieldUpdateOperationsInput | number
   User?: Prisma.UserUncheckedUpdateManyWithoutCharacterWaifuNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutCharacterNestedInput
   WaifuEvent?: Prisma.WaifuEventUncheckedUpdateManyWithoutCharacterWaifuNestedInput
@@ -1168,11 +1168,11 @@ export type CharacterWaifuSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
   addby?: boolean
+  dislikes?: boolean
+  likes?: boolean
   User?: boolean | Prisma.CharacterWaifu$UserArgs<ExtArgs>
   WaifuCollection?: boolean | Prisma.CharacterWaifu$WaifuCollectionArgs<ExtArgs>
   WaifuEvent?: boolean | Prisma.CharacterWaifu$WaifuEventArgs<ExtArgs>
@@ -1192,11 +1192,11 @@ export type CharacterWaifuSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
   addby?: boolean
+  dislikes?: boolean
+  likes?: boolean
 }, ExtArgs["result"]["characterWaifu"]>
 
 export type CharacterWaifuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1211,11 +1211,11 @@ export type CharacterWaifuSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
   addby?: boolean
+  dislikes?: boolean
+  likes?: boolean
 }, ExtArgs["result"]["characterWaifu"]>
 
 export type CharacterWaifuSelectScalar = {
@@ -1230,14 +1230,14 @@ export type CharacterWaifuSelectScalar = {
   updatedAt?: boolean
   popularity?: boolean
   sourceType?: boolean
-  likes?: boolean
-  dislikes?: boolean
   linkweb?: boolean
   linkwebExpiresAt?: boolean
   addby?: boolean
+  dislikes?: boolean
+  likes?: boolean
 }
 
-export type CharacterWaifuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "origem" | "mediaType" | "media" | "extras" | "slug" | "createdAt" | "updatedAt" | "popularity" | "sourceType" | "likes" | "dislikes" | "linkweb" | "linkwebExpiresAt" | "addby", ExtArgs["result"]["characterWaifu"]>
+export type CharacterWaifuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "origem" | "mediaType" | "media" | "extras" | "slug" | "createdAt" | "updatedAt" | "popularity" | "sourceType" | "linkweb" | "linkwebExpiresAt" | "addby" | "dislikes" | "likes", ExtArgs["result"]["characterWaifu"]>
 export type CharacterWaifuInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   User?: boolean | Prisma.CharacterWaifu$UserArgs<ExtArgs>
   WaifuCollection?: boolean | Prisma.CharacterWaifu$WaifuCollectionArgs<ExtArgs>
@@ -1268,11 +1268,11 @@ export type $CharacterWaifuPayload<ExtArgs extends runtime.Types.Extensions.Inte
     updatedAt: Date
     popularity: number
     sourceType: $Enums.SourceType
-    likes: number
-    dislikes: number
     linkweb: string | null
     linkwebExpiresAt: Date | null
     addby: runtime.JsonValue | null
+    dislikes: number
+    likes: number
   }, ExtArgs["result"]["characterWaifu"]>
   composites: {}
 }
@@ -1711,11 +1711,11 @@ export interface CharacterWaifuFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"CharacterWaifu", 'DateTime'>
   readonly popularity: Prisma.FieldRef<"CharacterWaifu", 'Int'>
   readonly sourceType: Prisma.FieldRef<"CharacterWaifu", 'SourceType'>
-  readonly likes: Prisma.FieldRef<"CharacterWaifu", 'Int'>
-  readonly dislikes: Prisma.FieldRef<"CharacterWaifu", 'Int'>
   readonly linkweb: Prisma.FieldRef<"CharacterWaifu", 'String'>
   readonly linkwebExpiresAt: Prisma.FieldRef<"CharacterWaifu", 'DateTime'>
   readonly addby: Prisma.FieldRef<"CharacterWaifu", 'Json'>
+  readonly dislikes: Prisma.FieldRef<"CharacterWaifu", 'Int'>
+  readonly likes: Prisma.FieldRef<"CharacterWaifu", 'Int'>
 }
     
 

@@ -1429,10 +1429,10 @@ export const CharacterHusbandoScalarFieldEnum = {
   updatedAt: 'updatedAt',
   popularity: 'popularity',
   sourceType: 'sourceType',
-  likes: 'likes',
-  dislikes: 'dislikes',
   linkweb: 'linkweb',
   linkwebExpiresAt: 'linkwebExpiresAt',
+  dislikes: 'dislikes',
+  likes: 'likes',
   addby: 'addby'
 } as const
 
@@ -1451,11 +1451,11 @@ export const CharacterWaifuScalarFieldEnum = {
   updatedAt: 'updatedAt',
   popularity: 'popularity',
   sourceType: 'sourceType',
-  likes: 'likes',
-  dislikes: 'dislikes',
   linkweb: 'linkweb',
   linkwebExpiresAt: 'linkwebExpiresAt',
-  addby: 'addby'
+  addby: 'addby',
+  dislikes: 'dislikes',
+  likes: 'likes'
 } as const
 
 export type CharacterWaifuScalarFieldEnum = (typeof CharacterWaifuScalarFieldEnum)[keyof typeof CharacterWaifuScalarFieldEnum]
@@ -1592,6 +1592,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

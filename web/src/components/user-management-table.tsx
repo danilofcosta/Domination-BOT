@@ -36,12 +36,12 @@ export function UserManagementTable() {
   )
 
   return (
-    <div className="space-y-4 px-4 lg:px-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <div className="relative w-full md:w-80">
+        <div className="relative w-full sm:w-64 md:w-80">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Pesquisar por ID do Telegram..."
+            placeholder="Pesquisar..."
             className="pl-9 bg-card/50 border-primary/10 rounded-xl"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -50,62 +50,65 @@ export function UserManagementTable() {
       </div>
 
       <div className="rounded-2xl border border-primary/10 bg-card/20 backdrop-blur-md overflow-hidden">
-        <Table>
-          <TableHeader className="bg-muted/40">
-            <TableRow className="border-primary/5 hover:bg-transparent">
-              <TableHead className="w-25">Avatar</TableHead>
-              <TableHead>Telegram ID</TableHead>
-              <TableHead>Nome</TableHead>
-              <TableHead>Tipo de Perfil</TableHead>
-              <TableHead>Moedas</TableHead>
-              <TableHead>Idioma</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-64 text-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-muted-foreground">Carregando usuários...</p>
-                  </div>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/40">
+              <TableRow className="border-primary/5 hover:bg-transparent">
+                <TableHead className="w-12">Avatar</TableHead>
+                <TableHead className="hidden sm:table-cell">Telegram ID</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead className="hidden md:table-cell">Tipo</TableHead>
+                <TableHead className="hidden lg:table-cell">Moedas</TableHead>
+                <TableHead className="hidden lg:table-cell">Idioma</TableHead>
               </TableRow>
-            ) : filteredUsers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-64 text-center">
-                  <p className="text-muted-foreground">Nenhum usuário encontrado.</p>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredUsers.map((user) => (
-                <TableRow key={user.id} className="border-primary/5 hover:bg-primary/3">
-                  <TableCell>
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                       {/* <UserIcon className="text-primary h-5 w-5" /> */}
-                       <img src="https://i.pinimg.com/736x/57/a3/f6/57a3f6824101576a8d83a81d60e9bccb.jpg" alt="x"  className="rounded-full"/>
-
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
+                      <p className="text-muted-foreground">Carregando usuários...</p>
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono font-bold">{user.telegramId}</TableCell>
-                  <TableCell className="font-bold">{user.telegramData?.first_name || "Desconecido"
-                }</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="font-black uppercase tracking-tighter shadow-sm border-primary/20">
-                      {user.profileType}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-bold text-yellow-500">
-                    💰 {user.coins}
-                  </TableCell>
-                  <TableCell className="font-medium text-muted-foreground">
-                    {user.language}
+                </TableRow>
+              ) : filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-32 text-center">
+                    <p className="text-muted-foreground">Nenhum usuário encontrado.</p>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                filteredUsers.map((user) => (
+                  <TableRow key={user.id} className="border-primary/5 hover:bg-primary/3">
+                    <TableCell>
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                        {user.avatarUrl ? (
+                          <img src={user.avatarUrl} alt={user.telegramData?.first_name || "User"} className="w-full h-full object-cover" />
+                        ) : (
+                          <UserIcon className="text-primary h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell font-mono font-bold text-xs">{user.telegramId}</TableCell>
+                    <TableCell className="font-bold text-sm">{user.telegramData?.first_name || "Desconhecido"}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Badge variant="outline" className="font-black uppercase tracking-tighter shadow-sm border-primary/20 text-xs">
+                        {user.profileType}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell font-bold text-yellow-500 text-sm">
+                      💰 {user.coins}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell font-medium text-muted-foreground text-sm">
+                      {user.language}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   )
