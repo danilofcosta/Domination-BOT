@@ -3,3 +3,4 @@ stack copy.env
 stack.env
 bot_telegram/.vscode/launch.json
 bot_telegram/src/testes/
+web/update_user.sql

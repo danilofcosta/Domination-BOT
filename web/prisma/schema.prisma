@@ -154,8 +154,8 @@ model User {
   profileType        ProfileType          @default(USER)
   language           Language             @default(PT)
   telegramId         BigInt               @unique
-  login  String?
-  password String?
+  webLogin String?                       @unique
+  webPassword String?
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])

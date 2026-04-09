@@ -3,7 +3,7 @@
 import { TelegramLoginWidget } from "./telegram/page";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
-import { ShieldCheck, Loader2, AlertTriangle, Sparkles, Home } from "lucide-react";
+import { ShieldCheck, Loader2, AlertTriangle, Sparkles, Home, User, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 function LoginContent() {
@@ -11,8 +11,13 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/admin";
 
+  const [loginMode, setLoginMode] = useState<"telegram" | "credentials">("telegram");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleTelegramAuth(user: any) {
     setStatus("loading");
@@ -33,7 +38,33 @@ function LoginContent() {
         return;
       }
 
-      // Login bem-sucedido — redirecionar para admin
+      router.push(redirect);
+    } catch {
+      setStatus("error");
+      setErrorMsg("Erro de conexão. Tente novamente.");
+    }
+  }
+
+  async function handleCredentialsAuth(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMsg(data.error || "Erro ao autenticar.");
+        return;
+      }
+
       router.push(redirect);
     } catch {
       setStatus("error");
@@ -87,10 +118,81 @@ function LoginContent() {
           <div className="flex flex-col items-center space-y-6">
             {status === "idle" && (
               <>
-                <p className="text-xs text-muted-foreground text-center uppercase tracking-widest font-bold">
-                  Autentique-se com o Telegram
-                </p>
-                <TelegramLoginWidget onAuth={handleTelegramAuth} />
+                {/* Toggle */}
+                <div className="flex bg-muted/50 rounded-xl p-1 border border-border/30">
+                  <button
+                    type="button"
+                    onClick={() => setLoginMode("telegram")}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                      loginMode === "telegram"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Telegram
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLoginMode("credentials")}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                      loginMode === "credentials"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Credenciais
+                  </button>
+                </div>
+
+                {loginMode === "telegram" ? (
+                  <>
+                    <p className="text-xs text-muted-foreground text-center uppercase tracking-widest font-bold">
+                      Autentique-se com o Telegram
+                    </p>
+                    <TelegramLoginWidget onAuth={handleTelegramAuth} />
+                  </>
+                ) : (
+                  <form onSubmit={handleCredentialsAuth} className="w-full space-y-4">
+                    <p className="text-xs text-muted-foreground text-center uppercase tracking-widest font-bold">
+                      Entre com suas credenciais
+                    </p>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
+                        placeholder="Login"
+                        className="w-full pl-10 pr-4 py-3 bg-muted/30 border border-border/40 rounded-xl text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+                        required
+                      />
+                    </div>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Senha"
+                        className="w-full pl-10 pr-12 py-3 bg-muted/30 border border-border/40 rounded-xl text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full py-3 px-4 bg-primary hover:bg-primary/90 border border-primary rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer text-primary-foreground"
+                    >
+                      Entrar
+                    </button>
+                  </form>
+                )}
               </>
             )}
 

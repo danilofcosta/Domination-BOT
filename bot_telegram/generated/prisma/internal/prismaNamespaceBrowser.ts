@@ -96,9 +96,9 @@ export const CharacterHusbandoScalarFieldEnum = {
   sourceType: 'sourceType',
   linkweb: 'linkweb',
   linkwebExpiresAt: 'linkwebExpiresAt',
-  addby: 'addby',
   dislikes: 'dislikes',
-  likes: 'likes'
+  likes: 'likes',
+  addby: 'addby'
 } as const
 
 export type CharacterHusbandoScalarFieldEnum = (typeof CharacterHusbandoScalarFieldEnum)[keyof typeof CharacterHusbandoScalarFieldEnum]
@@ -197,8 +197,8 @@ export const UserScalarFieldEnum = {
   profileType: 'profileType',
   language: 'language',
   telegramId: 'telegramId',
-  login: 'login',
-  password: 'password'
+  webLogin: 'webLogin',
+  webPassword: 'webPassword'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

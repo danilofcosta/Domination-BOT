@@ -21,9 +21,9 @@ model CharacterHusbando {
   sourceType         SourceType           @default(ANIME)
   linkweb            String?
   linkwebExpiresAt   DateTime?
-  addby              Json?
   dislikes           Int                  @default(0)
   likes              Int                  @default(0)
+  addby              Json?
   HusbandoCollection HusbandoCollection[]
   HusbandoEvent      HusbandoEvent[]
   HusbandoRarity     HusbandoRarity[]
@@ -127,8 +127,8 @@ model User {
   profileType        ProfileType          @default(USER)
   language           Language             @default(PT)
   telegramId         BigInt               @unique
-  login              String?
-  password           String?
+  webLogin           String?              @unique
+  webPassword        String?
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])
