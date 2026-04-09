@@ -55,7 +55,7 @@ services:
       context: ./web
       dockerfile: Dockerfile
     container_name: web
-     restart: unless-stopped
+    restart: unless-stopped
     ports:
       - "5000:3000"
     env_file:
