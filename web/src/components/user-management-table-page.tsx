@@ -1,7 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { getUsers } from "@/app/admin/actions";
+import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
+
+import {
+  UserDetailsDialog,
+} from "./user/user-details-dialog";
+import { SessionPayload } from "@/lib/auth";
+
+async function getUsersFromServer() {
+  const res = await fetch('/api/admin/users', { cache: 'no-store' });
+  if (!res.ok) return [];
+  return res.json();
+}
 
 import {
   Table,
@@ -52,7 +63,7 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
   const fetchData = React.useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await getUsers();
+      const data = await getUsersFromServer();
       setUsers((data as any) || []);
     } catch (err) {
       console.error("Erro ao buscar usuários:", err);

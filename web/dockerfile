@@ -1,5 +1,5 @@
 
-stágio 1: Instalação de dependências
+# Estágio 1: Instalação de dependências
 FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 

@@ -37,7 +37,16 @@ export default async function Page({
               stats={stats} 
               topEvents={topEvents} 
               topRarities={topRarities}
-              recentCharacters={recentCharacters}
+              recentCharacters={{
+                waifus: recentCharacters.waifus.map(c => ({
+                  ...c,
+                  likes: c.popularity // Mapping popularity to likes to satisfy RecentCharacter type
+                })),
+                husbandos: recentCharacters.husbandos.map(c => ({
+                  ...c,
+                  likes: c.popularity // Mapping popularity to likes to satisfy RecentCharacter type
+                }))
+              }}
             />
             <div className="max-w-4xl mx-auto w-full">
               <ProfileDistribution data={profileDistribution} />

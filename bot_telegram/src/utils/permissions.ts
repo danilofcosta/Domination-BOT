@@ -5,13 +5,15 @@ import { ProfileType } from "../../generated/prisma/client.js";
 
 /**
  * Weights for the profile types to handle hierarchy.
- * USER (0) < MOD (1) < ADMIN (2) < OWNER (3)
+ * BANNED (-1) < USER (0) < MOD (1) < ADMIN (2) < OWNER (3)
  */
 export const roleWeights: Record<ProfileType, number> = {
+  [ProfileType.BANNED]: -1,
   [ProfileType.USER]: 0,
-  [ProfileType.MOD]: 1,
+  [ProfileType.MODERATOR]: 1,
   [ProfileType.ADMIN]: 2,
-  [ProfileType.OWNER]: 3,
+  [ProfileType.SUPER_ADMIN]: 3,
+  [ProfileType.SUPREME]: 4,
 };
 
 // Simple in-memory cache for group admin status

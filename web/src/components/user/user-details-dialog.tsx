@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ProfileType } from "../../../generated/prisma/client";
 
 const PROFILE_TYPES = ["USER", "MOD", "ADMIN", "OWNER"] as const;
 
@@ -46,9 +47,9 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [typeUpdating, setTypeUpdating] = React.useState<string | null>(null);
 
-  const isOwner = currentUser?.profileType === "OWNER";
-  const canDelete = isOwner && user.profileType !== "OWNER";
-  const canEditType = isOwner && user.profileType !== "OWNER";
+  const isOwner = currentUser?.profileType === ProfileType.SUPREME;
+  const canDelete = isOwner && user.profileType !==  ProfileType.SUPREME;
+  const canEditType = isOwner && user.profileType !==  ProfileType.SUPREME
 
   const handleDelete = async () => {
     setDeleteError("");
@@ -237,7 +238,7 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
               <ShieldX className="w-4 h-4 shrink-0" />
               <span>
                 {!currentUser ? "Faça login para gerenciar" : 
-                 user.profileType === "OWNER" ? "Proprietário do sistema" :
+                 user.profileType === ProfileType.SUPREME  ? "Proprietário do sistema" :
                  "Apenas o Dono pode gerenciar"}
               </span>
             </div>
