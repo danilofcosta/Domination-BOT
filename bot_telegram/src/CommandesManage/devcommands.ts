@@ -4,6 +4,7 @@ import type { MyContext } from "../utils/customTypes.js";
 import { options } from "./conts.js";
 import { createSecureServer, emoji_id } from "../handlers/Comandos/testes_commands.js";
 
+
 const devCommands = new CommandGroup<MyContext>();
 function ForceDrop(ctx: MyContext) {
   console.log("dev");
@@ -33,5 +34,7 @@ devCommands.command(
   createSecureServer,
   options,
 );
+
+
 
 export { devCommands };
