@@ -27,7 +27,7 @@ export default async function initializeBot(
 
   bot.use(
     session({
-      getSessionKey: (ctx) => ctx.chat?.id.toString(),
+  getSessionKey: (ctx) => ctx.chat?.id?.toString() ?? ctx.from?.id?.toString(),
       initial: (): SessionData => ({
         settings: {
           genero: ChatTypeBot,
@@ -39,7 +39,7 @@ export default async function initializeBot(
           character: null,
         },
       }),
-      storage: new PrismaAdapter(prisma.session),
+      storage: new PrismaAdapter(prisma.session as any),
     }),
   );
 

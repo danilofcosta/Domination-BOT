@@ -1,12 +1,13 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import crypto from "crypto";
+import { ProfileType } from "../../generated/prisma/client";
+
 
 const AUTH_SECRET = process.env.AUTH_SECRET;
 const BOT_TOKEN = process.env.BOT_TOKEN_WAIFU;
 
-// Roles que têm acesso ao painel admin
-export const ADMIN_ROLES = ["MOD", "ADMIN", "OWNER"] as const;
+export const ADMIN_ROLES: readonly ProfileType[] = [ProfileType.ADMIN, ProfileType.SUPER_ADMIN, ProfileType.SUPREME];
 
 export interface TelegramAuthData {
   id: number;

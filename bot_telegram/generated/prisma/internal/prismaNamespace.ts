@@ -80,11 +80,11 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.6.0
+ * Prisma Client JS version: 7.7.0
  * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.6.0",
+  client: "7.7.0",
   engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
@@ -1431,9 +1431,9 @@ export const CharacterHusbandoScalarFieldEnum = {
   sourceType: 'sourceType',
   linkweb: 'linkweb',
   linkwebExpiresAt: 'linkwebExpiresAt',
+  addby: 'addby',
   dislikes: 'dislikes',
-  likes: 'likes',
-  addby: 'addby'
+  likes: 'likes'
 } as const
 
 export type CharacterHusbandoScalarFieldEnum = (typeof CharacterHusbandoScalarFieldEnum)[keyof typeof CharacterHusbandoScalarFieldEnum]
@@ -1531,7 +1531,9 @@ export const UserScalarFieldEnum = {
   coins: 'coins',
   profileType: 'profileType',
   language: 'language',
-  telegramId: 'telegramId'
+  telegramId: 'telegramId',
+  login: 'login',
+  password: 'password'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -1592,6 +1594,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

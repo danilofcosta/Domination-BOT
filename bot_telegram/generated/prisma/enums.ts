@@ -30,10 +30,12 @@ export type MediaType = (typeof MediaType)[keyof typeof MediaType]
 
 
 export const ProfileType = {
-  USER: 'USER',
-  MOD: 'MOD',
+  SUPREME: 'SUPREME',
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
-  OWNER: 'OWNER'
+  MODERATOR: 'MODERATOR',
+  USER: 'USER',
+  BANNED: 'BANNED'
 } as const
 
 export type ProfileType = (typeof ProfileType)[keyof typeof ProfileType]

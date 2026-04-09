@@ -64,11 +64,12 @@ export function RarityManagement() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    const formData = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    const formData = new FormData(form)
     const res = await createRarity(formData)
     if (res.success) {
       toast.success("Raridade criada com sucesso!")
-      e.currentTarget.reset()
+      form.reset()
       setIsAddDialogOpen(false)
       fetchData()
     } else {

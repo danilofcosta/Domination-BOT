@@ -154,15 +154,12 @@ model User {
   profileType        ProfileType          @default(USER)
   language           Language             @default(PT)
   telegramId         BigInt               @unique
+  login  String?
+  password String?
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])
   WaifuCollection    WaifuCollection[]
-}
-
-model Session {
-  key  String @id
-  data Json
 }
 
 model TelegramGroup {
@@ -173,6 +170,11 @@ model TelegramGroup {
   addedBy       Json?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
+}
+
+model Session {
+  key   String @id
+  value Json
 }
 
 enum Language {
@@ -190,10 +192,12 @@ enum MediaType {
 }
 
 enum ProfileType {
-  USER
-  MOD
+  SUPREME
+  SUPER_ADMIN
   ADMIN
-  OWNER
+  MODERATOR
+  USER
+  BANNED
 }
 
 enum SourceType {

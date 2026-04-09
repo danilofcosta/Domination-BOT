@@ -50,6 +50,8 @@ export type UserMinAggregateOutputType = {
   profileType: $Enums.ProfileType | null
   language: $Enums.Language | null
   telegramId: bigint | null
+  login: string | null
+  password: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -60,6 +62,8 @@ export type UserMaxAggregateOutputType = {
   profileType: $Enums.ProfileType | null
   language: $Enums.Language | null
   telegramId: bigint | null
+  login: string | null
+  password: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -73,6 +77,8 @@ export type UserCountAggregateOutputType = {
   profileType: number
   language: number
   telegramId: number
+  login: number
+  password: number
   _all: number
 }
 
@@ -101,6 +107,8 @@ export type UserMinAggregateInputType = {
   profileType?: true
   language?: true
   telegramId?: true
+  login?: true
+  password?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -111,6 +119,8 @@ export type UserMaxAggregateInputType = {
   profileType?: true
   language?: true
   telegramId?: true
+  login?: true
+  password?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -124,6 +134,8 @@ export type UserCountAggregateInputType = {
   profileType?: true
   language?: true
   telegramId?: true
+  login?: true
+  password?: true
   _all?: true
 }
 
@@ -224,6 +236,8 @@ export type UserGroupByOutputType = {
   profileType: $Enums.ProfileType
   language: $Enums.Language
   telegramId: bigint
+  login: string | null
+  password: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -260,6 +274,8 @@ export type UserWhereInput = {
   profileType?: Prisma.EnumProfileTypeFilter<"User"> | $Enums.ProfileType
   language?: Prisma.EnumLanguageFilter<"User"> | $Enums.Language
   telegramId?: Prisma.BigIntFilter<"User"> | bigint | number
+  login?: Prisma.StringNullableFilter<"User"> | string | null
+  password?: Prisma.StringNullableFilter<"User"> | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionListRelationFilter
   CharacterHusbando?: Prisma.XOR<Prisma.CharacterHusbandoNullableScalarRelationFilter, Prisma.CharacterHusbandoWhereInput> | null
   CharacterWaifu?: Prisma.XOR<Prisma.CharacterWaifuNullableScalarRelationFilter, Prisma.CharacterWaifuWhereInput> | null
@@ -277,6 +293,8 @@ export type UserOrderByWithRelationInput = {
   profileType?: Prisma.SortOrder
   language?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  login?: Prisma.SortOrderInput | Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
   HusbandoCollection?: Prisma.HusbandoCollectionOrderByRelationAggregateInput
   CharacterHusbando?: Prisma.CharacterHusbandoOrderByWithRelationInput
   CharacterWaifu?: Prisma.CharacterWaifuOrderByWithRelationInput
@@ -297,6 +315,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   coins?: Prisma.IntFilter<"User"> | number
   profileType?: Prisma.EnumProfileTypeFilter<"User"> | $Enums.ProfileType
   language?: Prisma.EnumLanguageFilter<"User"> | $Enums.Language
+  login?: Prisma.StringNullableFilter<"User"> | string | null
+  password?: Prisma.StringNullableFilter<"User"> | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionListRelationFilter
   CharacterHusbando?: Prisma.XOR<Prisma.CharacterHusbandoNullableScalarRelationFilter, Prisma.CharacterHusbandoWhereInput> | null
   CharacterWaifu?: Prisma.XOR<Prisma.CharacterWaifuNullableScalarRelationFilter, Prisma.CharacterWaifuWhereInput> | null
@@ -314,6 +334,8 @@ export type UserOrderByWithAggregationInput = {
   profileType?: Prisma.SortOrder
   language?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  login?: Prisma.SortOrderInput | Prisma.SortOrder
+  password?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -335,6 +357,8 @@ export type UserScalarWhereWithAggregatesInput = {
   profileType?: Prisma.EnumProfileTypeWithAggregatesFilter<"User"> | $Enums.ProfileType
   language?: Prisma.EnumLanguageWithAggregatesFilter<"User"> | $Enums.Language
   telegramId?: Prisma.BigIntWithAggregatesFilter<"User"> | bigint | number
+  login?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -345,6 +369,8 @@ export type UserCreateInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
@@ -362,6 +388,8 @@ export type UserUncheckedCreateInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -374,6 +402,8 @@ export type UserUpdateInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
@@ -391,6 +421,8 @@ export type UserUncheckedUpdateInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -406,6 +438,8 @@ export type UserCreateManyInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -416,6 +450,8 @@ export type UserUpdateManyMutationInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -429,6 +465,8 @@ export type UserUncheckedUpdateManyInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserListRelationFilter = {
@@ -457,6 +495,8 @@ export type UserCountOrderByAggregateInput = {
   profileType?: Prisma.SortOrder
   language?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  login?: Prisma.SortOrder
+  password?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -475,6 +515,8 @@ export type UserMaxOrderByAggregateInput = {
   profileType?: Prisma.SortOrder
   language?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  login?: Prisma.SortOrder
+  password?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -485,6 +527,8 @@ export type UserMinOrderByAggregateInput = {
   profileType?: Prisma.SortOrder
   language?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  login?: Prisma.SortOrder
+  password?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -631,6 +675,8 @@ export type UserCreateWithoutCharacterHusbandoInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutUserInput
@@ -646,6 +692,8 @@ export type UserUncheckedCreateWithoutCharacterHusbandoInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -690,6 +738,8 @@ export type UserScalarWhereInput = {
   profileType?: Prisma.EnumProfileTypeFilter<"User"> | $Enums.ProfileType
   language?: Prisma.EnumLanguageFilter<"User"> | $Enums.Language
   telegramId?: Prisma.BigIntFilter<"User"> | bigint | number
+  login?: Prisma.StringNullableFilter<"User"> | string | null
+  password?: Prisma.StringNullableFilter<"User"> | string | null
 }
 
 export type UserCreateWithoutCharacterWaifuInput = {
@@ -700,6 +750,8 @@ export type UserCreateWithoutCharacterWaifuInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutUserInput
@@ -715,6 +767,8 @@ export type UserUncheckedCreateWithoutCharacterWaifuInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -753,6 +807,8 @@ export type UserCreateWithoutHusbandoCollectionInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutUserInput
@@ -769,6 +825,8 @@ export type UserUncheckedCreateWithoutHusbandoCollectionInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -796,6 +854,8 @@ export type UserUpdateWithoutHusbandoCollectionInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutUserNestedInput
@@ -812,6 +872,8 @@ export type UserUncheckedUpdateWithoutHusbandoCollectionInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -823,6 +885,8 @@ export type UserCreateWithoutWaifuCollectionInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
@@ -839,6 +903,8 @@ export type UserUncheckedCreateWithoutWaifuCollectionInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -866,6 +932,8 @@ export type UserUpdateWithoutWaifuCollectionInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
@@ -882,6 +950,8 @@ export type UserUncheckedUpdateWithoutWaifuCollectionInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -895,6 +965,8 @@ export type UserCreateManyCharacterHusbandoInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
 }
 
 export type UserUpdateWithoutCharacterHusbandoInput = {
@@ -905,6 +977,8 @@ export type UserUpdateWithoutCharacterHusbandoInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutUserNestedInput
@@ -920,6 +994,8 @@ export type UserUncheckedUpdateWithoutCharacterHusbandoInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -934,6 +1010,8 @@ export type UserUncheckedUpdateManyWithoutCharacterHusbandoInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCreateManyCharacterWaifuInput = {
@@ -946,6 +1024,8 @@ export type UserCreateManyCharacterWaifuInput = {
   profileType?: $Enums.ProfileType
   language?: $Enums.Language
   telegramId: bigint | number
+  login?: string | null
+  password?: string | null
 }
 
 export type UserUpdateWithoutCharacterWaifuInput = {
@@ -956,6 +1036,8 @@ export type UserUpdateWithoutCharacterWaifuInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutUserNestedInput
@@ -971,6 +1053,8 @@ export type UserUncheckedUpdateWithoutCharacterWaifuInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -985,6 +1069,8 @@ export type UserUncheckedUpdateManyWithoutCharacterWaifuInput = {
   profileType?: Prisma.EnumProfileTypeFieldUpdateOperationsInput | $Enums.ProfileType
   language?: Prisma.EnumLanguageFieldUpdateOperationsInput | $Enums.Language
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  login?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1038,6 +1124,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   profileType?: boolean
   language?: boolean
   telegramId?: boolean
+  login?: boolean
+  password?: boolean
   HusbandoCollection?: boolean | Prisma.User$HusbandoCollectionArgs<ExtArgs>
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
   CharacterWaifu?: boolean | Prisma.User$CharacterWaifuArgs<ExtArgs>
@@ -1056,6 +1144,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   profileType?: boolean
   language?: boolean
   telegramId?: boolean
+  login?: boolean
+  password?: boolean
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
   CharacterWaifu?: boolean | Prisma.User$CharacterWaifuArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1071,6 +1161,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   profileType?: boolean
   language?: boolean
   telegramId?: boolean
+  login?: boolean
+  password?: boolean
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
   CharacterWaifu?: boolean | Prisma.User$CharacterWaifuArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1086,9 +1178,11 @@ export type UserSelectScalar = {
   profileType?: boolean
   language?: boolean
   telegramId?: boolean
+  login?: boolean
+  password?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "favoriteWaifuId" | "favoriteHusbandoId" | "waifuConfig" | "husbandoConfig" | "telegramData" | "coins" | "profileType" | "language" | "telegramId", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "favoriteWaifuId" | "favoriteHusbandoId" | "waifuConfig" | "husbandoConfig" | "telegramData" | "coins" | "profileType" | "language" | "telegramId" | "login" | "password", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   HusbandoCollection?: boolean | Prisma.User$HusbandoCollectionArgs<ExtArgs>
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
@@ -1124,6 +1218,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     profileType: $Enums.ProfileType
     language: $Enums.Language
     telegramId: bigint
+    login: string | null
+    password: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1561,6 +1657,8 @@ export interface UserFieldRefs {
   readonly profileType: Prisma.FieldRef<"User", 'ProfileType'>
   readonly language: Prisma.FieldRef<"User", 'Language'>
   readonly telegramId: Prisma.FieldRef<"User", 'BigInt'>
+  readonly login: Prisma.FieldRef<"User", 'String'>
+  readonly password: Prisma.FieldRef<"User", 'String'>
 }
     
 

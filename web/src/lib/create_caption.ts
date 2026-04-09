@@ -44,8 +44,8 @@ export function createCaption(
   const addedBy = usermention ? `⚕ ᴀᴅᴅᴇᴅ ʙʏ: ${usermention}` : "";
 
   return `${title}
-<b>${name}</b>
 
+<b>${name}</b>
 ${info}
 ${rarity}
 ${eventLine}

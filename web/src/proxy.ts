@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { ADMIN_ROLES } from "./lib/auth";
 
 const AUTH_SECRET = process.env.AUTH_SECRET;
 
@@ -22,8 +23,7 @@ export async function proxy(request: NextRequest) {
     const secret = new TextEncoder().encode(AUTH_SECRET);
     const { payload } = await jwtVerify(token, secret);
 
-    const adminRoles = ["MOD", "ADMIN", "OWNER"];
-    if (!adminRoles.includes(payload.profileType as string)) {
+    if (!ADMIN_ROLES.includes(payload.profileType as any)) {
       const loginUrl = new URL("/login", request.url);
       return NextResponse.redirect(loginUrl);
     }

@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
-    "prisma": "^7.6.0",
+    "prisma": "^7.7.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
@@ -31,15 +31,13 @@
     "@grammyjs/runner": "^1.0.4",
     "@grammyjs/storage-prisma": "^2.5.1",
     "@prisma/adapter-pg": "^7.6.0",
-    "@prisma/client": "^7.6.0",
+    "@prisma/client": "^7.7.0",
     "dayjs": "^1.11.9",
+    "dotenv": "^17.4.0",
     "grammy": "^1.41.0",
     "kysely": "^0.28.8",
     "lru-cache": "^11.2.6",
     "pg": "^8.20.0",
-    "reflect-metadata": "^0.1.13",
-    "dotenv": "^17.4.0"
-
-
+    "reflect-metadata": "^0.1.13"
   }
 }

@@ -127,12 +127,12 @@ export async function getDashboardData() {
       prisma.characterWaifu.findMany({
         orderBy: { createdAt: "desc" },
         take: 3,
-        select: { id: true, name: true, origem: true, likes: true, createdAt: true },
+        select: { id: true, name: true, origem: true, popularity: true, createdAt: true },
       }),
       prisma.characterHusbando.findMany({
         orderBy: { createdAt: "desc" },
         take: 3,
-        select: { id: true, name: true, origem: true, likes: true, createdAt: true },
+        select: { id: true, name: true, origem: true, popularity: true, createdAt: true },
       }),
       prisma.event.count(),
       prisma.rarity.count(),
