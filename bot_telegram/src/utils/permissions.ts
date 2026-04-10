@@ -24,6 +24,25 @@ type CacheEntry = {
 
 const adminCache = new Map<string, CacheEntry>();
 const CACHE_TTL = 60 * 1000; // 60 seconds
+const MAX_CACHE_SIZE = 1000; // Prevent memory leak
+
+function cleanupCache() {
+  if (adminCache.size >= MAX_CACHE_SIZE) {
+    const now = Date.now();
+    for (const [key, entry] of adminCache.entries()) {
+      if (now - entry.timestamp > CACHE_TTL) {
+        adminCache.delete(key);
+      }
+    }
+    if (adminCache.size >= MAX_CACHE_SIZE) {
+      const oldestKeys = [...adminCache.entries()]
+        .sort((a, b) => a[1].timestamp - b[1].timestamp)
+        .slice(0, Math.floor(MAX_CACHE_SIZE * 0.3))
+        .map(([key]) => key);
+      oldestKeys.forEach((key) => adminCache.delete(key));
+    }
+  }
+}
 
 /**
  * Checks if a user is an admin of the designated management group with caching.
@@ -42,6 +61,8 @@ async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
   if (cached && now - cached.timestamp < CACHE_TTL) {
     return cached.isAdmin;
   }
+
+  cleanupCache();
 
   try {
     const member = await ctx.api.getChatMember(adminGroupId, userId);

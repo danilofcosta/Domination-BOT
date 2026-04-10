@@ -1,12 +1,11 @@
 import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { ChatType, type Character } from "../../../utils/types.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { setHarem } from "../../../cache/cache.js";
-import { mentionUser } from "../../../utils/metion_user.js";
+import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import console from "node:console";
-import { extractListEmojisCharacter } from "../../../utils/extractListEmojisCharacter.js";
+import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
 
 export async function HaremHandler(ctx: MyContext) {
   console.log(ctx.from?.id, "harem");
@@ -127,7 +126,8 @@ function Harem_mode_latest(list_character: any[], ctx: MyContext) {
     // const eventEmojis = extrair_emojis(events);
     // const rarityEmojis = extrair_emojis(rarities);
 
-    const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+    const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
+      extractListEmojisCharacter(ctx, character);
 
     const sourceType = character.sourceType;
     const anime = character.origem;

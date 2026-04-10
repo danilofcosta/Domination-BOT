@@ -1,7 +1,7 @@
-import type { MyContext } from "./customTypes.js";
+import type { Character, MyContext } from "./customTypes.js";
 
 import { InputFile, InlineKeyboard } from "grammy";
-import type { Character } from "./types.js";
+
 import { MediaType } from "../../generated/prisma/client.js";
 interface ParamsSendMedia {
   chat_id?: string | number | undefined;
@@ -78,10 +78,8 @@ export async function Sendmedia(params: ParamsSendMedia) {
       return await sendPhoto(new InputFile(`D/${media}`));
     }
     if (type === MediaType.VIDEO_LOCAL) {
-      return await sendVideo(new InputFile( `D/${media}`));
+      return await sendVideo(new InputFile(`D/${media}`));
     }
-
-
 
     return sendText("Tipo de mídia não suportado.");
   } catch (err) {

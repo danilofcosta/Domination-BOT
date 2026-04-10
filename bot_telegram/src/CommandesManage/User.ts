@@ -1,13 +1,14 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { CapturarCharacter } from "../handlers/Comandos/users/dominar.js";
-import { botPrefix, options, typeBot } from "./conts.js";
+import { botPrefix, options, typeBot } from "./botConfigCommands.js";
 import { HaremHandler } from "../handlers/Comandos/users/harem.js";
 import { favCharacter } from "../handlers/Comandos/users/fav.js";
 import { Myinfos } from "../handlers/Comandos/users/myinfos.js";
 import { giftHandler } from "../handlers/Comandos/users/gift.js";
 import { Ramdon_Character_Handler } from "../handlers/Comandos/globais/random_character.js";
 import { topHandler } from "../handlers/Comandos/users/top.js";
+import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
 
 const botCommands = new CommandGroup<MyContext>();
 
@@ -61,6 +62,13 @@ botCommands.command(
   `${botPrefix}top`,
   "Show the top players",
   topHandler,
+  options,
+);
+
+botCommands.command(
+  `${botPrefix}stat`,
+  "Show bot statistics",
+  StartGreetings,
   options,
 );
 

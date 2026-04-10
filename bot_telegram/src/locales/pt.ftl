@@ -41,11 +41,51 @@ start-btn-colaboradores = colaboradores
 help-caption =
     ℹ️ <b>𝗖𝗲𝗻𝘁𝗿𝗮𝗹 𝗱𝗲 𝗔𝗷𝘂𝗱𝗮</b>
     ───────────────
-    Não finalzado
+    Selecione uma categoria abaixo para ver os comandos disponíveis.
+    ───────────────
+     
+help-group-redirect = 📩 Clique aqui para ajuda!
+
+help-btn-comandos = 📜 Comandos
+help-btn-admin = ⚙️ Admin
+
+help-commands-list =
+    📜 <b>Comandos</b>
     ───────────────
     
+    🗡 <b>/dominar</b> <code>nome</code>
+    → Capture um personagem
+    
+    🏯 <b>/mywaifus</b> / <b>/myhusbandos</b>
+    → Ver seu harém
+    
+    ⭐ <b>/fav</b>
+    → Favoritar personagem (responda)
+    
+    🎁 <b>/gift</b> <code>ID</code>
+    → Presentear personagem (responda)
+    
+    📊 <b>/info</b>
+    → Suas informações
+    
+    🏆 <b>/top</b>
+    → Ranking global
 
-help-group-redirect = 📩 Clique aqui para ajuda!
+help-admin-commands-list =
+    ⚙️ <b>Comandos Admin</b>
+    ───────────────
+    
+    ➕ <b>/addchar</b>
+    → Adicionar personagem
+    
+    ✨ <b>/addrarity</b>
+    → Adicionar raridade
+    
+    ✏️ <b>/editrarity</b>
+    → Editar raridade
+    
+    🗑 <b>/delrarity</b>
+    → Deletar raridade
 
 help-btn-open-pm = pm
 help-btn-back = ◀️ Voltar
@@ -261,3 +301,4 @@ add_character_edit_btn_events=eventos
 add_character_edit_btn_rarities=reridades
 add_character_edit_btn_confirm=salvarades
 add_character_edit_btn_confirm=salvar
+

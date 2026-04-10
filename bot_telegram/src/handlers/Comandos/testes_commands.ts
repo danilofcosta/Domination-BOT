@@ -2,14 +2,51 @@ import { ProfileType } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
 import type { MyContext } from "../../utils/customTypes.js";
 
-export async function emoji_id(ctx: MyContext) {
-  console.log("buscando infos da mensagem");
-  if (!ctx.message?.reply_to_message) {
-    console.log("mensagem vazia");
-    return;
-  }
-  ctx.reply(JSON.stringify(ctx.message?.reply_to_message));
+
+interface Entities {
+  offset:number
+  length:number
+  type:string
+custom_emoji_id:string|null|undefined
 }
+export async function emoji_id(ctx: MyContext) {
+  if (!ctx.message?.reply_to_message) return;
+
+  const msg = ctx.message.reply_to_message;
+  const text = msg.text || "";
+  const entities = msg.entities || [];
+
+  let result = "";
+  let currentIndex = 0;
+
+  for (const entity of entities) {
+    // adiciona texto normal antes da entity
+    result += text.slice(currentIndex, entity.offset);
+
+    if (entity.type === "custom_emoji") {
+      const emoji = text.slice(entity.offset, entity.offset + entity.length);
+      const id = (entity as any).custom_emoji_id;
+
+      result += `<code>${id}</code> ${emoji } <tg-emoji emoji-id="${id}">${emoji}</tg-emoji>`;
+    } else {
+      // texto normal (ou outros tipos)
+      result += text.slice(entity.offset, entity.offset + entity.length);
+    }
+
+    currentIndex = entity.offset + entity.length;
+  }
+
+  // adiciona o resto do texto
+  result += text.slice(currentIndex);
+
+  ctx.reply(result, {
+    parse_mode: "HTML"
+  });
+}
+
+
+
+
 //  await Sendmedia(ctx, character_db as characters_husbando, capiton);
 
 // }

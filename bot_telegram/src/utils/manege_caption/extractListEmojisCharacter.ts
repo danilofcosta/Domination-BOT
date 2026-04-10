@@ -1,10 +1,10 @@
-import type { Rarity } from "../../generated/prisma/client.js";
-import type { MyContext } from "./customTypes.js";
-import { ChatType, type Character, type EventType, type RarityType } from "./types.js";
+import type { Rarity } from "../../../generated/prisma/client.js";
+import { ChatType, type Character, type EventType, type MyContext, type RarityType } from "../customTypes.js";
+
 
 export function extractListEmojisCharacter(
   ctx: MyContext,
-  character: Character
+  character: Character,
 ): { emoji_event: string[]; emoji_raridade: string[] } {
   if (!character) {
     return { emoji_event: [], emoji_raridade: [] };
@@ -13,12 +13,12 @@ export function extractListEmojisCharacter(
   const char = character as any;
 
   const ListEmojsEventRaw =
-   process.env.TYPE_BOT === ChatType.WAIFU
+    process.env.TYPE_BOT === ChatType.WAIFU
       ? char.WaifuEvent
       : char.HusbandoEvent;
 
   const ListEmojsRarityRaw =
-process.env.TYPE_BOT === ChatType.WAIFU
+    process.env.TYPE_BOT === ChatType.WAIFU
       ? char.WaifuRarity
       : char.HusbandoRarity;
 
@@ -27,7 +27,6 @@ process.env.TYPE_BOT === ChatType.WAIFU
 
   return { emoji_event, emoji_raridade };
 }
-
 
 function Id_to_enomji(id?: string, emoji?: string) {
   if (!id) return emoji ?? "";
@@ -44,7 +43,10 @@ export function extrair_emojis(
 ) {
   const emojis: string[] = [];
   for (const item of events) {
-    const event = (item.event ?? item.rarity ?? item.Event ?? item.Rarity) as any;
+    const event = (item.event ??
+      item.rarity ??
+      item.Event ??
+      item.Rarity) as any;
 
     if (!event?.emoji) continue;
 

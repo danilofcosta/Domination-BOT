@@ -1,7 +1,6 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/metion_user.js";
-import { ChatType } from "../../../utils/types.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
 
@@ -77,8 +76,9 @@ export async function topHandler(ctx: MyContext) {
       });
 
   const reply_markup = new InlineKeyboard()
-    .text(ctx.t("top_user_btn"), "topuser_position").row()
-    .text(ctx.t("top_btn_close"), "top_user_close");
+    .text(ctx.t("top_user_btn"), "topuser_position")
+    .row()
+    .text(ctx.t("top_btn_close"), "top_close");
 
   if (character) {
     return Sendmedia({

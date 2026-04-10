@@ -8,9 +8,13 @@ import type {
 } from "grammy/types";
 
 import type { MyContext } from "../../utils/customTypes.js";
-import { create_caption } from "../../utils/create_caption.js";
+import { create_caption } from "../../utils/manege_caption/create_caption.js";
 import { MediaType } from "../../../generated/prisma/client.js";
-import type { Character, ChatType, Collection } from "../../utils/types.js";
+import type {
+  Character,
+  ChatType,
+  Collection,
+} from "../../utils/customTypes.ts";
 
 export interface Params {
   ctx: MyContext | any;

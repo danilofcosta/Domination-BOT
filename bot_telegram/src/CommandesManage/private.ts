@@ -2,9 +2,10 @@
 
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
-import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
-import { options } from "./conts.js";
+import { options } from "./botConfigCommands.js";
 import { helpCommand } from "../handlers/Comandos/globais/help.js";
+import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
+
 
 const privateCommands = new CommandGroup<MyContext>();
 // O comando 'start' é um comando padrão em bots do Telegram que é acionado quando um usuário inicia uma conversa com o bot. Ele é registrado com o nome "start" para garantir que seja reconhecido corretamente, e utiliza a função StartGreetings para fornecer uma mensagem de boas-vindas personalizada ao usuário, explicando as funcionalidades do bot e como usá-lo.

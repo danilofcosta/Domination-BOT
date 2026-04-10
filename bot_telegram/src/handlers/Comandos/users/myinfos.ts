@@ -1,18 +1,20 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/metion_user.js";
-import { ChatType } from "../../../utils/types.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 export async function Myinfos(ctx: MyContext) {
   console.log("myinfos");
   const loading = await ctx.reply(ctx.t("loading"));
+
+
+  const isWaifu = ctx.session.settings.genero ===ChatType.WAIFU;
 
   const user = await prisma.user.findUnique({
     where: {
       telegramId: ctx.from!.id,
     },
     include: {
-      WaifuCollection: true,
-      HusbandoCollection: true,
+      WaifuCollection: isWaifu ? { select: { id: true } } : false,
+      HusbandoCollection: !isWaifu ? { select: { id: true } } : false,
     },
   });
 
@@ -23,15 +25,15 @@ export async function Myinfos(ctx: MyContext) {
     return ctx.reply(ctx.t("error-not-registered"));
   }
 
-  const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
+
 
   const totalDB = isWaifu
     ? await prisma.characterWaifu.count()
     : await prisma.characterHusbando.count();
 
   const totalUser = isWaifu
-    ? (user as any).WaifuCollection?.length || 0
-    : (user as any).HusbandoCollection?.length || 0;
+    ? user?.WaifuCollection?.length || 0
+    : user?.HusbandoCollection?.length || 0;
 
   const ratio = totalDB > 0 ? totalUser / totalDB : 0;
   const percent = (ratio * 100).toFixed(2);
@@ -42,7 +44,9 @@ export async function Myinfos(ctx: MyContext) {
 
   const text = [
     ctx.t("myinfo-title"),
-    ctx.t("myinfo-user", { name: mentionUser(ctx.from!.first_name, ctx.from!.id) }),
+    ctx.t("myinfo-user", {
+      name: mentionUser(ctx.from!.first_name, ctx.from!.id),
+    }),
     ctx.t("myinfo-id", { id: ctx.from!.id }),
     ctx.t("myinfo-total", {
       genero: ctx.session.settings.genero,
@@ -61,11 +65,13 @@ export async function Myinfos(ctx: MyContext) {
     await ctx.api.deleteMessage(loading.chat.id, loading.message_id);
   } catch {}
 
-  const msg = await ctx.reply(text , {
+  const msg = await ctx.reply(text, {
     parse_mode: "HTML",
-  }); 
+  });
 
   if (percent === "100.00") {
-    await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [{ type: "emoji", emoji: "🎉" }]);
+    await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
+      { type: "emoji", emoji: "🎉" },
+    ]);
   }
 }

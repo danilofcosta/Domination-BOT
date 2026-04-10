@@ -1,9 +1,11 @@
 import { CommandGroup } from "@grammyjs/commands";
 import { DropCharacter } from "../handlers/listeners/doprar_per.js";
 import type { MyContext } from "../utils/customTypes.js";
-import { options } from "./conts.js";
-import { createSecureServer, emoji_id } from "../handlers/Comandos/testes_commands.js";
-
+import { options } from "./botConfigCommands.js";
+import {
+  createSecureServer,
+  emoji_id,
+} from "../handlers/Comandos/testes_commands.js";
 
 const devCommands = new CommandGroup<MyContext>();
 function ForceDrop(ctx: MyContext) {
@@ -34,7 +36,5 @@ devCommands.command(
   createSecureServer,
   options,
 );
-
-
 
 export { devCommands };

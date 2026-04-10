@@ -1,10 +1,9 @@
 import { prisma } from "../../../../lib/prisma.js";
 import { SetGiftUser } from "../../../cache/cache.js";
 import { bts_yes_or_no } from "../../../utils/bts.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/metion_user.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
-import { ChatType } from "../../../utils/types.js";
 
 export async function giftHandler(ctx: MyContext) {
   if (!ctx.message?.reply_to_message) {

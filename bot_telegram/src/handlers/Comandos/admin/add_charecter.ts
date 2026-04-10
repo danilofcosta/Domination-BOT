@@ -1,9 +1,8 @@
-
 import { MediaType } from "../../../../generated/prisma/client.js";
 import { setCharacter } from "../../../cache/cache.js";
 import { type MyContext } from "../../../utils/customTypes.js";
-import { LinkMsg } from "../../../utils/link_msg.js";
-import type { ChatType } from "../../../utils/types.js";
+import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
+import type { ChatType } from "../../../utils/customTypes.ts";
 
 export interface PreCharacter {
   idchat?: number;

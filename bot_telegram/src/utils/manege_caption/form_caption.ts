@@ -1,6 +1,5 @@
-import { type MyContext } from "./customTypes.js";
+import { ChatType, type Character, type MyContext } from "../customTypes.js";
 import { extractListEmojisCharacter } from "./extractListEmojisCharacter.js";
-import { ChatType, type Character } from "./types.js";
 
 export async function createSecretCaption(
   ctx: MyContext,
@@ -8,7 +7,10 @@ export async function createSecretCaption(
 ) {
   if (!character) return "";
 
-  const {emoji_event, emoji_raridade }= extractListEmojisCharacter(ctx, character);
+  const { emoji_event, emoji_raridade } = extractListEmojisCharacter(
+    ctx,
+    character,
+  );
 
   // ✅ operador ternário no lugar do "if ... else"
   const generoTexto =

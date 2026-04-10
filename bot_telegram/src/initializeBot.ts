@@ -1,15 +1,15 @@
 import { Bot, session } from "grammy";
 import { I18n } from "@grammyjs/i18n";
+import { limit } from "@grammyjs/ratelimiter";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PrismaAdapter } from "@grammyjs/storage-prisma";
 import { prisma } from "../lib/prisma.js";
 
 import localeNegotiator from "./utils/localeNegotiator.js";
-import { type MyContext, type SessionData } from "./utils/customTypes.js";
+import { ChatType, type MyContext, type SessionData } from "./utils/customTypes.js";
 import { listeners } from "./listeners.js";
 import { callbacks } from "./callbackQuery.js";
-import { NODE_ENV, type ChatType } from "./utils/types.js";
 import { privateCommands } from "./CommandesManage/private.js";
 import { botCommands } from "./CommandesManage/User.js";
 import { adminCommands } from "./CommandesManage/adminCommands.js";
@@ -27,10 +27,11 @@ export default async function initializeBot(
 
   bot.use(
     session({
-  getSessionKey: (ctx) => ctx.chat?.id?.toString() ?? ctx.from?.id?.toString(),
+  getSessionKey: (ctx) => `${ChatTypeBot}_${ctx.chat?.id ||ctx.from?.id}` ,
       initial: (): SessionData => ({
         settings: {
           genero: ChatTypeBot,
+    
         },
         grupo: {
           title: null,
@@ -54,6 +55,11 @@ export default async function initializeBot(
 
   // i18n middleware
   bot.use(i18n.middleware());
+
+  bot.use(limit({
+    timeFrame: 1000,
+    limit: 3,
+  }));
 
   // comandos
   bot.use(privateCommands);

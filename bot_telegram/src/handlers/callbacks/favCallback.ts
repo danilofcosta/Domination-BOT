@@ -1,7 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
-import type { MyContext } from "../../utils/customTypes.js";
-import { ChatType } from "../../utils/types.js";
-import { create_caption } from "../../utils/create_caption.js";
+import { ChatType, type MyContext } from "../../utils/customTypes.js";
+import { create_caption } from "../../utils/manege_caption/create_caption.js";
 export async function favConfirmHandler(ctx: MyContext) {
   const [_, action, favid, userid] = ctx.match
     ? (ctx.match as any).input.split("_")

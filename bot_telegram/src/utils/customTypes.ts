@@ -2,8 +2,26 @@
 import type { Context } from "grammy";
 import type { I18nFlavor } from "@grammyjs/i18n";
 import type { SessionFlavor } from "grammy";
-import type { Character, ChatType } from "./types.js";
 
+import type { CharacterWaifu, CharacterHusbando, WaifuCollection, HusbandoCollection, MediaType, HusbandoEvent, WaifuEvent, HusbandoRarity, WaifuRarity } from "../../generated/prisma/client.js";
+
+export type TypeMidia = MediaType;
+export type Character = CharacterWaifu | CharacterHusbando ;
+
+export type Collection = WaifuCollection | HusbandoCollection;
+export type EventType = WaifuEvent | HusbandoEvent;
+export type RarityType = WaifuRarity | HusbandoRarity
+
+// export type
+export enum ChatType {
+  WAIFU = "waifu",
+  HUSBANDO = "husbando",
+}
+
+export enum NODE_ENV {
+  PRODUCTION = "production",
+  DEVELOPMENT = "development",
+}
 
 export interface SessionData {
   settings: {

@@ -1,12 +1,12 @@
 import { prisma } from "../../../lib/prisma.js";
-import type { MyContext } from "../../utils/customTypes.js";
-import { ChatType } from "../../utils/types.js";
+import { ChatType, type MyContext } from "../../utils/customTypes.js";
 //topuser_ ation
 export async function topCallbackQuery(ctx: MyContext) {
+  console.log("comando top ");
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
-  const [Command, ation] = parts;
+  const [Command, action] = parts;
 
-  if (ation === "position") {
+  if (action === "position") {
     const userId = ctx.from?.id;
 
     if (!userId) {
@@ -52,7 +52,7 @@ export async function topCallbackQuery(ctx: MyContext) {
     });
   }
 
-  if (ation === "close") {
+  if (action === "close") {
     try {
       ctx.deleteMessage();
     } catch {

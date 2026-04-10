@@ -1,8 +1,8 @@
 import initializeBot from "./initializeBot.js";
 import "dotenv/config";
-import { Environment_validation } from "./utils/environment_validation.js";
-import { testDBConnection } from "./utils/test_db_Connection.js";
-import { ChatType } from "./utils/types.js";
+import { Environment_validation } from "./utils/testes/environment_validation.js";
+import { testDBConnection } from "./utils/testes/test_db_Connection.js";
+import { ChatType } from "./utils/customTypes.js";
 // Validar variáveis de ambiente
 await Environment_validation();
 

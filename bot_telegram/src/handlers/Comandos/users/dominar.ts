@@ -1,10 +1,9 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/metion_user.js";
-import { ChatType } from "../../../utils/types.js";
-import { LinkMsg } from "../../../utils/link_msg.js";
-import { AddCharacterCollection } from "../../../utils/add_character_colletion.js";
-import { extractListEmojisCharacter } from "../../../utils/extractListEmojisCharacter.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
+import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
+import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = [
@@ -108,7 +107,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       await ctx.answerCallbackQuery(ctx.t("not-charater-to-dominar"));
       return;
     } catch (e) {
-      console.error("Erro ao enviar resposta de callback query",e);
+      console.error("Erro ao enviar resposta de callback query", e);
       return;
     }
   }
@@ -160,6 +159,6 @@ export async function CapturarCharacter(ctx: MyContext) {
     dropId: null,
     character: null,
     data: null,
-      title:ctx.chat?.title || ''
+    title: ctx.chat?.title || "",
   };
 }

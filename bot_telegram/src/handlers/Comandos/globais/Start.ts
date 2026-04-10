@@ -2,28 +2,46 @@ import type { MyContext } from "../../../utils/customTypes.js";
 import {
   LastRandomCharacter,
   RandomCharacter,
-} from "../../../utils/randomCharacter.js";
+} from "../../../utils/chareter/randomCharacter.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
 import { helpCommand } from "./help.js";
+import { prisma } from "../../../../lib/prisma.js";
+import { formatUptime } from "./status.js";
+
+
+let lastRefreshTime = Date.now();
+
 
 export async function StartGreetings(ctx: MyContext) {
-  
- if (ctx.match === "help") {
-  helpCommand(ctx);
-  return;
- }
+  const startTime = Date.now();
+  if (ctx.match === "help") {
+    helpCommand(ctx);
+    return;
+  }
   ctx.react("⚡");
   const header = ctx.t("start-greeting-header", { botname: ctx.me.first_name });
   const boby = ctx.t("start-greeting-body", {
     genero: ctx.session.settings.genero,
   });
+
+  const dbPing = await prisma.$queryRaw<[{ now: Date }]>`
+    SELECT NOW()
+  `.then(() => Date.now() - startTime);
+
+  const uptime = formatUptime(process.uptime());
+  lastRefreshTime = Date.now();
+
   const extra_body = ctx.t("start-greeting-extra-body"); //boby
 
-  const greeting = ` ${header}\n <blockquote>${boby}</blockquote>\n\n <blockquote>${extra_body} </blockquote>`;
+  let greeting = ` ${header}\n <blockquote>${boby}</blockquote>\n\n <blockquote>${extra_body} </blockquote>`;
 
+
+  const status = `➺ <b>ᴘɪɴɢ:</b>  ${dbPing}ms\n➺ <b>ᴜᴘᴛɪᴍᴇ:</b> ${uptime}`.trim()
+  greeting = `${greeting}\n\n ${status}`
   const character = await LastRandomCharacter(
-    ctx.session.settings.genero || process.env.TYPE_BOT,
+    ctx
+    .session.settings.genero || process.env.TYPE_BOT,
   );
 
   const replaymarkup = new InlineKeyboard()
@@ -37,12 +55,12 @@ export async function StartGreetings(ctx: MyContext) {
       ctx.t("start-btn-database"),
       process.env.DATABASE_TELEGRAM_LINK ||
         `https://t.me/${ctx.me.username}?startgroup=true`,
-    ).url(
+    )
+    .url(
       ctx.t("start-btn-colaboradores"),
-      
-        `https://telegra.ph/Colaboradores-04-04`,
-    );
 
+      `https://telegra.ph/Colaboradores-04-04`,
+    );
 
   if (!character)
     return ctx.reply(greeting, {
@@ -56,3 +74,4 @@ export async function StartGreetings(ctx: MyContext) {
     reply_markup: replaymarkup,
   });
 }
+

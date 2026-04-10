@@ -1,9 +1,8 @@
-import { type MyContext } from "../../utils/customTypes.js";
+import { ChatType, type MyContext } from "../../utils/customTypes.js";
 
 import { showResults } from "./show_results_inline.js";
 import { createResult } from "./create_inline_result.js";
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType } from "../../utils/types.js";
 const LIMIT = 25;
 
 // busca um personagem em modo inline
@@ -54,34 +53,21 @@ export async function getCharactersall(ctx: MyContext) {
 
 
   // buscar os personagens em ordem crescente de id, limitando a quantidade de resultados e pulando os já mostrados
-  const pers =
-    chatType === ChatType.HUSBANDO
-      ? await prisma.characterHusbando.findMany({
-          include: {
-            HusbandoEvent: { include: { Event: true } },
-            HusbandoRarity: { include: { Rarity: true } },
-          },
-          take: LIMIT,
-          orderBy: {
-            id: "desc",
-          },
-          skip: offset,
-        })
-      : await prisma.characterWaifu.findMany({
-          take: LIMIT,
-          include: {
-            WaifuEvent: { include: { Event: true } },
-            WaifuRarity: { include: { Rarity: true } },
-          },
-          orderBy: {
-            id: "desc",
-          },
-          skip: offset,
-        });
-  const total =
-    chatType === ChatType.HUSBANDO
-      ? await prisma.characterHusbando.count()
-      : await prisma.characterWaifu.count();
+  const model = chatType === ChatType.HUSBANDO
+    ? { count: () => prisma.characterHusbando.count(), findMany: (args: any) => prisma.characterHusbando.findMany(args) }
+    : { count: () => prisma.characterWaifu.count(), findMany: (args: any) => prisma.characterWaifu.findMany(args) };
+
+  const [pers, total] = await Promise.all([
+    model.findMany({
+      include: chatType === ChatType.HUSBANDO
+        ? { HusbandoEvent: { include: { Event: true } }, HusbandoRarity: { include: { Rarity: true } } }
+        : { WaifuEvent: { include: { Event: true } }, WaifuRarity: { include: { Rarity: true } } },
+      take: LIMIT,
+      orderBy: { id: "desc" },
+      skip: offset,
+    }),
+    model.count(),
+  ]);
 
   if (!pers) return;
 

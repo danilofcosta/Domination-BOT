@@ -1,5 +1,4 @@
-import type { MyContext } from "../../utils/customTypes.js";
-import { ChatType, NODE_ENV } from "../../utils/types.js";
+import { ChatType, NODE_ENV, type MyContext } from "../../utils/customTypes.js";
 import { botNewgroupMember } from "./botNewgroupMember.js";
 import { DropCharacter } from "./doprar_per.js";
 
@@ -29,7 +28,8 @@ export async function contarMensagens(ctx: MyContext) {
   }
 
   console.log(
-    "contando mensagens",
+    "msg",ctx.session.settings.genero
+    ,
     ctx.chat.id,
     ctx.chat.type,
     ctx.chat.title,

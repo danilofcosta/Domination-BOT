@@ -1,5 +1,5 @@
-import { prisma } from "../../lib/prisma.js";
-import type { MyContext } from "./customTypes.js";
+import { prisma } from "../../../lib/prisma.js";
+import type { MyContext } from "../customTypes.js";
 
 export async function AddCharacterCollection(
   ctx: MyContext,
@@ -8,9 +8,21 @@ export async function AddCharacterCollection(
 ) {
   const isWaifu = ctx.session.settings.genero === "waifu";
 
+  const existingUser = await prisma.user.findUnique({
+    where: { telegramId: userId },
+  });
+
+  const shouldSetFavorite = isWaifu
+    ? existingUser?.favoriteWaifuId === null || !existingUser
+    : existingUser?.favoriteHusbandoId === null || !existingUser;
+
   const user = await prisma.user.upsert({
     where: { telegramId: userId },
-    update: {},
+    update: shouldSetFavorite
+      ? isWaifu
+        ? { favoriteWaifuId: Charater_id }
+        : { favoriteHusbandoId: Charater_id }
+      : {},
     create: {
       telegramId: userId,
       telegramData: (ctx.from ?? {}) as Record<string, any>,
@@ -40,7 +52,6 @@ export async function AddCharacterCollection(
       characterId: Charater_id,
       count: 1,
     },
-    
   });
   return collection_result;
 }

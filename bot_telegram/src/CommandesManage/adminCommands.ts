@@ -1,7 +1,7 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { AddCharacterHandler } from "../handlers/Comandos/admin/add_charecter.js";
-import { botPrefix } from "./conts.js";
+import { botPrefix } from "./botConfigCommands.js";
 import { ProfileType } from "../../generated/prisma/client.js";
 import { onlyRole } from "../utils/permissions.js";
 import { Composer } from "grammy";

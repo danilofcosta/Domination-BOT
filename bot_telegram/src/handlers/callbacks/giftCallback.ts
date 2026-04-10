@@ -1,7 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import { getGiftUser } from "../../cache/cache.js";
-import type { MyContext } from "../../utils/customTypes.js";
-import { ChatType } from "../../utils/types.js";
+import { ChatType, type MyContext } from "../../utils/customTypes.js";
 
 export async function giftConfirmHandler(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];

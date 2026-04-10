@@ -5,12 +5,12 @@ import type {
   WaifuRarity,
   HusbandoRarity,
   Rarity,
-} from "../../generated/prisma/client.js";
+} from "../../../generated/prisma/client.js";
 
 import { mentionUser } from "./metion_user.js";
-import { ChatType, type Collection } from "./types.js";
-import type { Params } from "../handlers/inline_query/create_inline_result.js";
+import type { Params } from "../../handlers/inline_query/create_inline_result.js";
 import { extractListEmojisCharacter } from "./extractListEmojisCharacter.js";
+import { ChatType } from "../customTypes.js";
 
 export function create_caption({
   ctx,
@@ -65,8 +65,6 @@ export function create_caption({
     HusbandoRarity?: (HusbandoRarity & { Rarity?: Rarity })[];
   };
   // console.log(char);
-;
-
   const events = char?.WaifuEvent ?? char?.HusbandoEvent ?? [];
   const rarities = char?.WaifuRarity ?? char?.HusbandoRarity ?? [];
   const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
