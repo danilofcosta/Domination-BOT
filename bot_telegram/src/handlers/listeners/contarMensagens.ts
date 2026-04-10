@@ -23,7 +23,9 @@ export async function contarMensagens(ctx: MyContext) {
    * ========================= */
   if (isDev && isTestGroup) {
     grupo.cont = 100; // modo teste
+     grupo.title= ctx.chat.title || null
   } else {
+   grupo.title= ctx.chat.title || null
     grupo.cont = (grupo.cont ?? 0) + 1;
   }
 
