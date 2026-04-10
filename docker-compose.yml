@@ -60,8 +60,8 @@ services:
       - "5000:3000"
     env_file:
       - stack.env
-    # depends_on:
-    #   - postgres
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
