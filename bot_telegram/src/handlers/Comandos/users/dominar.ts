@@ -159,6 +159,6 @@ export async function CapturarCharacter(ctx: MyContext) {
     dropId: null,
     character: null,
     data: null,
-      title:ctx.chat.title || ''
+      title:ctx.chat?.title || ''
   };
 }
