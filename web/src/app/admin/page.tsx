@@ -9,6 +9,8 @@ import { RarityManagement } from "@/components/rarity-management";
 import { EventManagement } from "@/components/event-management";
 import { CharacterManagementTable } from "@/components/character-management-table";
 import { TelegramGroupManagement } from "@/components/telegram-group-management";
+import { UserManagementTable_page } from "@/components/user-management-table-page";
+import { SessionLogs } from "@/components/session-logs";
 import { getSession } from "@/lib/auth";
 
 export default async function Page({
@@ -60,7 +62,27 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Repositório de Personagens</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable />
+            <CharacterManagementTable initialType="waifu" />
+          </div>
+        )}
+
+        {activeTab === "waifus" && (
+          <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <div className="flex flex-col mb-6">
+                <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Todas as Waifus</h2>
+                <div className="h-1 w-12 bg-primary rounded-full mt-1" />
+            </div>
+            <CharacterManagementTable initialType="waifu" />
+          </div>
+        )}
+
+        {activeTab === "husbandos" && (
+          <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <div className="flex flex-col mb-6">
+                <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Todos os Husbandos</h2>
+                <div className="h-1 w-12 bg-primary rounded-full mt-1" />
+            </div>
+            <CharacterManagementTable initialType="husbando" />
           </div>
         )}
 
@@ -91,6 +113,22 @@ export default async function Page({
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
             <TelegramGroupManagement />
+          </div>
+        )}
+
+        {activeTab === "users" && (
+          <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <UserManagementTable_page currentUser={session} />
+          </div>
+        )}
+
+        {activeTab === "session_logs" && (
+          <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <div className="flex flex-col mb-6">
+                <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Logs de Sessão</h2>
+                <div className="h-1 w-12 bg-primary rounded-full mt-1" />
+            </div>
+            <SessionLogs />
           </div>
         )}
       </main>

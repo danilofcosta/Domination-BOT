@@ -50,18 +50,18 @@ services:
     depends_on:
       - postgres
 
-  # web:
-  #   build:
-  #     context: ./web
-  #     dockerfile: Dockerfile
-  #   container_name: web
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5000:3000"
-  #   env_file:
-  #     - stack.env
-  #   # depends_on:
-  #   #   - postgres
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: web
+    restart: unless-stopped
+    ports:
+      - "5000:3000"
+    env_file:
+      - stack.env
+    # depends_on:
+    #   - postgres
 
 volumes:
   postgres_data:

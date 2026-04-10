@@ -63,12 +63,13 @@ export function EventManagement() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
     setIsSubmitting(true)
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(form)
     const res = await createEvent(formData)
     if (res.success) {
       toast.success("Evento criado com sucesso!")
-      e.currentTarget.reset()
+      form.reset()
       setIsAddDialogOpen(false)
       fetchData()
     } else {
@@ -91,11 +92,13 @@ export function EventManagement() {
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!editingEvent) return
+    const form = e.currentTarget
     setIsSubmitting(true)
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(form)
     const res = await updateEvent(editingEvent.id, formData)
     if (res.success) {
       toast.success("Evento atualizado!")
+      form.reset()
       setIsEditDialogOpen(false)
       fetchData()
     } else {
@@ -179,7 +182,7 @@ export function EventManagement() {
                 <TableHead className="w-16">Emoji</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead className="hidden md:table-cell">Código</TableHead>
-                <TableHead className="hidden lg:table-cell">Emoji ID</TableHead>
+                <TableHead className="w-24">Emoji ID</TableHead>
                 <TableHead className="w-24 text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -195,7 +198,7 @@ export function EventManagement() {
                     <TableCell className="text-2xl">{event.emoji}</TableCell>
                     <TableCell className="font-bold">{event.name}</TableCell>
                     <TableCell className="hidden md:table-cell font-mono text-xs opacity-60 uppercase">{event.code}</TableCell>
-                    <TableCell className="hidden lg:table-cell font-mono text-xs text-muted-foreground">{event.emoji_id || "-"}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{event.emoji_id || "-"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg" onClick={() => {

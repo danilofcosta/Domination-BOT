@@ -26,12 +26,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
+const PROFILE_TYPE_LOCAL = {
+  SUPREME: 'SUPREME',
+  ADMIN: 'ADMIN',
+  MODERATOR: 'MODERATOR',
+  USER: 'USER',
+} as const;
 
-import {
-  UserDetailsDialog,
-} from "./user/user-details-dialog";
-import { SessionPayload } from "@/lib/auth";
+const ProfileType = PROFILE_TYPE_LOCAL;
+type ProfileType = typeof PROFILE_TYPE_LOCAL[keyof typeof PROFILE_TYPE_LOCAL];
 
 type User = {
   id: number;
@@ -89,9 +92,9 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
 
   const getProfileBadgeVariant = (type: string) => {
     switch (type) {
-      case "OWNER": return "default";
-      case "ADMIN": return "secondary";
-      case "MOD": return "outline";
+      case  PROFILE_TYPE_LOCAL.SUPREME: return "default";
+      case  PROFILE_TYPE_LOCAL.ADMIN: return "secondary";
+      case  PROFILE_TYPE_LOCAL.USER: return "outline";
       default: return "outline";
     }
   };

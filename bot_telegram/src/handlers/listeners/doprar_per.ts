@@ -24,6 +24,6 @@ export async function DropCharacter(
   grupo.dropId = message.message_id;
   grupo.character = character;
   grupo.data = new Date();
-
+  grupo.title = ctx.chat?.title || ''
   return true
 }

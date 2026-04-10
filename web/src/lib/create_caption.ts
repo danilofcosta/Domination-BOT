@@ -43,12 +43,12 @@ export function createCaption(
 
   const addedBy = usermention ? `⚕ ᴀᴅᴅᴇᴅ ʙʏ: ${usermention}` : "";
 
-  return `${title}
+  return `<b>${title}
 
-<b>${name}</b>
+${name}
 ${info}
 ${rarity}
 ${eventLine}
 
-${addedBy}`.trim();
+${addedBy}</b>`.trim();
 }

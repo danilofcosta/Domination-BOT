@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { TelegramProvider } from "@/components/telegram-provider"
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 

@@ -33,6 +33,8 @@ export default async function initializeBot(
           genero: ChatTypeBot,
         },
         grupo: {
+          title: null,
+
           cont: 0,
           dropId: null,
           data: null,

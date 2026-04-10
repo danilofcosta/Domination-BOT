@@ -14,6 +14,7 @@ export interface SessionData {
     dropId: number | null;
     data: Date | null;
     character: Character | null;
+    title:string|null|undefined
   };
   adminSetup?: {
     action: "edit_nome" | "edit_anime" | null;

@@ -27,8 +27,12 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 
-export function CharacterManagementTable() {
-  const [type, setType] = React.useState<"waifu" | "husbando">("waifu")
+interface CharacterManagementTableProps {
+  initialType?: "waifu" | "husbando";
+}
+
+export function CharacterManagementTable({ initialType = "waifu" }: CharacterManagementTableProps) {
+  const [type, setType] = React.useState<"waifu" | "husbando">(initialType)
   const [characters, setCharacters] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [search, setSearch] = React.useState("")

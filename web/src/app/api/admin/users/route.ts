@@ -27,12 +27,12 @@ export async function GET() {
       },
     })
     
-    return users.map(u => ({
+    return NextResponse.json(users.map(u => ({
       ...u,
       telegramId: u.telegramId.toString(),
-    }))
+    })))
   } catch (error) {
     console.error("Erro ao buscar usuários:", error)
-    return []
+    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 })
   }
 }

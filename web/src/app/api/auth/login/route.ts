@@ -39,6 +39,7 @@ export async function POST(req: Request) {
     const token = await createSessionToken({
       telegramId: user.telegramId.toString(),
       profileType: user.profileType,
+      firstName: user.telegramData ? (user.telegramData as any).first_name || "Admin" : "Admin",
     });
 
     const cookieStore = await cookies();

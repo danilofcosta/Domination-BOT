@@ -24,7 +24,7 @@ export default async function AdminLayout({
         sessionUser={
           session
             ? {
-                name: session.firstName,
+                name: session.firstName || "Usuário",
                 role: session.profileType,
                 avatar: session.photoUrl || "",
               }

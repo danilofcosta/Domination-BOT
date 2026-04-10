@@ -180,7 +180,7 @@ export function RarityManagement() {
                 <TableHead className="w-16">Emoji</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead className="hidden md:table-cell">Código</TableHead>
-                <TableHead className="hidden lg:table-cell">Emoji ID</TableHead>
+                <TableHead className="w-24">Emoji ID</TableHead>
                 <TableHead className="w-24 text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -196,7 +196,7 @@ export function RarityManagement() {
                     <TableCell className="text-2xl">{rarity.emoji}</TableCell>
                     <TableCell className="font-bold">{rarity.name}</TableCell>
                     <TableCell className="hidden md:table-cell font-mono text-xs opacity-60 uppercase">{rarity.code}</TableCell>
-                    <TableCell className="hidden lg:table-cell font-mono text-xs text-muted-foreground">{rarity.emoji_id || "-"}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{rarity.emoji_id || "-"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-500/10 rounded-lg" onClick={() => {

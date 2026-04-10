@@ -464,6 +464,7 @@ export async function createCharacter(formData: FormData) {
       };
     }
 
+    
     const usermention = session 
       ? `<a href="tg://user?id=${session.telegramId}"><b>${session.firstName}</b></a>` 
       : "";

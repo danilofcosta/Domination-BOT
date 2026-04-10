@@ -24,9 +24,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ProfileType } from "../../../generated/prisma/client";
 
-const PROFILE_TYPES = ["USER", "MOD", "ADMIN", "OWNER"] as const;
+const PROFILE_TYPE = {
+  USER: 'USER',
+  MODERATOR: 'MODERATOR',
+  ADMIN: 'ADMIN',
+  SUPREME: 'SUPREME'
+} as const;
+
+export const ProfileType = PROFILE_TYPE;
+export type ProfileType = typeof PROFILE_TYPE[keyof typeof PROFILE_TYPE];
 
 export interface UserDetailsDialogProps {
   user: User & {
@@ -87,9 +94,9 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
 
   const getProfileBadgeVariant = (type: string) => {
     switch (type) {
-      case "OWNER": return "default";
-      case "ADMIN": return "secondary";
-      case "MOD": return "outline";
+      case ProfileType.SUPREME: return "default";
+      case ProfileType.ADMIN: return "secondary";
+      case ProfileType.MODERATOR: return "outline";
       default: return "outline";
     }
   };
@@ -131,7 +138,7 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
                       Alterar tipo de perfil
                     </DialogDescription>
                     <DropdownMenuSeparator />
-                    {PROFILE_TYPES.filter(t => t !== "OWNER").map((type) => {
+                    {Object.values(ProfileType).filter(t => t !== ProfileType.SUPREME).map((type) => {
                       const isLoading = typeUpdating === type;
                       const isCurrent = user.profileType === type;
                       return (

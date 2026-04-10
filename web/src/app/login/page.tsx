@@ -77,7 +77,7 @@ function LoginContent() {
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-background"
     >
       {/* Background gradient layers */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10" />
+      <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-primary/10" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/8 rounded-full blur-3xl" />
 

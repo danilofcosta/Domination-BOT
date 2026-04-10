@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { ProfileType } from "../../generated/prisma/client";
 
 
+
 const AUTH_SECRET = process.env.AUTH_SECRET;
 const BOT_TOKEN = process.env.BOT_TOKEN_WAIFU;
 
