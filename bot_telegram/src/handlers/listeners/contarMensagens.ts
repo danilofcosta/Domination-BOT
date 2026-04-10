@@ -5,16 +5,19 @@ import { DropCharacter } from "./doprar_per.js";
 
 const DROP = 100;
 const UNDROP = DROP + 40;
-const TEST_GROUP_ID = -1003772830810;
+const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function contarMensagens(ctx: MyContext) {
   if (!ctx.chat) return;
 
   const grupo = ctx.session.grupo;
-  if (!grupo) return;
-
+  if (!grupo) {
+    return console.log("Grupo não encontrado");
+  }
   const isDev = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
-  const isTestGroup = ctx.chat.id === TEST_GROUP_ID;
+  const isTestGroup = TEST_GROUP_ID
+    ? ctx.chat.id === Number(TEST_GROUP_ID)
+    : false;
 
   /* =========================
    * CONTADOR
@@ -30,7 +33,6 @@ export async function contarMensagens(ctx: MyContext) {
     ctx.chat.id,
     ctx.chat.type,
     ctx.chat.title,
-    ctx.message?.text,
     grupo.cont,
   );
 
@@ -50,13 +52,14 @@ export async function contarMensagens(ctx: MyContext) {
   if (grupo.cont >= DROP && !grupo.dropId) {
     const result = await DropCharacter(ctx);
     if (!result) {
+      // caso não retorna a mensagem
       grupo.cont = DROP - 10;
       return;
     }
 
-   if (result){
-     console.log("dopre com sucesso");
-   }
+    if (result) {
+      console.log("dopre com sucesso");
+    }
 
     return;
   }
@@ -94,7 +97,7 @@ export async function contarMensagens(ctx: MyContext) {
       dropId: null,
       character: null,
       data: null,
-     title:ctx.chat?.title || ''
+      title: ctx.chat?.title || "",
     };
   }
 }

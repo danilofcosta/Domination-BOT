@@ -34,11 +34,12 @@ function verificarNome(personagem: string, tentativa: string) {
   return false;
 }
 
-function calcularTempo(per: { data: Date | null }) {
+function calcularTempo(per: { data: Date | string | null }) {
   if (!per.data) return "desconhecido";
 
   const agora = new Date();
-  const diferenca = agora.getTime() - per.data.getTime();
+  const data = typeof per.data === "string" ? new Date(per.data) : per.data;
+  const diferenca = agora.getTime() - data.getTime();
 
   const segundos = Math.floor(diferenca / 1000);
   const minutos = Math.floor(diferenca / 60000);
