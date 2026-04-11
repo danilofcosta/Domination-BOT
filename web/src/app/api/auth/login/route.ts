@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { createSessionToken, ADMIN_ROLES } from "@/lib/auth";
+import { createSessionToken, ADMIN_ROLES, verifyPassword } from "@/lib/auth";
 import { checkRateLimit, getClientIp, recordFailedAttempt } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
@@ -29,11 +29,19 @@ export async function POST(req: Request) {
     const user = await prisma.user.findFirst({
       where: {
         webLogin: login,
-        webPassword: password,
       },
     });
 
-    if (!user) {
+    if (!user || !user.webPassword) {
+      recordFailedAttempt(`login:${clientIp}`);
+      return NextResponse.json(
+        { error: "Credenciais inválidas." },
+        { status: 401 }
+      );
+    }
+
+    const isValidPassword = await verifyPassword(password, user.webPassword);
+    if (!isValidPassword) {
       recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Credenciais inválidas." },

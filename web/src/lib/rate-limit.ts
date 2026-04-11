@@ -1,6 +1,6 @@
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
-const WINDOW_MS = 15 * 60 * 1000;
+const WINDOW_MS = 60 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 
 export function checkRateLimit(identifier: string): { allowed: boolean; remaining: number; resetAt: number } {
