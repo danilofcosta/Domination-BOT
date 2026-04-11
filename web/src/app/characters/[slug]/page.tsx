@@ -4,16 +4,11 @@ import {
   Calendar,
   Gem,
   ArrowLeft,
-  Share2,
-  SparklesIcon,
   ZapIcon,
-  Heart,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CharacterMedia } from "@/components/character-media";
 import { Footer } from "@/components/home/footer";
-import { ApiCharacter } from "@/lib/types";
-import { Button } from "@/components/ui/button";
 import { LikeButton } from "./like-button";
 import { ShareButton } from "./share-button";
 import { CharacterSuggestions } from "@/components/character-suggestions";

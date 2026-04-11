@@ -32,6 +32,7 @@ export default async function AdminLayout({
         }
       />
       {children}
+      
       <MenuFloating />
     </SidebarProvider>
   );

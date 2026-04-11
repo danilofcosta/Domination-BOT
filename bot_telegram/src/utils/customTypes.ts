@@ -23,6 +23,16 @@ export enum NODE_ENV {
   DEVELOPMENT = "development",
 }
 
+export const roleHierarchy: Record<string, number> = {
+  OWNER: 6,
+  SUPREME: 5,
+  SUPER_ADMIN: 4,
+  ADMIN: 3,
+  MODERATOR: 2,
+  USER: 1,
+  BANNED: -1,
+};
+
 export interface SessionData {
   settings: {
     genero: ChatType;

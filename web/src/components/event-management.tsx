@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -25,7 +26,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { SearchIcon, Loader2Icon, PlusIcon, Trash2Icon, RefreshCwIcon, CalendarIcon, Edit2Icon } from "lucide-react"
 import { toast } from "sonner"
 
-export function EventManagement() {
+interface EventManagementProps {
+  currentUser?: { profileType?: string } | null;
+}
+
+export function EventManagement({ currentUser }: EventManagementProps) {
   const [events, setEvents] = React.useState<any[]>([])
   const [filteredEvents, setFilteredEvents] = React.useState<any[]>([])
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -78,9 +83,11 @@ export function EventManagement() {
     setIsSubmitting(false)
   }
 
+  const canDelete = currentUser?.profileType && ["SUPREME", "SUPER_ADMIN", "ADMIN"].includes(currentUser.profileType)
+
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir este evento? Isso pode afetar personagens vinculados.")) return
-    const res = await deleteEvent(id)
+    const res = await deleteEvent(id, currentUser?.profileType)
     if (res.success) {
       toast.success("Evento excluído!")
       fetchData()
@@ -128,6 +135,7 @@ export function EventManagement() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Novo Evento</DialogTitle>
+                <DialogDescription>Preencha os dados para criar um novo evento.</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-2">
@@ -207,9 +215,11 @@ export function EventManagement() {
                         }}>
                           <Edit2Icon className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => handleDelete(event.id)}>
-                          <Trash2Icon className="h-4 w-4" />
-                        </Button>
+                        {canDelete && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => handleDelete(event.id)}>
+                            <Trash2Icon className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -224,6 +234,7 @@ export function EventManagement() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Editar Evento</DialogTitle>
+            <DialogDescription>Edite os dados do evento selecionado.</DialogDescription>
           </DialogHeader>
           {editingEvent && (
             <form onSubmit={handleUpdate} className="space-y-4">

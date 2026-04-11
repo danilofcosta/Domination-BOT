@@ -33,9 +33,6 @@ const PROFILE_TYPE_LOCAL = {
   USER: 'USER',
 } as const;
 
-const ProfileType = PROFILE_TYPE_LOCAL;
-type ProfileType = typeof PROFILE_TYPE_LOCAL[keyof typeof PROFILE_TYPE_LOCAL];
-
 type User = {
   id: number;
   telegramId: string;

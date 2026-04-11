@@ -18,7 +18,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { SearchIcon, Loader2Icon, SettingsIcon, Trash2Icon, RefreshCwIcon, Users2Icon, SaveIcon } from "lucide-react"
 import { toast } from "sonner"
 
-export function TelegramGroupManagement() {
+interface TelegramGroupManagementProps {
+  currentUser?: { profileType?: string } | null;
+}
+
+export function TelegramGroupManagement({ currentUser }: TelegramGroupManagementProps) {
   const [groups, setGroups] = React.useState<any[]>([])
   const [filteredGroups, setFilteredGroups] = React.useState<any[]>([])
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -76,9 +80,11 @@ export function TelegramGroupManagement() {
     setIsSubmitting(false)
   }
 
+  const canDelete = currentUser?.profileType && ["SUPREME", "SUPER_ADMIN", "ADMIN"].includes(currentUser.profileType)
+
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir este grupo?")) return
-    const res = await deleteTelegramGroup(id)
+    const res = await deleteTelegramGroup(id, currentUser?.profileType)
     if (res.success) {
       toast.success("Grupo excluído!")
       fetchData()
@@ -197,9 +203,11 @@ export function TelegramGroupManagement() {
                       <Button variant="ghost" size="icon" className="text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full" onClick={() => handleEdit(group)}>
                         <SettingsIcon className="h-4 w-4" />
                       </Button>
+                      {canDelete && (
                       <Button variant="ghost" size="icon" className="text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-full" onClick={() => handleDelete(group.id)}>
                         <Trash2Icon className="h-4 w-4" />
                       </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

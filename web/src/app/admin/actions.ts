@@ -1,13 +1,19 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { MediaType, SourceType } from "../../../generated/prisma/client"
+import { SourceType } from "../../../generated/prisma/client"
 import { slugify } from "@/lib/utils"
 import { revalidatePath } from "next/cache"
 import fs from "fs/promises"
 import path from "path"
 import { notifyDatabaseChannelWithPhoto, notifyDatabaseChannel, notifyDatabaseChannelWithVideo, sendLocalPhotoToTelegram, sendLocalVideoToTelegram } from "@/lib/telegram"
 import { createCaption } from "@/lib/create_caption"
+import { DELETE_ROLES } from "@/lib/constants"
+
+function canDelete(currentUserProfileType?: string): boolean {
+  if (!currentUserProfileType) return false
+  return DELETE_ROLES.includes(currentUserProfileType as typeof DELETE_ROLES[number])
+}
 import { getSession } from "@/lib/auth"
 
 import { LRUCache } from "lru-cache";
@@ -222,17 +228,17 @@ export async function getUsers() {
   }
 }
 
-export async function deleteUser(id: number, currentUserProfileType?: string, targetUserProfileType?: string) {
-  if (currentUserProfileType !== "OWNER") {
-    return { success: false, error: "Apenas o dono pode excluir usuários" }
+export async function deleteUser(telegramId: string, currentUserProfileType?: string, targetUserProfileType?: string) {
+  if (currentUserProfileType !== "SUPREME") {
+    return { success: false, error: "Apenas o SUPREME pode excluir usuários" }
   }
   
-  if (targetUserProfileType === "OWNER") {
-    return { success: false, error: "Não é possível excluir um usuário com perfil de dono" }
+  if (targetUserProfileType === "SUPREME") {
+    return { success: false, error: "Não é possível excluir um usuário com perfil SUPREME" }
   }
   
   try {
-    await prisma.user.delete({ where: { id } })
+    await prisma.user.delete({ where: { telegramId: BigInt(telegramId) } })
     revalidatePath("/admin")
     revalidatePath("/admin/users")
     return { success: true }
@@ -242,19 +248,27 @@ export async function deleteUser(id: number, currentUserProfileType?: string, ta
   }
 }
 
-export async function updateUserProfileType(id: number, newProfileType: string, currentUserProfileType?: string) {
-  if (currentUserProfileType !== "OWNER") {
-    return { success: false, error: "Apenas o dono pode alterar perfis de usuários" }
+export async function updateUserProfileType(telegramId: bigint, newProfileType: string, currentUserProfileType?: string) {
+  if (currentUserProfileType !== "SUPREME") {
+    return { success: false, error: "Apenas o SUPREME pode alterar perfis de usuários" }
   }
   
-  const validTypes = ["USER", "MOD", "ADMIN", "OWNER"]
+  const validTypes = ["USER", "MODERATOR", "ADMIN", "SUPER_ADMIN"]
   if (!validTypes.includes(newProfileType)) {
     return { success: false, error: "Tipo de perfil inválido" }
   }
   
   try {
+    const targetUser = await prisma.user.findUnique({
+      where: { telegramId }
+    })
+    
+    if (targetUser?.profileType === "SUPREME") {
+      return { success: false, error: "Não é possível alterar o perfil de um usuário SUPREME" }
+    }
+    
     await prisma.user.update({
-      where: { id },
+      where: { telegramId },
       data: { profileType: newProfileType as any }
     })
     revalidatePath("/admin")
@@ -299,7 +313,10 @@ export async function createEvent(formData: FormData) {
   }
 }
 
-export async function deleteEvent(id: number) {
+export async function deleteEvent(id: number, currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir eventos" }
+  }
   try {
     await prisma.event.delete({ where: { id } })
     revalidatePath("/admin")
@@ -364,7 +381,10 @@ export async function createRarity(formData: FormData) {
   }
 }
 
-export async function deleteRarity(id: number) {
+export async function deleteRarity(id: number, currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir raridades" }
+  }
   try {
     await prisma.rarity.delete({ where: { id } })
     revalidatePath("/admin")
@@ -640,7 +660,10 @@ export async function updateCharacter(id: number, type: "waifu" | "husbando", fo
   }
 }
 
-export async function deleteCharacter(id: number, type: "waifu" | "husbando") {
+export async function deleteCharacter(id: number, type: "waifu" | "husbando", currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir personagens" }
+  }
   try {
     if (type === "waifu") {
       const char = await prisma.characterWaifu.findUnique({ where: { id } })
@@ -833,13 +856,182 @@ export async function updateTelegramGroup(id: number, formData: FormData) {
   }
 }
 
-export async function deleteTelegramGroup(id: number) {
+export async function deleteTelegramGroup(id: number, currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir grupos do Telegram" }
+  }
   try {
     await prisma.telegramGroup.delete({ where: { id } })
     revalidatePath("/admin")
     return { success: true }
   } catch (error) {
     console.error("Erro ao excluir grupo do Telegram:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function adjustUserCoins(telegramId: string, amount: number, operation: "add" | "subtract" | "set", currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem ajustar moedas" }
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { telegramId: BigInt(telegramId) } })
+    if (!user) {
+      return { success: false, error: "Usuário não encontrado" }
+    }
+
+    let newCoins: number
+    switch (operation) {
+      case "add":
+        newCoins = user.coins + amount
+        break
+      case "subtract":
+        newCoins = Math.max(0, user.coins - amount)
+        break
+      case "set":
+        newCoins = amount
+        break
+    }
+
+    await prisma.user.update({
+      where: { telegramId: BigInt(telegramId) },
+      data: { coins: newCoins }
+    })
+
+    revalidatePath("/admin")
+    return { success: true, newCoins }
+  } catch (error) {
+    console.error("Erro ao ajustar moedas:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function reduceDuplicateCharacter(telegramId: string, characterId: number, type: "waifu" | "husbando", reduceBy: number, currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem reduzir repetições" }
+  }
+
+  try {
+    let existing
+    if (type === "waifu") {
+      existing = await prisma.waifuCollection.findFirst({
+        where: { userId: BigInt(telegramId), characterId }
+      })
+    } else {
+      existing = await prisma.husbandoCollection.findFirst({
+        where: { userId: BigInt(telegramId), characterId }
+      })
+    }
+
+    if (!existing) {
+      return { success: false, error: "Personagem não encontrado na coleção" }
+    }
+
+    const newCount = Math.max(0, existing.count - reduceBy)
+
+    if (newCount === 0) {
+      if (type === "waifu") {
+        await prisma.waifuCollection.delete({ where: { id: existing.id } })
+      } else {
+        await prisma.husbandoCollection.delete({ where: { id: existing.id } })
+      }
+    } else {
+      if (type === "waifu") {
+        await prisma.waifuCollection.update({ where: { id: existing.id }, data: { count: newCount } })
+      } else {
+        await prisma.husbandoCollection.update({ where: { id: existing.id }, data: { count: newCount } })
+      }
+    }
+
+    revalidatePath("/admin")
+    return { success: true, newCount }
+  } catch (error) {
+    console.error("Erro ao reduzir repetições:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function getUserCollectionDetails(telegramId: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { telegramId: BigInt(telegramId) },
+      include: {
+        WaifuCollection: {
+          include: {
+            Character: true
+          },
+          orderBy: { count: "desc" }
+        },
+        HusbandoCollection: {
+          include: {
+            Character: true
+          },
+          orderBy: { count: "desc" }
+        }
+      }
+    })
+
+    if (!user) return null
+
+    return {
+      waifus: user.WaifuCollection,
+      husbandos: user.HusbandoCollection
+    }
+  } catch (error) {
+    console.error("Erro ao buscar detalhes da coleção:", error)
+    return null
+  }
+}
+
+export async function setUserFavorite(telegramId: string, characterId: number, type: "waifu" | "husbando", currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem alterar favoritos" }
+  }
+
+  try {
+    if (type === "waifu") {
+      await prisma.user.update({
+        where: { telegramId: BigInt(telegramId) },
+        data: { CharacterWaifu: { connect: { id: characterId } } }
+      })
+    } else {
+      await prisma.user.update({
+        where: { telegramId: BigInt(telegramId) },
+        data: { CharacterHusbando: { connect: { id: characterId } } }
+      })
+    }
+
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao definir favorito:", error)
+    return { success: false, error: String(error) }
+  }
+}
+
+export async function removeUserFavorite(telegramId: string, type: "waifu" | "husbando", currentUserProfileType?: string) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem remover favoritos" }
+  }
+
+  try {
+    if (type === "waifu") {
+      await prisma.user.update({
+        where: { telegramId: BigInt(telegramId) },
+        data: { CharacterWaifu: { disconnect: true } }
+      })
+    } else {
+      await prisma.user.update({
+        where: { telegramId: BigInt(telegramId) },
+        data: { CharacterHusbando: { disconnect: true } }
+      })
+    }
+
+    revalidatePath("/admin")
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao remover favorito:", error)
     return { success: false, error: String(error) }
   }
 }

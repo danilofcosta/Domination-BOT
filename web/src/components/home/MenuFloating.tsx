@@ -1,6 +1,6 @@
 "use client";
 
-import { BookSearch, Grid2x2, House, Sparkles, Search, User } from "lucide-react";
+import { BookSearch, House, Sparkles, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -27,7 +27,7 @@ export function MenuFloating() {
           {/* Glow effect */}
           <div className="absolute inset-0 bg-primary/5 blur-xl opacity-0 hover:opacity-100 transition-opacity duration-300" />
           
-          {menuItems.map((item, index) => {
+          {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.active;
             

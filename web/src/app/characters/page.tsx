@@ -123,7 +123,7 @@ export default function CharactersPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24">
         {/* Search and Filters Toggle */}
         <div className="space-y-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-3">

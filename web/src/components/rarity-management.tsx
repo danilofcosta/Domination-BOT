@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -25,7 +26,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { SearchIcon, Loader2Icon, PlusIcon, Trash2Icon, RefreshCwIcon, StarIcon, Edit2Icon } from "lucide-react"
 import { toast } from "sonner"
 
-export function RarityManagement() {
+interface RarityManagementProps {
+  currentUser?: { profileType?: string } | null;
+}
+
+export function RarityManagement({ currentUser }: RarityManagementProps) {
   const [rarities, setRarities] = React.useState<any[]>([])
   const [filteredRarities, setFilteredRarities] = React.useState<any[]>([])
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -78,9 +83,11 @@ export function RarityManagement() {
     setIsSubmitting(false)
   }
 
+  const canDelete = currentUser?.profileType && ["SUPREME", "SUPER_ADMIN", "ADMIN"].includes(currentUser.profileType)
+
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir esta raridade? Isso afetará personagens vinculados.")) return
-    const res = await deleteRarity(id)
+    const res = await deleteRarity(id, currentUser?.profileType)
     if (res.success) {
       toast.success("Raridade excluída!")
       fetchData()
@@ -126,6 +133,7 @@ export function RarityManagement() {
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Nova Raridade</DialogTitle>
+                <DialogDescription>Preencha os dados para criar uma nova raridade.</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-2">
@@ -205,9 +213,11 @@ export function RarityManagement() {
                         }}>
                           <Edit2Icon className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => handleDelete(rarity.id)}>
-                          <Trash2Icon className="h-4 w-4" />
-                        </Button>
+                        {canDelete && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/40 hover:text-destructive hover:bg-destructive/10 rounded-lg" onClick={() => handleDelete(rarity.id)}>
+                            <Trash2Icon className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -222,6 +232,7 @@ export function RarityManagement() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-black uppercase italic tracking-tighter">Editar Raridade</DialogTitle>
+            <DialogDescription>Edite os dados da raridade selecionada.</DialogDescription>
           </DialogHeader>
           {editingRarity && (
             <form onSubmit={handleUpdate} className="space-y-4">

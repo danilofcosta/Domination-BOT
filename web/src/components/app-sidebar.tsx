@@ -88,7 +88,7 @@ export function AppSidebar({ sessionUser, ...props }: AppSidebarProps) {
             onClick={toggleSidebar}
             className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors"
           >
-            <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center">
               <CommandIcon className="size-5 text-primary" />
             </div>
             <div className="flex flex-col items-start">

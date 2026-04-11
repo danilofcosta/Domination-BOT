@@ -1,7 +1,3 @@
-bot_telegram/dist/
-stack copy.env
-stack.env
+web0
 bot_telegram/.vscode/launch.json
 bot_telegram/src/testes/
-web/update_user.sql
-stack sever.env

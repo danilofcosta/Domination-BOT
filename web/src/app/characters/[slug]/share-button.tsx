@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, CheckIcon, CopyIcon } from "lucide-react";
+import { Share2, CheckIcon } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +11,7 @@ interface ShareButtonProps {
   type: string;
 }
 
-export function ShareButton({ name, slug, type }: ShareButtonProps) {
+export function ShareButton({ name: _name, slug, type }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {

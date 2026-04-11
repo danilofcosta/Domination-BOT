@@ -14,6 +14,7 @@ import { privateCommands } from "./CommandesManage/private.js";
 import { botCommands } from "./CommandesManage/User.js";
 import { adminCommands } from "./CommandesManage/adminCommands.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
+import { isUserBanned } from "./utils/permissions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,15 @@ export default async function initializeBot(
     timeFrame: 1000,
     limit: 3,
   }));
+
+  bot.use(async (ctx, next) => {
+    if (!ctx.from) return;
+    const banned = await isUserBanned(ctx.from.id);
+    if (banned) {
+      return;
+    }
+    await next();
+  });
 
   // comandos
   bot.use(privateCommands);

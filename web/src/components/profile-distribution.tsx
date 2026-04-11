@@ -5,7 +5,6 @@ import {
   Pie,
   PieChart,
   Cell,
-  ResponsiveContainer,
   Legend,
   Tooltip,
 } from "recharts";

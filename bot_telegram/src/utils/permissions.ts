@@ -93,6 +93,11 @@ export async function getUserRole(userId: number): Promise<ProfileType> {
   }
 }
 
+export async function isUserBanned(userId: number): Promise<boolean> {
+  const role = await getUserRole(userId);
+  return roleWeights[role] === roleWeights[ProfileType.BANNED];
+}
+
 /**
  * Middleware factory for role-based access control.
  * Grants access if:

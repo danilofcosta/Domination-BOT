@@ -7,13 +7,25 @@ import {
   ADMIN_ROLES,
   type TelegramAuthData,
 } from "@/lib/auth";
+import { checkRateLimit, getClientIp, recordFailedAttempt } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`telegram:${clientIp}`);
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Muitas tentativas. Tente novamente mais tarde." },
+        { status: 429 }
+      );
+    }
+
     const body: TelegramAuthData = await req.json();
 
     // 1. Validar hash do Telegram
     if (!validateTelegramHash(body)) {
+      recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Dados de autenticação inválidos." },
         { status: 401 }
@@ -27,6 +39,7 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
+      recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Usuário não encontrado. Você precisa usar o bot primeiro." },
         { status: 404 }
@@ -35,6 +48,7 @@ export async function POST(req: Request) {
 
     // 3. Verificar se tem role admin
     if (!ADMIN_ROLES.includes(user.profileType as any)) {
+      recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Acesso negado. Você não tem permissão de administrador." },
         { status: 403 }

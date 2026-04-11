@@ -1,5 +1,4 @@
 import { DashboardStats } from "@/components/dashboard-stats";
-import { MenuFloating } from "@/components/home/MenuFloating";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { getDashboardData } from "./actions";
 import { SiteHeader } from "@/components/site-header";
@@ -27,7 +26,7 @@ export default async function Page({
     <SidebarInset className="flex flex-col min-h-screen bg-background/50 backdrop-blur-sm">
       <SiteHeader user={session} />
       
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 lg:space-y-8">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 lg:space-y-8 pb-24">
         {activeTab === "home_dashboard" && (
           <div className="space-y-8 lg:space-y-12 animate-in fade-in zoom-in-95 duration-500">
              <div className="flex flex-col items-center justify-center text-center space-y-2">
@@ -62,7 +61,7 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Repositório de Personagens</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable initialType="waifu" />
+            <CharacterManagementTable initialType="waifu" currentUser={session} />
           </div>
         )}
 
@@ -72,7 +71,7 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Todas as Waifus</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable initialType="waifu" />
+            <CharacterManagementTable initialType="waifu" currentUser={session} />
           </div>
         )}
 
@@ -82,7 +81,7 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Todos os Husbandos</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable initialType="husbando" />
+            <CharacterManagementTable initialType="husbando" currentUser={session} />
           </div>
         )}
 
@@ -92,7 +91,7 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Protocolos de Eventos</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <EventManagement />
+            <EventManagement currentUser={session} />
           </div>
         )}
 
@@ -102,7 +101,7 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Graus de Raridade</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <RarityManagement />
+            <RarityManagement currentUser={session} />
           </div>
         )}
 
@@ -112,7 +111,7 @@ export default async function Page({
                 <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Grupos Autorizados</h2>
                 <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <TelegramGroupManagement />
+            <TelegramGroupManagement currentUser={session} />
           </div>
         )}
 

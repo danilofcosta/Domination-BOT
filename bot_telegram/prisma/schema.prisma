@@ -192,12 +192,12 @@ enum MediaType {
 }
 
 enum ProfileType {
-  SUPREME
+  SUPREME 
   SUPER_ADMIN
   ADMIN
   MODERATOR
   USER
-  BANNED
+  BANNED  
 }
 
 enum SourceType {

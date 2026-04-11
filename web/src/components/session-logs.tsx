@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { DownloadIcon, Loader2Icon, SearchIcon, FileJsonIcon, CopyIcon, CheckIcon } from "lucide-react";
+import { DownloadIcon, Loader2Icon, SearchIcon, CopyIcon, CheckIcon, RefreshCwIcon } from "lucide-react";
 
 import {
   Table,
@@ -49,6 +49,7 @@ export function SessionLogs() {
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   React.useEffect(() => {
     const timeout = setTimeout(() => {
@@ -59,6 +60,7 @@ export function SessionLogs() {
 
   const fetchData = React.useCallback(async () => {
     try {
+      setIsRefreshing(true);
       setIsLoading(true);
       const data = await getSessionsFromServer();
       setSessions(data);
@@ -66,6 +68,7 @@ export function SessionLogs() {
       console.error("Erro ao buscar sessões:", err);
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, []);
 
@@ -117,6 +120,15 @@ export function SessionLogs() {
           />
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={() => { fetchData(); }}
+            variant="outline"
+            className="border-primary/20 hover:bg-primary/10"
+            disabled={isRefreshing}
+          >
+            <RefreshCwIcon className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
           <Button
             onClick={exportToJson}
             variant="outline"
@@ -222,6 +234,7 @@ export function SessionLogs() {
             </TableBody>
           </Table>
         </div>
+        
       </div>
     </div>
   );

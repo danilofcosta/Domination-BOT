@@ -2,9 +2,20 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { createSessionToken, ADMIN_ROLES } from "@/lib/auth";
+import { checkRateLimit, getClientIp, recordFailedAttempt } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`login:${clientIp}`);
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Muitas tentativas. Tente novamente mais tarde." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { login, password } = body;
 
@@ -23,13 +34,15 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
+      recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Credenciais inválidas." },
         { status: 401 }
       );
     }
 
-    if (!ADMIN_ROLES.includes(user.profileType as any)) {
+    if (!ADMIN_ROLES.includes(user.profileType as "ADMIN" | "SUPER_ADMIN" | "SUPREME")) {
+      recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Acesso negado. Você não tem permissão de administrador." },
         { status: 403 }

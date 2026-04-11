@@ -6,7 +6,6 @@ import {
   HeartIcon,
   SparklesIcon,
 } from "lucide-react";
-import Link from "next/link";
 
 interface DashboardStatsProps {
   stats: {

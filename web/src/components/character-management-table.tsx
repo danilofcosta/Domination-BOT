@@ -13,25 +13,27 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { SearchIcon, Loader2Icon, Trash2Icon, PlusIcon, CalendarIcon, StarIcon, HeartIcon, UserIcon } from "lucide-react"
+import { SearchIcon, Loader2Icon, Trash2Icon, HeartIcon, UserIcon } from "lucide-react"
 import { toast } from "sonner"
 import { AddCharacterModal } from "./add-character-modal"
 import { EditCharacterModal } from "./edit-character-modal"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { CharacterMedia } from "./character-media"
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
 
 interface CharacterManagementTableProps {
   initialType?: "waifu" | "husbando";
+  currentUser?: { profileType?: string } | null;
 }
 
-export function CharacterManagementTable({ initialType = "waifu" }: CharacterManagementTableProps) {
+export function CharacterManagementTable({ initialType = "waifu", currentUser }: CharacterManagementTableProps) {
   const [type, setType] = React.useState<"waifu" | "husbando">(initialType)
   const [characters, setCharacters] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
@@ -60,7 +62,7 @@ export function CharacterManagementTable({ initialType = "waifu" }: CharacterMan
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir?")) return
     setIsDeleting(id)
-    const res = await deleteCharacter(id, type)
+    const res = await deleteCharacter(id, type, currentUser?.profileType)
     if (res.success) {
       toast.success("Excluído com sucesso")
       fetchData()
@@ -180,6 +182,7 @@ export function CharacterManagementTable({ initialType = "waifu" }: CharacterMan
                         <DialogContent className="max-w-md">
                            <DialogHeader>
                              <DialogTitle>Adicionado por:</DialogTitle>
+                             <DialogDescription>Informações sobre quem adicionou este personagem.</DialogDescription>
                            </DialogHeader>
                            <div className="space-y-4">
                              <pre className="text-xs bg-muted p-4 rounded-xl overflow-x-auto text-muted-foreground border border-primary/10">

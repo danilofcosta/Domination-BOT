@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { CharacterCard } from "@/components/ui/charaterCard";
 import { ApiCharacter, Character } from "@/lib/types";
-import { CommandIcon, Heart } from "lucide-react";
+import { CommandIcon } from "lucide-react";
 import Link from "next/link";
 import { useLayoutEffect, useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -95,7 +95,7 @@ function HomeContent() {
 
   return (
     <>
-      <main className="max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-6 py-6 sm:py-10">
+      <main className="max-w-7xl mx-auto w-full px-2 sm:px-4 lg:px-6 py-6 sm:py-10 pb-24">
         <div className="flex items-end justify-between mb-6 sm:mb-8 px-2">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
