@@ -124,6 +124,15 @@ export interface TelegramSendResult {
   error?: string;
 }
 
+
+
+
+
+
+
+
+
+
 export async function sendTelegramPhoto(
   chatId: string,
   photo: string,
