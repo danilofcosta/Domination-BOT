@@ -131,7 +131,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
                   <TableCell className="font-mono text-muted-foreground">{char.id}</TableCell>
                   <TableCell className="py-3">
                     <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-primary/10 shadow-sm bg-muted">
-                        <CharacterMedia item={char} type={type} />
+                      <CharacterMedia item={char} type={type} />
                     </div>
                   </TableCell>
                   <TableCell className="font-bold">
@@ -147,28 +147,28 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1.5">
-                       {/* Eventos */}
-                       {char[type === "waifu" ? "WaifuEvent" : "HusbandoEvent"]?.map((e: any) => (
-                          <Tooltip key={e.eventId}>
-                             <TooltipTrigger asChild>
-                                <Badge variant="secondary" className="px-1.5 py-0 text-[10px] bg-blue-500/10 text-blue-500 border-blue-500/20">
-                                   {e.Event.emoji}
-                                </Badge>
-                             </TooltipTrigger>
-                             <TooltipContent><p>{e.Event.name}</p></TooltipContent>
-                          </Tooltip>
-                       ))}
-                       {/* Raridades */}
-                       {char[type === "waifu" ? "WaifuRarity" : "HusbandoRarity"]?.map((r: any) => (
-                          <Tooltip key={r.rarityId}>
-                             <TooltipTrigger asChild>
-                                <Badge variant="secondary" className="px-1.5 py-0 text-[10px] bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
-                                   {r.Rarity.emoji}
-                                </Badge>
-                             </TooltipTrigger>
-                             <TooltipContent><p>{r.Rarity.name}</p></TooltipContent>
-                          </Tooltip>
-                       ))}
+                      {/* Eventos */}
+                      {char[type === "waifu" ? "WaifuEvent" : "HusbandoEvent"]?.map((e: any) => (
+                        <Tooltip key={e.eventId}>
+                          <TooltipTrigger asChild>
+                            <Badge variant="secondary" className="px-1.5 py-0 text-[10px] bg-blue-500/10 text-blue-500 border-blue-500/20">
+                              {e.Event.emoji}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent><p>{e.Event.name}</p></TooltipContent>
+                        </Tooltip>
+                      ))}
+                      {/* Raridades */}
+                      {char[type === "waifu" ? "WaifuRarity" : "HusbandoRarity"]?.map((r: any) => (
+                        <Tooltip key={r.rarityId}>
+                          <TooltipTrigger asChild>
+                            <Badge variant="secondary" className="px-1.5 py-0 text-[10px] bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
+                              {r.Rarity.emoji}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent><p>{r.Rarity.name}</p></TooltipContent>
+                        </Tooltip>
+                      ))}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -180,15 +180,15 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-md">
-                           <DialogHeader>
-                             <DialogTitle>Adicionado por:</DialogTitle>
-                             <DialogDescription>Informações sobre quem adicionou este personagem.</DialogDescription>
-                           </DialogHeader>
-                           <div className="space-y-4">
-                             <pre className="text-xs bg-muted p-4 rounded-xl overflow-x-auto text-muted-foreground border border-primary/10">
-                               {JSON.stringify(char.addby, null, 2)}
-                             </pre>
-                           </div>
+                          <DialogHeader>
+                            <DialogTitle>Adicionado por:</DialogTitle>
+                            <DialogDescription>Informações sobre quem adicionou este personagem.</DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <pre className="text-xs bg-muted p-4 rounded-xl overflow-x-auto text-muted-foreground border border-primary/10">
+                              {JSON.stringify(char.addby, null, 2)}
+                            </pre>
+                          </div>
                         </DialogContent>
                       </Dialog>
                     ) : (

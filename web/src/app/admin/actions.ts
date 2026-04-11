@@ -419,17 +419,23 @@ export async function updateRarity(id: number, formData: FormData) {
 // --- Characters ---
 
 async function handleFileUpload(file: File) {
-  if (!file || file.size === 0 || file.name === "undefined") return null
+  if (!file || file.size === 0 || !file.name || file.name === "undefined") return null
   
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const filename = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`
-  const uploadDir = path.join(process.cwd(), "public", "uploads")
-  
-  await fs.mkdir(uploadDir, { recursive: true }).catch(() => {})
-  
-  const filepath = path.join(uploadDir, filename)
-  await fs.writeFile(filepath, buffer)
-  return `/uploads/${filename}`
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const safeName = (file.name || "upload").replace(/[^a-zA-Z0-9._-]/g, "_")
+    const filename = `${Date.now()}-${safeName}`
+    const uploadDir = path.join(process.cwd(), "public", "uploads")
+    
+    await fs.mkdir(uploadDir, { recursive: true }).catch(() => {})
+    
+    const filepath = path.join(uploadDir, filename)
+    await fs.writeFile(filepath, buffer)
+    return `/uploads/${filename}`
+  } catch (error) {
+    console.error("Erro no upload de arquivo:", error)
+    return null
+  }
 }
 
 async function deleteLocalFile(filePath: string) {
@@ -589,7 +595,7 @@ export async function updateCharacter(id: number, type: "waifu" | "husbando", fo
       const uploadedPath = await handleFileUpload(file)
       if (uploadedPath) {
         localFilePath = uploadedPath
-        isVideo = file.type.includes("video")
+        isVideo = file.type.includes("video") || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name || "")
         finalMediaType = isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL"
       }
     } else if (mediaUrlInput) {

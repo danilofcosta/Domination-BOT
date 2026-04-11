@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { getEvents, getRarities } from "@/app/admin/actions"
+import { useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -52,6 +53,7 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
   const [isVideoPreview, setIsVideoPreview] = React.useState(false)
   const [currentMediaId, setCurrentMediaId] = React.useState<string | null>(null)
   const [isResolving, setIsResolving] = React.useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [availableEvents, setAvailableEvents] = React.useState<any[]>([])
   const [filteredEvents, setFilteredEvents] = React.useState<any[]>([])
@@ -171,11 +173,14 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         toast.error("O arquivo deve ter no máximo 20MB")
-        e.target.value = ""
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
         return
       }
       setPreviewUrl(URL.createObjectURL(file))
-      setIsVideoPreview(file.type.includes("video"))
+      const isVideo = file.type.includes("video") || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name)
+      setIsVideoPreview(isVideo)
     }
   }
 
@@ -287,18 +292,20 @@ export function CharacterForm({ character, currentType, onSubmit, onComplete, on
                                onChange={handleUrlChange}
                            />
                        </div>
-                     ) : (
-                       <div className="relative">
-                           <UploadIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                           <Input 
-                               type="file" 
-                               name="file" 
-                               accept="image/*,video/*" 
-                               className="pl-9"
-                               onChange={handleFileChange}
-                           />
-                       </div>
-                     )}
+                      ) : (
+                        <div className="relative">
+                            <UploadIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                            <Input 
+                                ref={fileInputRef}
+                                type="file" 
+                                name="file" 
+                                accept="image/*,video/mp4,video/webm,video/quicktime"
+                                capture="environment"
+                                className="pl-9"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+                      )}
                 </div>
                 
                 <div className="flex gap-2">

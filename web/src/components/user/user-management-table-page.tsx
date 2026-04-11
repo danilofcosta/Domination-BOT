@@ -5,7 +5,7 @@ import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
 
 import {
   UserDetailsDialog,
-} from "./user/user-details-dialog";
+} from "./user-details-dialog";
 import { SessionPayload } from "@/lib/auth";
 
 async function getUsersFromServer() {
@@ -89,9 +89,9 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
 
   const getProfileBadgeVariant = (type: string) => {
     switch (type) {
-      case  PROFILE_TYPE_LOCAL.SUPREME: return "default";
-      case  PROFILE_TYPE_LOCAL.ADMIN: return "secondary";
-      case  PROFILE_TYPE_LOCAL.USER: return "outline";
+      case PROFILE_TYPE_LOCAL.SUPREME: return "default";
+      case PROFILE_TYPE_LOCAL.ADMIN: return "secondary";
+      case PROFILE_TYPE_LOCAL.USER: return "outline";
       default: return "outline";
     }
   };

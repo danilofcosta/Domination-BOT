@@ -1,4 +1,4 @@
-import { UserManagementTable_page } from "@/components/user-management-table-page"
+import { UserManagementTable_page } from "@/components/user/user-management-table-page"
 import { getSession } from "@/lib/auth"
 
 export default async function UserPage() {

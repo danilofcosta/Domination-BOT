@@ -7,11 +7,11 @@ import {
   ZapIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { CharacterMedia } from "@/components/character-media";
+import { CharacterMedia } from "@/components/character/character-media";
 import { Footer } from "@/components/home/footer";
 import { LikeButton } from "./like-button";
 import { ShareButton } from "./share-button";
-import { CharacterSuggestions } from "@/components/character-suggestions";
+import { CharacterSuggestions } from "@/components/character/character-suggestions";
 
 async function getCharacter(slug: string) {
   // Tentar encontrar o tipo no slug (ex: nome-personagem_waifu)

@@ -2,12 +2,12 @@
 
 import * as React from "react"
 import { Character } from "@/lib/types";
-import { MediaType } from "../../generated/prisma/enums";
+import { MediaType } from "../../../generated/prisma/enums";
 import { resolveTelegramMedia } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
 
 type CharacterMediaProps = {
-  item: Character | any; 
+  item: Character | any;
   type: "waifu" | "husbando";
   className?: string;
   priority?: boolean;
@@ -17,7 +17,7 @@ type CharacterMediaProps = {
 export function CharacterMedia({ item, type, className, priority, fill }: CharacterMediaProps) {
   const [url, setUrl] = React.useState<string | null>(null);
 
-  
+
   // Extrair tipo de mídia com segurança
   const mediaType = item?.mediaType || MediaType.IMAGE_URL;
   const isVideo = mediaType === MediaType.VIDEO_URL || mediaType === MediaType.VIDEO_FILEID;
@@ -30,7 +30,7 @@ export function CharacterMedia({ item, type, className, priority, fill }: Charac
     async function resolve() {
       // 1. Caso base: URL direta (ou se não for um FileID)
       if (!isFileId) {
-        if (isMounted) setUrl(item?.media || "/placeholder.png"); 
+        if (isMounted) setUrl(item?.media || "/placeholder.png");
         return;
       }
 
@@ -67,7 +67,7 @@ export function CharacterMedia({ item, type, className, priority, fill }: Charac
       </div>
     );
   }
-  
+
 
   // Fallback visual
   const finalUrl = url || "/placeholder.png";

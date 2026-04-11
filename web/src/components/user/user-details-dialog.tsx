@@ -11,7 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Character, User } from "@/lib/types";
-import { CharacterMedia } from "../character-media";
+import { CharacterMedia } from "../character/character-media";
 import { Badge } from "@/components/ui/badge";
 import { deleteUser, updateUserProfileType, adjustUserCoins, reduceDuplicateCharacter, getUserCollectionDetails, setUserFavorite, removeUserFavorite } from "@/app/admin/actions";
 import { Trash2Icon, ShieldX, MoreVertical, UserCog, AlertTriangle, CheckIcon, Loader2, MinusIcon, PlusIcon, HeartIcon, XIcon } from "lucide-react";
@@ -66,7 +66,7 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
   const [deleteError, setDeleteError] = React.useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [typeUpdating, setTypeUpdating] = React.useState<string | null>(null);
-  
+
   const [collectionDetails, setCollectionDetails] = React.useState<{ waifus: CollectionItem[]; husbandos: CollectionItem[] } | null>(null);
   const [loadingCollection, setLoadingCollection] = React.useState(false);
   const [adjustingCoins, setAdjustingCoins] = React.useState(false);
@@ -91,17 +91,17 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
 
   const handleDelete = async () => {
     if (!confirm(`Tem certeza que deseja excluir o usuário ${user.telegramData?.first_name || "este usuário"}? Isso não pode ser desfeito.`)) return;
-    
+
     setDeleteError("");
     setIsDeleting(true);
     const result = await deleteUser(String(user.telegramId), currentUser?.profileType, user.profileType);
-    
+
     if (!result.success) {
       setDeleteError(result.error || "Erro ao excluir usuário");
       setIsDeleting(false);
       return;
     }
-    
+
     setIsDeleting(false);
     setShowDeleteConfirm(false);
     setIsOpen(false);
@@ -112,7 +112,7 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
     setTypeUpdating(newType);
     const result = await updateUserProfileType(BigInt(user.telegramId), newType, currentUser?.profileType);
     setTypeUpdating(null);
-    
+
     if (result.success) {
       toast.success(`Perfil alterado para ${newType}`, {
         description: `${user.telegramData?.first_name || "Usuário"} agora é ${newType}`,
@@ -128,11 +128,11 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
   const handleAdjustCoins = async (operation: "add" | "subtract" | "set", amount: number) => {
     if (operation !== "set" && !confirm(`Tem certeza que deseja ${operation === "add" ? "adicionar" : "remover"} ${amount} moedas?`)) return;
     if (operation === "set" && !confirm(`Tem certeza que deseja definir as moedas para ${amount}?`)) return;
-    
+
     setAdjustingCoins(true);
     const result = await adjustUserCoins(user.telegramId, amount, operation, currentUser?.profileType);
     setAdjustingCoins(false);
-    
+
     if (result.success) {
       toast.success(operation === "add" ? "Moedas adicionadas" : operation === "subtract" ? "Moedas removidas" : "Moedas definidas", {
         description: `Novo saldo: ${result.newCoins?.toLocaleString()}`,
@@ -147,11 +147,11 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
 
   const handleReduceDuplicate = async (characterId: number, type: "waifu" | "husbando", reduceBy: number, name: string) => {
     if (!confirm(`Tem certeza que deseja remover ${reduceBy} repetição(ões) de "${name}"? Isso não pode ser desfeito.`)) return;
-    
+
     setReducingId(characterId);
     const result = await reduceDuplicateCharacter(user.telegramId, characterId, type, reduceBy, currentUser?.profileType);
     setReducingId(null);
-    
+
     if (result.success) {
       toast.success("Repetição removida", {
         description: `Nova quantidade: ${result.newCount}`,
@@ -197,11 +197,11 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
 
   const handleRemoveFavorite = async (type: "waifu" | "husbando") => {
     if (!confirm(`Tem certeza que deseja remover o favorito ${type === "waifu" ? "waifu" : "husbando"}?`)) return;
-    
+
     setSettingFavorite(true);
     const result = await removeUserFavorite(user.telegramId, type, currentUser?.profileType);
     setSettingFavorite(false);
-    
+
     if (result.success) {
       toast.success("Favorito removido");
       window.location.reload();
@@ -224,9 +224,9 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <Button 
-        variant="ghost" 
-        size="sm" 
+      <Button
+        variant="ghost"
+        size="sm"
         className="h-8 w-8 p-0 hover:bg-primary/10"
         onClick={() => setIsOpen(true)}
       >
@@ -323,7 +323,7 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
               )}
             </div>
           </div>
-          
+
           <div className="bg-muted/30 p-4 rounded-xl space-y-3">
             <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Coleção</h4>
             <div className="space-y-2 text-sm">
@@ -390,7 +390,7 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
             <TabsTrigger value="waifus" className="flex-1">Waifus ({collectionDetails?.waifus.length || 0})</TabsTrigger>
             <TabsTrigger value="husbandos" className="flex-1">Husbandos ({collectionDetails?.husbandos.length || 0})</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="waifus" className="mt-4">
             {loadingCollection ? (
               <div className="flex items-center justify-center py-8">
@@ -403,54 +403,55 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
                 {collectionDetails?.waifus.map((item) => {
                   const isFav = user.CharacterWaifu?.id === item.characterId;
                   return (
-                  <div key={item.id} className={`relative bg-muted/30 p-2 rounded-lg ${isFav ? 'ring-2 ring-red-500' : ''}`}>
-                    {isFav && (
-                      <div className="absolute -top-1 -right-1 z-10">
-                        <HeartIcon className="h-4 w-4 fill-red-500 text-red-500" />
-                      </div>
-                    )}
-                    {item.Character.media && (
-                      <img 
-                        src={item.Character.media} 
-                        alt={item.Character.name}
-                        className="w-full h-16 object-cover rounded mb-2"
-                      />
-                    )}
-                    <p className="text-xs font-medium truncate">{item.Character.name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs bg-pink-500/20 px-1.5 py-0.5 rounded">x{item.count}</span>
-                      <div className="flex gap-1">
-                        {canAdjustCoins && item.count > 0 && (
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-6 px-1"
-                            onClick={() => handleReduceDuplicate(item.characterId, "waifu", 1, item.Character.name)}
-                            disabled={reducingId === item.characterId}
-                          >
-                            <MinusIcon className="h-3 w-3" />
-                          </Button>
-                        )}
-                        {canAdjustCoins && !isFav && (
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-6 px-1 text-green-500"
-                            onClick={() => handleSetFavorite("waifu", item.characterId, item.Character.name)}
-                            disabled={settingFavorite}
-                            title="Definir como favorito"
-                          >
-                            <HeartIcon className="h-3 w-3" />
-                          </Button>
-                        )}
+                    <div key={item.id} className={`relative bg-muted/30 p-2 rounded-lg ${isFav ? 'ring-2 ring-red-500' : ''}`}>
+                      {isFav && (
+                        <div className="absolute -top-1 -right-1 z-10">
+                          <HeartIcon className="h-4 w-4 fill-red-500 text-red-500" />
+                        </div>
+                      )}
+                      {item.Character.media && (
+                        <img
+                          src={item.Character.media}
+                          alt={item.Character.name}
+                          className="w-full h-16 object-cover rounded mb-2"
+                        />
+                      )}
+                      <p className="text-xs font-medium truncate">{item.Character.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs bg-pink-500/20 px-1.5 py-0.5 rounded">x{item.count}</span>
+                        <div className="flex gap-1">
+                          {canAdjustCoins && item.count > 0 && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-1"
+                              onClick={() => handleReduceDuplicate(item.characterId, "waifu", 1, item.Character.name)}
+                              disabled={reducingId === item.characterId}
+                            >
+                              <MinusIcon className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {canAdjustCoins && !isFav && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-1 text-green-500"
+                              onClick={() => handleSetFavorite("waifu", item.characterId, item.Character.name)}
+                              disabled={settingFavorite}
+                              title="Definir como favorito"
+                            >
+                              <HeartIcon className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )})}
+                  )
+                })}
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="husbandos" className="mt-4">
             {loadingCollection ? (
               <div className="flex items-center justify-center py-8">
@@ -463,50 +464,51 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
                 {collectionDetails?.husbandos.map((item) => {
                   const isFav = user.CharacterHusbando?.id === item.characterId;
                   return (
-                  <div key={item.id} className={`relative bg-muted/30 p-2 rounded-lg ${isFav ? 'ring-2 ring-red-500' : ''}`}>
-                    {isFav && (
-                      <div className="absolute -top-1 -right-1 z-10">
-                        <HeartIcon className="h-4 w-4 fill-red-500 text-red-500" />
-                      </div>
-                    )}
-                    {item.Character.media && (
-                      <img 
-                        src={item.Character.media} 
-                        alt={item.Character.name}
-                        className="w-full h-16 object-cover rounded mb-2"
-                      />
-                    )}
-                    <p className="text-xs font-medium truncate">{item.Character.name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs bg-blue-500/20 px-1.5 py-0.5 rounded">x{item.count}</span>
-                      <div className="flex gap-1">
-                        {canAdjustCoins && item.count > 0 && (
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-6 px-1"
-                            onClick={() => handleReduceDuplicate(item.characterId, "husbando", 1, item.Character.name)}
-                            disabled={reducingId === item.characterId}
-                          >
-                            <MinusIcon className="h-3 w-3" />
-                          </Button>
-                        )}
-                        {canAdjustCoins && !isFav && (
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-6 px-1 text-green-500"
-                            onClick={() => handleSetFavorite("husbando", item.characterId, item.Character.name)}
-                            disabled={settingFavorite}
-                            title="Definir como favorito"
-                          >
-                            <HeartIcon className="h-3 w-3" />
-                          </Button>
-                        )}
+                    <div key={item.id} className={`relative bg-muted/30 p-2 rounded-lg ${isFav ? 'ring-2 ring-red-500' : ''}`}>
+                      {isFav && (
+                        <div className="absolute -top-1 -right-1 z-10">
+                          <HeartIcon className="h-4 w-4 fill-red-500 text-red-500" />
+                        </div>
+                      )}
+                      {item.Character.media && (
+                        <img
+                          src={item.Character.media}
+                          alt={item.Character.name}
+                          className="w-full h-16 object-cover rounded mb-2"
+                        />
+                      )}
+                      <p className="text-xs font-medium truncate">{item.Character.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs bg-blue-500/20 px-1.5 py-0.5 rounded">x{item.count}</span>
+                        <div className="flex gap-1">
+                          {canAdjustCoins && item.count > 0 && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-1"
+                              onClick={() => handleReduceDuplicate(item.characterId, "husbando", 1, item.Character.name)}
+                              disabled={reducingId === item.characterId}
+                            >
+                              <MinusIcon className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {canAdjustCoins && !isFav && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 px-1 text-green-500"
+                              onClick={() => handleSetFavorite("husbando", item.characterId, item.Character.name)}
+                              disabled={settingFavorite}
+                              title="Definir como favorito"
+                            >
+                              <HeartIcon className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )})}
+                  )
+                })}
               </div>
             )}
           </TabsContent>
@@ -524,9 +526,9 @@ export function UserDetailsDialog({ user, currentUser }: UserDetailsDialogProps)
             <div className="flex items-center gap-2 text-xs text-muted-foreground w-full sm:w-auto">
               <ShieldX className="w-4 h-4 shrink-0" />
               <span>
-                {!currentUser ? "Faça login para gerenciar" : 
-                 user.profileType === ProfileType.SUPREME ? "Proprietário do sistema" :
-                 "Apenas o Dono pode gerenciar"}
+                {!currentUser ? "Faça login para gerenciar" :
+                  user.profileType === ProfileType.SUPREME ? "Proprietário do sistema" :
+                    "Apenas o Dono pode gerenciar"}
               </span>
             </div>
           ) : (

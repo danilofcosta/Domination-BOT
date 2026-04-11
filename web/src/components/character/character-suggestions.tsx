@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { CharacterMedia } from "@/components/character-media";
+import { CharacterMedia } from "@/components/character/character-media";
 import { Badge } from "@/components/ui/badge";
 import { SparklesIcon, ShuffleIcon } from "lucide-react";
 
@@ -20,10 +20,10 @@ interface CharacterSuggestionsProps {
 }
 
 export async function CharacterSuggestions({ character, type }: CharacterSuggestionsProps) {
-  const eventIds = character.WaifuEvent?.map((e: any) => e.eventId) 
-    || character.HusbandoEvent?.map((e: any) => e.eventId) 
+  const eventIds = character.WaifuEvent?.map((e: any) => e.eventId)
+    || character.HusbandoEvent?.map((e: any) => e.eventId)
     || [];
-  
+
   const rarityIds = character.WaifuRarity?.map((r: any) => r.rarityId)
     || character.HusbandoRarity?.map((r: any) => r.rarityId)
     || [];
@@ -65,7 +65,7 @@ export async function CharacterSuggestions({ character, type }: CharacterSuggest
         [rarityRelation]: { include: { Rarity: true } },
       },
     });
-    
+
     const existingIds = new Set(suggestions.map((s: any) => s.id));
     suggestions = [...suggestions, ...relatedByOrigem.filter((r: any) => !existingIds.has(r.id))];
   }
@@ -79,7 +79,7 @@ export async function CharacterSuggestions({ character, type }: CharacterSuggest
         [rarityRelation]: { include: { Rarity: true } },
       },
     });
-    
+
     const existingIds = new Set(suggestions.map((s: any) => s.id));
     suggestions = [...suggestions, ...randomChars.filter((r: any) => !existingIds.has(r.id))];
   }
@@ -89,7 +89,7 @@ export async function CharacterSuggestions({ character, type }: CharacterSuggest
   if (suggestions.length === 0) return null;
 
   const hasSameOrigem = suggestions.some((s: any) => s.origem === character.origem);
-  const hasSameEvent = suggestions.some((s: any) => 
+  const hasSameEvent = suggestions.some((s: any) =>
     (s.WaifuEvent || s.HusbandoEvent)?.some((e: any) => eventIds.includes(e.eventId))
   );
 
@@ -132,15 +132,15 @@ export async function CharacterSuggestions({ character, type }: CharacterSuggest
                 type={type}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
-              
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              
+
               {topRarity && (
                 <div className="absolute top-2 right-2 px-2 py-1 bg-background/60 backdrop-blur-md rounded-lg text-sm">
                   {topRarity.emoji}
                 </div>
               )}
-              
+
               <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
                 <p className="text-[10px] sm:text-xs text-muted-foreground font-bold uppercase tracking-wider truncate opacity-60">
                   {char.origem}

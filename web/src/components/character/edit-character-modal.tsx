@@ -29,26 +29,26 @@ export function EditCharacterModal({ character, type, onComplete }: { character:
       <DialogContent className="sm:max-w-4xl w-[95vw] h-[95vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2 text-xl font-bold">
-             <EditIcon className="size-5" /> 
-             <span>Editar Personagem</span>
-             <Badge variant="outline" className={cn("ml-auto text-xs font-bold", type === "waifu" ? "text-pink-500 border-pink-500 bg-pink-500/10" : "text-blue-500 border-blue-500 bg-blue-500/10")}>
-               {type === "waifu" ? "WAIFU" : "HUSBANDO"}
-             </Badge>
+            <EditIcon className="size-5" />
+            <span>Editar Personagem</span>
+            <Badge variant="outline" className={cn("ml-auto text-xs font-bold", type === "waifu" ? "text-pink-500 border-pink-500 bg-pink-500/10" : "text-blue-500 border-blue-500 bg-blue-500/10")}>
+              {type === "waifu" ? "WAIFU" : "HUSBANDO"}
+            </Badge>
           </DialogTitle>
           <DialogDescription>
             Alteração nos dados do personagem.
           </DialogDescription>
         </DialogHeader>
 
-        <CharacterForm 
-           character={character}
-           currentType={type}
-           onSubmit={async (formData) => updateCharacter(character.id, type, formData)}
-           onComplete={() => {
-             setIsOpen(false);
-             onComplete();
-           }}
-           onCancel={() => setIsOpen(false)}
+        <CharacterForm
+          character={character}
+          currentType={type}
+          onSubmit={async (formData) => updateCharacter(character.id, type, formData)}
+          onComplete={() => {
+            setIsOpen(false);
+            onComplete();
+          }}
+          onCancel={() => setIsOpen(false)}
         />
       </DialogContent>
     </Dialog>
