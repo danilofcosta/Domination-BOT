@@ -200,7 +200,12 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
               )}
             </TableBody>
           </Table>
+          
         </div>
+      
+      </div>
+      <div className="h-16">
+
       </div>
     </div>
   );

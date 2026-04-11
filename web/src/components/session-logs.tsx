@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 interface SessionData {
   settings: {
     genero: string;
+    genero_id?: string;
+    confirmLeave?: boolean;
   };
   grupo: {
     cont: number;
@@ -25,11 +27,16 @@ interface SessionData {
     data: Date | null;
     character: unknown | null;
     title: string | null | undefined;
+    genero_id?: string;
   };
   adminSetup?: {
     action: "edit_nome" | "edit_anime" | null;
     targetId: string | null;
   };
+  leaveAction?: {
+    action: "sair_grupo";
+    confirm: boolean;
+  } | null;
 }
 
 interface Session {
@@ -151,10 +158,14 @@ export function SessionLogs() {
               <TableRow className="border-primary/5 hover:bg-transparent">
                 <TableHead className="w-32">Session Key</TableHead>
                 <TableHead>Gênero</TableHead>
+                <TableHead>Gen ID</TableHead>
                 <TableHead>Grupo Cont</TableHead>
                 <TableHead>Grupo Title</TableHead>
-                <TableHead>Grupo Data</TableHead>
+                <TableHead>Grupo Gen ID</TableHead>
+                <TableHead>Data</TableHead>
                 <TableHead className="hidden md:table-cell">Admin Setup</TableHead>
+                <TableHead>Confirm Leave</TableHead>
+                <TableHead>Leave Action</TableHead>
                 <TableHead className="w-24">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -162,7 +173,7 @@ export function SessionLogs() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-32 text-center">
+                  <TableCell colSpan={11} className="h-32 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
                       <p className="text-muted-foreground text-sm">Carregando...</p>
@@ -171,7 +182,7 @@ export function SessionLogs() {
                 </TableRow>
               ) : filteredSessions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-32 text-center">
+                  <TableCell colSpan={11} className="h-32 text-center">
                     <p className="text-muted-foreground">
                       Nenhuma sessão encontrada
                       {search && ` para "${search}"`}
@@ -192,12 +203,20 @@ export function SessionLogs() {
                       {session.value?.settings?.genero || "-"}
                     </TableCell>
 
+                    <TableCell className="font-mono text-xs">
+                      {session.value?.settings?.genero_id || "-"}
+                    </TableCell>
+
                     <TableCell className="font-mono">
                       {session.value?.grupo?.cont ?? "-"}
                     </TableCell>
 
                     <TableCell className="max-w-[200px] truncate">
                       {session.value?.grupo?.title || "-"}
+                    </TableCell>
+
+                    <TableCell className="font-mono text-xs">
+                      {session.value?.grupo?.genero_id || "-"}
                     </TableCell>
 
                     <TableCell className="text-xs text-muted-foreground">
@@ -208,6 +227,26 @@ export function SessionLogs() {
                       {session.value?.adminSetup?.action ? (
                         <span className="text-xs bg-primary/10 px-2 py-1 rounded">
                           {session.value.adminSetup.action}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      {session.value?.settings?.confirmLeave ? (
+                        <span className="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded">
+                          Sim
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+
+                    <TableCell>
+                      {session.value?.leaveAction?.action === "sair_grupo" ? (
+                        <span className="text-xs bg-red-500/20 text-red-500 px-2 py-1 rounded">
+                          {session.value.leaveAction.confirm ? "Confirmado" : "Pendente"}
                         </span>
                       ) : (
                         "-"
