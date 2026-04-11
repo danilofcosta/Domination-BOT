@@ -1,3 +1,6 @@
 web0
 bot_telegram/.vscode/launch.json
 bot_telegram/src/testes/
+stack.env
+stack sever.env
+.env

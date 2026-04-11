@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   postgres:
-    image: docker.io/bitnami/postgresql:16
+    image: docker.io/bitnami/postgresql:latest
     container_name: postgres
     restart: unless-stopped
     environment:
@@ -14,17 +14,10 @@ services:
       - "5434:5432"
     volumes:
       - postgres_data:/bitnami/postgresql
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - backend
+
 
   redis:
-    image: bitnami/redis:7
+    image: bitnami/redis:latest
     container_name: redis
     restart: unless-stopped
     environment:
@@ -33,14 +26,7 @@ services:
       - "6378:6379"
     volumes:
       - redis_data:/bitnami/redis/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-    networks:
-      - backend
+
 
   waifu_bot:
     build: ./bot_telegram
@@ -50,27 +36,8 @@ services:
       - stack.env
     environment:
       TYPE_BOT: waifu
-      REDIS_HOST: redis
-      POSTGRES_HOST: postgres
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - backend
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
+      - postgres
 
   husbando_bot:
     build: ./bot_telegram
@@ -80,48 +47,24 @@ services:
       - stack.env
     environment:
       TYPE_BOT: husbando
-      REDIS_HOST: redis
-      POSTGRES_HOST: postgres
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - backend
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
+      - postgres
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: web
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
+      - "5000:3000"
+    env_file:
+      - stack.env
     depends_on:
-      - waifu_bot
-      - husbando_bot
-    networks:
-      - backend
+      - postgres
 
 volumes:
   postgres_data:
   redis_data:
 
-networks:
-  backend:
-    driver: bridge
+
