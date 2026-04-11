@@ -4,6 +4,4 @@ bot_telegram/src/testes/
 stack.env
 stack sever.env
 .env
-stack sever.env
-
-stack sever.env
+stack_sever.env
