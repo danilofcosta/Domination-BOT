@@ -47,7 +47,7 @@ export async function topCallbackQuery(ctx: MyContext) {
     const userData = ranking[position]!;
 
     return ctx.answerCallbackQuery({
-      text: `🏆 Sua posição: ${position + 1}\n📊 Total: ${userData._count.characterId}`,
+      text: `🏆 Sua posição: ${position + 1}\n📊 Total: ${ranking.length}`,
       show_alert: true,
     });
   }

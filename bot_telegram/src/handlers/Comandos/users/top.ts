@@ -78,7 +78,7 @@ export async function topHandler(ctx: MyContext) {
   const reply_markup = new InlineKeyboard()
     .text(ctx.t("top_user_btn"), "topuser_position")
     .row()
-    .text(ctx.t("top_btn_close"), "top_close");
+    .text(ctx.t("top_btn_close"), "topuser_close");
 
   if (character) {
     return Sendmedia({
