@@ -3,7 +3,7 @@ import { Bot, InputFile } from "grammy";
 import { prisma } from "./prisma";
 import fs from "fs/promises";
 import path from "path";
-
+import "dotenv/config";
 const tokens = {
   waifu: process.env.BOT_TOKEN_WAIFU || "",
   husbando: process.env.BOT_TOKEN_HUSBANDO || "",
