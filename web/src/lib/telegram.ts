@@ -5,8 +5,8 @@ import fs from "fs/promises";
 import path from "path";
 import "dotenv/config";
 const tokens = {
-  waifu: process.env.BOT_TOKEN_WAIFU || "",
-  husbando: process.env.BOT_TOKEN_HUSBANDO || "",
+  waifu: process.env.BOT_TOKEN_WAIFU || "Empty ",
+  husbando: process.env.BOT_TOKEN_HUSBANDO || "Empty ",
 };
 
 const bots = {
