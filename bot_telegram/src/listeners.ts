@@ -64,15 +64,15 @@ listeners.on("inline_query", async (ctx) => {
 // listeners.chatType("private")
 // .on("my_chat_member", myPrivateChatMemberHandler); //
 
-listeners.filter((ctx) => {
-  const msg = ctx.message;
-  if (!msg) return false;
-  const caption = msg.caption || "";
-  const regex1 = new RegExp(`^[/!]${botPrefix}up[wWhH]?\\s*`, "i");
-  const regex2 = new RegExp(`^[/!]up[wWhH]?\\s*`, "i");
-  const matches = regex1.test(caption) || regex2.test(caption);
-  console.log("[Upload Filter] Prefixo:", botPrefix, "| Caption:", caption, "| Corresponde:", matches);
-  return matches;
-}).on("message", UploadMediaMiddleware, UploadMediaHandler);
+// listeners.filter((ctx) => {
+//   const msg = ctx.message;
+//   if (!msg) return false;
+//   const caption = msg.caption || "";
+//   const regex1 = new RegExp(`^[/!]${botPrefix}up[wWhH]?\\s*`, "i");
+//   const regex2 = new RegExp(`^[/!]up[wWhH]?\\s*`, "i");
+//   const matches = regex1.test(caption) || regex2.test(caption);
+//   console.log("[Upload Filter] Prefixo:", botPrefix, "| Caption:", caption, "| Corresponde:", matches);
+//   return matches;
+// }).on("message", UploadMediaMiddleware, UploadMediaHandler);
 
 export { listeners };
