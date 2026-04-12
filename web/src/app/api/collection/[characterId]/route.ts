@@ -8,6 +8,7 @@ export async function GET(
   const { characterId } = await params;
   const url = new URL(req.url);
   const type = url.searchParams.get("type") as "waifu" | "husbando";
+  const telegramIdStr = url.searchParams.get("telegramId");
 
   if (!characterId || !type) {
     return NextResponse.json(
@@ -17,6 +18,7 @@ export async function GET(
   }
 
   const charId = parseInt(characterId);
+  const telegramId = telegramIdStr ? BigInt(telegramIdStr) : null;
 
   try {
     const isWaifu = type === "waifu";
@@ -55,6 +57,14 @@ export async function GET(
         where: { characterId: charId },
       });
 
+      let userHasCount = 0;
+      if (telegramId) {
+        const userCollection = await prisma.waifuCollection.findFirst({
+          where: { characterId: charId, userId: telegramId },
+        });
+        userHasCount = userCollection?.count || 0;
+      }
+
       if (!character) {
         return NextResponse.json(
           { error: "Character not found" },
@@ -75,10 +85,12 @@ export async function GET(
         dislikes: character.dislikes,
         type,
         userCount,
+        userHasCount,
         topOwners: character.WaifuCollection.slice(0, 10).map((c: any) => ({
           userId: c.User.id,
+          telegramId: c.User?.telegramId?.toString() || "",
           count: c.count,
-          telegramData: c.User.telegramData,
+          telegramData: c.User?.telegramData || null,
         })),
         rarities: character.WaifuRarity?.map((r: any) => r.Rarity) || [],
         events: character.WaifuEvent?.map((e: any) => e.Event) || [],
@@ -114,6 +126,14 @@ export async function GET(
         where: { characterId: charId },
       });
 
+      let userHasCount = 0;
+      if (telegramId) {
+        const userCollection = await prisma.husbandoCollection.findFirst({
+          where: { characterId: charId, userId: telegramId },
+        });
+        userHasCount = userCollection?.count || 0;
+      }
+
       if (!character) {
         return NextResponse.json(
           { error: "Character not found" },
@@ -134,10 +154,12 @@ export async function GET(
         dislikes: character.dislikes,
         type,
         userCount,
+        userHasCount,
         topOwners: character.HusbandoCollection.slice(0, 10).map((c: any) => ({
           userId: c.User.id,
+          telegramId: c.User?.telegramId?.toString() || "",
           count: c.count,
-          telegramData: c.User.telegramData,
+          telegramData: c.User?.telegramData || null,
         })),
         rarities: character.HusbandoRarity?.map((r: any) => r.Rarity) || [],
         events: character.HusbandoEvent?.map((e: any) => e.Event) || [],

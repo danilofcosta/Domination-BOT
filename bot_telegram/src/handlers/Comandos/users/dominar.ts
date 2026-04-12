@@ -57,7 +57,7 @@ function calcularTempo(per: { data: Date | string | null }) {
 
 function successDominarMessage(ctx: MyContext) {
   const character = ctx.session.grupo.character;
-  if (!character) return "";
+  if (!character) return "vc tem um personagem!";
   //success_dominar_title = ✅ { $usermention }, você tem { $genero }!
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
@@ -104,10 +104,11 @@ export async function CapturarCharacter(ctx: MyContext) {
 
   if (!character || !tentativa) {
     try {
-      await ctx.answerCallbackQuery(ctx.t("not-charater-to-dominar"));
+    //  await ctx.answerCallbackQuery(ctx.t("not-charater-to-dominar"));
+    console.log("not-charater-to-dominar");
       return;
     } catch (e) {
-      console.error("Erro ao enviar resposta de callback query", e);
+      console.log("Erro ao enviar resposta de callback query", e);
       return;
     }
   }

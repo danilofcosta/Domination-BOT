@@ -360,6 +360,16 @@ function ProfileCard({
           background: `linear-gradient(135deg, ${adjustColor(theme.themeParams.button_color || "#2481cc", -30)}, ${theme.themeParams.button_color || "#2481cc"})`,
         }}
       >
+        <a
+          href="/miniapptg"
+          className="absolute top-4 left-4 z-10 p-2 rounded-full transition-all hover:scale-105"
+          style={{ backgroundColor: "rgba(255,255,255,0.2)", color: "white" }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m12 19-7-7 7-7"/>
+            <path d="M19 12H5"/>
+          </svg>
+        </a>
         <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
           <div className="relative">
             <Avatar className="w-24 h-24 ring-4 shadow-lg">

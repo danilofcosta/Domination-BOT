@@ -212,7 +212,7 @@ export default function UserProfilePage() {
       if (!userId) return;
 
       try {
-        const res = await fetch(`/api/admin/users?id=${userId}`);
+        const res = await fetch(`/api/user?id=${userId}`);
         if (res.ok) {
           const data = await res.json();
           setUser(data);

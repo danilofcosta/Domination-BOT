@@ -46,8 +46,10 @@ type CollectionDetail = {
   dislikes: number;
   type: "waifu" | "husbando";
   userCount: number;
+  userHasCount: number;
   topOwners: Array<{
     userId: number;
+    telegramId: string;
     count: number;
     telegramData: {
       first_name: string;
@@ -195,7 +197,8 @@ export default function CollectionDetailPage() {
       if (!characterId || !type) return;
 
       try {
-        const res = await fetch(`/api/collection/${characterId}?type=${type}`);
+        const tgId = currentUser?.id ? `&telegramId=${currentUser.id}` : "";
+        const res = await fetch(`/api/collection/${characterId}?type=${type}${tgId}`);
         if (res.ok) {
           const data = await res.json();
           setCharacter(data);
@@ -535,12 +538,11 @@ export default function CollectionDetailPage() {
                 {character.topOwners.map((owner, index) => {
                   const tgData = owner.telegramData;
                   const firstLetter = tgData?.first_name?.charAt(0).toUpperCase() || "?";
-                  const ownerTelegramId = (tgData as any)?.id || owner.userId;
                   
                   return (
                     <Link
                       key={owner.userId}
-                      href={`/miniapptg/user/${owner.userId}`}
+                      href={`/miniapptg/user/${owner.telegramId}`}
                       className="block"
                     >
                       <div
@@ -634,6 +636,30 @@ export default function CollectionDetailPage() {
               Informações
             </h3>
             <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span style={{ color: theme.themeParams.hint_color || "#999999" }}>ID Personagem</span>
+                <span className="font-mono text-xs" style={{ color: theme.themeParams.text_color }}>
+                  #{character.id}
+                </span>
+              </div>
+              {character.userHasCount > 0 && (
+                <>
+                  <div
+                    className="h-px w-full"
+                    style={{ backgroundColor: theme.themeParams.section_separator_color || "#e0e0e0" }}
+                  />
+                  <div className="flex justify-between">
+                    <span style={{ color: theme.themeParams.hint_color || "#999999" }}>ID Local</span>
+                    <span className="font-mono text-xs" style={{ color: accentColor }}>
+                      x{character.userHasCount}
+                    </span>
+                  </div>
+                </>
+              )}
+              <div
+                className="h-px w-full"
+                style={{ backgroundColor: theme.themeParams.section_separator_color || "#e0e0e0" }}
+              />
               <div className="flex justify-between">
                 <span style={{ color: theme.themeParams.hint_color || "#999999" }}>Tipo</span>
                 <span style={{ color: theme.themeParams.text_color }}>{character.sourceType}</span>
