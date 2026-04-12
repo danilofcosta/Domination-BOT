@@ -18,19 +18,33 @@ export async function helpCommand(ctx: MyContext) {
   }
 
   const reply_markup = new InlineKeyboard()
-    .text(ctx.t("help-btn-comandos"), "help_user_cmds")
-    .row()
-    .text(ctx.t("help-btn-admin"), "help_admin_cmds")
+    .text(ctx.t("help-btn-comandos"), "help_btn_comandos")
+    .text(ctx.t("help-btn-admin"), "help_btn_admin")
     .row()
     .text(ctx.t("btn-close"), "close");
 
   const caption = ctx.t("help-caption");
 
-  if (ctx.msg) {
+  if (ctx.callbackQuery) {
+    await ctx.editMessageCaption({
+      caption,
+      parse_mode: "HTML",
+      reply_markup,
+    }).catch(err => {
+      console.log("error edit message text", err)
+      ctx.reply(caption, {
+        parse_mode: "HTML",
+        reply_markup,
+      });
+    });
+    await ctx.answerCallbackQuery();
+  } else if (ctx.msg) {
+    console.log("error edit message text", ctx.msg.caption)
     await ctx.editMessageText(caption, {
       parse_mode: "HTML",
       reply_markup,
-    }).catch(() => {
+    }).catch((err) => {
+      console.log("error edit message text", err  )
       ctx.reply(caption, {
         parse_mode: "HTML",
         reply_markup,
@@ -43,3 +57,4 @@ export async function helpCommand(ctx: MyContext) {
     });
   }
 }
+

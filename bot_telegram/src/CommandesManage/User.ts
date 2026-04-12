@@ -1,4 +1,4 @@
-import { CommandGroup } from "@grammyjs/commands";
+import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { CapturarCharacter } from "../handlers/Comandos/users/dominar.js";
 import { botPrefix, options, typeBot } from "./botConfigCommands.js";
@@ -11,60 +11,108 @@ import { topHandler } from "../handlers/Comandos/users/top.js";
 import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
 
 const botCommands = new CommandGroup<MyContext>();
+export const  ComandosUser={
+ dominar:{
+  command:"dominar",
+  description:"Dominate a character",
+  handler:CapturarCharacter,
+  scope:"all_group_chats",
+ },
+  harem:{
+    command:`my${typeBot}s`,
+    description:"Get information about the Harem feature",
+    handler:HaremHandler,
+    scope:"all_group_chats",
+  },
+  fav:{
+    command:`${botPrefix}fav`,
+    description:"Show your favorite character",
+    handler:favCharacter,
+    scope:"all_group_chats",
+  },
+  gift:{
+    command:`${botPrefix}gift`,
+    description:"Gift a character to another user",
+    handler:giftHandler,
+    scope:"all_group_chats",
+  },
+  myinfos:{
+    command:`myinfo${botPrefix}`,
+    description:"Show your information",
+    handler:Myinfos,
+    scope:"all_group_chats",
+  },
+  random:{
+    command:typeBot || "random",
+    description:"traz um personagem aleatorio do db",
+    handler:Ramdon_Character_Handler,
+    scope:"all_group_chats",
+  },
+  top:{
+    command:`${botPrefix}top`,
+    description:"Show the top players",
+    handler:topHandler,
+    scope:"all_group_chats",
+  },
+  start:{
+    command:"start",
+    description:"Start the bot",
+    handler:StartGreetings,
+    scope:"all_group_chats",
+  },
+} as const;
 
-// dominar' é um comando que permite aos usuários dominar um personagem específico. Ele é registrado com o nome "dominar" para garantir que seja reconhecido corretamente, e utiliza a função CapturarCharacter para processar a lógica de dominação, como verificar o personagem a ser dominado, atualizar as informações do usuário e fornecer feedback sobre o sucesso ou falha da ação.
-botCommands.command(
-  "dominar",
-  "Dominate a character").addToScope(
-    { type: "all_group_chats" },
-    (ctx) => CapturarCharacter(ctx)
-  )
+const localizedCommands: Record<string, { es: { command: string; description: string }; pt: { command: string; description: string } }> = {
+  dominar: { 
+    es: { command: "dominar", description: "Domina a un personaje" }, 
+    pt: { command: "dominar", description: "Domina um personagem" } 
+  },
+  harem: { 
+    es: { command: `mis${typeBot}s`, description: "Información del Harem" }, 
+    pt: { command: `meus${typeBot}s`, description: "Informações do Harem" } 
+  },
+  fav: { 
+    es: { command: `${botPrefix}fav`, description: "Tu personaje favorito" }, 
+    pt: { command: `${botPrefix}fav`, description: "Seu personagem favorito" } 
+  },
+  gift: { 
+    es: { command: `${botPrefix}regalo`, description: "Regala un personaje" }, 
+    pt: { command: `${botPrefix}presente`, description: "Presenteia um personagem" } 
+  },
+  myinfos: { 
+    es: { command: `miinfo${botPrefix}`, description: "Tu información" }, 
+    pt: { command: `minhainfo${botPrefix}`, description: "Suas informações" } 
+  },
+  random: { 
+    es: { command: "aleatorio", description: "Personaje aleatorio del DB" }, 
+    pt: { command: "aleatorio", description: "Personagem aleatório do DB" } 
+  },
+  top: { 
+    es: { command: `${botPrefix}top`, description: "Top jugadores" }, 
+    pt: { command: `${botPrefix}top`, description: "Top jogadores" } 
+  },
+  start: { 
+    es: { command: "start", description: "Iniciar el bot" }, 
+    pt: { command: "start", description: "Iniciar o bot" } 
+  },
+};
 
-//harem busca a coleção de personagens dominados e favoritos do usuário, mostrando informações como nome, imagem, nível de dominação, etc. O comando é personalizado para cada tipo de bot (waifu ou husbando) usando a variável typeBot para diferenciar as mensagens e informações exibidas.
-botCommands.command(
-  `my${typeBot}s`,
-  "Get information about the Harem feature").addToScope(
-    { type: "all_group_chats" },
-    (ctx) => HaremHandler(ctx)
-  )
-
-//define o comando para mostrar o personagem favorito do usuário, utilizando a função favCharacter para buscar e exibir as informações do personagem favorito. O comando é personalizado com o prefixo do bot para garantir que seja reconhecido corretamente.
-botCommands.command(
-  `${botPrefix}fav`,
-  "Show your favorite character"
-).addToScope(
-  { type: "all_group_chats" },
-  (ctx) => favCharacter(ctx)
-)
-//giftHandler é um comando que permite aos usuários presentear um personagem para outro usuário. Ele é registrado com o prefixo do bot para garantir que seja reconhecido corretamente, e utiliza a função giftHandler para processar a lógica de presenteação, como verificar o personagem a ser presenteado, o destinatário e atualizar as informações do usuário.
-botCommands.command(
-  `${botPrefix}gift`,
-  "Gift a character to another user").addToScope(
-    { type: "all_group_chats" },
-    (ctx) => giftHandler(ctx)
-  )
-//Myinfos é um comando que permite aos usuários visualizar suas informações pessoais, como nome, nível de dominação, personagens dominados, etc. Ele é registrado com o prefixo do bot para garantir que seja reconhecido corretamente, e utiliza a função Myinfos para buscar e exibir as informações do usuário de forma personalizada.
-botCommands.command(
-  `myinfo${botPrefix}`,
-  "Show your information").addToScope(
-    { type: "all_group_chats" },
-    (ctx) => Myinfos(ctx)
-  )
-  
-//Ramdon_Character_Handler é um comando que traz um personagem aleatório do banco de dados. Ele é registrado com o nome do tipo de bot (waifu ou husbando) para garantir que seja reconhecido corretamente, e utiliza a função Ramdon_Character_Handler para buscar e exibir as informações do personagem aleatório de forma personalizada.
-botCommands.command(
-  typeBot || "random",
-  "traz um personagem aleatorio do db").addToScope(
-    { type: "all_group_chats" },
-    (ctx) => Ramdon_Character_Handler(ctx)
-  )
-// top é um comando que exibe os melhores jogadores do jogo, mostrando informações como nome, nível de dominação, número de personagens dominados, etc. Ele é registrado com o prefixo do bot para garantir que seja reconhecido corretamente, e utiliza a função topHandler para buscar e exibir as informações dos melhores jogadores de forma personalizada.
-botCommands.command(
-  `${botPrefix}top`,
-  "Show the top players",) .addToScope(
-    { type: "all_group_chats" },
-    (ctx) => topHandler(ctx)
-  )
+for (const [key, value] of Object.entries(ComandosUser)) {
+  const localized = localizedCommands[key];
+  console.log("Comando", value.command, "executado por", );
+  const cmd = botCommands.command(value.command, value.description).addToScope(
+    { type: 'all_group_chats' },
+    (ctx: MyContext) => {
+      console.log("Comando", value.command, "executado por", ctx.from?.username);
+      value.handler(ctx)
+    }
+  );
+  if (localized) {
+    cmd
+      .localize(LanguageCodes.Spanish, localized.es.command, localized.es.description)
+      .localize(LanguageCodes.Portuguese, localized.pt.command, localized.pt.description);
+  }
+}
  
 
 

@@ -52,6 +52,7 @@ type CollectionDetail = {
     telegramId: string;
     count: number;
     telegramData: {
+      id?: string|number;
       first_name: string;
       last_name?: string;
       username?: string;
@@ -72,6 +73,8 @@ type CollectionDetail = {
     emoji: string;
     description: string | null;
   }>;
+  userHasCharacter: boolean;
+  userHasLiked: boolean;
 };
 
 type WebAppUser = {
@@ -123,9 +126,10 @@ export default function CollectionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFavoriteMsg, setShowFavoriteMsg] = useState(false);
+  const [showNoCollectionMsg, setShowNoCollectionMsg] = useState(false);
+  const [hasLiked, setHasLiked] = useState(false);
 
   const isFavorite = type === "waifu"
     ? userFavorites?.favoriteWaifuId === Number(characterId)
@@ -143,6 +147,15 @@ export default function CollectionDetailPage() {
       return () => clearTimeout(timer);
     }
   }, [isFavorite]);
+
+  useEffect(() => {
+    if (showNoCollectionMsg) {
+      const timer = setTimeout(() => {
+        setShowNoCollectionMsg(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNoCollectionMsg]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -202,6 +215,7 @@ export default function CollectionDetailPage() {
         if (res.ok) {
           const data = await res.json();
           setCharacter(data);
+          setHasLiked(data.userHasLiked);
         } else {
           setError("Personagem não encontrado");
         }
@@ -214,10 +228,18 @@ export default function CollectionDetailPage() {
     };
 
     fetchCharacter();
-  }, [characterId, type]);
+  }, [characterId, type, currentUser]);
 
   const handleFavorite = async () => {
-    if (!character || actionLoading) return;
+    if (!character || actionLoading || isFavorite) return;
+
+    if (!character.userHasCharacter) {
+      setShowNoCollectionMsg(true);
+      const timer = setTimeout(() => {
+        setShowNoCollectionMsg(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
 
     setActionLoading(true);
     try {
@@ -257,7 +279,7 @@ export default function CollectionDetailPage() {
   };
 
   const handleLike = async () => {
-    if (!character || actionLoading) return;
+    if (!character || actionLoading || hasLiked) return;
 
     setActionLoading(true);
     try {
@@ -275,7 +297,7 @@ export default function CollectionDetailPage() {
       if (res.ok) {
         const data = await res.json();
         setCharacter((prev) => prev ? { ...prev, likes: data.likes } : null);
-        setIsLiked(true);
+        setHasLiked(true);
 
         const tg = (window as any).Telegram?.WebApp;
         tg?.HapticFeedback?.impactOccurred("light");
@@ -330,7 +352,7 @@ export default function CollectionDetailPage() {
       >
         <div className="relative h-72 overflow-hidden">
           {character.media ? (
-            <img src={character.media} alt={character.name} className="w-full h-full object-cover" />
+            <img src={character.media} alt={character.name} className="w-full h-full object-contain" />
           ) : (
             <div
               className="w-full h-full flex items-center justify-center"
@@ -339,7 +361,7 @@ export default function CollectionDetailPage() {
               <span style={{ color: theme.themeParams.hint_color }}>No image</span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
 
           <Link
             href="/miniapptg"
@@ -393,38 +415,43 @@ export default function CollectionDetailPage() {
           <div className="flex gap-2">
             <button
               onClick={() => handleFavorite()}
-              disabled={actionLoading}
+              disabled={actionLoading || !character.userHasCharacter}
               className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
               style={{
                 backgroundColor: isFavorite 
                   ? accentBgColor
                   : theme.themeParams.secondary_bg_color || "#f0f0f0",
                 color: isFavorite ? accentColor : theme.themeParams.text_color,
+                cursor: (actionLoading || !character.userHasCharacter) ? "not-allowed" : "pointer",
+                opacity: (actionLoading || !character.userHasCharacter) ? 0.5 : 1,
               }}
             >
               <Heart 
                 size={20} 
                 className={isFavorite ? "fill-current" : ""} 
               />
+              {isFavorite && (
+                <span className="text-xs" style={{ color: accentColor }}>★</span>
+              )}
             </button>
 
             <button
               onClick={() => handleLike()}
-              disabled={actionLoading}
+              disabled={actionLoading || hasLiked}
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
               style={{
-                backgroundColor: isLiked 
+                backgroundColor: hasLiked 
                   ? accentBgColor
                   : theme.themeParams.secondary_bg_color || "#f0f0f0",
-                color: isLiked ? accentColor : theme.themeParams.text_color,
+                color: hasLiked ? accentColor : theme.themeParams.text_color,
               }}
             >
               <ThumbsUp 
                 size={20} 
-                className={isLiked ? "fill-current" : ""} 
+                className={hasLiked ? "fill-current" : ""} 
               />
               <span className="text-sm font-medium">
-                {isLiked ? "Curtido" : "Curtir"}
+                {hasLiked ? "Curtido" : "Curtir"}
               </span>
               <span className="text-sm">({character.likes})</span>
             </button>
@@ -445,6 +472,12 @@ export default function CollectionDetailPage() {
             <div className="flex items-center justify-center gap-2 py-2 text-sm animate-pulse" style={{ color: accentColor }}>
               <Heart size={14} className="fill-current" />
               <span>Adicionado aos favoritos</span>
+            </div>
+          )}
+
+          {showNoCollectionMsg && (
+            <div className="flex items-center justify-center gap-2 py-2 text-sm animate-pulse" style={{ color: theme.themeParams.destructive_text_color || "#ef4444" }}>
+              <span>Adicione este personagem à sua coleção para favoritar</span>
             </div>
           )}
 
@@ -538,11 +571,10 @@ export default function CollectionDetailPage() {
                 {character.topOwners.map((owner, index) => {
                   const tgData = owner.telegramData;
                   const firstLetter = tgData?.first_name?.charAt(0).toUpperCase() || "?";
-                  
                   return (
                     <Link
                       key={owner.userId}
-                      href={`/miniapptg/user/${owner.telegramId}`}
+                      href={`/miniapptg/user/${tgData?.id || 0}`}
                       className="block"
                     >
                       <div
@@ -558,19 +590,24 @@ export default function CollectionDetailPage() {
                         <Avatar size="sm">
                           {tgData?.photo_url ? (
                             <img
-                              src={tgData.photo_url}
-                              alt={tgData.first_name}
+                              src={tgData.photo_url||'/login/avatar.jpg'}
+                              alt={tgData?.first_name}
                               className="w-full h-full object-cover rounded-full"
                             />
-                          ) : (
-                            <AvatarFallback
-                              style={{
-                                backgroundColor: theme.themeParams.secondary_bg_color,
-                                color: theme.themeParams.text_color,
-                              }}
-                            >
-                              {firstLetter}
-                            </AvatarFallback>
+                          ) : ( <img
+                              src={'/login/avatar.jpg'}
+                              alt={tgData?.first_name}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          
+                            // <AvatarFallback
+                            //   style={{
+                            //     backgroundColor: theme.themeParams.secondary_bg_color,
+                            //     color: theme.themeParams.text_color,
+                            //   }}
+                            // >
+                            //   {firstLetter}
+                            // </AvatarFallback>
                           )}
                         </Avatar>
                         <div className="flex-1 min-w-0">
@@ -579,7 +616,7 @@ export default function CollectionDetailPage() {
                           </p>
                           {tgData?.username && (
                             <p className="text-xs" style={{ color: theme.themeParams.hint_color || "#999999" }}>
-                              @{tgData.username}
+                              @{tgData.username} 
                             </p>
                           )}
                         </div>

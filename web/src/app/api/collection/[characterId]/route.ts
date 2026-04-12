@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { resolveCharacterMedia } from "@/lib/uteis/resolveMediaClient";
 
 export async function GET(
   req: Request,
@@ -72,13 +73,21 @@ export async function GET(
         );
       }
 
+      const { displayUrl: resolvedMedia, isVideo } = resolveCharacterMedia(
+        character.media,
+        character.mediaType,
+        character.linkweb,
+        character.linkwebExpiresAt
+      );
+
       return NextResponse.json({
         id: character.id,
         name: character.name,
         slug: character.slug,
         origem: character.origem,
-        media: character.media,
+        media: resolvedMedia,
         mediaType: character.mediaType,
+        isVideo,
         sourceType: character.sourceType,
         popularity: character.popularity,
         likes: character.likes,
@@ -86,6 +95,12 @@ export async function GET(
         type,
         userCount,
         userHasCount,
+        userHasCharacter: userHasCount > 0,
+        userHasLiked: telegramId && isWaifu 
+          ? (await prisma.user.findUnique({ where: { telegramId }, select: { waifuLikes: true } }))?.waifuLikes?.includes(charId) || false
+          : telegramId && !isWaifu 
+            ? (await prisma.user.findUnique({ where: { telegramId }, select: { husbandoLikes: true } }))?.husbandoLikes?.includes(charId) || false
+            : false,
         topOwners: character.WaifuCollection.slice(0, 10).map((c: any) => ({
           userId: c.User.id,
           telegramId: c.User?.telegramId?.toString() || "",
@@ -141,13 +156,21 @@ export async function GET(
         );
       }
 
+      const { displayUrl: resolvedMedia, isVideo } = resolveCharacterMedia(
+        character.media,
+        character.mediaType,
+        character.linkweb,
+        character.linkwebExpiresAt
+      );
+
       return NextResponse.json({
         id: character.id,
         name: character.name,
         slug: character.slug,
         origem: character.origem,
-        media: character.media,
+        media: resolvedMedia,
         mediaType: character.mediaType,
+        isVideo,
         sourceType: character.sourceType,
         popularity: character.popularity,
         likes: character.likes,
@@ -155,6 +178,10 @@ export async function GET(
         type,
         userCount,
         userHasCount,
+        userHasCharacter: userHasCount > 0,
+        userHasLiked: telegramId && !isWaifu 
+          ? (await prisma.user.findUnique({ where: { telegramId }, select: { husbandoLikes: true } }))?.husbandoLikes?.includes(charId) || false
+          : false,
         topOwners: character.HusbandoCollection.slice(0, 10).map((c: any) => ({
           userId: c.User.id,
           telegramId: c.User?.telegramId?.toString() || "",

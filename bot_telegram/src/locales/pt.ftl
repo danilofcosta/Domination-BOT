@@ -232,10 +232,10 @@ harem_logo={$usermention}  ๛Harem ツ
 harem_btn_inline_query=🌐
 harem_btn_prev_page=⬅️
 harem_btn_current_page=[{$currentpage}/{$totalpages}]
-harem_btn_fast_page=⚡️
+harem_btn_fast_page=⚡️²
 harem_btn_next_page=➡️
 harem_btn_close=🗑
-
+harem_btn_web_app= 🌐 web
 harem_no_user = vc nao tem um harem
 
 ############

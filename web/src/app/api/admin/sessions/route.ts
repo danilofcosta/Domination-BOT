@@ -16,3 +16,13 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch sessions" }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    await prisma.session.deleteMany({});
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Erro ao resetar sessões:", error);
+    return NextResponse.json({ error: "Failed to reset sessions" }, { status: 500 });
+  }
+}

@@ -27,6 +27,7 @@ import {
   HomeIcon,
   SparklesIcon,
   FileJsonIcon,
+  TrophyIcon,
 } from "lucide-react";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -57,7 +58,8 @@ const navItems = [
       { title: "Eventos", url: "/admin?tab=events", icon: CalendarIcon },
       { title: "Raridades", url: "/admin?tab=rarities", icon: StarIcon },
       { title: "Grupos Telegram", url: "/admin?tab=groups", icon: Settings2Icon },
-      { title: "Logs de Sessão", url: "/admin?tab=session_logs", icon: FileJsonIcon },
+      { title: "Sessões Bots", url: "/admin?tab=session_logs_bots", icon: FileJsonIcon },
+      { title: "Top Coleções", url: "/admin?tab=collections", icon: TrophyIcon },
     ],
   },
   {

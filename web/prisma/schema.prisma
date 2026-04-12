@@ -147,6 +147,8 @@ model User {
   id                 Int                  @id @default(autoincrement())
   favoriteWaifuId    Int?
   favoriteHusbandoId Int?
+  waifuLikes         Int[]
+  husbandoLikes      Int[]
   waifuConfig        Json?
   husbandoConfig     Json?
   telegramData       Json?

@@ -132,7 +132,7 @@ function CharacterMiniCard({
       className="block relative overflow-hidden rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
       style={{ backgroundColor: theme.themeParams.section_bg_color || "#ffffff" }}
     >
-      <div className="aspect-[2/3] overflow-hidden">
+      <div className="aspect-2/3 overflow-hidden">
         {character.media ? (
           <img
             src={character.media}

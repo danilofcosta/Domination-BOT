@@ -8,7 +8,8 @@ import { addCharacterCallbackData } from "./handlers/Comandos/admin/add_charecte
 import { editCharacterCallbackData } from "./handlers/Comandos/admin/edit_character_callbacks.js";
 import { topCallbackQuery } from "./handlers/callbacks/topCallbackQuery.js";
 import { StatRefresh } from "./handlers/Comandos/globais/status.js";
-import { helpCommand } from "./handlers/callbacks/help.js";
+import { helpCommand } from "./handlers/Comandos/globais/help.js";
+import { helpCallback } from "./handlers/callbacks/helpCallback.js";
 
 const callbacks = new Composer<MyContext>();
 
@@ -23,7 +24,8 @@ callbacks.callbackQuery(/^fav_/, favConfirmHandler);
 callbacks.callbackQuery(/^gift_/, giftConfirmHandler);
 callbacks.callbackQuery(/^harem_/, haremCallback);
 
-callbacks.callbackQuery(/^help_/, helpCommand);
+callbacks.callbackQuery(/^start_help_/, helpCommand);
+callbacks.callbackQuery(/^help_/, helpCallback);
 callbacks.callbackQuery(/^topuser_/, topCallbackQuery);
 callbacks.callbackQuery("stat_refresh", StatRefresh);
 

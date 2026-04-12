@@ -9,11 +9,16 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      router.replace("/miniapptg");
+    }, 3000);
+
     const script = document.createElement("script");
     script.src = "https://telegram.org/js/telegram-web-app.js?62";
     script.async = true;
     document.head.appendChild(script);
     script.onload = () => {
+      clearTimeout(timeoutId);
       const tg = (window as any).Telegram?.WebApp;
       if (tg) {
         tg.ready();
@@ -28,6 +33,7 @@ export default function UserPage() {
       }
     };
     script.onerror = () => {
+      clearTimeout(timeoutId);
       router.replace("/miniapptg");
     };
   }, [router]);

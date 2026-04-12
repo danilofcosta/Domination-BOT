@@ -93,6 +93,9 @@ export default async function initializeBot(
     await privateCommands.setCommands(bot);
     await botCommands.setCommands(bot);
     await devCommands.setCommands(bot);
+ 
+
+
   }
 
   // Error handling

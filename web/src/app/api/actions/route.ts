@@ -61,22 +61,68 @@ export async function POST(req: Request) {
           where: { id: characterId },
         });
         if (character) {
+          const user = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { waifuLikes: true },
+          });
+          const hasLiked = user?.waifuLikes?.includes(characterId) || false;
+          
+          const newLikes = hasLiked 
+            ? character.likes - 1 
+            : character.likes + 1;
+          
           const updated = await prisma.characterWaifu.update({
             where: { id: characterId },
-            data: { likes: character.likes + 1 },
+            data: { likes: newLikes },
           });
-          return NextResponse.json({ success: true, likes: updated.likes });
+
+          if (hasLiked) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { waifuLikes: { set: (user.waifuLikes || []).filter((id: number) => id !== characterId) } },
+            });
+          } else {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { waifuLikes: { push: characterId } },
+            });
+          }
+          
+          return NextResponse.json({ success: true, likes: updated.likes, hasLiked: !hasLiked });
         }
       } else {
         character = await prisma.characterHusbando.findUnique({
           where: { id: characterId },
         });
         if (character) {
+          const user = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { husbandoLikes: true },
+          });
+          const hasLiked = user?.husbandoLikes?.includes(characterId) || false;
+          
+          const newLikes = hasLiked 
+            ? character.likes - 1 
+            : character.likes + 1;
+          
           const updated = await prisma.characterHusbando.update({
             where: { id: characterId },
-            data: { likes: character.likes + 1 },
+            data: { likes: newLikes },
           });
-          return NextResponse.json({ success: true, likes: updated.likes });
+
+          if (hasLiked) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { husbandoLikes: { set: (user.husbandoLikes || []).filter((id: number) => id !== characterId) } },
+            });
+          } else {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { husbandoLikes: { push: characterId } },
+            });
+          }
+          
+          return NextResponse.json({ success: true, likes: updated.likes, hasLiked: !hasLiked });
         }
       }
 

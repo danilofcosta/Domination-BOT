@@ -96,9 +96,8 @@ export async function HaremHandler(ctx: MyContext) {
     .switchInlineCurrent(
       ctx.t("harem_btn_inline_query"),
       `harem_user_${userId}`,
-    )
-    .text(ctx.t("harem_btn_fast_page"), `harem_user_${userId}_jump`)
-    .row()
+    ).text(ctx.t("harem_btn_fast_page"), `harem_user_${userId}_jump`)
+    .row().url(ctx.t("harem_btn_web_app"), process.env.WEBAPP||`https://t.me/${ctx.me.username}?startgroup=true`).row()
     .text(ctx.t("harem_btn_close"), `harem_user_${userId}_close`);
 
   await Sendmedia({

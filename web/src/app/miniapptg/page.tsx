@@ -272,7 +272,7 @@ function FavoriteCard({
   );
 }
 
-function CollectionItem({
+function CollectionCard({
   character,
   type,
   theme,
@@ -284,46 +284,72 @@ function CollectionItem({
     origem: string;
     media: string | null;
     mediaType: string | null;
+    isVideo?: boolean;
     count: number;
   };
   type: "waifu" | "husbando";
   theme: TelegramTheme;
 }) {
+  const accentColor = type === "waifu" ? "#ec4899" : "#3b82f6";
+
   return (
     <a
       href={`/miniapptg/detal/${character.id}?type=${type}`}
-      className="flex overflow-hidden hover:shadow-lg transition-shadow cursor-pointer flex-row h-24 rounded-2xl"
+      className="block overflow-hidden rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
       style={{ backgroundColor: theme.themeParams.section_bg_color || "#ffffff" }}
     >
-      <div className="w-20 shrink-0">
-        <CharacterMedia
-          media={character.media}
-          mediaType={character.mediaType}
-          name={character.name}
-          type={type}
-          theme={theme}
-        />
-      </div>
-      <div className="p-2 flex flex-col justify-center flex-1 min-w-0">
-        <h3 className="font-bold text-sm truncate" style={{ color: theme.themeParams.text_color }}>
-            {character.name}
-          </h3>
-          <p
-            className="text-xs truncate"
-            style={{ color: theme.themeParams.hint_color || "#999999" }}
-          >
-            {character.origem}
-          </p>
+      <div className="aspect-[2/3] relative overflow-hidden">
+        {character.media ? (
+          character.isVideo ? (
+            <video
+              src={character.media}
+              className="w-full h-full object-cover"
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            <img
+              src={character.media}
+              alt={character.name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          )
+        ) : (
           <div
-            className="w-fit mt-1 text-xs px-2 py-0.5 rounded-full border"
-            style={{
-              borderColor: theme.themeParams.section_separator_color || "#e0e0e0",
-              color: theme.themeParams.text_color,
-            }}
+            className="w-full h-full flex items-center justify-center"
+            style={{ backgroundColor: theme.themeParams.secondary_bg_color || "#f0f0f0" }}
+          >
+            <span style={{ color: theme.themeParams.hint_color }}>?</span>
+          </div>
+        )}
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        
+        <div
+          className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-mono font-bold"
+          style={{ backgroundColor: accentColor, color: "white" }}
+        >
+          #{character.id}
+        </div>
+        
+        {character.count > 1 && (
+          <div
+            className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-bold"
+            style={{ backgroundColor: "rgba(0,0,0,0.6)", color: "white" }}
           >
             x{character.count}
           </div>
+        )}
+        
+        <div className="absolute bottom-0 left-0 right-0 p-2">
+          <h3 className="text-white text-sm font-bold truncate drop-shadow-lg">
+            {character.name}
+          </h3>
+          <p className="text-white/60 text-xs truncate">{character.origem}</p>
         </div>
+      </div>
     </a>
   );
 }
@@ -617,11 +643,11 @@ export default function MiniAppTelegram() {
             </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-2">
             {activeTab === "waifus" ? (
               user?.waifus && user.waifus.length > 0 ? (
                 user.waifus.map((waifu) => (
-                  <CollectionItem
+                  <CollectionCard
                     key={waifu.id}
                     character={waifu}
                     type="waifu"
@@ -629,12 +655,14 @@ export default function MiniAppTelegram() {
                   />
                 ))
               ) : (
-                <EmptyState message="Nenhuma waifu na coleção" theme={theme} />
+                <div className="col-span-3">
+                  <EmptyState message="Nenhuma waifu na coleção" theme={theme} />
+                </div>
               )
             ) : (
               user?.husbandos && user.husbandos.length > 0 ? (
                 user.husbandos.map((husbando) => (
-                  <CollectionItem
+                  <CollectionCard
                     key={husbando.id}
                     character={husbando}
                     type="husbando"
@@ -642,7 +670,9 @@ export default function MiniAppTelegram() {
                   />
                 ))
               ) : (
-                <EmptyState message="Nenhum husbando na coleção" theme={theme} />
+                <div className="col-span-3">
+                  <EmptyState message="Nenhum husbando na coleção" theme={theme} />
+                </div>
               )
             )}
           </div>

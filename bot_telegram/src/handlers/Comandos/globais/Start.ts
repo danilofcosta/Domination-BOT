@@ -50,7 +50,7 @@ export async function StartGreetings(ctx: MyContext) {
       `https://t.me/${ctx.me.username}?startgroup=true`,
     )
     .row() // start a new row
-    .text(ctx.t("start-btn-help"), `help_${ctx.from?.id}`) // callback button
+    .text(ctx.t("start-btn-help"), `start_help_${ctx.from?.id}`) // callback button
     .url(
       ctx.t("start-btn-database"),
       process.env.DATABASE_TELEGRAM_LINK ||

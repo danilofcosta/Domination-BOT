@@ -9,7 +9,8 @@ import { EventManagement } from "@/components/event-management";
 import { CharacterManagementTable } from "@/components/character/character-management-table";
 import { TelegramGroupManagement } from "@/components/telegram-group-management";
 import { UserManagementTable_page } from "@/components/user/user-management-table-page";
-import { SessionLogs } from "@/components/session-logs";
+import { SessionLogsBots } from "@/components/session-logs-bots";
+import { CollectionStats } from "@/components/collection-stats";
 import { getSession } from "@/lib/auth/auth";
 
 export default async function Page({
@@ -152,15 +153,27 @@ export default async function Page({
           </div>
         )}
 
-        {activeTab === "session_logs" && (
+        {activeTab === "session_logs_bots" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
               <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
-                Logs de Sessão
+                Sessões dos Bots
               </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <SessionLogs />
+            <SessionLogsBots />
+          </div>
+        )}
+
+        {activeTab === "collections" && (
+          <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <div className="flex flex-col mb-6">
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Top Coleções
+              </h2>
+              <div className="h-1 w-12 bg-primary rounded-full mt-1" />
+            </div>
+            <CollectionStats />
           </div>
         )}
       </main>
