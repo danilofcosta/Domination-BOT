@@ -21,6 +21,7 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
   const grupo = ctx.session.grupo;
 
   grupo.dropId = message.message_id;
+  grupo.cont = 100;
   grupo.character = character;
   grupo.data = new Date();
   grupo.title = ctx.chat?.title || "";
