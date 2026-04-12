@@ -3,13 +3,11 @@
 import * as React from "react";
 import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
 
-import {
-  UserDetailsDialog,
-} from "./user-details-dialog";
-import { SessionPayload } from "@/lib/auth";
+import { UserDetailsDialog } from "./user-details-dialog";
+import { SessionPayload } from "@/lib/auth/auth";
 
 async function getUsersFromServer() {
-  const res = await fetch('/api/admin/users', { cache: 'no-store' });
+  const res = await fetch("/api/admin/users", { cache: "no-store" });
   if (!res.ok) return [];
   return res.json();
 }
@@ -27,10 +25,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
 const PROFILE_TYPE_LOCAL = {
-  SUPREME: 'SUPREME',
-  ADMIN: 'ADMIN',
-  MODERATOR: 'MODERATOR',
-  USER: 'USER',
+  SUPREME: "SUPREME",
+  ADMIN: "ADMIN",
+  MODERATOR: "MODERATOR",
+  USER: "USER",
 } as const;
 
 type User = {
@@ -47,7 +45,9 @@ interface UserManagementTable_pageProps {
   currentUser?: SessionPayload | null;
 }
 
-export function UserManagementTable_page({ currentUser }: UserManagementTable_pageProps) {
+export function UserManagementTable_page({
+  currentUser,
+}: UserManagementTable_pageProps) {
   const [users, setUsers] = React.useState<User[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
@@ -89,10 +89,14 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
 
   const getProfileBadgeVariant = (type: string) => {
     switch (type) {
-      case PROFILE_TYPE_LOCAL.SUPREME: return "default";
-      case PROFILE_TYPE_LOCAL.ADMIN: return "secondary";
-      case PROFILE_TYPE_LOCAL.USER: return "outline";
-      default: return "outline";
+      case PROFILE_TYPE_LOCAL.SUPREME:
+        return "default";
+      case PROFILE_TYPE_LOCAL.ADMIN:
+        return "secondary";
+      case PROFILE_TYPE_LOCAL.USER:
+        return "outline";
+      default:
+        return "outline";
     }
   };
 
@@ -133,7 +137,9 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
                   <TableCell colSpan={6} className="h-32 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
-                      <p className="text-muted-foreground text-sm">Carregando...</p>
+                      <p className="text-muted-foreground text-sm">
+                        Carregando...
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -172,9 +178,13 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
 
                     <TableCell className="font-bold">
                       <div className="flex flex-col">
-                        <span className="text-sm">{user.telegramData?.first_name || "Desconhecido"}</span>
+                        <span className="text-sm">
+                          {user.telegramData?.first_name || "Desconhecido"}
+                        </span>
                         {user.telegramData?.username && (
-                          <span className="text-xs text-muted-foreground">@{user.telegramData.username}</span>
+                          <span className="text-xs text-muted-foreground">
+                            @{user.telegramData.username}
+                          </span>
                         )}
                       </div>
                     </TableCell>
@@ -193,20 +203,19 @@ export function UserManagementTable_page({ currentUser }: UserManagementTable_pa
                     </TableCell>
 
                     <TableCell>
-                      <UserDetailsDialog user={user as any} currentUser={currentUser} />
+                      <UserDetailsDialog
+                        user={user as any}
+                        currentUser={currentUser}
+                      />
                     </TableCell>
                   </TableRow>
                 ))
               )}
             </TableBody>
           </Table>
-          
         </div>
-      
       </div>
-      <div className="h-16">
-
-      </div>
+      <div className="h-16"></div>
     </div>
   );
 }

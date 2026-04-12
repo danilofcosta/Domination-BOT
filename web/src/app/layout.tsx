@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { ThemeProvider } from "@/components/theme-provider"
+import { cn } from "@/lib/telegram/create_slug";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,22 +19,34 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Domination Web",
-  description: "Domination Web um projeto",
+  description: "Traga o universo dos animes para o seu grupo Eu faço aparecer waifus e husbandos no seu chat para os usuários capturarem.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={cn(geistSans.variable, geistMono.variable, inter.variable)}>
+    <html
+      lang="pt-BR"
+      suppressHydrationWarning
+      className={cn(geistSans.variable, geistMono.variable, inter.variable)}
+    >
       <body className="antialiased min-h-screen">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <TooltipProvider>{children}</TooltipProvider>
-          </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

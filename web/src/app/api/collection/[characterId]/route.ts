@@ -1,0 +1,153 @@
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ characterId: string }> }
+) {
+  const { characterId } = await params;
+  const url = new URL(req.url);
+  const type = url.searchParams.get("type") as "waifu" | "husbando";
+
+  if (!characterId || !type) {
+    return NextResponse.json(
+      { error: "Missing characterId or type" },
+      { status: 400 }
+    );
+  }
+
+  const charId = parseInt(characterId);
+
+  try {
+    const isWaifu = type === "waifu";
+
+    let character: any;
+    let userCount: number;
+
+    if (isWaifu) {
+      character = await prisma.characterWaifu.findUnique({
+        where: { id: charId },
+        include: {
+          WaifuCollection: {
+            include: {
+              User: {
+                select: {
+                  id: true,
+                  telegramData: true,
+                },
+              },
+            },
+            orderBy: { count: "desc" },
+          },
+          WaifuRarity: {
+            include: {
+              Rarity: true,
+            },
+          },
+          WaifuEvent: {
+            include: {
+              Event: true,
+            },
+          },
+        },
+      });
+      userCount = await prisma.waifuCollection.count({
+        where: { characterId: charId },
+      });
+
+      if (!character) {
+        return NextResponse.json(
+          { error: "Character not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        id: character.id,
+        name: character.name,
+        slug: character.slug,
+        origem: character.origem,
+        media: character.media,
+        mediaType: character.mediaType,
+        sourceType: character.sourceType,
+        popularity: character.popularity,
+        likes: character.likes,
+        dislikes: character.dislikes,
+        type,
+        userCount,
+        topOwners: character.WaifuCollection.slice(0, 10).map((c: any) => ({
+          userId: c.User.id,
+          count: c.count,
+          telegramData: c.User.telegramData,
+        })),
+        rarities: character.WaifuRarity?.map((r: any) => r.Rarity) || [],
+        events: character.WaifuEvent?.map((e: any) => e.Event) || [],
+      });
+    } else {
+      character = await prisma.characterHusbando.findUnique({
+        where: { id: charId },
+        include: {
+          HusbandoCollection: {
+            include: {
+              User: {
+                select: {
+                  id: true,
+                  telegramData: true,
+                },
+              },
+            },
+            orderBy: { count: "desc" },
+          },
+          HusbandoRarity: {
+            include: {
+              Rarity: true,
+            },
+          },
+          HusbandoEvent: {
+            include: {
+              Event: true,
+            },
+          },
+        },
+      });
+      userCount = await prisma.husbandoCollection.count({
+        where: { characterId: charId },
+      });
+
+      if (!character) {
+        return NextResponse.json(
+          { error: "Character not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        id: character.id,
+        name: character.name,
+        slug: character.slug,
+        origem: character.origem,
+        media: character.media,
+        mediaType: character.mediaType,
+        sourceType: character.sourceType,
+        popularity: character.popularity,
+        likes: character.likes,
+        dislikes: character.dislikes,
+        type,
+        userCount,
+        topOwners: character.HusbandoCollection.slice(0, 10).map((c: any) => ({
+          userId: c.User.id,
+          count: c.count,
+          telegramData: c.User.telegramData,
+        })),
+        rarities: character.HusbandoRarity?.map((r: any) => r.Rarity) || [],
+        events: character.HusbandoEvent?.map((e: any) => e.Event) || [],
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Error fetching collection" },
+      { status: 500 }
+    );
+  }
+}

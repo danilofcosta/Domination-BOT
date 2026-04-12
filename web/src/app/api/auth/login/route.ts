@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { createSessionToken, ADMIN_ROLES, verifyPassword } from "@/lib/auth";
-import { checkRateLimit, getClientIp, recordFailedAttempt } from "@/lib/rate-limit";
+import {
+  createSessionToken,
+  ADMIN_ROLES,
+  verifyPassword,
+} from "@/lib/auth/auth";
+import {
+  checkRateLimit,
+  getClientIp,
+  recordFailedAttempt,
+} from "@/lib/auth/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +20,7 @@ export async function POST(req: Request) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: "Muitas tentativas. Tente novamente mais tarde." },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -22,7 +30,7 @@ export async function POST(req: Request) {
     if (!login || !password) {
       return NextResponse.json(
         { error: "Login e senha são obrigatórios." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -36,7 +44,7 @@ export async function POST(req: Request) {
       recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Credenciais inválidas." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -45,22 +53,28 @@ export async function POST(req: Request) {
       recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Credenciais inválidas." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    if (!ADMIN_ROLES.includes(user.profileType as "ADMIN" | "SUPER_ADMIN" | "SUPREME")) {
+    if (
+      !ADMIN_ROLES.includes(
+        user.profileType as "ADMIN" | "SUPER_ADMIN" | "SUPREME",
+      )
+    ) {
       recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Acesso negado. Você não tem permissão de administrador." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     const token = await createSessionToken({
       telegramId: user.telegramId.toString(),
       profileType: user.profileType,
-      firstName: user.telegramData ? (user.telegramData as any).first_name || "Admin" : "Admin",
+      firstName: user.telegramData
+        ? (user.telegramData as any).first_name || "Admin"
+        : "Admin",
     });
 
     const cookieStore = await cookies();
@@ -82,7 +96,7 @@ export async function POST(req: Request) {
     console.error("[Auth Login API] Erro:", error);
     return NextResponse.json(
       { error: "Erro interno do servidor." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { SessionPayload } from "@/lib/auth";
+import { SessionPayload } from "@/lib/auth/auth";
 
 interface SiteHeaderProps {
   user?: SessionPayload | null;
@@ -41,7 +41,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
     </header>
   );
 }
-
 
 function getGreeting() {
   const hour = new Date().getHours();

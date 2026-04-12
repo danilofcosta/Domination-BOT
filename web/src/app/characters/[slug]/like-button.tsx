@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { linkCharacter } from "@/app/admin/actions";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/telegram/create_slug";
 
 interface LikeButtonProps {
   characterId: number;
@@ -54,7 +54,8 @@ export function LikeButton({
       size="default"
       className={cn(
         "px-10 py-8 transition-all duration-300 gap-3",
-        hasLiked && "bg-rose-700 hover:bg-rose-800 text-white border-none shadow-lg shadow-rose-500/10"
+        hasLiked &&
+          "bg-rose-700 hover:bg-rose-800 text-white border-none shadow-lg shadow-rose-500/10",
       )}
       onClick={!isLiking && !hasLiked ? handleLike : undefined}
     >
@@ -62,11 +63,11 @@ export function LikeButton({
         className={cn(
           "size-5 transition-transform duration-300",
           hasLiked && "fill-current scale-125",
-          isLiking && "animate-pulse"
+          isLiking && "animate-pulse",
         )}
       />
 
-      <span className="font-bold" >{hasLiked ? "Curtido!" : "Favoritar"}</span>
+      <span className="font-bold">{hasLiked ? "Curtido!" : "Favoritar"}</span>
       <span className="ml-2 px-2 py-0.5 bg-background/20 rounded-full text-xs font-bold">
         {likes}
       </span>

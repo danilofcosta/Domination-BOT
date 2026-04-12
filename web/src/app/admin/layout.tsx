@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { MenuFloating } from "@/components/home/MenuFloating";
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth/auth";
 
 export default async function AdminLayout({
   children,
@@ -32,7 +32,7 @@ export default async function AdminLayout({
         }
       />
       {children}
-      
+
       <MenuFloating />
     </SidebarProvider>
   );

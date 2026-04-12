@@ -1,6 +1,6 @@
 "use server";
 
-import { getTelegramImageUrl } from "@/lib/telegram";
+import { getTelegramImageUrl } from "@/lib/telegram/telegram";
 import { MediaType } from "../../../generated/prisma/client";
 import { Characterdb, Genero } from "../types";
 

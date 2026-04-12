@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Share2, CheckIcon } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/telegram/create_slug";
 
 interface ShareButtonProps {
   name: string;
@@ -39,7 +39,7 @@ export function ShareButton({ name: _name, slug, type }: ShareButtonProps) {
         "p-5 backdrop-blur-xl border rounded-3xl transition-all group flex items-center gap-2",
         copied
           ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
-          : "bg-card/40 border-primary/10 hover:bg-primary/5 hover:border-primary/30"
+          : "bg-card/40 border-primary/10 hover:bg-primary/5 hover:border-primary/30",
       )}
     >
       {copied ? (

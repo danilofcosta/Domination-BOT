@@ -67,7 +67,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
   );
 }
 
-function StatCard({
+export function StatCard({
   icon,
   title,
   description,

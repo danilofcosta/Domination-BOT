@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import { ProfileType } from "../../generated/prisma/client";
+import { ProfileType } from "../../../generated/prisma/client";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -10,16 +10,21 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, BCRYPT_ROUNDS);
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+export async function verifyPassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
-
-
 
 const AUTH_SECRET = process.env.AUTH_SECRET;
 const BOT_TOKEN = process.env.BOT_TOKEN_WAIFU;
 
-export const ADMIN_ROLES: readonly ProfileType[] = [ProfileType.ADMIN, ProfileType.SUPER_ADMIN, ProfileType.SUPREME];
+export const ADMIN_ROLES: readonly ProfileType[] = [
+  ProfileType.ADMIN,
+  ProfileType.SUPER_ADMIN,
+  ProfileType.SUPREME,
+];
 
 export interface TelegramAuthData {
   id: number;
@@ -65,10 +70,7 @@ export function validateTelegramHash(data: TelegramAuthData): boolean {
     .join("\n");
 
   // SHA256 do bot token como chave secreta
-  const secretKey = crypto
-    .createHash("sha256")
-    .update(BOT_TOKEN)
-    .digest();
+  const secretKey = crypto.createHash("sha256").update(BOT_TOKEN).digest();
 
   // HMAC-SHA256 da data-check-string
   const hmac = crypto
@@ -83,7 +85,9 @@ export function validateTelegramHash(data: TelegramAuthData): boolean {
  * Cria um JWT assinado para a sessão do admin.
  * Expira em 7 dias.
  */
-export async function createSessionToken(payload: SessionPayload): Promise<string> {
+export async function createSessionToken(
+  payload: SessionPayload,
+): Promise<string> {
   if (!AUTH_SECRET) {
     throw new Error("[Auth] AUTH_SECRET não configurado no .env");
   }
@@ -101,7 +105,9 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
  * Verifica e decodifica o JWT da sessão.
  * Compatível com Edge Runtime (usa jose).
  */
-export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
+export async function verifySessionToken(
+  token: string,
+): Promise<SessionPayload | null> {
   if (!AUTH_SECRET) {
     return null;
   }
@@ -133,4 +139,3 @@ export async function getSession(): Promise<SessionPayload | null> {
 
   return verifySessionToken(token);
 }
-

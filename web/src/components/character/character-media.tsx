@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import { Character } from "@/lib/types";
 import { MediaType } from "../../../generated/prisma/enums";
 import { resolveTelegramMedia } from "@/app/admin/actions";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/telegram/create_slug";
 
 type CharacterMediaProps = {
   item: Character | any;
@@ -14,15 +14,24 @@ type CharacterMediaProps = {
   fill?: boolean;
 };
 
-export function CharacterMedia({ item, type, className, priority, fill }: CharacterMediaProps) {
+export function CharacterMedia({
+  item,
+  type,
+  className,
+  priority,
+  fill,
+}: CharacterMediaProps) {
   const [url, setUrl] = React.useState<string | null>(null);
-
 
   // Extrair tipo de mídia com segurança
   const mediaType = item?.mediaType || MediaType.IMAGE_URL;
-  const isVideo = mediaType === MediaType.VIDEO_URL || mediaType === MediaType.VIDEO_FILEID;
-  const isFileId = mediaType === MediaType.IMAGE_FILEID || mediaType === MediaType.VIDEO_FILEID;
-  const islocal = mediaType === MediaType.IMAGE_LOCAL || mediaType === MediaType.VIDEO_LOCAL;
+  const isVideo =
+    mediaType === MediaType.VIDEO_URL || mediaType === MediaType.VIDEO_FILEID;
+  const isFileId =
+    mediaType === MediaType.IMAGE_FILEID ||
+    mediaType === MediaType.VIDEO_FILEID;
+  const islocal =
+    mediaType === MediaType.IMAGE_LOCAL || mediaType === MediaType.VIDEO_LOCAL;
 
   React.useEffect(() => {
     let isMounted = true;
@@ -51,23 +60,29 @@ export function CharacterMedia({ item, type, className, priority, fill }: Charac
     }
 
     resolve();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [item?.media, item?.linkweb, type, isFileId]);
 
   const baseClasses = cn(
     "w-full h-full object-cover transition-all duration-700",
-    className
+    className,
   );
 
   // Placeholder de carregamento enquanto o link é resolvido (somente para FileIDs)
   if (!url && isFileId) {
     return (
-      <div className={cn("w-full h-full bg-muted animate-pulse flex items-center justify-center", className)}>
+      <div
+        className={cn(
+          "w-full h-full bg-muted animate-pulse flex items-center justify-center",
+          className,
+        )}
+      >
         <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
-
 
   // Fallback visual
   const finalUrl = url || "/placeholder.png";

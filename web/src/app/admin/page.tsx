@@ -10,7 +10,7 @@ import { CharacterManagementTable } from "@/components/character/character-manag
 import { TelegramGroupManagement } from "@/components/telegram-group-management";
 import { UserManagementTable_page } from "@/components/user/user-management-table-page";
 import { SessionLogs } from "@/components/session-logs";
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth/auth";
 
 export default async function Page({
   searchParams,
@@ -18,7 +18,13 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await getSession();
-  const { stats, profileDistribution, topEvents, topRarities, recentCharacters } = await getDashboardData();
+  const {
+    stats,
+    profileDistribution,
+    topEvents,
+    topRarities,
+    recentCharacters,
+  } = await getDashboardData();
   const params = await searchParams;
   const activeTab = (params.tab as string) || "home_dashboard";
 
@@ -30,8 +36,12 @@ export default async function Page({
         {activeTab === "home_dashboard" && (
           <div className="space-y-8 lg:space-y-12 animate-in fade-in zoom-in-95 duration-500">
             <div className="flex flex-col items-center justify-center text-center space-y-2">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-primary">Overview do Sistema</h1>
-              <p className="text-muted-foreground text-xs sm:text-sm font-medium uppercase tracking-widest opacity-60">Status Geral da Domination</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-primary">
+                Overview do Sistema
+              </h1>
+              <p className="text-muted-foreground text-xs sm:text-sm font-medium uppercase tracking-widest opacity-60">
+                Status Geral da Domination
+              </p>
             </div>
             <DashboardStats stats={stats} />
             <DashboardExtras
@@ -39,14 +49,14 @@ export default async function Page({
               topEvents={topEvents}
               topRarities={topRarities}
               recentCharacters={{
-                waifus: recentCharacters.waifus.map(c => ({
+                waifus: recentCharacters.waifus.map((c) => ({
                   ...c,
-                  likes: c.popularity // Mapping popularity to likes to satisfy RecentCharacter type
+                  likes: c.popularity, // Mapping popularity to likes to satisfy RecentCharacter type
                 })),
-                husbandos: recentCharacters.husbandos.map(c => ({
+                husbandos: recentCharacters.husbandos.map((c) => ({
                   ...c,
-                  likes: c.popularity // Mapping popularity to likes to satisfy RecentCharacter type
-                }))
+                  likes: c.popularity, // Mapping popularity to likes to satisfy RecentCharacter type
+                })),
               }}
             />
             <div className="max-w-4xl mx-auto w-full">
@@ -58,37 +68,54 @@ export default async function Page({
         {activeTab === "characters" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Repositório de Personagens</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Repositório de Personagens
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable initialType="waifu" currentUser={session} />
+            <CharacterManagementTable
+              initialType="waifu"
+              currentUser={session}
+            />
           </div>
         )}
 
         {activeTab === "waifus" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Todas as Waifus</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Todas as Waifus
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable initialType="waifu" currentUser={session} />
+            <CharacterManagementTable
+              initialType="waifu"
+              currentUser={session}
+            />
           </div>
         )}
 
         {activeTab === "husbandos" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Todos os Husbandos</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Todos os Husbandos
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
-            <CharacterManagementTable initialType="husbando" currentUser={session} />
+            <CharacterManagementTable
+              initialType="husbando"
+              currentUser={session}
+            />
           </div>
         )}
 
         {activeTab === "events" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Protocolos de Eventos</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Protocolos de Eventos
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
             <EventManagement currentUser={session} />
@@ -98,7 +125,9 @@ export default async function Page({
         {activeTab === "rarities" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Graus de Raridade</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Graus de Raridade
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
             <RarityManagement currentUser={session} />
@@ -108,7 +137,9 @@ export default async function Page({
         {activeTab === "groups" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Grupos Autorizados</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Grupos Autorizados
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
             <TelegramGroupManagement currentUser={session} />
@@ -124,14 +155,15 @@ export default async function Page({
         {activeTab === "session_logs" && (
           <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
             <div className="flex flex-col mb-6">
-              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">Logs de Sessão</h2>
+              <h2 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter shrink-0">
+                Logs de Sessão
+              </h2>
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
             <SessionLogs />
           </div>
         )}
       </main>
-
     </SidebarInset>
   );
 }

@@ -6,8 +6,12 @@ import {
   createSessionToken,
   ADMIN_ROLES,
   type TelegramAuthData,
-} from "@/lib/auth";
-import { checkRateLimit, getClientIp, recordFailedAttempt } from "@/lib/rate-limit";
+} from "@/lib/auth/auth";
+import {
+  checkRateLimit,
+  getClientIp,
+  recordFailedAttempt,
+} from "@/lib/auth/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +21,7 @@ export async function POST(req: Request) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: "Muitas tentativas. Tente novamente mais tarde." },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -28,7 +32,7 @@ export async function POST(req: Request) {
       recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Dados de autenticação inválidos." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -42,7 +46,7 @@ export async function POST(req: Request) {
       recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Usuário não encontrado. Você precisa usar o bot primeiro." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -51,7 +55,7 @@ export async function POST(req: Request) {
       recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Acesso negado. Você não tem permissão de administrador." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -84,7 +88,7 @@ export async function POST(req: Request) {
     console.error("[Auth API] Erro:", error);
     return NextResponse.json(
       { error: "Erro interno do servidor." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

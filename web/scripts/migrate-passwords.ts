@@ -1,5 +1,5 @@
 import { prisma } from "../src/lib/prisma";
-import { hashPassword } from "../src/lib/auth";
+import { hashPassword } from "../src/lib/auth/auth";
 
 async function migratePasswords() {
   console.log("Iniciando migração de senhas para bcrypt...");

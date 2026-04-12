@@ -1,6 +1,6 @@
 import { LRUCache } from "lru-cache";
 import { Bot, InputFile } from "grammy";
-import { prisma } from "./prisma";
+import { prisma } from "../prisma";
 import fs from "fs/promises";
 import path from "path";
 import "dotenv/config";
@@ -14,7 +14,8 @@ const bots = {
   husbando: new Bot(tokens.husbando),
 };
 
-const DATABASE_TELEGRAM_ID = process.env.DATABASE_TELEGRAM_ID || "-1002400748069";
+const DATABASE_TELEGRAM_ID =
+  process.env.DATABASE_TELEGRAM_ID || "-1002400748069";
 
 const mediaCache = new LRUCache<string, string>({
   max: 1000,
@@ -50,7 +51,10 @@ export async function getTelegramImageUrl(
       return `https://api.telegram.org/file/bot${token}/${filePath}`;
     }
   } catch (error) {
-    console.error(`[Telegram API] Erro ao buscar link do fileId ${fileId}:`, error);
+    console.error(
+      `[Telegram API] Erro ao buscar link do fileId ${fileId}:`,
+      error,
+    );
   }
 
   return "";
@@ -80,7 +84,10 @@ async function updatelinkweb(
       });
     }
   } catch (err) {
-    console.error(`[Database] Erro ao atualizar o link temporário do ${type}:`, err);
+    console.error(
+      `[Database] Erro ao atualizar o link temporário do ${type}:`,
+      err,
+    );
   }
 }
 
@@ -124,7 +131,9 @@ export async function sendTelegramPhoto(
       parse_mode: "HTML",
     });
 
-    const fileId = result.photo?.[result.photo.length - 1]?.file_id || result.photo?.[0]?.file_id;
+    const fileId =
+      result.photo?.[result.photo.length - 1]?.file_id ||
+      result.photo?.[0]?.file_id;
     return { success: true, fileId };
   } catch (error) {
     console.error(`[Telegram API] Erro ao enviar foto:`, error);
@@ -201,10 +210,12 @@ export async function sendLocalPhotoToTelegram(
     const result = await bots[type].api.sendPhoto(
       DATABASE_TELEGRAM_ID,
       new InputFile(fileBuffer, fileName),
-      { caption, parse_mode: "HTML" }
+      { caption, parse_mode: "HTML" },
     );
 
-    const fileId = result.photo?.[result.photo.length - 1]?.file_id || result.photo?.[0]?.file_id;
+    const fileId =
+      result.photo?.[result.photo.length - 1]?.file_id ||
+      result.photo?.[0]?.file_id;
     return { success: true, fileId };
   } catch (error) {
     console.error(`[Telegram API] Erro ao enviar foto local:`, error);
@@ -233,7 +244,7 @@ export async function sendLocalVideoToTelegram(
     const result = await bots[type].api.sendVideo(
       DATABASE_TELEGRAM_ID,
       new InputFile(fileBuffer, fileName),
-      { caption, parse_mode: "HTML" }
+      { caption, parse_mode: "HTML" },
     );
 
     const fileId = result.video?.file_id;
