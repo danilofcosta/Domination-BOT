@@ -7,7 +7,12 @@ import { PrismaAdapter } from "@grammyjs/storage-prisma";
 import { prisma } from "../lib/prisma.js";
 
 import localeNegotiator from "./utils/localeNegotiator.js";
-import { ChatType, type MyContext, type SessionData } from "./utils/customTypes.js";
+import {
+  ChatType,
+  NODE_ENV,
+  type MyContext,
+  type SessionData,
+} from "./utils/customTypes.js";
 import { listeners } from "./listeners.js";
 import { callbacks } from "./callbackQuery.js";
 import { privateCommands } from "./CommandesManage/private.js";
@@ -15,6 +20,7 @@ import { botCommands } from "./CommandesManage/User.js";
 import { adminCommands } from "./CommandesManage/adminCommands.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
+import { customCommands } from "./CommandesManage/custom_commands.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,11 +34,10 @@ export default async function initializeBot(
 
   bot.use(
     session({
-  getSessionKey: (ctx) => `${ChatTypeBot}_${ctx.chat?.id ||ctx.from?.id}` ,
+      getSessionKey: (ctx) => `${ChatTypeBot}_${ctx.chat?.id || ctx.from?.id}`,
       initial: (): SessionData => ({
         settings: {
           genero: ChatTypeBot,
-    
         },
         grupo: {
           title: null,
@@ -57,10 +62,12 @@ export default async function initializeBot(
   // i18n middleware
   bot.use(i18n.middleware());
 
-  bot.use(limit({
-    timeFrame: 1000,
-    limit: 3,
-  }));
+  bot.use(
+    limit({
+      timeFrame: 1000,
+      limit: 3,
+    }),
+  );
 
   bot.use(async (ctx, next) => {
     if (!ctx.from) return;
@@ -76,15 +83,17 @@ export default async function initializeBot(
   bot.use(botCommands);
   bot.use(adminCommands);
   bot.use(devCommands);
+  bot.use(customCommands);
 
   //LISTENERS
   bot.use(listeners);
   bot.use(callbacks);
 
-//   if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-//    await botCommands.setCommands(bot);
-//  //   await adminCommands.setCommands(bot);
-//   }
+  if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
+    await privateCommands.setCommands(bot);
+    await botCommands.setCommands(bot);
+    await devCommands.setCommands(bot);
+  }
 
   // Error handling
   bot.catch((err) => {
