@@ -32,6 +32,8 @@ export type UserAvgAggregateOutputType = {
   favoriteHusbandoId: number | null
   coins: number | null
   telegramId: number | null
+  husbandoLikes: number | null
+  waifuLikes: number | null
 }
 
 export type UserSumAggregateOutputType = {
@@ -40,6 +42,8 @@ export type UserSumAggregateOutputType = {
   favoriteHusbandoId: number | null
   coins: number | null
   telegramId: bigint | null
+  husbandoLikes: number[]
+  waifuLikes: number[]
 }
 
 export type UserMinAggregateOutputType = {
@@ -79,6 +83,8 @@ export type UserCountAggregateOutputType = {
   telegramId: number
   webLogin: number
   webPassword: number
+  husbandoLikes: number
+  waifuLikes: number
   _all: number
 }
 
@@ -89,6 +95,8 @@ export type UserAvgAggregateInputType = {
   favoriteHusbandoId?: true
   coins?: true
   telegramId?: true
+  husbandoLikes?: true
+  waifuLikes?: true
 }
 
 export type UserSumAggregateInputType = {
@@ -97,6 +105,8 @@ export type UserSumAggregateInputType = {
   favoriteHusbandoId?: true
   coins?: true
   telegramId?: true
+  husbandoLikes?: true
+  waifuLikes?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -136,6 +146,8 @@ export type UserCountAggregateInputType = {
   telegramId?: true
   webLogin?: true
   webPassword?: true
+  husbandoLikes?: true
+  waifuLikes?: true
   _all?: true
 }
 
@@ -238,6 +250,8 @@ export type UserGroupByOutputType = {
   telegramId: bigint
   webLogin: string | null
   webPassword: string | null
+  husbandoLikes: number[]
+  waifuLikes: number[]
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -276,6 +290,8 @@ export type UserWhereInput = {
   telegramId?: Prisma.BigIntFilter<"User"> | bigint | number
   webLogin?: Prisma.StringNullableFilter<"User"> | string | null
   webPassword?: Prisma.StringNullableFilter<"User"> | string | null
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
   HusbandoCollection?: Prisma.HusbandoCollectionListRelationFilter
   CharacterHusbando?: Prisma.XOR<Prisma.CharacterHusbandoNullableScalarRelationFilter, Prisma.CharacterHusbandoWhereInput> | null
   CharacterWaifu?: Prisma.XOR<Prisma.CharacterWaifuNullableScalarRelationFilter, Prisma.CharacterWaifuWhereInput> | null
@@ -295,6 +311,8 @@ export type UserOrderByWithRelationInput = {
   telegramId?: Prisma.SortOrder
   webLogin?: Prisma.SortOrderInput | Prisma.SortOrder
   webPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
   HusbandoCollection?: Prisma.HusbandoCollectionOrderByRelationAggregateInput
   CharacterHusbando?: Prisma.CharacterHusbandoOrderByWithRelationInput
   CharacterWaifu?: Prisma.CharacterWaifuOrderByWithRelationInput
@@ -317,6 +335,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   profileType?: Prisma.EnumProfileTypeFilter<"User"> | $Enums.ProfileType
   language?: Prisma.EnumLanguageFilter<"User"> | $Enums.Language
   webPassword?: Prisma.StringNullableFilter<"User"> | string | null
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
   HusbandoCollection?: Prisma.HusbandoCollectionListRelationFilter
   CharacterHusbando?: Prisma.XOR<Prisma.CharacterHusbandoNullableScalarRelationFilter, Prisma.CharacterHusbandoWhereInput> | null
   CharacterWaifu?: Prisma.XOR<Prisma.CharacterWaifuNullableScalarRelationFilter, Prisma.CharacterWaifuWhereInput> | null
@@ -336,6 +356,8 @@ export type UserOrderByWithAggregationInput = {
   telegramId?: Prisma.SortOrder
   webLogin?: Prisma.SortOrderInput | Prisma.SortOrder
   webPassword?: Prisma.SortOrderInput | Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -359,6 +381,8 @@ export type UserScalarWhereWithAggregatesInput = {
   telegramId?: Prisma.BigIntWithAggregatesFilter<"User"> | bigint | number
   webLogin?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   webPassword?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
 }
 
 export type UserCreateInput = {
@@ -371,6 +395,8 @@ export type UserCreateInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
@@ -390,6 +416,8 @@ export type UserUncheckedCreateInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -404,6 +432,8 @@ export type UserUpdateInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
@@ -423,6 +453,8 @@ export type UserUncheckedUpdateInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -440,6 +472,8 @@ export type UserCreateManyInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
 }
 
 export type UserUpdateManyMutationInput = {
@@ -452,6 +486,8 @@ export type UserUpdateManyMutationInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -467,6 +503,8 @@ export type UserUncheckedUpdateManyInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
 }
 
 export type UserListRelationFilter = {
@@ -484,6 +522,14 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type IntNullableListFilter<$PrismaModel = never> = {
+  equals?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  has?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  hasEvery?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  hasSome?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   favoriteWaifuId?: Prisma.SortOrder
@@ -497,6 +543,8 @@ export type UserCountOrderByAggregateInput = {
   telegramId?: Prisma.SortOrder
   webLogin?: Prisma.SortOrder
   webPassword?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -505,6 +553,8 @@ export type UserAvgOrderByAggregateInput = {
   favoriteHusbandoId?: Prisma.SortOrder
   coins?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -537,6 +587,8 @@ export type UserSumOrderByAggregateInput = {
   favoriteHusbandoId?: Prisma.SortOrder
   coins?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
 }
 
 export type UserCreateNestedManyWithoutCharacterHusbandoInput = {
@@ -637,12 +689,30 @@ export type UserUpdateOneRequiredWithoutHusbandoCollectionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHusbandoCollectionInput, Prisma.UserUpdateWithoutHusbandoCollectionInput>, Prisma.UserUncheckedUpdateWithoutHusbandoCollectionInput>
 }
 
+export type UserCreatehusbandoLikesInput = {
+  set: number[]
+}
+
+export type UserCreatewaifuLikesInput = {
+  set: number[]
+}
+
 export type EnumProfileTypeFieldUpdateOperationsInput = {
   set?: $Enums.ProfileType
 }
 
 export type EnumLanguageFieldUpdateOperationsInput = {
   set?: $Enums.Language
+}
+
+export type UserUpdatehusbandoLikesInput = {
+  set?: number[]
+  push?: number | number[]
+}
+
+export type UserUpdatewaifuLikesInput = {
+  set?: number[]
+  push?: number | number[]
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -677,6 +747,8 @@ export type UserCreateWithoutCharacterHusbandoInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutUserInput
@@ -694,6 +766,8 @@ export type UserUncheckedCreateWithoutCharacterHusbandoInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -740,6 +814,8 @@ export type UserScalarWhereInput = {
   telegramId?: Prisma.BigIntFilter<"User"> | bigint | number
   webLogin?: Prisma.StringNullableFilter<"User"> | string | null
   webPassword?: Prisma.StringNullableFilter<"User"> | string | null
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
 }
 
 export type UserCreateWithoutCharacterWaifuInput = {
@@ -752,6 +828,8 @@ export type UserCreateWithoutCharacterWaifuInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutUserInput
@@ -769,6 +847,8 @@ export type UserUncheckedCreateWithoutCharacterWaifuInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -809,6 +889,8 @@ export type UserCreateWithoutHusbandoCollectionInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
   WaifuCollection?: Prisma.WaifuCollectionCreateNestedManyWithoutUserInput
@@ -827,6 +909,8 @@ export type UserUncheckedCreateWithoutHusbandoCollectionInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   WaifuCollection?: Prisma.WaifuCollectionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -856,6 +940,8 @@ export type UserUpdateWithoutHusbandoCollectionInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutUserNestedInput
@@ -874,6 +960,8 @@ export type UserUncheckedUpdateWithoutHusbandoCollectionInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -887,6 +975,8 @@ export type UserCreateWithoutWaifuCollectionInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionCreateNestedManyWithoutUserInput
   CharacterHusbando?: Prisma.CharacterHusbandoCreateNestedOneWithoutUserInput
   CharacterWaifu?: Prisma.CharacterWaifuCreateNestedOneWithoutUserInput
@@ -905,6 +995,8 @@ export type UserUncheckedCreateWithoutWaifuCollectionInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -934,6 +1026,8 @@ export type UserUpdateWithoutWaifuCollectionInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
@@ -952,6 +1046,8 @@ export type UserUncheckedUpdateWithoutWaifuCollectionInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -967,6 +1063,8 @@ export type UserCreateManyCharacterHusbandoInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
 }
 
 export type UserUpdateWithoutCharacterHusbandoInput = {
@@ -979,6 +1077,8 @@ export type UserUpdateWithoutCharacterHusbandoInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterWaifu?: Prisma.CharacterWaifuUpdateOneWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutUserNestedInput
@@ -996,6 +1096,8 @@ export type UserUncheckedUpdateWithoutCharacterHusbandoInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1012,6 +1114,8 @@ export type UserUncheckedUpdateManyWithoutCharacterHusbandoInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
 }
 
 export type UserCreateManyCharacterWaifuInput = {
@@ -1026,6 +1130,8 @@ export type UserCreateManyCharacterWaifuInput = {
   telegramId: bigint | number
   webLogin?: string | null
   webPassword?: string | null
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
 }
 
 export type UserUpdateWithoutCharacterWaifuInput = {
@@ -1038,6 +1144,8 @@ export type UserUpdateWithoutCharacterWaifuInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUpdateManyWithoutUserNestedInput
   CharacterHusbando?: Prisma.CharacterHusbandoUpdateOneWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUpdateManyWithoutUserNestedInput
@@ -1055,6 +1163,8 @@ export type UserUncheckedUpdateWithoutCharacterWaifuInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
   HusbandoCollection?: Prisma.HusbandoCollectionUncheckedUpdateManyWithoutUserNestedInput
   WaifuCollection?: Prisma.WaifuCollectionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1071,6 +1181,8 @@ export type UserUncheckedUpdateManyWithoutCharacterWaifuInput = {
   telegramId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   webLogin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   webPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
 }
 
 
@@ -1126,6 +1238,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   telegramId?: boolean
   webLogin?: boolean
   webPassword?: boolean
+  husbandoLikes?: boolean
+  waifuLikes?: boolean
   HusbandoCollection?: boolean | Prisma.User$HusbandoCollectionArgs<ExtArgs>
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
   CharacterWaifu?: boolean | Prisma.User$CharacterWaifuArgs<ExtArgs>
@@ -1146,6 +1260,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   telegramId?: boolean
   webLogin?: boolean
   webPassword?: boolean
+  husbandoLikes?: boolean
+  waifuLikes?: boolean
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
   CharacterWaifu?: boolean | Prisma.User$CharacterWaifuArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1163,6 +1279,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   telegramId?: boolean
   webLogin?: boolean
   webPassword?: boolean
+  husbandoLikes?: boolean
+  waifuLikes?: boolean
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
   CharacterWaifu?: boolean | Prisma.User$CharacterWaifuArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1180,9 +1298,11 @@ export type UserSelectScalar = {
   telegramId?: boolean
   webLogin?: boolean
   webPassword?: boolean
+  husbandoLikes?: boolean
+  waifuLikes?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "favoriteWaifuId" | "favoriteHusbandoId" | "waifuConfig" | "husbandoConfig" | "telegramData" | "coins" | "profileType" | "language" | "telegramId" | "webLogin" | "webPassword", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "favoriteWaifuId" | "favoriteHusbandoId" | "waifuConfig" | "husbandoConfig" | "telegramData" | "coins" | "profileType" | "language" | "telegramId" | "webLogin" | "webPassword" | "husbandoLikes" | "waifuLikes", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   HusbandoCollection?: boolean | Prisma.User$HusbandoCollectionArgs<ExtArgs>
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
@@ -1220,6 +1340,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     telegramId: bigint
     webLogin: string | null
     webPassword: string | null
+    husbandoLikes: number[]
+    waifuLikes: number[]
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1659,6 +1781,8 @@ export interface UserFieldRefs {
   readonly telegramId: Prisma.FieldRef<"User", 'BigInt'>
   readonly webLogin: Prisma.FieldRef<"User", 'String'>
   readonly webPassword: Prisma.FieldRef<"User", 'String'>
+  readonly husbandoLikes: Prisma.FieldRef<"User", 'Int[]'>
+  readonly waifuLikes: Prisma.FieldRef<"User", 'Int[]'>
 }
     
 

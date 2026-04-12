@@ -30,6 +30,8 @@ export type UserAvgAggregateOutputType = {
   id: number | null
   favoriteWaifuId: number | null
   favoriteHusbandoId: number | null
+  waifuLikes: number | null
+  husbandoLikes: number | null
   coins: number | null
   telegramId: number | null
 }
@@ -38,6 +40,8 @@ export type UserSumAggregateOutputType = {
   id: number | null
   favoriteWaifuId: number | null
   favoriteHusbandoId: number | null
+  waifuLikes: number[]
+  husbandoLikes: number[]
   coins: number | null
   telegramId: bigint | null
 }
@@ -70,6 +74,8 @@ export type UserCountAggregateOutputType = {
   id: number
   favoriteWaifuId: number
   favoriteHusbandoId: number
+  waifuLikes: number
+  husbandoLikes: number
   waifuConfig: number
   husbandoConfig: number
   telegramData: number
@@ -87,6 +93,8 @@ export type UserAvgAggregateInputType = {
   id?: true
   favoriteWaifuId?: true
   favoriteHusbandoId?: true
+  waifuLikes?: true
+  husbandoLikes?: true
   coins?: true
   telegramId?: true
 }
@@ -95,6 +103,8 @@ export type UserSumAggregateInputType = {
   id?: true
   favoriteWaifuId?: true
   favoriteHusbandoId?: true
+  waifuLikes?: true
+  husbandoLikes?: true
   coins?: true
   telegramId?: true
 }
@@ -127,6 +137,8 @@ export type UserCountAggregateInputType = {
   id?: true
   favoriteWaifuId?: true
   favoriteHusbandoId?: true
+  waifuLikes?: true
+  husbandoLikes?: true
   waifuConfig?: true
   husbandoConfig?: true
   telegramData?: true
@@ -229,6 +241,8 @@ export type UserGroupByOutputType = {
   id: number
   favoriteWaifuId: number | null
   favoriteHusbandoId: number | null
+  waifuLikes: number[]
+  husbandoLikes: number[]
   waifuConfig: runtime.JsonValue | null
   husbandoConfig: runtime.JsonValue | null
   telegramData: runtime.JsonValue | null
@@ -267,6 +281,8 @@ export type UserWhereInput = {
   id?: Prisma.IntFilter<"User"> | number
   favoriteWaifuId?: Prisma.IntNullableFilter<"User"> | number | null
   favoriteHusbandoId?: Prisma.IntNullableFilter<"User"> | number | null
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
   waifuConfig?: Prisma.JsonNullableFilter<"User">
   husbandoConfig?: Prisma.JsonNullableFilter<"User">
   telegramData?: Prisma.JsonNullableFilter<"User">
@@ -286,6 +302,8 @@ export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   favoriteWaifuId?: Prisma.SortOrderInput | Prisma.SortOrder
   favoriteHusbandoId?: Prisma.SortOrderInput | Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
   waifuConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   husbandoConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   telegramData?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -310,6 +328,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   favoriteWaifuId?: Prisma.IntNullableFilter<"User"> | number | null
   favoriteHusbandoId?: Prisma.IntNullableFilter<"User"> | number | null
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
   waifuConfig?: Prisma.JsonNullableFilter<"User">
   husbandoConfig?: Prisma.JsonNullableFilter<"User">
   telegramData?: Prisma.JsonNullableFilter<"User">
@@ -327,6 +347,8 @@ export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   favoriteWaifuId?: Prisma.SortOrderInput | Prisma.SortOrder
   favoriteHusbandoId?: Prisma.SortOrderInput | Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
   waifuConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   husbandoConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   telegramData?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -350,6 +372,8 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
   favoriteWaifuId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   favoriteHusbandoId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
   waifuConfig?: Prisma.JsonNullableWithAggregatesFilter<"User">
   husbandoConfig?: Prisma.JsonNullableWithAggregatesFilter<"User">
   telegramData?: Prisma.JsonNullableWithAggregatesFilter<"User">
@@ -362,6 +386,8 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -381,6 +407,8 @@ export type UserUncheckedCreateInput = {
   id?: number
   favoriteWaifuId?: number | null
   favoriteHusbandoId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -395,6 +423,8 @@ export type UserUncheckedCreateInput = {
 }
 
 export type UserUpdateInput = {
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -414,6 +444,8 @@ export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteWaifuId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   favoriteHusbandoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -431,6 +463,8 @@ export type UserCreateManyInput = {
   id?: number
   favoriteWaifuId?: number | null
   favoriteHusbandoId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -443,6 +477,8 @@ export type UserCreateManyInput = {
 }
 
 export type UserUpdateManyMutationInput = {
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -458,6 +494,8 @@ export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteWaifuId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   favoriteHusbandoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -484,10 +522,20 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type IntNullableListFilter<$PrismaModel = never> = {
+  equals?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
+  has?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
+  hasEvery?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  hasSome?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   favoriteWaifuId?: Prisma.SortOrder
   favoriteHusbandoId?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
   waifuConfig?: Prisma.SortOrder
   husbandoConfig?: Prisma.SortOrder
   telegramData?: Prisma.SortOrder
@@ -503,6 +551,8 @@ export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   favoriteWaifuId?: Prisma.SortOrder
   favoriteHusbandoId?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
   coins?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
 }
@@ -535,6 +585,8 @@ export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   favoriteWaifuId?: Prisma.SortOrder
   favoriteHusbandoId?: Prisma.SortOrder
+  waifuLikes?: Prisma.SortOrder
+  husbandoLikes?: Prisma.SortOrder
   coins?: Prisma.SortOrder
   telegramId?: Prisma.SortOrder
 }
@@ -651,6 +703,24 @@ export type UserUpdateOneRequiredWithoutWaifuCollectionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWaifuCollectionInput, Prisma.UserUpdateWithoutWaifuCollectionInput>, Prisma.UserUncheckedUpdateWithoutWaifuCollectionInput>
 }
 
+export type UserCreatewaifuLikesInput = {
+  set: number[]
+}
+
+export type UserCreatehusbandoLikesInput = {
+  set: number[]
+}
+
+export type UserUpdatewaifuLikesInput = {
+  set?: number[]
+  push?: number | number[]
+}
+
+export type UserUpdatehusbandoLikesInput = {
+  set?: number[]
+  push?: number | number[]
+}
+
 export type EnumProfileTypeFieldUpdateOperationsInput = {
   set?: $Enums.ProfileType
 }
@@ -668,6 +738,8 @@ export type NullableIntFieldUpdateOperationsInput = {
 }
 
 export type UserCreateWithoutCharacterHusbandoInput = {
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -685,6 +757,8 @@ export type UserCreateWithoutCharacterHusbandoInput = {
 export type UserUncheckedCreateWithoutCharacterHusbandoInput = {
   id?: number
   favoriteWaifuId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -731,6 +805,8 @@ export type UserScalarWhereInput = {
   id?: Prisma.IntFilter<"User"> | number
   favoriteWaifuId?: Prisma.IntNullableFilter<"User"> | number | null
   favoriteHusbandoId?: Prisma.IntNullableFilter<"User"> | number | null
+  waifuLikes?: Prisma.IntNullableListFilter<"User">
+  husbandoLikes?: Prisma.IntNullableListFilter<"User">
   waifuConfig?: Prisma.JsonNullableFilter<"User">
   husbandoConfig?: Prisma.JsonNullableFilter<"User">
   telegramData?: Prisma.JsonNullableFilter<"User">
@@ -743,6 +819,8 @@ export type UserScalarWhereInput = {
 }
 
 export type UserCreateWithoutCharacterWaifuInput = {
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -760,6 +838,8 @@ export type UserCreateWithoutCharacterWaifuInput = {
 export type UserUncheckedCreateWithoutCharacterWaifuInput = {
   id?: number
   favoriteHusbandoId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -800,6 +880,8 @@ export type UserUpdateManyWithWhereWithoutCharacterWaifuInput = {
 }
 
 export type UserCreateWithoutHusbandoCollectionInput = {
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -818,6 +900,8 @@ export type UserUncheckedCreateWithoutHusbandoCollectionInput = {
   id?: number
   favoriteWaifuId?: number | null
   favoriteHusbandoId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -847,6 +931,8 @@ export type UserUpdateToOneWithWhereWithoutHusbandoCollectionInput = {
 }
 
 export type UserUpdateWithoutHusbandoCollectionInput = {
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -865,6 +951,8 @@ export type UserUncheckedUpdateWithoutHusbandoCollectionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteWaifuId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   favoriteHusbandoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -878,6 +966,8 @@ export type UserUncheckedUpdateWithoutHusbandoCollectionInput = {
 }
 
 export type UserCreateWithoutWaifuCollectionInput = {
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -896,6 +986,8 @@ export type UserUncheckedCreateWithoutWaifuCollectionInput = {
   id?: number
   favoriteWaifuId?: number | null
   favoriteHusbandoId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -925,6 +1017,8 @@ export type UserUpdateToOneWithWhereWithoutWaifuCollectionInput = {
 }
 
 export type UserUpdateWithoutWaifuCollectionInput = {
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -943,6 +1037,8 @@ export type UserUncheckedUpdateWithoutWaifuCollectionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteWaifuId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   favoriteHusbandoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -958,6 +1054,8 @@ export type UserUncheckedUpdateWithoutWaifuCollectionInput = {
 export type UserCreateManyCharacterHusbandoInput = {
   id?: number
   favoriteWaifuId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -970,6 +1068,8 @@ export type UserCreateManyCharacterHusbandoInput = {
 }
 
 export type UserUpdateWithoutCharacterHusbandoInput = {
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -987,6 +1087,8 @@ export type UserUpdateWithoutCharacterHusbandoInput = {
 export type UserUncheckedUpdateWithoutCharacterHusbandoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteWaifuId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1003,6 +1105,8 @@ export type UserUncheckedUpdateWithoutCharacterHusbandoInput = {
 export type UserUncheckedUpdateManyWithoutCharacterHusbandoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteWaifuId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1017,6 +1121,8 @@ export type UserUncheckedUpdateManyWithoutCharacterHusbandoInput = {
 export type UserCreateManyCharacterWaifuInput = {
   id?: number
   favoriteHusbandoId?: number | null
+  waifuLikes?: Prisma.UserCreatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserCreatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1029,6 +1135,8 @@ export type UserCreateManyCharacterWaifuInput = {
 }
 
 export type UserUpdateWithoutCharacterWaifuInput = {
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1046,6 +1154,8 @@ export type UserUpdateWithoutCharacterWaifuInput = {
 export type UserUncheckedUpdateWithoutCharacterWaifuInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteHusbandoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1062,6 +1172,8 @@ export type UserUncheckedUpdateWithoutCharacterWaifuInput = {
 export type UserUncheckedUpdateManyWithoutCharacterWaifuInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   favoriteHusbandoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  waifuLikes?: Prisma.UserUpdatewaifuLikesInput | number[]
+  husbandoLikes?: Prisma.UserUpdatehusbandoLikesInput | number[]
   waifuConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   husbandoConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   telegramData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1117,6 +1229,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   favoriteWaifuId?: boolean
   favoriteHusbandoId?: boolean
+  waifuLikes?: boolean
+  husbandoLikes?: boolean
   waifuConfig?: boolean
   husbandoConfig?: boolean
   telegramData?: boolean
@@ -1137,6 +1251,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   favoriteWaifuId?: boolean
   favoriteHusbandoId?: boolean
+  waifuLikes?: boolean
+  husbandoLikes?: boolean
   waifuConfig?: boolean
   husbandoConfig?: boolean
   telegramData?: boolean
@@ -1154,6 +1270,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   favoriteWaifuId?: boolean
   favoriteHusbandoId?: boolean
+  waifuLikes?: boolean
+  husbandoLikes?: boolean
   waifuConfig?: boolean
   husbandoConfig?: boolean
   telegramData?: boolean
@@ -1171,6 +1289,8 @@ export type UserSelectScalar = {
   id?: boolean
   favoriteWaifuId?: boolean
   favoriteHusbandoId?: boolean
+  waifuLikes?: boolean
+  husbandoLikes?: boolean
   waifuConfig?: boolean
   husbandoConfig?: boolean
   telegramData?: boolean
@@ -1182,7 +1302,7 @@ export type UserSelectScalar = {
   webPassword?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "favoriteWaifuId" | "favoriteHusbandoId" | "waifuConfig" | "husbandoConfig" | "telegramData" | "coins" | "profileType" | "language" | "telegramId" | "webLogin" | "webPassword", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "favoriteWaifuId" | "favoriteHusbandoId" | "waifuLikes" | "husbandoLikes" | "waifuConfig" | "husbandoConfig" | "telegramData" | "coins" | "profileType" | "language" | "telegramId" | "webLogin" | "webPassword", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   HusbandoCollection?: boolean | Prisma.User$HusbandoCollectionArgs<ExtArgs>
   CharacterHusbando?: boolean | Prisma.User$CharacterHusbandoArgs<ExtArgs>
@@ -1211,6 +1331,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: number
     favoriteWaifuId: number | null
     favoriteHusbandoId: number | null
+    waifuLikes: number[]
+    husbandoLikes: number[]
     waifuConfig: runtime.JsonValue | null
     husbandoConfig: runtime.JsonValue | null
     telegramData: runtime.JsonValue | null
@@ -1650,6 +1772,8 @@ export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
   readonly favoriteWaifuId: Prisma.FieldRef<"User", 'Int'>
   readonly favoriteHusbandoId: Prisma.FieldRef<"User", 'Int'>
+  readonly waifuLikes: Prisma.FieldRef<"User", 'Int[]'>
+  readonly husbandoLikes: Prisma.FieldRef<"User", 'Int[]'>
   readonly waifuConfig: Prisma.FieldRef<"User", 'Json'>
   readonly husbandoConfig: Prisma.FieldRef<"User", 'Json'>
   readonly telegramData: Prisma.FieldRef<"User", 'Json'>

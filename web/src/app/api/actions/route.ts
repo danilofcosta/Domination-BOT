@@ -61,11 +61,11 @@ export async function POST(req: Request) {
           where: { id: characterId },
         });
         if (character) {
-          const user = await prisma.user.findUnique({
+          const userLikes = await prisma.user.findUnique({
             where: { id: user.id },
             select: { waifuLikes: true },
           });
-          const hasLiked = user?.waifuLikes?.includes(characterId) || false;
+          const hasLiked = userLikes?.waifuLikes?.includes(characterId) || false;
           
           const newLikes = hasLiked 
             ? character.likes - 1 
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
           if (hasLiked) {
             await prisma.user.update({
               where: { id: user.id },
-              data: { waifuLikes: { set: (user.waifuLikes || []).filter((id: number) => id !== characterId) } },
+              data: { waifuLikes: { set: (userLikes?.waifuLikes || []).filter((id: number) => id !== characterId) } },
             });
           } else {
             await prisma.user.update({
@@ -95,11 +95,11 @@ export async function POST(req: Request) {
           where: { id: characterId },
         });
         if (character) {
-          const user = await prisma.user.findUnique({
+          const userLikes = await prisma.user.findUnique({
             where: { id: user.id },
             select: { husbandoLikes: true },
           });
-          const hasLiked = user?.husbandoLikes?.includes(characterId) || false;
+          const hasLiked = userLikes?.husbandoLikes?.includes(characterId) || false;
           
           const newLikes = hasLiked 
             ? character.likes - 1 
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
           if (hasLiked) {
             await prisma.user.update({
               where: { id: user.id },
-              data: { husbandoLikes: { set: (user.husbandoLikes || []).filter((id: number) => id !== characterId) } },
+              data: { husbandoLikes: { set: (userLikes?.husbandoLikes || []).filter((id: number) => id !== characterId) } },
             });
           } else {
             await prisma.user.update({

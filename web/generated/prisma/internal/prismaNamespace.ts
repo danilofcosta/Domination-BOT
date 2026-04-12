@@ -1545,6 +1545,8 @@ export const UserScalarFieldEnum = {
   id: 'id',
   favoriteWaifuId: 'favoriteWaifuId',
   favoriteHusbandoId: 'favoriteHusbandoId',
+  waifuLikes: 'waifuLikes',
+  husbandoLikes: 'husbandoLikes',
   waifuConfig: 'waifuConfig',
   husbandoConfig: 'husbandoConfig',
   telegramData: 'telegramData',

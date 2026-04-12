@@ -129,6 +129,8 @@ model User {
   telegramId         BigInt               @unique
   webLogin           String?              @unique
   webPassword        String?
+  husbandoLikes      Int[]
+  waifuLikes         Int[]
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])
@@ -192,12 +194,12 @@ enum MediaType {
 }
 
 enum ProfileType {
-  SUPREME 
+  SUPREME
   SUPER_ADMIN
   ADMIN
   MODERATOR
   USER
-  BANNED  
+  BANNED
 }
 
 enum SourceType {
