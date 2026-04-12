@@ -10,6 +10,23 @@ const tokens = {
 
 const DATABASE_TELEGRAM_ID = process.env.DATABASE_TELEGRAM_ID || "-1002400748069";
 
+const TELEGRAM_TIMEOUT = 30 * 1000; // 30 segundos
+
+async function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), TELEGRAM_TIMEOUT);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // Cache na memória (file_id -> file_path) para acesso ultrarrápido
 const mediaCache = new LRUCache<string, string>({
   max: 1000,
@@ -37,9 +54,9 @@ export async function getTelegramImageUrl(
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`,
-      { cache: "no-store" } // Evita conflitos com cache global do Next.js para links expirados
+      { cache: "no-store" }
     );
     
     if (!response.ok) return "";
@@ -57,8 +74,13 @@ export async function getTelegramImageUrl(
       
       return `https://api.telegram.org/file/bot${token}/${filePath}`;
     }
-  } catch (error) {
-    console.error(`[Telegram API] Erro ao buscar link do fileId ${fileId}:`, error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
+      console.error(`[Telegram API] Timeout ao buscar link do fileId ${fileId}`);
+    } else {
+      console.error(`[Telegram API] Erro ao buscar link do fileId ${fileId}:`, error);
+    }
   }
 
   return "";
@@ -104,7 +126,7 @@ export async function sendTelegramMessage(
   }
 
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -113,8 +135,13 @@ export async function sendTelegramMessage(
         parse_mode: "HTML",
       }),
     });
-  } catch (error) {
-    console.error(`[Telegram API] Erro ao enviar mensagem:`, error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
+      console.error(`[Telegram API] Timeout ao enviar mensagem`);
+    } else {
+      console.error(`[Telegram API] Erro ao enviar mensagem:`, error);
+    }
   }
 }
 
@@ -146,7 +173,7 @@ export async function sendTelegramPhoto(
   }
 
   try {
-    const response = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+    const response = await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendPhoto`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -165,9 +192,14 @@ export async function sendTelegramPhoto(
     }
 
     return { success: false, error: data.description || "Erro ao enviar foto" };
-  } catch (error) {
-    console.error(`[Telegram API] Erro ao enviar foto:`, error);
-    return { success: false, error: String(error) };
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
+      console.error(`[Telegram API] Timeout ao enviar foto`);
+    } else {
+      console.error(`[Telegram API] Erro ao enviar foto:`, error);
+    }
+    return { success: false, error: err.name === "AbortError" ? "Timeout" : String(error) };
   }
 }
 
@@ -184,7 +216,7 @@ export async function sendTelegramVideo(
   }
 
   try {
-    const response = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, {
+    const response = await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendVideo`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -203,9 +235,14 @@ export async function sendTelegramVideo(
     }
 
     return { success: false, error: data.description || "Erro ao enviar vídeo" };
-  } catch (error) {
-    console.error(`[Telegram API] Erro ao enviar vídeo:`, error);
-    return { success: false, error: String(error) };
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
+      console.error(`[Telegram API] Timeout ao enviar vídeo`);
+    } else {
+      console.error(`[Telegram API] Erro ao enviar vídeo:`, error);
+    }
+    return { success: false, error: err.name === "AbortError" ? "Timeout" : String(error) };
   }
 }
 
@@ -255,7 +292,7 @@ export async function sendLocalPhotoToTelegram(
     formData.append("caption", caption);
     formData.append("parse_mode", "HTML");
 
-    const response = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+    const response = await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendPhoto`, {
       method: "POST",
       body: formData,
     });
@@ -268,9 +305,14 @@ export async function sendLocalPhotoToTelegram(
     }
 
     return { success: false, error: data.description || "Erro ao enviar foto local" };
-  } catch (error) {
-    console.error(`[Telegram API] Erro ao enviar foto local:`, error);
-    return { success: false, error: String(error) };
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
+      console.error(`[Telegram API] Timeout ao enviar foto local`);
+    } else {
+      console.error(`[Telegram API] Erro ao enviar foto local:`, error);
+    }
+    return { success: false, error: err.name === "AbortError" ? "Timeout" : String(error) };
   }
 }
 
@@ -297,7 +339,7 @@ export async function sendLocalVideoToTelegram(
     formData.append("caption", caption);
     formData.append("parse_mode", "HTML");
 
-    const response = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, {
+    const response = await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendVideo`, {
       method: "POST",
       body: formData,
     });
@@ -310,8 +352,13 @@ export async function sendLocalVideoToTelegram(
     }
 
     return { success: false, error: data.description || "Erro ao enviar vídeo local" };
-  } catch (error) {
-    console.error(`[Telegram API] Erro ao enviar vídeo local:`, error);
-    return { success: false, error: String(error) };
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
+      console.error(`[Telegram API] Timeout ao enviar vídeo local`);
+    } else {
+      console.error(`[Telegram API] Erro ao enviar vídeo local:`, error);
+    }
+    return { success: false, error: err.name === "AbortError" ? "Timeout" : String(error) };
   }
 }
