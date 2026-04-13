@@ -844,17 +844,87 @@ export async function deleteCharacter(
   }
 }
 
+export async function bulkUpdateCharacters(
+  ids: number[],
+  type: "waifu" | "husbando",
+  eventIds?: number[],
+  rarityIds?: number[],
+  currentUserProfileType?: string,
+) {
+  if (!canDelete(currentUserProfileType)) {
+    return { success: false, error: "Sem permissão" };
+  }
+
+  if (!ids || ids.length === 0) {
+    return { success: false, error: "Nenhum personagem selecionado" };
+  }
+
+  try {
+    const eventKey = type === "waifu" ? "WaifuEvent" : "HusbandoEvent";
+    const rarityKey = type === "waifu" ? "WaifuRarity" : "HusbandoRarity";
+
+    for (const id of ids) {
+      if (type === "waifu") {
+        await prisma.$transaction([
+          prisma.waifuEvent.deleteMany({ where: { characterId: id } }),
+          prisma.waifuRarity.deleteMany({ where: { characterId: id } }),
+          ...(eventIds && eventIds.length > 0 ? [prisma.waifuEvent.createMany({
+            data: eventIds.map((eid) => ({ characterId: id, eventId: eid })),
+          })] : []),
+          ...(rarityIds && rarityIds.length > 0 ? [prisma.waifuRarity.createMany({
+            data: rarityIds.map((rid) => ({ characterId: id, rarityId: rid })),
+          })] : []),
+        ]);
+      } else {
+        await prisma.$transaction([
+          prisma.husbandoEvent.deleteMany({ where: { characterId: id } }),
+          prisma.husbandoRarity.deleteMany({ where: { characterId: id } }),
+          ...(eventIds && eventIds.length > 0 ? [prisma.husbandoEvent.createMany({
+            data: eventIds.map((eid) => ({ characterId: id, eventId: eid })),
+          })] : []),
+          ...(rarityIds && rarityIds.length > 0 ? [prisma.husbandoRarity.createMany({
+            data: rarityIds.map((rid) => ({ characterId: id, rarityId: rid })),
+          })] : []),
+        ]);
+      }
+    }
+
+    revalidatePath("/admin");
+    return { success: true, updated: ids.length };
+  } catch (error) {
+    console.error("Erro ao atualizar personagens em massa:", error);
+    return { success: false, error: String(error) };
+  }
+}
+
 export async function getCharacters(
   type: "waifu" | "husbando",
   search?: string,
+  idSearch?: number,
+  eventId?: number,
+  rarityId?: number,
 ) {
   try {
     const where: any = {};
-    if (search) {
+    if (idSearch) {
+      where.id = idSearch;
+    } else if (search) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
         { origem: { contains: search, mode: "insensitive" } },
       ];
+    }
+
+    if (eventId) {
+      where[type === "waifu" ? "WaifuEvent" : "HusbandoEvent"] = {
+        some: { eventId },
+      };
+    }
+
+    if (rarityId) {
+      where[type === "waifu" ? "WaifuRarity" : "HusbandoRarity"] = {
+        some: { rarityId },
+      };
     }
 
     const include = {

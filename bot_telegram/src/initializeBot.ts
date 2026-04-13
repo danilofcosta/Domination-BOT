@@ -82,12 +82,12 @@ export default async function initializeBot(
   bot.use(privateCommands);
   bot.use(botCommands);
   bot.use(adminCommands);
-  bot.use(devCommands);
+   bot.use(devCommands);
   bot.use(customCommands);
 
-  //LISTENERS
-  bot.use(listeners);
-  bot.use(callbacks);
+  // //LISTENERS
+ bot.use(listeners);
+ bot.use(callbacks);
 
   if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
     await privateCommands.setCommands(bot);

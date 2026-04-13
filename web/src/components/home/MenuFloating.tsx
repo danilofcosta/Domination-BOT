@@ -15,11 +15,11 @@ export function MenuFloating() {
   ];
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50  px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="max-w-md mx-auto">
         <div className="
           relative overflow-hidden
-          bg-background/0 backdrop-blur-xl border border-primary/10
+          bg-background/50 backdrop-blur-xl border border-primary/10
           rounded-2xl shadow-2xl shadow-black/20
           h-16 flex items-center justify-around px-2
           before:absolute before:inset-0 before:bg-linear-to-r before:from-primary/5 before:via-transparent before:to-primary/5 before:pointer-events-none

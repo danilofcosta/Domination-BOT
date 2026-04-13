@@ -19,11 +19,36 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Domination Web",
-  description: "Traga o universo dos animes para o seu grupo Eu faço aparecer waifus e husbandos no seu chat para os usuários capturarem.",
+  description: "Traga o universo dos animes para o seu grupo. Waifus e Husbandos para capturar!",
+  keywords: ["waifu", "husbando", "anime", "telegram bot", "captura", "collection"],
+  authors: [{ name: "Domination Bot" }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    title: "Domination Web",
+    description: "Traga o universo dos animes para o seu grupo. Waifus e Husbandos para capturar!",
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Domination Web",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Domination Web",
+    description: "Traga o universo dos animes para o seu grupo. Waifus e Husbandos para capturar!",
+  },
   icons: {
     icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
-  
 };
 
 export default function RootLayout({

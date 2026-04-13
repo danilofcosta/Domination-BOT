@@ -230,20 +230,51 @@ export function CharacterForm({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error("O arquivo deve ter no máximo 20MB");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        return;
-      }
-      setPreviewUrl(URL.createObjectURL(file));
-      const isVideo =
-        file.type.includes("video") ||
-        /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
-      setIsVideoPreview(isVideo);
+      processFile(file);
     }
   };
+
+  const processFile = (file: File) => {
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("O arquivo deve ter no máximo 20MB");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+    setPreviewUrl(URL.createObjectURL(file));
+    const isVideo =
+      file.type.includes("video") ||
+      /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
+    setIsVideoPreview(isVideo);
+  };
+
+  React.useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type.startsWith("image/") || item.type.startsWith("video/")) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            setMediaEntry("upload");
+            processFile(file);
+            if (fileInputRef.current) {
+              const dt = new DataTransfer();
+              dt.items.add(file);
+              fileInputRef.current.files = dt.files;
+            }
+          }
+          break;
+        }
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, []);
 
   const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -414,6 +445,9 @@ export function CharacterForm({
                     className="pl-9"
                     onChange={handleFileChange}
                   />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    Ctrl+V para colar
+                  </span>
                 </div>
               )}
             </div>

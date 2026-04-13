@@ -77,6 +77,7 @@ interface CollectionItem {
     id: number;
     name: string;
     media: string | null;
+    mediaType?: string | null;
   };
 }
 
@@ -587,7 +588,7 @@ export function UserDetailsDialog({
                 Nenhuma waifu na coleção
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[400px] overflow-y-auto">
                 {collectionDetails?.waifus.map((item) => {
                   const isFav = user.CharacterWaifu?.id === item.characterId;
                   return (
@@ -600,13 +601,13 @@ export function UserDetailsDialog({
                           <HeartIcon className="h-4 w-4 fill-red-500 text-red-500" />
                         </div>
                       )}
-                      {item.Character.media && (
-                        <img
-                          src={item.Character.media}
-                          alt={item.Character.name}
-                          className="w-full h-16 object-cover rounded mb-2"
+                      <div className="w-full h-24 rounded mb-2 overflow-hidden">
+                        <CharacterMedia
+                          item={item.Character}
+                          type="waifu"
+                          className="w-full h-full"
                         />
-                      )}
+                      </div>
                       <p className="text-xs font-medium truncate">
                         {item.Character.name}
                       </p>
@@ -670,7 +671,7 @@ export function UserDetailsDialog({
                 Nenhum husbando na coleção
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[400px] overflow-y-auto">
                 {collectionDetails?.husbandos.map((item) => {
                   const isFav = user.CharacterHusbando?.id === item.characterId;
                   return (
@@ -683,13 +684,13 @@ export function UserDetailsDialog({
                           <HeartIcon className="h-4 w-4 fill-red-500 text-red-500" />
                         </div>
                       )}
-                      {item.Character.media && (
-                        <img
-                          src={item.Character.media}
-                          alt={item.Character.name}
-                          className="w-full h-16 object-cover rounded mb-2"
+                      <div className="w-full h-24 rounded mb-2 overflow-hidden">
+                        <CharacterMedia
+                          item={item.Character}
+                          type="husbando"
+                          className="w-full h-full"
                         />
-                      )}
+                      </div>
                       <p className="text-xs font-medium truncate">
                         {item.Character.name}
                       </p>
