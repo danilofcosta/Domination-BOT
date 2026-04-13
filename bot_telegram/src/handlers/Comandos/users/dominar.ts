@@ -130,6 +130,14 @@ export async function CapturarCharacter(ctx: MyContext) {
 
     return;
   }
+
+  ctx.session.grupo = {
+    cont: 0,
+    dropId: null,
+    character: null,
+    data: null,
+    title: ctx.chat?.title || "",
+  };
   // ✅ nome correto
 
   let userId = Number(ctx.from?.id);
@@ -155,11 +163,5 @@ export async function CapturarCharacter(ctx: MyContext) {
   });
 
   //limpar sessao
-  ctx.session.grupo = {
-    cont: 0,
-    dropId: null,
-    character: null,
-    data: null,
-    title: ctx.chat?.title || "",
-  };
+
 }
