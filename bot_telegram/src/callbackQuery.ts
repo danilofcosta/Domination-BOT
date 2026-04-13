@@ -4,12 +4,12 @@ import { favConfirmHandler } from "./handlers/callbacks/favCallback.js";
 import { giftConfirmHandler } from "./handlers/callbacks/giftCallback.js";
 import { haremCallback } from "./handlers/callbacks/haremCallback.js";
 
-import { addCharacterCallbackData } from "./handlers/Comandos/admin/add_charecter_callback_data.js";
-import { editCharacterCallbackData } from "./handlers/Comandos/admin/edit_character_callbacks.js";
 import { topCallbackQuery } from "./handlers/callbacks/topCallbackQuery.js";
 import { StatRefresh } from "./handlers/Comandos/globais/status.js";
 import { helpCommand } from "./handlers/Comandos/globais/help.js";
 import { helpCallback } from "./handlers/callbacks/helpCallback.js";
+import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/add_charecter_callback_data.js";
+import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/edit_character_callbacks.js";
 
 const callbacks = new Composer<MyContext>();
 

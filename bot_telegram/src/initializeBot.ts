@@ -17,7 +17,7 @@ import { listeners } from "./listeners.js";
 import { callbacks } from "./callbackQuery.js";
 import { privateCommands } from "./CommandesManage/private.js";
 import { botCommands } from "./CommandesManage/User.js";
-import { adminCommands } from "./CommandesManage/adminCommands.js";
+import { adminCommands } from "./CommandesManage/adminCommands_bot.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
 import { customCommands } from "./CommandesManage/custom_commands.js";

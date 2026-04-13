@@ -1,6 +1,8 @@
+import type { User } from "grammy/types";
 import { ChatType, NODE_ENV, type MyContext } from "../../utils/customTypes.js";
 import { botNewgroupMember } from "./botNewgroupMember.js";
 import { DropCharacter } from "./doprar_per.js";
+import { error, log } from "../../utils/log.js";
 
 const DROP = 100;
 const UNDROP = DROP + 40;
@@ -11,7 +13,7 @@ export async function contarMensagens(ctx: MyContext) {
 
   const grupo = ctx.session.grupo;
   if (!grupo) {
-    return console.log("Grupo não encontrado");
+    return log("Grupo não encontrado");
   }
   const isDev = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
   const isTestGroup = TEST_GROUP_ID
@@ -22,15 +24,18 @@ export async function contarMensagens(ctx: MyContext) {
    * CONTADOR
    * ========================= */
   if (isDev && isTestGroup) {
-    grupo.cont = 100; // modo teste
-     grupo.title= ctx.chat.title || null
+    const cont = grupo.cont ?? 0;
+
+    grupo.cont = cont < 97 ? 97 : cont + 1;
+    grupo.title = ctx.chat.title || null;
+
   } else {
-   grupo.title= ctx.chat.title || null
+    grupo.title = ctx.chat.title || null;
     grupo.cont = (grupo.cont ?? 0) + 1;
   }
 
-  console.log(
-    "msg",ctx.session.settings.genero
+  log(
+    "log", ctx.session.settings.genero
     ,
     ctx.chat.id,
     ctx.chat.type,
@@ -42,15 +47,20 @@ export async function contarMensagens(ctx: MyContext) {
    * BOT ADICIONADO NO GRUPO
    * ========================= */
   if (ctx.message?.new_chat_members) {
-    const newMember = ctx.message.new_chat_members[0];
-    if (newMember?.id === ctx.me.id) {
+    const newMembers: User[] = ctx.message.new_chat_members;
+
+    if (newMembers.some(member => member.id === ctx.me.id)) {
       return botNewgroupMember(ctx);
     }
+
+
   }
 
   /* =========================
-   * DROP
-   * ========================= */
+    * DROP
+    * ========================= */
+
+  // se o contador for maior ou igual a 100 e não tiver dropId
   if (grupo.cont >= DROP && !grupo.dropId) {
     const result = await DropCharacter(ctx);
     if (!result) {
@@ -60,7 +70,8 @@ export async function contarMensagens(ctx: MyContext) {
     }
 
     if (result) {
-      console.log("dopre com sucesso");
+      //log terminal
+      log("dopre com sucesso");
     }
 
     return;
@@ -69,31 +80,38 @@ export async function contarMensagens(ctx: MyContext) {
   /* =========================
    * UNDROP
    * ========================= */
+
+
+  //caso o contador seja maior ou igual a 140 e tiver dropId
   if (grupo.cont >= UNDROP && grupo.dropId != null) {
     const character = grupo.character;
 
     const character_genero =
-      ctx.session.settings.genero === ChatType.HUSBANDO
+      ctx.session.settings.genero || process.env.TYPE_BOT === ChatType.HUSBANDO
         ? "o husbando"
         : "a waifu";
 
     const txt = ctx.t("drop_character_secret_caption", {
-      charater_nome: character?.name ?? "???",
+      charater_nome: character?.name ?? "??",
       charater_anime: character?.origem ?? "???",
       charater_genero: character_genero,
     });
 
     try {
       await ctx.api.deleteMessage(ctx.chat.id, grupo.dropId);
+      await ctx.reply(txt, { parse_mode: "HTML" });
+      log("undrop com sucesso");
     } catch (err) {
-      console.log("Erro ao deletar mensagem:", err);
+      error("Erro ao deletar mensagem:", err)
     }
 
-    await ctx.reply(txt, { parse_mode: "HTML" });
 
-/* =========================
-      * RESET
-      * ========================= */
+
+    /* =========================
+          * RESET
+          * ========================= */
+    //caso o contador seja maior ou igual a 180 e tiver dropId resetar o grupo
+
     ctx.session.grupo = {
       cont: 0,
       dropId: null,
@@ -101,6 +119,7 @@ export async function contarMensagens(ctx: MyContext) {
       data: null,
       title: ctx.chat.title || "-",
       directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
-    };
+
+    }
   }
 }

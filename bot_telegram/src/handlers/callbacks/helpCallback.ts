@@ -18,7 +18,7 @@ export async function helpCallback(ctx: MyContext) {
     if (!ctx.callbackQuery?.data) return;
     const [command, btn, action, ...rest] = ctx.callbackQuery.data.split("_");
     if (action === "comandos") {
-        if (ctx.callbackQuery) {
+        if (!ctx.callbackQuery.message?.text) {
             await ctx.editMessageCaption({
                 caption: "comandos",
                 parse_mode: "HTML",
@@ -40,11 +40,14 @@ export async function helpCallback(ctx: MyContext) {
             }
     }
     if (action === "comandos" && rest[0] === "user") {
+        const comandosText = Object.entries(ComandosUser).map(([key, value]) => {
+            return `/${value.command} - ${value.description}`;
+        }).join("\n");
 
-        if (ctx.callbackQuery) {
-            const comandosText = Object.entries(ComandosUser).map(([key, value]) => {
-                return `/${value.command} - ${value.description}`;
-            }).join("\n");
+
+        if (!ctx.callbackQuery.message?.text) {
+
+
             await ctx.editMessageCaption({
                 caption: comandosText,
                 parse_mode: "HTML",
@@ -56,18 +59,18 @@ export async function helpCallback(ctx: MyContext) {
         }
         else
             try {
-                await ctx.editMessageText("comandos", {
+                await ctx.editMessageText(comandosText, {
                     parse_mode: "HTML",
-                    reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
+                    reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
                 });
             } catch (error) {
                 console.log(error)
             }
     }
-    
+
     if (action === "comandos" && rest[0] === "admin") {
 
-        if (ctx.callbackQuery) {
+        if (!ctx.callbackQuery.message?.text) {
             const comandosText = ComandosAdmin.map((cmd) => {
                 return `/${cmd.command} - ${cmd.description}`;
             }).join("\n");

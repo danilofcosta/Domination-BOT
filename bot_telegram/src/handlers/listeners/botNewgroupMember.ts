@@ -1,9 +1,9 @@
 import { Language } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
-import type { MyContext } from "../../utils/customTypes.js";
+import { mentionUser } from "../../utils/manege_caption/metion_user.js";
 
 async function botNewgroupMember(ctx: any) {
-  console.log("bot new group member");
+  console.log("Bot add new group ");
 
   try {
     const newMember = ctx.message.new_chat_members?.[0];
@@ -20,7 +20,7 @@ async function botNewgroupMember(ctx: any) {
       data: {
         groupId: Number(chat.id),
         groupName: chat.title || "Grupo sem nome",
-      
+
         configuration: JSON.stringify({
           group_id: chat.id,
           group_username: chat.username || null,
@@ -41,15 +41,15 @@ async function botNewgroupMember(ctx: any) {
     });
 
     // mensagem para outro chat (fixo)
-    const text = ctx.t("add_bot_new_group", {
+    const log = ctx.t("add_bot_new_group", {
       name: chat.title || "Grupo sem nome",
       id: chat.id,
-      user: addedBy.first_name
+      user: mentionUser(`${addedBy.first_name} ${addedBy.last_name}`, addedBy.id)
     });
 
     await ctx.api.sendMessage(
-     process.env.GROUP_ADM, // ID de outro grupo/canal
-      text,
+      process.env.GROUP_ADM,
+      log,
       { parse_mode: "Markdown" }
     );
 

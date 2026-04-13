@@ -25,13 +25,21 @@ export async function helpCommand(ctx: MyContext) {
 
   const caption = ctx.t("help-caption");
 
-  if (ctx.callbackQuery) {
+  // If it's a direct command call (not a callback button interaction)
+  if (!ctx.callbackQuery) {
+    return ctx.reply(caption, {
+      parse_mode: "HTML",
+      reply_markup,
+    });
+  }
+
+  if (!ctx.callbackQuery?.message?.text) {
     await ctx.editMessageCaption({
       caption,
       parse_mode: "HTML",
       reply_markup,
     }).catch(err => {
-      console.log("error edit message text", err)
+      // console.log("error edit message text", err)
       ctx.reply(caption, {
         parse_mode: "HTML",
         reply_markup,
@@ -39,12 +47,12 @@ export async function helpCommand(ctx: MyContext) {
     });
     await ctx.answerCallbackQuery();
   } else if (ctx.msg) {
-    console.log("error edit message text", ctx.msg.caption)
+    // console.log("error edit message text", ctx.msg.caption)
     await ctx.editMessageText(caption, {
       parse_mode: "HTML",
       reply_markup,
     }).catch((err) => {
-      console.log("error edit message text", err  )
+      // console.log("error edit message text", err  )
       ctx.reply(caption, {
         parse_mode: "HTML",
         reply_markup,

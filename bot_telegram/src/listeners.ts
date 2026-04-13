@@ -4,9 +4,8 @@ import { contarMensagens } from "./handlers/listeners/contarMensagens.js";
 import { haremInlineQuery } from "./handlers/inline_query/harem_inline_query.js";
 import { getCharacters, getCharactersall } from "./handlers/inline_query/inline_query.js";
 import { getCharacter, setCharacter } from "./cache/cache.js";
-import { addCharacter_edit_CallbackData } from "./handlers/Comandos/admin/add_character_edit.js";
-import { UploadMediaHandler, UploadMediaMiddleware } from "./handlers/Comandos/admin/upload_media_handler.js";
-import { botPrefix } from "./CommandesManage/botConfigCommands.js";
+import { addCharacter_edit_CallbackData } from "./handlers/Comandos/admin_bot/add_character_edit.js";
+import { debug } from "./utils/log.js";
 
 const listeners = new Composer<MyContext>();
 
@@ -43,7 +42,7 @@ listeners.chatType(["group", "supergroup"]).on("message", contarMensagens);
 
 
 listeners.on("inline_query", async (ctx) => {
-  console.log("inline query:", ctx.inlineQuery?.query);
+  debug("inline query:", ctx.inlineQuery?.query);
   const query = ctx.inlineQuery.query || "";
 
   if (query.startsWith("harem_user_")) {

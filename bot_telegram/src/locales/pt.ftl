@@ -211,7 +211,7 @@ bt-tentative-again= Tente novamente
 #
 success_dominar_title = <tg-emoji emoji-id="5355035722246016995">✅</tg-emoji> <b>{ $usermention } dominou { $genero }!</b>
 success_dominar_name = 🏷 <b>Nome:</b> { $character_name }
-success_dominar_rarity = {rarity_emoji_local} <b>Raridade:</b> { $rarity }
+success_dominar_rarity = { $rarity } <b>Raridade:</b>  { $rarity_name }  {$emoji_event}
 success_dominar_anime = 📺 <b>Anime:</b> { $anime }
 success_dominar_event = 🆔 <b>ID:</b> { $id }
 success_dominar_time = ⏱ <b>Tempo gasto:</b> <code>{ $time }</code>

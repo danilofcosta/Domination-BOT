@@ -11,8 +11,8 @@ model CharacterHusbando {
   id                 Int                  @id @default(autoincrement())
   name               String               @db.VarChar(100)
   origem             String               @db.VarChar(100)
-  mediaType          MediaType?
-  media              String?
+  mediaType          MediaType
+  media              String
   slug               String               @unique
   extras             Json?
   createdAt          DateTime             @default(now())
@@ -36,8 +36,8 @@ model CharacterWaifu {
   id               Int               @id @default(autoincrement())
   name             String            @db.VarChar(100)
   origem           String            @db.VarChar(100)
-  mediaType        MediaType?
-  media            String?
+  mediaType        MediaType
+  media            String
   extras           Json?
   slug             String            @unique
   createdAt        DateTime          @default(now())

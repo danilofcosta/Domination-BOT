@@ -2,7 +2,6 @@ import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 export async function Myinfos(ctx: MyContext) {
-  console.log("myinfos");
   const loading = await ctx.reply(ctx.t("loading"));
 
 

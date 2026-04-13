@@ -106,7 +106,7 @@ export async function isUserBanned(userId: number): Promise<boolean> {
  * 
  * @param requiredRole The minimum role required to access the command.
  */
-export function onlyRole(requiredRole: ProfileType): MiddlewareFn<MyContext> {
+export function onlyRoleBotAdmin(requiredRole: ProfileType): MiddlewareFn<MyContext> {
   return async (ctx, next) => {
     try {
       const from = ctx.from;

@@ -1,5 +1,5 @@
 import { prisma } from "../../../../lib/prisma.js";
-import { ChatType, type Character, type MyContext } from "../../../utils/customTypes.js";
+import { ChatType, type Character, type Collection, type MyContext, type RarityType } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
@@ -55,9 +55,8 @@ function calcularTempo(per: { data: Date | string | null }) {
   return `${horas} h`;
 }
 
-function successDominarMessage(ctx: MyContext,character: Character) {
-  if (!character) return "vc tem um personagem novo!";
-  //success_dominar_title = ✅ { $usermention }, você tem { $genero }!
+function successDominarMessage(ctx: MyContext, character: Character, collection: Collection) {
+  if (!collection || !character) return "vc tem um personagem novo!";
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
     genero:
@@ -71,20 +70,35 @@ function successDominarMessage(ctx: MyContext,character: Character) {
   });
 
   const success_dominar_anime = ctx.t("success_dominar_anime", {
-    anime: character.origem,
+    anime: `${character.origem} ${collection.count}x`,
   });
-  const { emoji_event, emoji_raridade: rarityEmojis } =
-    extractListEmojisCharacter(ctx, character);
-  // const rarityEmojis = extrair_emojis(
-  //   (character.extras as any)?.rarities ?? [],
-  // );
+  const { emoji_event, emoji_raridade: rarityEmojis } =  extractListEmojisCharacter(ctx, character);
+  const char = character as any;
+  const raritys: RarityType[] = process.env.TYPE_BOT === ChatType.WAIFU
+      ? char.WaifuRarity
+      : char.HusbandoRarity;
+
+  const rarity_name = raritys.length > 1
+        ? `[${raritys.map((r: any) => r.Rarity?.name || r.rarity?.name).join(", ")}]`
+        : raritys.length === 1
+          ? (raritys[0] as any).Rarity?.name || (raritys[0] as any).rarity?.name
+          : "";
+
 
   const success_dominar_rarity = ctx.t("success_dominar_rarity", {
+    rarity_name: rarity_name,
     rarity:
       rarityEmojis.length > 1
         ? `[${rarityEmojis.join(", ")}]`
         : rarityEmojis.length === 1
           ? rarityEmojis.join(", ")
+          : "",
+    
+    
+     emoji_event: emoji_event.length > 1
+        ? `[${emoji_event.join(", ")}]`
+        : emoji_event.length === 1
+          ? emoji_event.join(", ")
           : "",
   });
 
@@ -139,18 +153,18 @@ export async function CapturarCharacter(ctx: MyContext) {
 
   let userId = Number(ctx.from?.id);
 
-  const res = await AddCharacterCollection({
+  const character_collection : Collection = await AddCharacterCollection({
     type,
     userId,
     from: ctx.from || {},
     Charater_id: character.id
   });
 
-  if (!res) {
-    ctx.reply(ctx.t("error add character"));
+  if (!character_collection) {
+    return ctx.reply(ctx.t("error_add_character"));
   }
 
-  await ctx.reply(successDominarMessage(ctx,character), {
+  await ctx.reply(successDominarMessage(ctx, character, character_collection), {
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
@@ -173,4 +187,5 @@ export async function CapturarCharacter(ctx: MyContext) {
     title: ctx.chat?.title || "",
     directMessagesTopicId: ctx.session.grupo.directMessagesTopicId , 
   };
+  return true
 }
