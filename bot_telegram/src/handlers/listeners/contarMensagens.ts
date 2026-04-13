@@ -91,15 +91,16 @@ export async function contarMensagens(ctx: MyContext) {
 
     await ctx.reply(txt, { parse_mode: "HTML" });
 
-    /* =========================
-     * RESET
-     * ========================= */
+/* =========================
+      * RESET
+      * ========================= */
     ctx.session.grupo = {
       cont: 0,
       dropId: null,
       character: null,
       data: null,
       title: ctx.chat.title || "-",
+      directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
     };
   }
 }

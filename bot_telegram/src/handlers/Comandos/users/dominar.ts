@@ -1,5 +1,5 @@
 import { prisma } from "../../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { ChatType, type Character, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
@@ -55,9 +55,8 @@ function calcularTempo(per: { data: Date | string | null }) {
   return `${horas} h`;
 }
 
-function successDominarMessage(ctx: MyContext) {
-  const character = ctx.session.grupo.character;
-  if (!character) return "vc tem um personagem!";
+function successDominarMessage(ctx: MyContext,character: Character) {
+  if (!character) return "vc tem um personagem novo!";
   //success_dominar_title = ✅ { $usermention }, você tem { $genero }!
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
@@ -101,6 +100,7 @@ function successDominarMessage(ctx: MyContext) {
 export async function CapturarCharacter(ctx: MyContext) {
   const tentativa = String(ctx.match).trim();
   const character = ctx.session.grupo.character;
+  const type = ctx.session.settings.genero || process.env.TYPE_BOT
 
   if (!character || !tentativa) {
     try {
@@ -130,25 +130,27 @@ export async function CapturarCharacter(ctx: MyContext) {
 
     return;
   }
-
-  ctx.session.grupo = {
-    cont: 0,
-    dropId: null,
-    character: null,
-    data: null,
-    title: ctx.chat?.title || "",
-  };
+  
+  ctx.session.grupo.character = null;
+  ctx.session.grupo.dropId = null;
+  ctx.session.grupo.cont = 0;
+ 
   // ✅ nome correto
 
   let userId = Number(ctx.from?.id);
 
-  const res = AddCharacterCollection(ctx, userId, character.id);
+  const res = await AddCharacterCollection({
+    type,
+    userId,
+    from: ctx.from || {},
+    Charater_id: character.id
+  });
 
   if (!res) {
     ctx.reply(ctx.t("error add character"));
   }
 
-  await ctx.reply(successDominarMessage(ctx), {
+  await ctx.reply(successDominarMessage(ctx,character), {
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
@@ -163,5 +165,12 @@ export async function CapturarCharacter(ctx: MyContext) {
   });
 
   //limpar sessao
-
+ ctx.session.grupo = {
+    cont: 0,
+    dropId: null,
+    character: null,
+    data: null,
+    title: ctx.chat?.title || "",
+    directMessagesTopicId: ctx.session.grupo.directMessagesTopicId , 
+  };
 }

@@ -16,7 +16,10 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
     caption,
   });
 
-  if (!message) return null;
+  if (!message) {
+    console.log("DropCharacter message is null");
+    return null;
+  }
 
   const grupo = ctx.session.grupo;
   grupo.dropId = message.message_id;

@@ -41,7 +41,7 @@ export default async function initializeBot(
         },
         grupo: {
           title: null,
-
+          directMessagesTopicId: null,
           cont: 0,
           dropId: null,
           data: null,

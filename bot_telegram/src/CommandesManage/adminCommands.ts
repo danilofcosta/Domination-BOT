@@ -11,6 +11,7 @@ import { DeleteRarityHandler } from "../handlers/Comandos/admin/del_rarity.js";
 import { reloadAdmsHandler } from "../handlers/Comandos/admin/reload_adms.js";
 import { banHandler, unbanHandler, listBannedHandler } from "../handlers/Comandos/admin/ban_user.js";
 import { onlyRole } from "../utils/permissions.js";
+import { setChatTopicHandler } from "../handlers/Comandos/admin/set_chat_topic.js";
 
 const adminCommands = new CommandGroup<MyContext>();
 
@@ -104,6 +105,15 @@ adminCommands.command(
   `listbanned${botPrefix}`,
   "Listar usuários banidos",
   listBannedComposer,
+);
+
+const setChatTopicComposer = new Composer<MyContext>();
+setChatTopicComposer.use(setChatTopicHandler);
+
+adminCommands.command(
+  `setchattopic${botPrefix}`,
+  "Define o topic para mensagens de drop",
+  setChatTopicComposer,
 );
 
 // We can add more admin commands here following the same pattern

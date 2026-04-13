@@ -43,6 +43,7 @@ export interface SessionData {
     data: Date | null;
     character: Character | null;
     title:string|null|undefined
+    directMessagesTopicId:number|null|undefined
   };
   adminSetup?: {
     action: "edit_nome" | "edit_anime" | null;

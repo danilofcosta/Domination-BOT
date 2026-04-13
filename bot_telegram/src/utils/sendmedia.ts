@@ -5,6 +5,7 @@ import { InputFile, InlineKeyboard } from "grammy";
 import { MediaType } from "../../generated/prisma/client.js";
 interface ParamsSendMedia {
   chat_id?: string | number | undefined;
+  message_thread_id?: number | undefined;
   ctx: MyContext | null | undefined;
   per?: Character | null;
   caption?: string;
@@ -12,7 +13,7 @@ interface ParamsSendMedia {
 }
 
 export async function Sendmedia(params: ParamsSendMedia) {
-  const { chat_id, ctx, per, caption, reply_markup } = params;
+  const { chat_id, message_thread_id, ctx, per, caption, reply_markup } = params;
 
   if (!ctx) {
     throw new Error("ctx é obrigatório");
@@ -25,10 +26,14 @@ export async function Sendmedia(params: ParamsSendMedia) {
     throw new Error("chat_id não fornecido e ctx.chat.id não disponível");
   }
 
+  const directTopicId = ctx.session.grupo.directMessagesTopicId;
+  const topicId = message_thread_id ?? (directTopicId ?? undefined);
+
   const options = {
     parse_mode: "HTML" as const,
     ...(caption !== undefined && { caption }),
     ...(reply_markup && { reply_markup }),
+    ...(topicId && { message_thread_id: topicId }),
   };
 
   // 🔥 helpers seguros

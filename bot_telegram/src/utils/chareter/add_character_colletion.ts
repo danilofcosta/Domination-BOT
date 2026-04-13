@@ -1,12 +1,20 @@
 import { prisma } from "../../../lib/prisma.js";
-import type { MyContext } from "../customTypes.js";
+import type { ChatType } from "../customTypes.js";
 
-export async function AddCharacterCollection(
-  ctx: MyContext,
+interface AddCharacterCollectionForm{
+   type: ChatType,
   userId: number,
-  Charater_id: number,
-) {
-  const isWaifu = ctx.session.settings.genero === "waifu";
+  from: any,
+  Charater_id: number 
+}
+
+export async function AddCharacterCollection({
+  type,
+  userId,
+  from,
+  Charater_id
+}: AddCharacterCollectionForm) {
+  const isWaifu = type === "waifu";
 
   const existingUser = await prisma.user.findUnique({
     where: { telegramId: userId },
@@ -25,7 +33,7 @@ export async function AddCharacterCollection(
       : {},
     create: {
       telegramId: userId,
-      telegramData: (ctx.from ?? {}) as Record<string, any>,
+      telegramData: (from ?? {}) as Record<string, any>,
       favoriteWaifuId: isWaifu ? Charater_id : null,
       favoriteHusbandoId: !isWaifu ? Charater_id : null,
       waifuConfig: {},
