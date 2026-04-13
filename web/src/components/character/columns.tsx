@@ -23,8 +23,8 @@ export interface Character {
   name: string
   origem: string
   likes: number
-  media?: string
-  mediaType?: string
+  media?: string | null
+  mediaType?: string | null
   addby?: any
   WaifuEvent?: { eventId: number; Event: { id: number; name: string; emoji: string } }[]
   WaifuRarity?: { rarityId: number; Rarity: { id: number; name: string; emoji: string } }[]
