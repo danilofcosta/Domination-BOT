@@ -4,8 +4,9 @@ import { MediaType, Prisma, ProfileType } from "../../../../generated/prisma/cli
 import { create_caption } from "../../../utils/manege_caption/create_caption.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { botPrefix } from "../../../CommandesManage/botConfigCommands.js";
-import { onlyRole } from "../../../utils/permissions.js";
+
 import { Sendmedia } from "../../../utils/sendmedia.js";
+import { onlyRoleBotAdmin } from "../../../utils/permissions.js";
 
 
 const MAX_BATCH_SIZE = 100;
@@ -58,7 +59,7 @@ function parseUploadCommand(caption: string): { suffix: "w" | "h" | null; patter
   return { suffix: null, pattern: "" };
 }
 
-export const UploadMediaMiddleware = onlyRole(ProfileType.ADMIN);
+export const UploadMediaMiddleware = onlyRoleBotAdmin(ProfileType.ADMIN);
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

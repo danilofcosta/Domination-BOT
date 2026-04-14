@@ -1,5 +1,6 @@
 import { LRUCache } from "lru-cache";
-import type { PreCharacter } from "../handlers/Comandos/admin/add_charecter.js";
+import type { PreCharacter } from "../handlers/Comandos/admin_bot/add_charecter.js";
+
 
 export const haremCache = new LRUCache<string, any>({
   max: 1000,

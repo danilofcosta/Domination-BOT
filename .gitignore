@@ -6,3 +6,4 @@ stack sever.env
 .env
 stack_sever.env
 bot_telegram/D/
+bot_telegram/dist/
