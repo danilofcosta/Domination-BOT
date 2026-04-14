@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 type CharacterType = "all" | "waifu" | "husbando";
-type SortBy = "recent" | "likes" | "name";
+type SortBy = "recent" | "old" | "likes" | "name";
 
 export default function CharactersPage() {
   const [collection, setCollection] = useState<Character[]>([]);
@@ -30,6 +30,9 @@ export default function CharactersPage() {
   const [characterType, setCharacterType] = useState<CharacterType>("all");
   const [sortBy, setSortBy] = useState<SortBy>("recent");
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [fetchingMore, setFetchingMore] = useState(false);
   const [filters, setFilters] = useState({
     rarity: "",
     event: "",
@@ -62,25 +65,39 @@ export default function CharactersPage() {
     }
   }, []);
 
-  const fetchCharacters = useCallback(async () => {
+  const fetchCharacters = useCallback(async (pageNum = 1, append = false) => {
     try {
-      setLoading(true);
+      if (pageNum === 1) setLoading(true);
+      else setFetchingMore(true);
+
       const params = new URLSearchParams();
       if (characterType !== "all") params.set("type", characterType);
       params.set("sort", sortBy);
+      params.set("page", pageNum.toString());
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (filters.rarity) params.set("rarity", filters.rarity);
       if (filters.event) params.set("event", filters.event);
       if (filters.sourceType) params.set("sourceType", filters.sourceType);
 
       const res = await fetch(`/api/characters?${params.toString()}`);
+      if (!res.ok) throw new Error("Falha ao buscar personagens");
+      
       const data = await res.json();
       const normalized = normalizeCharacters(data.waifus || [], data.husbandos || []);
-      setCollection(normalized);
+      
+      if (append) {
+        setCollection(prev => [...prev, ...normalized]);
+      } else {
+        setCollection(normalized);
+      }
+      
+      // Se não retornou nada ou retornou menos que o esperado, pode ser o fim
+      setHasMore(normalized.length >= 24);
     } catch (err) {
       console.error("Erro ao carregar personagens:", err);
     } finally {
       setLoading(false);
+      setFetchingMore(false);
     }
   }, [characterType, sortBy, debouncedSearch, filters]);
 
@@ -89,8 +106,34 @@ export default function CharactersPage() {
   }, [fetchFiltersOptions]);
 
   useEffect(() => {
-    fetchCharacters();
-  }, [fetchCharacters]);
+    setPage(1);
+    fetchCharacters(1, false);
+  }, [characterType, sortBy, debouncedSearch, filters, fetchCharacters]);
+
+  const loadMore = useCallback(() => {
+    if (!fetchingMore && hasMore && !loading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchCharacters(nextPage, true);
+    }
+  }, [fetchingMore, hasMore, loading, page, fetchCharacters]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !fetchingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const target = document.querySelector("#infinite-scroll-trigger");
+    if (target) observer.observe(target);
+
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, loading, fetchingMore]);
 
   const hasActiveFilters = filters.rarity || filters.event || filters.sourceType;
 
@@ -261,6 +304,7 @@ export default function CharactersPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="recent">Mais Recentes</SelectItem>
+              <SelectItem value="old">Mais Antigos</SelectItem>
               <SelectItem value="likes">Mais Curtidos</SelectItem>
               <SelectItem value="name">Ordem Alfabética</SelectItem>
             </SelectContent>
@@ -300,6 +344,16 @@ export default function CharactersPage() {
             ))}
           </div>
         )}
+
+        {/* Loading trigger for infinite scroll */}
+        <div id="infinite-scroll-trigger" className="h-20 flex items-center justify-center">
+          {fetchingMore && (
+            <div className="flex items-center gap-2 text-muted-foreground animate-pulse">
+              <SparklesIcon className="size-4" />
+              <span className="text-xs font-bold uppercase tracking-widest">Carregando mais...</span>
+            </div>
+          )}
+        </div>
       </main>
 
       <Footer />

@@ -5,7 +5,7 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { ThumbsUp, Maximize2, X, ChevronLeft, Heart } from "lucide-react";
 
 type ThemeParams = {
@@ -83,6 +83,18 @@ type WebAppUser = {
   last_name?: string;
   username?: string;
   photo_url?: string;
+};
+
+type TelegramWebApp = {
+  ready: () => void;
+  expand: () => void;
+  themeParams?: Record<string, string>;
+  colorScheme?: string;
+  backgroundColor?: string;
+  headerColor?: string;
+  initDataUnsafe?: { user?: WebAppUser };
+  BackButton?: { show: () => void; onClick: (cb: () => void) => void };
+  HapticFeedback?: { impactOccurred: (type: string) => void };
 };
 
 function ThemeProvider({
@@ -163,7 +175,7 @@ export default function CollectionDetailPage() {
     script.async = true;
     document.head.appendChild(script);
     script.onload = () => {
-      const tg = (window as any).Telegram?.WebApp;
+      const tg = (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
       if (tg) {
         tg.ready();
         tg.expand();
@@ -171,19 +183,19 @@ export default function CollectionDetailPage() {
         const themeParams = tg.themeParams || {};
         setTheme({
           themeParams,
-          colorScheme: tg.colorScheme || "light",
+          colorScheme: (tg.colorScheme || "light") as "light" | "dark",
           backgroundColor: tg.backgroundColor || themeParams.bg_color || "#ffffff",
           headerColor: tg.headerColor || themeParams.header_bg_color || "#ffffff",
         });
 
-        setCurrentUser(tg.initDataUnsafe.user || null);
+        setCurrentUser(tg.initDataUnsafe?.user || null);
         
-        if (tg.initDataUnsafe.user?.id) {
+        if (tg.initDataUnsafe?.user?.id) {
           fetchUserFavorites(tg.initDataUnsafe.user.id);
         }
 
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
+        tg.BackButton?.show();
+        tg.BackButton?.onClick(() => {
           window.history.back();
         });
       }
@@ -268,8 +280,8 @@ export default function CollectionDetailPage() {
           } : null);
         }
 
-        const tg = (window as any).Telegram?.WebApp;
-        tg?.HapticFeedback?.impactOccurred("light");
+        const tgHaptic = (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
+        tgHaptic?.HapticFeedback?.impactOccurred("light");
       }
     } catch (err) {
       console.error("Error handling favorite:", err);
@@ -299,8 +311,8 @@ export default function CollectionDetailPage() {
         setCharacter((prev) => prev ? { ...prev, likes: data.likes } : null);
         setHasLiked(true);
 
-        const tg = (window as any).Telegram?.WebApp;
-        tg?.HapticFeedback?.impactOccurred("light");
+        const tgHaptic = (window as unknown as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
+        tgHaptic?.HapticFeedback?.impactOccurred("light");
       }
     } catch (err) {
       console.error("Error handling action:", err);
@@ -570,7 +582,6 @@ export default function CollectionDetailPage() {
               <div className="space-y-2">
                 {character.topOwners.map((owner, index) => {
                   const tgData = owner.telegramData;
-                  const firstLetter = tgData?.first_name?.charAt(0).toUpperCase() || "?";
                   return (
                     <Link
                       key={owner.userId}

@@ -903,6 +903,7 @@ export async function getCharacters(
   idSearch?: number,
   eventId?: number,
   rarityId?: number,
+  mediaType?: string,
 ) {
   try {
     const where: any = {};
@@ -925,6 +926,10 @@ export async function getCharacters(
       where[type === "waifu" ? "WaifuRarity" : "HusbandoRarity"] = {
         some: { rarityId },
       };
+    }
+
+    if (mediaType && mediaType !== "all") {
+      where.mediaType = mediaType;
     }
 
     const include = {

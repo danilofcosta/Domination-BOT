@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { resolveCharacterMedia } from "@/lib/uteis/resolveMediaClient";
+import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl ";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -82,38 +82,21 @@ export async function GET(req: Request) {
     const waifuCount = user.WaifuCollection.reduce((acc, w) => acc + w.count, 0);
     const husbandoCount = user.HusbandoCollection.reduce((acc, h) => acc + h.count, 0);
 
-    const resolveFavoriteMedia = (char: any) => {
+    const resolveFavoriteMedia = async (char: any, type: "waifu" | "husbando") => {
       if (!char) return null;
-      const { displayUrl } = resolveCharacterMedia(
-        char.media,
-        char.mediaType,
-        char.linkweb,
-        char.linkwebExpiresAt
-      );
+      const { displayUrl, isVideo } = await resolveMediaUrl(char, type);
       return {
         ...char,
         media: displayUrl,
+        isVideo,
       };
     };
 
-    return NextResponse.json({
-      id: user.id.toString(),
-      telegramId: user.telegramId.toString(),
-      coins: user.coins,
-      profileType: user.profileType,
-      language: user.language,
-      waifuCount,
-      husbandoCount,
-      telegramData: user.telegramData,
-      favoriteWaifu: resolveFavoriteMedia(user.CharacterWaifu),
-      favoriteHusbando: resolveFavoriteMedia(user.CharacterHusbando),
-      waifus: user.WaifuCollection.map((w) => {
-        const { displayUrl, isVideo } = resolveCharacterMedia(
-          w.Character.media,
-          w.Character.mediaType,
-          w.Character.linkweb,
-          w.Character.linkwebExpiresAt
-        );
+    const [favoriteWaifu, favoriteHusbando, waifus, husbandos] = await Promise.all([
+      resolveFavoriteMedia(user.CharacterWaifu, "waifu"),
+      resolveFavoriteMedia(user.CharacterHusbando, "husbando"),
+      Promise.all(user.WaifuCollection.map(async (w) => {
+        const { displayUrl, isVideo } = await resolveMediaUrl(w.Character as any, "waifu");
         return {
           id: w.characterId,
           name: w.Character.name,
@@ -124,14 +107,9 @@ export async function GET(req: Request) {
           isVideo,
           count: w.count,
         };
-      }),
-      husbandos: user.HusbandoCollection.map((h) => {
-        const { displayUrl, isVideo } = resolveCharacterMedia(
-          h.Character.media,
-          h.Character.mediaType,
-          h.Character.linkweb,
-          h.Character.linkwebExpiresAt
-        );
+      })),
+      Promise.all(user.HusbandoCollection.map(async (h) => {
+        const { displayUrl, isVideo } = await resolveMediaUrl(h.Character as any, "husbando");
         return {
           id: h.characterId,
           name: h.Character.name,
@@ -142,7 +120,22 @@ export async function GET(req: Request) {
           isVideo,
           count: h.count,
         };
-      }),
+      }))
+    ]);
+
+    return NextResponse.json({
+      id: user.id.toString(),
+      telegramId: user.telegramId.toString(),
+      coins: user.coins,
+      profileType: user.profileType,
+      language: user.language,
+      waifuCount,
+      husbandoCount,
+      telegramData: user.telegramData,
+      favoriteWaifu,
+      favoriteHusbando,
+      waifus,
+      husbandos,
     });
   } catch (error) {
     console.error(error);

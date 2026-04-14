@@ -130,7 +130,7 @@ function CharacterDetailView({ character }: { character: any }) {
 
           <div className="flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-20 items-center lg:items-end">
             {/* 🖼️ MAIN PORTRAIT */}
-            <div className="relative w-48 sm:w-64 md:w-80 lg:w-96 shrink-0 aspect-[2/3] rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(var(--primary-rgb),0.2)] border border-primary/10 group/img">
+            <div className="relative w-64 sm:w-72 md:w-80 lg:w-[380px] shrink-0 aspect-[2/3] rounded-[2rem] sm:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden shadow-[0_0_80px_rgba(var(--primary-rgb),0.2)] border border-primary/10 group/img">
               <CharacterMedia
                 item={character}
                 type={character.type}

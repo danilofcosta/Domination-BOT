@@ -103,11 +103,16 @@ export function getColumns({ type, currentUser, onDelete, onComplete, isDeleting
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="text-lg font-bold">{row.original.name}</span>
-          <span className="text-xs font-normal opacity-60 flex items-center gap-2">
+          <span className="text-xs font-normal opacity-60 flex items-center gap-2 flex-wrap">
             {row.original.origem}
             <span className="flex items-center gap-1 text-red-500">
               <HeartIcon className="w-3 h-3 fill-current" /> {row.original.likes || 0}
             </span>
+            {row.original.mediaType && (
+              <Badge variant="outline" className="text-[8px] py-0 h-4 border-primary/20 bg-primary/5 uppercase font-black tracking-tighter">
+                {row.original.mediaType.replace('_URL', '').replace('_FILEID', '').replace('_LOCAL', '')}
+              </Badge>
+            )}
           </span>
         </div>
       ),

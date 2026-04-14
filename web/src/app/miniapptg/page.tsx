@@ -58,6 +58,7 @@ type TelegramUser = {
     origem: string;
     media: string | null;
     mediaType: string | null;
+    isVideo?: boolean;
   } | null;
   favoriteHusbando: {
     id: number;
@@ -66,6 +67,7 @@ type TelegramUser = {
     origem: string;
     media: string | null;
     mediaType: string | null;
+    isVideo?: boolean;
   } | null;
   waifus: Array<{
     id: number;
@@ -147,12 +149,14 @@ function CharacterMedia({
   name,
   type,
   theme,
+  isVideo,
 }: {
   media: string | null;
   mediaType: string | null;
   name: string;
   type: "waifu" | "husbando";
   theme: TelegramTheme;
+  isVideo?: boolean;
 }) {
   if (!media) {
     return (
@@ -167,6 +171,19 @@ function CharacterMedia({
           No image
         </span>
       </div>
+    );
+  }
+
+  if (isVideo) {
+    return (
+      <video
+        src={media}
+        className="w-full h-full object-cover"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
     );
   }
 
@@ -241,6 +258,7 @@ function FavoriteCard({
           name={character.name}
           type={type}
           theme={theme}
+          isVideo={(character as any).isVideo}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         <div
@@ -299,31 +317,14 @@ function CollectionCard({
       style={{ backgroundColor: theme.themeParams.section_bg_color || "#ffffff" }}
     >
       <div className="aspect-[2/3] relative overflow-hidden">
-        {character.media ? (
-          character.isVideo ? (
-            <video
-              src={character.media}
-              className="w-full h-full object-cover"
-              muted
-              loop
-              playsInline
-            />
-          ) : (
-            <img
-              src={character.media}
-              alt={character.name}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          )
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ backgroundColor: theme.themeParams.secondary_bg_color || "#f0f0f0" }}
-          >
-            <span style={{ color: theme.themeParams.hint_color }}>?</span>
-          </div>
-        )}
+        <CharacterMedia
+          media={character.media}
+          mediaType={character.mediaType}
+          name={character.name}
+          type={type}
+          theme={theme}
+          isVideo={character.isVideo}
+        />
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         

@@ -119,7 +119,7 @@ export function SessionLogsBots() {
 
   const handleReset = async () => {
     if (!confirm("Tem certeza que deseja resetar todas as sessões? Esta ação não pode ser desfeita.")) return;
-    
+
     setIsResetting(true);
     try {
       const success = await resetSessionsServer();
@@ -138,7 +138,7 @@ export function SessionLogsBots() {
 
   const handleLeaveGroup = async (groupId: string) => {
     if (!confirm("Tem certeza que deseja sair do grupo?")) return;
-    
+
     setActionLoading(groupId);
     try {
       const success = await leaveGroupServer(groupId);
@@ -158,7 +158,7 @@ export function SessionLogsBots() {
   const handleToggleBan = async (userId: string, currentBanned: boolean) => {
     const action = currentBanned ? "desbanir" : "banir";
     if (!confirm(`Tem certeza que deseja ${action} este usuário?`)) return;
-    
+
     setActionLoading(userId);
     try {
       const success = await toggleBanUserServer(userId, !currentBanned);
@@ -279,7 +279,7 @@ export function SessionLogsBots() {
                 filteredSessions.map((session) => {
                   const isGroupSession = isGroup(session.key);
                   const isUserSession = isUser(session.key);
-                  
+
                   return (
                     <TableRow
                       key={session.key}

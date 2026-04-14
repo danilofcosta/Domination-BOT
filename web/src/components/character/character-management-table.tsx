@@ -43,6 +43,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
   const [rarities, setRarities] = React.useState<any[]>([])
   const [selectedEvent, setSelectedEvent] = React.useState<string>("all")
   const [selectedRarity, setSelectedRarity] = React.useState<string>("all")
+  const [selectedMediaType, setSelectedMediaType] = React.useState<string>("all")
   const [rowSelection, setRowSelection] = React.useState<VisibilityState>({})
   const [bulkDialogOpen, setBulkDialogOpen] = React.useState(false)
   const [bulkEvent, setBulkEvent] = React.useState<string>("none")
@@ -58,11 +59,12 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
     loadFilters()
   }, [])
 
-  const hasFilters = selectedEvent !== "all" || selectedRarity !== "all"
+  const hasFilters = selectedEvent !== "all" || selectedRarity !== "all" || selectedMediaType !== "all"
 
   const clearFilters = () => {
     setSelectedEvent("all")
     setSelectedRarity("all")
+    setSelectedMediaType("all")
   }
 
   React.useEffect(() => {
@@ -83,11 +85,11 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
     setIsLoading(true)
     const eventId = selectedEvent !== "all" ? parseInt(selectedEvent) : undefined
     const rarityId = selectedRarity !== "all" ? parseInt(selectedRarity) : undefined
-    const data = await getCharacters(type, debouncedSearch, idSearch || undefined, eventId, rarityId)
+    const data = await getCharacters(type, debouncedSearch, idSearch || undefined, eventId, rarityId, selectedMediaType)
     setCharacters(data)
     setIsLoading(false)
     setRowSelection({})
-  }, [type, debouncedSearch, idSearch, selectedEvent, selectedRarity])
+  }, [type, debouncedSearch, idSearch, selectedEvent, selectedRarity, selectedMediaType])
 
   React.useEffect(() => {
     fetchData()
@@ -188,6 +190,21 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
                   {r.emoji} {r.name}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedMediaType} onValueChange={setSelectedMediaType}>
+            <SelectTrigger className="w-[160px] bg-card/50 border-primary/10 rounded-xl">
+              <SelectValue placeholder="Mídia" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Mídias</SelectItem>
+              <SelectItem value="IMAGE_URL">🖼️ URL Imagem</SelectItem>
+              <SelectItem value="VIDEO_URL">🎥 URL Vídeo</SelectItem>
+              <SelectItem value="IMAGE_FILEID">🆔 ID Imagem</SelectItem>
+              <SelectItem value="VIDEO_FILEID">🆔 ID Vídeo</SelectItem>
+              <SelectItem value="IMAGE_LOCAL">📁 Local Imagem</SelectItem>
+              <SelectItem value="VIDEO_LOCAL">📁 Local Vídeo</SelectItem>
             </SelectContent>
           </Select>
 

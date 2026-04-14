@@ -85,7 +85,7 @@ export default async function initializeBot(
    bot.use(devCommands);
   bot.use(customCommands);
 
-  // //LISTENERS
+//   // //LISTENERS
  bot.use(listeners);
  bot.use(callbacks);
 

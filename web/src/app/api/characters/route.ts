@@ -30,7 +30,9 @@ export async function GET(req: Request) {
   const eventId = url.searchParams.get("event");
   const sourceType = url.searchParams.get("sourceType");
 
-  const take = 50;
+  const page = parseInt(url.searchParams.get("page") || "1");
+  const take = 24;
+  const skip = (page - 1) * take;
   const whereClause: any = {};
 
   if (search) {
@@ -52,6 +54,9 @@ export async function GET(req: Request) {
     case "name":
       orderBy = { name: "asc" };
       break;
+    case "old":
+      orderBy = { createdAt: "asc" };
+      break;
     default:
       orderBy = { createdAt: "desc" };
   }
@@ -72,6 +77,7 @@ export async function GET(req: Request) {
     const rawWaifus = await prisma.characterWaifu.findMany({
       where: waifuWhere,
       take,
+      skip,
       orderBy,
     });
     waifus = await mapWithDisplay(rawWaifus, "waifu");
@@ -90,6 +96,7 @@ export async function GET(req: Request) {
     const rawHusbandos = await prisma.characterHusbando.findMany({
       where: husbandoWhere,
       take,
+      skip,
       orderBy,
     });
     husbandos = await mapWithDisplay(rawHusbandos, "husbando");

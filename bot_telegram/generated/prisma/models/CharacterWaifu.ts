@@ -253,8 +253,8 @@ export type CharacterWaifuGroupByOutputType = {
   id: number
   name: string
   origem: string
-  mediaType: $Enums.MediaType | null
-  media: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras: runtime.JsonValue | null
   slug: string
   createdAt: Date
@@ -295,8 +295,8 @@ export type CharacterWaifuWhereInput = {
   id?: Prisma.IntFilter<"CharacterWaifu"> | number
   name?: Prisma.StringFilter<"CharacterWaifu"> | string
   origem?: Prisma.StringFilter<"CharacterWaifu"> | string
-  mediaType?: Prisma.EnumMediaTypeNullableFilter<"CharacterWaifu"> | $Enums.MediaType | null
-  media?: Prisma.StringNullableFilter<"CharacterWaifu"> | string | null
+  mediaType?: Prisma.EnumMediaTypeFilter<"CharacterWaifu"> | $Enums.MediaType
+  media?: Prisma.StringFilter<"CharacterWaifu"> | string
   extras?: Prisma.JsonNullableFilter<"CharacterWaifu">
   slug?: Prisma.StringFilter<"CharacterWaifu"> | string
   createdAt?: Prisma.DateTimeFilter<"CharacterWaifu"> | Date | string
@@ -318,8 +318,8 @@ export type CharacterWaifuOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   origem?: Prisma.SortOrder
-  mediaType?: Prisma.SortOrderInput | Prisma.SortOrder
-  media?: Prisma.SortOrderInput | Prisma.SortOrder
+  mediaType?: Prisma.SortOrder
+  media?: Prisma.SortOrder
   extras?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -345,8 +345,8 @@ export type CharacterWaifuWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CharacterWaifuWhereInput | Prisma.CharacterWaifuWhereInput[]
   name?: Prisma.StringFilter<"CharacterWaifu"> | string
   origem?: Prisma.StringFilter<"CharacterWaifu"> | string
-  mediaType?: Prisma.EnumMediaTypeNullableFilter<"CharacterWaifu"> | $Enums.MediaType | null
-  media?: Prisma.StringNullableFilter<"CharacterWaifu"> | string | null
+  mediaType?: Prisma.EnumMediaTypeFilter<"CharacterWaifu"> | $Enums.MediaType
+  media?: Prisma.StringFilter<"CharacterWaifu"> | string
   extras?: Prisma.JsonNullableFilter<"CharacterWaifu">
   createdAt?: Prisma.DateTimeFilter<"CharacterWaifu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CharacterWaifu"> | Date | string
@@ -367,8 +367,8 @@ export type CharacterWaifuOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   origem?: Prisma.SortOrder
-  mediaType?: Prisma.SortOrderInput | Prisma.SortOrder
-  media?: Prisma.SortOrderInput | Prisma.SortOrder
+  mediaType?: Prisma.SortOrder
+  media?: Prisma.SortOrder
   extras?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -394,8 +394,8 @@ export type CharacterWaifuScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"CharacterWaifu"> | number
   name?: Prisma.StringWithAggregatesFilter<"CharacterWaifu"> | string
   origem?: Prisma.StringWithAggregatesFilter<"CharacterWaifu"> | string
-  mediaType?: Prisma.EnumMediaTypeNullableWithAggregatesFilter<"CharacterWaifu"> | $Enums.MediaType | null
-  media?: Prisma.StringNullableWithAggregatesFilter<"CharacterWaifu"> | string | null
+  mediaType?: Prisma.EnumMediaTypeWithAggregatesFilter<"CharacterWaifu"> | $Enums.MediaType
+  media?: Prisma.StringWithAggregatesFilter<"CharacterWaifu"> | string
   extras?: Prisma.JsonNullableWithAggregatesFilter<"CharacterWaifu">
   slug?: Prisma.StringWithAggregatesFilter<"CharacterWaifu"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CharacterWaifu"> | Date | string
@@ -412,8 +412,8 @@ export type CharacterWaifuScalarWhereWithAggregatesInput = {
 export type CharacterWaifuCreateInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -435,8 +435,8 @@ export type CharacterWaifuUncheckedCreateInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -457,8 +457,8 @@ export type CharacterWaifuUncheckedCreateInput = {
 export type CharacterWaifuUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -480,8 +480,8 @@ export type CharacterWaifuUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -503,8 +503,8 @@ export type CharacterWaifuCreateManyInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -521,8 +521,8 @@ export type CharacterWaifuCreateManyInput = {
 export type CharacterWaifuUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -540,8 +540,8 @@ export type CharacterWaifuUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -693,8 +693,8 @@ export type CharacterWaifuUpdateOneRequiredWithoutWaifuRarityNestedInput = {
 export type CharacterWaifuCreateWithoutUserInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -715,8 +715,8 @@ export type CharacterWaifuUncheckedCreateWithoutUserInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -752,8 +752,8 @@ export type CharacterWaifuUpdateToOneWithWhereWithoutUserInput = {
 export type CharacterWaifuUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -774,8 +774,8 @@ export type CharacterWaifuUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -795,8 +795,8 @@ export type CharacterWaifuUncheckedUpdateWithoutUserInput = {
 export type CharacterWaifuCreateWithoutWaifuCollectionInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -817,8 +817,8 @@ export type CharacterWaifuUncheckedCreateWithoutWaifuCollectionInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -854,8 +854,8 @@ export type CharacterWaifuUpdateToOneWithWhereWithoutWaifuCollectionInput = {
 export type CharacterWaifuUpdateWithoutWaifuCollectionInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -876,8 +876,8 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuCollectionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -897,8 +897,8 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuCollectionInput = {
 export type CharacterWaifuCreateWithoutWaifuEventInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -919,8 +919,8 @@ export type CharacterWaifuUncheckedCreateWithoutWaifuEventInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -956,8 +956,8 @@ export type CharacterWaifuUpdateToOneWithWhereWithoutWaifuEventInput = {
 export type CharacterWaifuUpdateWithoutWaifuEventInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -978,8 +978,8 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuEventInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -999,8 +999,8 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuEventInput = {
 export type CharacterWaifuCreateWithoutWaifuRarityInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -1021,8 +1021,8 @@ export type CharacterWaifuUncheckedCreateWithoutWaifuRarityInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug: string
   createdAt?: Date | string
@@ -1058,8 +1058,8 @@ export type CharacterWaifuUpdateToOneWithWhereWithoutWaifuRarityInput = {
 export type CharacterWaifuUpdateWithoutWaifuRarityInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1080,8 +1080,8 @@ export type CharacterWaifuUncheckedUpdateWithoutWaifuRarityInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1260,8 +1260,8 @@ export type $CharacterWaifuPayload<ExtArgs extends runtime.Types.Extensions.Inte
     id: number
     name: string
     origem: string
-    mediaType: $Enums.MediaType | null
-    media: string | null
+    mediaType: $Enums.MediaType
+    media: string
     extras: runtime.JsonValue | null
     slug: string
     createdAt: Date

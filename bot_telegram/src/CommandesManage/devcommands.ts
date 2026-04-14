@@ -6,14 +6,19 @@ import {
   createSecureServer,
   emoji_id,
 } from "../handlers/Comandos/testes_commands.js";
+import { updbts } from "../testes/utts.js";
 
 const devCommands = new CommandGroup<MyContext>();
-function ForceDrop(ctx: MyContext) {
+async function ForceDrop(ctx: MyContext) {
   console.log("dev");
   console.log(ctx.message?.from.id);
   console.log(process.env.CHAT_ID_DEV);
   if (String(ctx.message?.from.id) === process.env.CHAT_ID_DEV) {
-    DropCharacter(ctx);
+    const result = await DropCharacter(ctx);
+    console.log("ForceDrop result:", result);
+    if (!result) {
+      await ctx.reply("Falha ao dropar character");
+    }
   }
 }
 
@@ -34,6 +39,12 @@ devCommands.command(
   "createuser",
   "Start the bot and get a greeting message",
   createSecureServer,
+  options,
+);
+devCommands.command(
+  "d",
+  "Start the bot and get a greeting message",
+  updbts,
   options,
 );
 

@@ -8,8 +8,9 @@
     "build": "npx ts",
     "dev": "tsx watch src/index.ts",
     "local": "tsx  src/testes/teste.ts",
-    "up": "tsx  src/testes/up.ts",
-    "clean": "tsx  src/testes/clean.ts",
+    "res": "tsx  src/testesreset_auto_increment.ts",
+     "up00000000000000000000000000": "tsx  src/testes/up.ts",
+    "clean": "tsx  src/testes/delete_from_id.ts",
     "addEvent": "tsx src/handlers/Comandos/admin/add_event.ts",
     "addRarity": "tsx src/handlers/Comandos/admin/add_rarity.ts"
   },

@@ -253,8 +253,8 @@ export type CharacterHusbandoGroupByOutputType = {
   id: number
   name: string
   origem: string
-  mediaType: $Enums.MediaType | null
-  media: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras: runtime.JsonValue | null
   createdAt: Date
@@ -295,8 +295,8 @@ export type CharacterHusbandoWhereInput = {
   id?: Prisma.IntFilter<"CharacterHusbando"> | number
   name?: Prisma.StringFilter<"CharacterHusbando"> | string
   origem?: Prisma.StringFilter<"CharacterHusbando"> | string
-  mediaType?: Prisma.EnumMediaTypeNullableFilter<"CharacterHusbando"> | $Enums.MediaType | null
-  media?: Prisma.StringNullableFilter<"CharacterHusbando"> | string | null
+  mediaType?: Prisma.EnumMediaTypeFilter<"CharacterHusbando"> | $Enums.MediaType
+  media?: Prisma.StringFilter<"CharacterHusbando"> | string
   slug?: Prisma.StringFilter<"CharacterHusbando"> | string
   extras?: Prisma.JsonNullableFilter<"CharacterHusbando">
   createdAt?: Prisma.DateTimeFilter<"CharacterHusbando"> | Date | string
@@ -318,8 +318,8 @@ export type CharacterHusbandoOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   origem?: Prisma.SortOrder
-  mediaType?: Prisma.SortOrderInput | Prisma.SortOrder
-  media?: Prisma.SortOrderInput | Prisma.SortOrder
+  mediaType?: Prisma.SortOrder
+  media?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   extras?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -345,8 +345,8 @@ export type CharacterHusbandoWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CharacterHusbandoWhereInput | Prisma.CharacterHusbandoWhereInput[]
   name?: Prisma.StringFilter<"CharacterHusbando"> | string
   origem?: Prisma.StringFilter<"CharacterHusbando"> | string
-  mediaType?: Prisma.EnumMediaTypeNullableFilter<"CharacterHusbando"> | $Enums.MediaType | null
-  media?: Prisma.StringNullableFilter<"CharacterHusbando"> | string | null
+  mediaType?: Prisma.EnumMediaTypeFilter<"CharacterHusbando"> | $Enums.MediaType
+  media?: Prisma.StringFilter<"CharacterHusbando"> | string
   extras?: Prisma.JsonNullableFilter<"CharacterHusbando">
   createdAt?: Prisma.DateTimeFilter<"CharacterHusbando"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CharacterHusbando"> | Date | string
@@ -367,8 +367,8 @@ export type CharacterHusbandoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   origem?: Prisma.SortOrder
-  mediaType?: Prisma.SortOrderInput | Prisma.SortOrder
-  media?: Prisma.SortOrderInput | Prisma.SortOrder
+  mediaType?: Prisma.SortOrder
+  media?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   extras?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -394,8 +394,8 @@ export type CharacterHusbandoScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"CharacterHusbando"> | number
   name?: Prisma.StringWithAggregatesFilter<"CharacterHusbando"> | string
   origem?: Prisma.StringWithAggregatesFilter<"CharacterHusbando"> | string
-  mediaType?: Prisma.EnumMediaTypeNullableWithAggregatesFilter<"CharacterHusbando"> | $Enums.MediaType | null
-  media?: Prisma.StringNullableWithAggregatesFilter<"CharacterHusbando"> | string | null
+  mediaType?: Prisma.EnumMediaTypeWithAggregatesFilter<"CharacterHusbando"> | $Enums.MediaType
+  media?: Prisma.StringWithAggregatesFilter<"CharacterHusbando"> | string
   slug?: Prisma.StringWithAggregatesFilter<"CharacterHusbando"> | string
   extras?: Prisma.JsonNullableWithAggregatesFilter<"CharacterHusbando">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CharacterHusbando"> | Date | string
@@ -412,8 +412,8 @@ export type CharacterHusbandoScalarWhereWithAggregatesInput = {
 export type CharacterHusbandoCreateInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -435,8 +435,8 @@ export type CharacterHusbandoUncheckedCreateInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -457,8 +457,8 @@ export type CharacterHusbandoUncheckedCreateInput = {
 export type CharacterHusbandoUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -480,8 +480,8 @@ export type CharacterHusbandoUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -503,8 +503,8 @@ export type CharacterHusbandoCreateManyInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -521,8 +521,8 @@ export type CharacterHusbandoCreateManyInput = {
 export type CharacterHusbandoUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -540,8 +540,8 @@ export type CharacterHusbandoUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -636,12 +636,8 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
-export type NullableEnumMediaTypeFieldUpdateOperationsInput = {
-  set?: $Enums.MediaType | null
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
+export type EnumMediaTypeFieldUpdateOperationsInput = {
+  set?: $Enums.MediaType
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -658,6 +654,10 @@ export type IntFieldUpdateOperationsInput = {
 
 export type EnumSourceTypeFieldUpdateOperationsInput = {
   set?: $Enums.SourceType
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -725,8 +725,8 @@ export type CharacterHusbandoUpdateOneWithoutUserNestedInput = {
 export type CharacterHusbandoCreateWithoutHusbandoCollectionInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -747,8 +747,8 @@ export type CharacterHusbandoUncheckedCreateWithoutHusbandoCollectionInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -784,8 +784,8 @@ export type CharacterHusbandoUpdateToOneWithWhereWithoutHusbandoCollectionInput 
 export type CharacterHusbandoUpdateWithoutHusbandoCollectionInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -806,8 +806,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoCollectionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -827,8 +827,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoCollectionInput = {
 export type CharacterHusbandoCreateWithoutHusbandoEventInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -849,8 +849,8 @@ export type CharacterHusbandoUncheckedCreateWithoutHusbandoEventInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -886,8 +886,8 @@ export type CharacterHusbandoUpdateToOneWithWhereWithoutHusbandoEventInput = {
 export type CharacterHusbandoUpdateWithoutHusbandoEventInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -908,8 +908,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoEventInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -929,8 +929,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoEventInput = {
 export type CharacterHusbandoCreateWithoutHusbandoRarityInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -951,8 +951,8 @@ export type CharacterHusbandoUncheckedCreateWithoutHusbandoRarityInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -988,8 +988,8 @@ export type CharacterHusbandoUpdateToOneWithWhereWithoutHusbandoRarityInput = {
 export type CharacterHusbandoUpdateWithoutHusbandoRarityInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1010,8 +1010,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoRarityInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1031,8 +1031,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutHusbandoRarityInput = {
 export type CharacterHusbandoCreateWithoutUserInput = {
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -1053,8 +1053,8 @@ export type CharacterHusbandoUncheckedCreateWithoutUserInput = {
   id?: number
   name: string
   origem: string
-  mediaType?: $Enums.MediaType | null
-  media?: string | null
+  mediaType: $Enums.MediaType
+  media: string
   slug: string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
@@ -1090,8 +1090,8 @@ export type CharacterHusbandoUpdateToOneWithWhereWithoutUserInput = {
 export type CharacterHusbandoUpdateWithoutUserInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1112,8 +1112,8 @@ export type CharacterHusbandoUncheckedUpdateWithoutUserInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   origem?: Prisma.StringFieldUpdateOperationsInput | string
-  mediaType?: Prisma.NullableEnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType | null
-  media?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mediaType?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  media?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   extras?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1292,8 +1292,8 @@ export type $CharacterHusbandoPayload<ExtArgs extends runtime.Types.Extensions.I
     id: number
     name: string
     origem: string
-    mediaType: $Enums.MediaType | null
-    media: string | null
+    mediaType: $Enums.MediaType
+    media: string
     slug: string
     extras: runtime.JsonValue | null
     createdAt: Date
