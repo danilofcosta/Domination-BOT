@@ -54,6 +54,7 @@ export function createCaption(
 ${name}
 ${info}
 ${rarity}
+
 ${eventLine}
 
 ${addedBy}</b>`.trim();
