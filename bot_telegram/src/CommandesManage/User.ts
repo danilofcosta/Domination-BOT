@@ -85,8 +85,8 @@ const localizedCommands: Record<string, { es: { command: string; description: st
     pt: { command: `minhainfo${botPrefix}`, description: "Suas informações" }
   },
   random: {
-    es: { command: "aleatorio", description: "Personaje aleatorio del DB" },
-    pt: { command: "aleatorio", description: "Personagem aleatório do DB" }
+    es: { command: `${typeBot}`, description: "Personaje aleatorio del DB" },
+    pt: { command: `${typeBot}`, description: "Personagem aleatório do DB" }
   },
   top: {
     es: { command: `${botPrefix}top`, description: "Top jugadores" },
