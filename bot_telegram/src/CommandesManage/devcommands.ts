@@ -6,7 +6,7 @@ import {
   createSecureServer,
   emoji_id,
 } from "../handlers/Comandos/testes_commands.js";
-import { updbts } from "../testes/utts.js";
+// import { updbts } from "../testes/utts.js";
 
 const devCommands = new CommandGroup<MyContext>();
 async function ForceDrop(ctx: MyContext) {
@@ -41,11 +41,11 @@ devCommands.command(
   createSecureServer,
   options,
 );
-devCommands.command(
-  "d",
-  "Start the bot and get a greeting message",
-  updbts,
-  options,
-);
+// devCommands.command(
+//   "d",
+//   "Start the bot and get a greeting message",
+//   updbts,
+//   options,
+// );
 
 export { devCommands };
