@@ -1,4 +1,4 @@
-web0
+n web0
 bot_telegram/.vscode/launch.json
 bot_telegram/src/testes/
 stack.env
@@ -7,3 +7,4 @@ stack sever.env
 stack_sever.env
 bot_telegram/D/
 bot_telegram/dist/
+db.txt

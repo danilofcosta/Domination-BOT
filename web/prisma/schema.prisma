@@ -11,8 +11,8 @@ model CharacterHusbando {
   id                 Int                  @id @default(autoincrement())
   name               String               @db.VarChar(100)
   origem             String               @db.VarChar(100)
-  mediaType          MediaType?
-  media              String?
+  mediaType          MediaType
+  media              String
   slug               String               @unique
   extras             Json?
   createdAt          DateTime             @default(now())
@@ -36,8 +36,8 @@ model CharacterWaifu {
   id               Int               @id @default(autoincrement())
   name             String            @db.VarChar(100)
   origem           String            @db.VarChar(100)
-  mediaType        MediaType?
-  media            String?
+  mediaType        MediaType
+  media            String
   extras           Json?
   slug             String            @unique
   createdAt        DateTime          @default(now())
@@ -147,8 +147,6 @@ model User {
   id                 Int                  @id @default(autoincrement())
   favoriteWaifuId    Int?
   favoriteHusbandoId Int?
-  waifuLikes         Int[]
-  husbandoLikes      Int[]
   waifuConfig        Json?
   husbandoConfig     Json?
   telegramData       Json?
@@ -158,6 +156,8 @@ model User {
   telegramId         BigInt               @unique
   webLogin           String?              @unique
   webPassword        String?
+  husbandoLikes      Int[]
+  waifuLikes         Int[]
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])

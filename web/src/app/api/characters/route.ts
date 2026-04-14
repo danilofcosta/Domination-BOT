@@ -29,6 +29,7 @@ export async function GET(req: Request) {
   const rarityId = url.searchParams.get("rarity");
   const eventId = url.searchParams.get("event");
   const sourceType = url.searchParams.get("sourceType");
+  const anime = url.searchParams.get("anime");
 
   const page = parseInt(url.searchParams.get("page") || "1");
   const take = 24;
@@ -44,6 +45,18 @@ export async function GET(req: Request) {
 
   if (sourceType) {
     whereClause.sourceType = sourceType;
+  }
+
+  if (anime) {
+    if (whereClause.OR) {
+      whereClause.AND = [
+        { OR: whereClause.OR },
+        { origem: { contains: anime, mode: "insensitive" } },
+      ];
+      delete whereClause.OR;
+    } else {
+      whereClause.origem = { contains: anime, mode: "insensitive" };
+    }
   }
 
   let orderBy: any;

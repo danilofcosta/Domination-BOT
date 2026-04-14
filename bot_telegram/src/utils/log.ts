@@ -22,6 +22,7 @@ export function trace(...messages: any[]) {
   console.trace(`[TRACE] ${messages}`);
 }
 
-export function fatal(message: string) {
-  console.error(`[FATAL] ${message}`);
+export function fatal(message: string, ...args: any[]) {
+  console.error(`[FATAL] ${message}`, ...args);
+  process.exit(1);
 }

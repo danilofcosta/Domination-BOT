@@ -3,6 +3,7 @@ import "dotenv/config";
 import { Environment_validation } from "./utils/testes/environment_validation.js";
 import { testDBConnection } from "./utils/testes/test_db_Connection.js";
 import { ChatType } from "./utils/customTypes.js";
+import { fatal, info } from "./utils/log.js";
 // Validar variáveis de ambiente
 await Environment_validation();
 
@@ -30,7 +31,7 @@ await bot.start({
         process.env.CHAT_ID_DEV as string,
         `Bot Iniciado ${process.env.TYPE_BOT}\nModo : ${process.env.NODE_ENV}\nConectado ao banco: ${dbtest}`,
       );
-      console.log("Bot iniciado", process.env.NODE_ENV, process.env.TYPE_BOT);
+      info("Bot iniciado", process.env.NODE_ENV, process.env.TYPE_BOT);
     }
   },
 });
@@ -39,7 +40,7 @@ await bot.start({
 process.once("SIGINT", async () => {
   if (process.env.CHAT_ID) {
     await bot.api.sendMessage(process.env.CHAT_ID_DEV as string, "Bot parado");
-    console.log("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
+    fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
   }
   await bot.stop();
 });

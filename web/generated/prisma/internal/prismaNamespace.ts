@@ -1545,8 +1545,6 @@ export const UserScalarFieldEnum = {
   id: 'id',
   favoriteWaifuId: 'favoriteWaifuId',
   favoriteHusbandoId: 'favoriteHusbandoId',
-  waifuLikes: 'waifuLikes',
-  husbandoLikes: 'husbandoLikes',
   waifuConfig: 'waifuConfig',
   husbandoConfig: 'husbandoConfig',
   telegramData: 'telegramData',
@@ -1555,7 +1553,9 @@ export const UserScalarFieldEnum = {
   language: 'language',
   telegramId: 'telegramId',
   webLogin: 'webLogin',
-  webPassword: 'webPassword'
+  webPassword: 'webPassword',
+  husbandoLikes: 'husbandoLikes',
+  waifuLikes: 'waifuLikes'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

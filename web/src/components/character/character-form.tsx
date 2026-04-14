@@ -83,6 +83,7 @@ export function CharacterForm({
     null,
   );
   const [isResolving, setIsResolving] = React.useState(false);
+  const [isProcessingFile, setIsProcessingFile] = React.useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [availableEvents, setAvailableEvents] = React.useState<any[]>([]);
@@ -222,7 +223,13 @@ export function CharacterForm({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     setPreviewUrl(url);
-    setIsVideoPreview(/\.(mp4|webm|mov|avi|mkv)$/i.test(url));
+    const isVideo = /\.(mp4|webm|mov|avi|mkv)$/i.test(url) || url.includes("video");
+    setIsVideoPreview(isVideo);
+    if (isVideo) {
+      setMediaType("VIDEO_URL");
+    } else if (url.startsWith("http")) {
+      setMediaType("IMAGE_URL");
+    }
   };
 
   const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
@@ -230,7 +237,9 @@ export function CharacterForm({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setIsProcessingFile(true);
       processFile(file);
+      setTimeout(() => setIsProcessingFile(false), 500);
     }
   };
 
@@ -247,6 +256,7 @@ export function CharacterForm({
       file.type.includes("video") ||
       /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
     setIsVideoPreview(isVideo);
+    setMediaType(isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL");
   };
 
   React.useEffect(() => {
@@ -260,7 +270,12 @@ export function CharacterForm({
           const file = item.getAsFile();
           if (file) {
             setMediaEntry("upload");
+            setIsProcessingFile(true);
+            const isVideo = file.type.includes("video") || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
+            setMediaType(isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL");
+            setIsVideoPreview(isVideo);
             processFile(file);
+            setTimeout(() => setIsProcessingFile(false), 500);
             if (fileInputRef.current) {
               const dt = new DataTransfer();
               dt.items.add(file);
@@ -278,6 +293,9 @@ export function CharacterForm({
 
   const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    if (isSubmitting || isProcessingFile) return;
+    
     setIsSubmitting(true);
 
     try {
@@ -584,8 +602,8 @@ export function CharacterForm({
             <XIcon className="mr-2 size-4" /> Cancelar
           </Button>
         </DialogClose>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
+        <Button type="submit" disabled={isSubmitting || isProcessingFile}>
+          {isSubmitting || isProcessingFile ? (
             <Loader2Icon className="mr-2 size-4 animate-spin" />
           ) : (
             <CheckIcon className="mr-2 size-4" />

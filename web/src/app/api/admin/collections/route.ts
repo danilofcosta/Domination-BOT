@@ -57,12 +57,12 @@ export async function GET() {
 
     const userWaifuCounts = await prisma.waifuCollection.groupBy({
       by: ["userId"],
-      _count: true,
+      _sum: { count: true },
     });
 
     const userHusbandoCounts = await prisma.husbandoCollection.groupBy({
       by: ["userId"],
-      _count: true,
+      _sum: { count: true },
     });
 
     const userIds = [...new Set([
@@ -79,9 +79,11 @@ export async function GET() {
       },
     });
 
-    const topOwners = userIds.map(tgId => {
-      const waifuCount = userWaifuCounts.find(w => w.userId === tgId)?._count || 0;
-      const husbandoCount = userHusbandoCounts.find(h => h.userId === tgId)?._count || 0;
+    const topOwners = userIds.map((tgId: bigint) => {
+      const waifuEntry = userWaifuCounts.find(w => w.userId === tgId);
+      const husbandoEntry = userHusbandoCounts.find(h => h.userId === tgId);
+      const waifuCount = waifuEntry?._sum?.count ? Number(waifuEntry._sum.count) : 0;
+      const husbandoCount = husbandoEntry?._sum?.count ? Number(husbandoEntry._sum.count) : 0;
       const user = users.find(u => u.telegramId === tgId);
       
       return {

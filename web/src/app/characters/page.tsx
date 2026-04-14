@@ -37,11 +37,13 @@ export default function CharactersPage() {
     rarity: "",
     event: "",
     sourceType: "",
+    anime: "",
   });
   const [options, setOptions] = useState({
     rarities: [] as { id: number; name: string; emoji: string }[],
     events: [] as { id: number; name: string; emoji: string }[],
     sourceTypes: ["ANIME", "GAME", "MANGA", "MOVIE"],
+    animeNames: [] as string[],
   });
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export default function CharactersPage() {
           rarities: data.rarities || [],
           events: data.events || [],
           sourceTypes: ["ANIME", "GAME", "MANGA", "MOVIE"],
+          animeNames: data.animeNames || [],
         });
       }
     } catch (err) {
@@ -78,6 +81,7 @@ export default function CharactersPage() {
       if (filters.rarity) params.set("rarity", filters.rarity);
       if (filters.event) params.set("event", filters.event);
       if (filters.sourceType) params.set("sourceType", filters.sourceType);
+      if (filters.anime) params.set("anime", filters.anime);
 
       const res = await fetch(`/api/characters?${params.toString()}`);
       if (!res.ok) throw new Error("Falha ao buscar personagens");
@@ -135,10 +139,10 @@ export default function CharactersPage() {
     return () => observer.disconnect();
   }, [loadMore, hasMore, loading, fetchingMore]);
 
-  const hasActiveFilters = filters.rarity || filters.event || filters.sourceType;
+  const hasActiveFilters = filters.rarity || filters.event || filters.sourceType || filters.anime;
 
   const clearFilters = () => {
-    setFilters({ rarity: "", event: "", sourceType: "" });
+    setFilters({ rarity: "", event: "", sourceType: "", anime: "" });
   };
 
   return (
@@ -241,6 +245,19 @@ export default function CharactersPage() {
                     ))}
                   </SelectContent>
                 </Select>
+
+                <Select value={filters.anime} onValueChange={(v) => setFilters(f => ({ ...f, anime: v }))}>
+                  <SelectTrigger className="h-10 bg-background">
+                    <SelectValue placeholder="Anime" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.animeNames.map((anime) => (
+                      <SelectItem key={anime} value={anime}>
+                        {anime}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}
@@ -268,6 +285,14 @@ export default function CharactersPage() {
                 <Badge variant="secondary" className="gap-1 pl-2 pr-1">
                   {filters.sourceType}
                   <button onClick={() => setFilters(f => ({ ...f, sourceType: "" }))} className="ml-1 hover:bg-muted rounded p-0.5">
+                    <X className="size-3" />
+                  </button>
+                </Badge>
+              )}
+              {filters.anime && (
+                <Badge variant="secondary" className="gap-1 pl-2 pr-1">
+                  {filters.anime}
+                  <button onClick={() => setFilters(f => ({ ...f, anime: "" }))} className="ml-1 hover:bg-muted rounded p-0.5">
                     <X className="size-3" />
                   </button>
                 </Badge>

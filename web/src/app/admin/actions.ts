@@ -708,32 +708,44 @@ export async function updateCharacter(
       (formData.get("rarityIds") as string) || "[]",
     ) as number[];
 
-    let finalMedia = mediaUrlInput;
-    let finalMediaType:
-      | "IMAGE_URL"
-      | "VIDEO_URL"
-      | "IMAGE_FILEID"
-      | "VIDEO_FILEID"
-      | "IMAGE_LOCAL"
-      | "VIDEO_LOCAL" = (mediaTypeInput as any) || "IMAGE_URL";
-    let isVideo = finalMediaType.includes("VIDEO");
-    let localFilePath: string | null = null;
+  let finalMedia = "";
+  let finalMediaType:
+    | "IMAGE_URL"
+    | "VIDEO_URL"
+    | "IMAGE_FILEID"
+    | "VIDEO_FILEID"
+    | "IMAGE_LOCAL"
+    | "VIDEO_LOCAL" = "IMAGE_URL";
+  let isVideo = false;
+  let localFilePath: string | null = null;
 
-    if (file && file.size > 0) {
-      const uploadedPath = await handleFileUpload(file);
-      if (uploadedPath) {
-        localFilePath = uploadedPath;
-        isVideo =
-          file.type.includes("video") ||
-          /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name || "");
-        finalMediaType = isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL";
-      }
-    } else if (mediaUrlInput) {
-      isVideo = mediaUrlInput.match(/\.(mp4|webm|mov|avi|mkv)$/i) !== null;
-      finalMediaType = isVideo ? "VIDEO_URL" : "IMAGE_URL";
+  const existingCharacter = type === "waifu"
+    ? await prisma.characterWaifu.findUnique({ where: { id } })
+    : await prisma.characterHusbando.findUnique({ where: { id } });
+
+  if (file && file.size > 0) {
+    const uploadedPath = await handleFileUpload(file);
+    if (uploadedPath) {
+      localFilePath = uploadedPath;
+      isVideo =
+        file.type.includes("video") ||
+        /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name || "");
+      finalMediaType = isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL";
     }
+  } else if (mediaUrlInput && mediaUrlInput.trim()) {
+    finalMedia = mediaUrlInput;
+    isVideo = mediaUrlInput.match(/\.(mp4|webm|mov|avi|mkv)$/i) !== null;
+    finalMediaType = isVideo ? "VIDEO_URL" : "IMAGE_URL";
+  } else if (mediaTypeInput) {
+    finalMediaType = mediaTypeInput as any;
+    isVideo = finalMediaType.includes("VIDEO");
+  } else if (existingCharacter) {
+    finalMedia = existingCharacter.media;
+    finalMediaType = existingCharacter.mediaType;
+    isVideo = finalMediaType.includes("VIDEO");
+  }
 
-    const updateData: any = {
+  const updateData: any = {
       name,
       origem,
       sourceType,
