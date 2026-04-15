@@ -36,6 +36,8 @@ services:
       - stack.env
     environment:
       TYPE_BOT: waifu
+    volumes:
+      - botdata:/app/data
     depends_on:
       - postgres
 
@@ -43,6 +45,8 @@ services:
     build: ./bot_telegram
     container_name: husbando_bot
     restart: unless-stopped
+    volumes:
+      - botdata:/app/data
     env_file:
       - stack.env
     environment:
@@ -66,5 +70,6 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  botdata:
 
 
