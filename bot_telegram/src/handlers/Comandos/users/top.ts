@@ -3,9 +3,11 @@ import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function topHandler(ctx: MyContext) {
   const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+  info(`topHandler - carregando ranking`, { userId: ctx.from?.id, genero: ctx.session.settings.genero });
 
   const ranking = isHusbando
     ? await prisma.husbandoCollection.groupBy({
@@ -34,8 +36,11 @@ export async function topHandler(ctx: MyContext) {
       });
 
   if (!ranking.length) {
+    warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
     return ctx.reply("Nenhum usuário no ranking ainda.");
   }
+
+  debug(`topHandler - usuários no ranking`, { count: ranking.length });
 
   const users = await prisma.user.findMany({
     where: {
@@ -81,12 +86,17 @@ export async function topHandler(ctx: MyContext) {
     .text(ctx.t("top_btn_close"), "topuser_close");
 
   if (character) {
-    return Sendmedia({
-      ctx,
-      per: character,
-      caption: text,
-      reply_markup: reply_markup,
-    });
+    try {
+      return Sendmedia({
+        ctx,
+        per: character,
+        caption: text,
+        reply_markup: reply_markup,
+      });
+    } catch (e) {
+      error(`topHandler - erro ao enviar mídia`, e);
+      return ctx.reply(text);
+    }
   }
 
   return ctx.reply(text);

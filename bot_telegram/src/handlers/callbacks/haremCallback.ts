@@ -1,6 +1,7 @@
 import { InlineKeyboard } from "grammy";
 import { getHarem } from "../../cache/cache.js";
 import type { MyContext } from "../../utils/customTypes.js";
+import { info, warn, error, debug } from "../../utils/log.js";
 
 export async function haremCallback(ctx: MyContext) {
   const match = ctx.match as any;
@@ -10,6 +11,7 @@ export async function haremCallback(ctx: MyContext) {
   const userId = Number(userid);
 
   if (ctx.from?.id !== userId) {
+    warn(`haremCallback - usuário não autorizado`, { expected: userId, actual: ctx.from?.id });
     await ctx.answerCallbackQuery(
       ctx.t("error-action-not-autoauthorized-by-id"),
     );
@@ -22,7 +24,10 @@ export async function haremCallback(ctx: MyContext) {
   }
 
   const harem = await getHarem(userId);
-  if (!harem) return;
+  if (!harem) {
+    warn(`haremCallback - harém não encontrado no cache`, { userId });
+    return;
+  }
 
   const total = harem.length;
   let page = Number(pageRaw ?? 0);
@@ -32,18 +37,20 @@ export async function haremCallback(ctx: MyContext) {
   let jump = Number(jumpRaw ?? 2);
   if (isNaN(jump)) jump = 2;
 
-  // ações
   if (action === "prev") page--;
   if (action === "next") page++;
   if (action === "jump") page += jump;
 
   if (action === "page") page = 0;
 
-  // limite
-  if (page < 0 || page >= total) return;
+  if (page < 0 || page >= total) {
+    debug(`haremCallback - página fora do limite`, { page, total });
+    return;
+  }
 
-  // próximo salto
   const nextJump = jump * 2;
+
+  debug(`haremCallback - navegando harém`, { userId, page, action });
 
   const keyboard = new InlineKeyboard()
     .text(ctx.t("harem_btn_prev_page"), `harem_user_${userId}_prev_${page}`)
@@ -56,7 +63,6 @@ export async function haremCallback(ctx: MyContext) {
     )
     .text(ctx.t("harem_btn_next_page"), `harem_user_${userId}_next_${page}`)
     .row()
-    // .switchInline(ctx.t("harem_btn_inline_query"), `harem_user_${userId}`)
     .switchInlineCurrent(ctx.t("harem_btn_inline_query"), `harem_user_${userId}`)
     .text(
       ctx.t("harem_btn_fast_page") + ` x${jump}`,
@@ -65,11 +71,15 @@ export async function haremCallback(ctx: MyContext) {
     .row()
     .text(ctx.t("harem_btn_close"), `harem_user_${userId}_close`);
 
-  await ctx.editMessageCaption({
-    caption: harem[page],
-    reply_markup: keyboard,
-    parse_mode: "HTML",
-  });
+  try {
+    await ctx.editMessageCaption({
+      caption: harem[page],
+      reply_markup: keyboard,
+      parse_mode: "HTML",
+    });
+  } catch (e) {
+    error(`haremCallback - erro ao editar caption`, e);
+  }
 
   await ctx.answerCallbackQuery();
 }

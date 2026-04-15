@@ -47,7 +47,6 @@ export function create_caption({
     const telegramId =
       colItem.User?.telegramData?.id || colItem.User?.telegramId || 0;
     usermention = mentionUser(name, Number(telegramId));
-    console.log(usermention);
   } else {
     character_let = character;
     usermention =

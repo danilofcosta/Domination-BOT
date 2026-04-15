@@ -3,6 +3,7 @@ import { ProfileType } from "../../../../generated/prisma/client.js";
 import { prisma } from "../../../../lib/prisma.js";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { roleWeights } from "../../../utils/permissions.js";
+import { info, error, debug } from "../../../utils/log.js";
 
 
 
@@ -12,6 +13,8 @@ export async function reloadAdmsHandler(ctx: MyContext) {
     await ctx.reply("❌ Grupo ADM não configurado");
     return;
   }
+
+  info(`reloadAdmsHandler - iniciando atualização de ADMs`, { adminId: ctx.from?.id });
 
   let totalUpdated = 0;
   let totalErrors = 0;
@@ -24,6 +27,8 @@ export async function reloadAdmsHandler(ctx: MyContext) {
     await ctx.reply("Nenhum admin encontrado neste grupo.");
     return;
   }
+
+  debug(`reloadAdmsHandler - admins encontrados`, { count: admins.length });
 
   for (const admin of admins) {
     if (!admin.user?.id) continue;
@@ -62,10 +67,12 @@ export async function reloadAdmsHandler(ctx: MyContext) {
           totalUpdated++;
         }
     } catch (err) {
-      console.error(`Erro ao atualizar user ${userId}:`, err);
+      error(`reloadAdmsHandler - erro ao atualizar usuário ${userId}`, err);
       totalErrors++;
     }
   }
+
+  info(`reloadAdmsHandler - conclusão`, { totalUpdated, totalErrors });
 
   await ctx.reply(
     `✅ Atualização concluída!\n\n📊 Total atualizados: ${totalUpdated}\n❌ Erros: ${totalErrors}`

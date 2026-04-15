@@ -4,11 +4,11 @@ import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { setHarem } from "../../../cache/cache.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
-import console from "node:console";
 import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function HaremHandler(ctx: MyContext) {
-  console.log(ctx.from?.id, "harem");
+  info(`HaremHandler - carregando harém`, { userId: ctx.from?.id, genero: ctx.session.settings.genero });
 
   const user = await prisma.user.findUnique({
     where: {
@@ -52,6 +52,7 @@ export async function HaremHandler(ctx: MyContext) {
   });
 
   if (!user) {
+    warn(`HaremHandler - usuário não encontrado`, { userId: ctx.from?.id });
     ctx.reply(ctx.t("harem_no_user"));
     return;
   }
@@ -64,8 +65,9 @@ export async function HaremHandler(ctx: MyContext) {
     ctx.session.settings.genero === ChatType.HUSBANDO
       ? (user as any).HusbandoCollection
       : (user as any).WaifuCollection;
-  // console.log(user);
   const pages = Harem_mode_latest(colletion || [], ctx);
+
+  debug(`HaremHandler - páginas geradas`, { userId: ctx.from?.id, pageCount: pages.length });
 
   setHarem(Number(ctx.from?.id), pages);
   const harem_logo = ctx.t("harem_logo", {
@@ -92,7 +94,6 @@ export async function HaremHandler(ctx: MyContext) {
       `harem_user_${userId}_next_${pages.length > 1 ? 1 : 0}`,
     )
     .row()
-    // .switchInline(ctx.t("harem_btn_inline_query"), `harem_user_${userId}`)
     .switchInlineCurrent(
       ctx.t("harem_btn_inline_query"),
       `harem_user_${userId}`,
@@ -100,12 +101,16 @@ export async function HaremHandler(ctx: MyContext) {
     .row().url(ctx.t("harem_btn_web_app"), process.env.WEBAPP||`https://t.me/${ctx.me.username}?startgroup=true`).row()
     .text(ctx.t("harem_btn_close"), `harem_user_${userId}_close`);
 
-  await Sendmedia({
-    ctx: ctx,
-    per: data,
-    caption: harem_logo + "\n\n" + pages[0],
-    reply_markup: reply_markup,
-  });
+  try {
+    await Sendmedia({
+      ctx: ctx,
+      per: data,
+      caption: harem_logo + "\n\n" + pages[0],
+      reply_markup: reply_markup,
+    });
+  } catch (e) {
+    error(`HaremHandler - erro ao enviar mídia`, e);
+  }
 }
 
 function Harem_mode_latest(list_character: any[], ctx: MyContext) {

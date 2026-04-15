@@ -1,5 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import { ChatType, type Character } from "../customTypes.js";
+import { info, error, debug } from "../log.js";
 
 async function getRandom<T>(
   model: {
@@ -11,9 +12,13 @@ async function getRandom<T>(
   try {
     return prisma.$transaction(async () => {
       const count = await model.count();
-      if (count === 0) return null;
+      if (count === 0) {
+        debug(`getRandom - banco vazio, sem personagens`);
+        return null;
+      }
 
       const skip = Math.floor(Math.random() * count);
+      debug(`getRandom - buscando personagem`, { skip, total: count });
 
       const result = await model.findFirst({
         skip,
@@ -22,8 +27,8 @@ async function getRandom<T>(
 
       return result;
     });
-  } catch (error) {
-    console.error("Erro ao buscar personagem:", error);
+  } catch (e) {
+    error("getRandom - erro ao buscar personagem", e);
     return null;
   }
 }
@@ -31,8 +36,8 @@ async function getRandom<T>(
 export async function RandomCharacter(
   genero: ChatType,
 ): Promise<Character | null> {
+  info(`RandomCharacter - buscando personagem aleatório`, { genero });
 
-  console.log(genero)
   if (genero === ChatType.HUSBANDO) {
     return getRandom<Character>(prisma.characterHusbando, {
       HusbandoEvent: {
@@ -58,7 +63,7 @@ export async function RandomCharacter(
 export async function LastRandomCharacter(
   genero: ChatType,
 ): Promise<Character | null> {
-  console.log(genero);
+  info(`LastRandomCharacter - buscando último personagem`, { genero });
   const LIMIT = 1;
   try {
     const lastCharacter =
@@ -72,7 +77,6 @@ export async function LastRandomCharacter(
             orderBy: {
               id: "desc",
             },
-            //      skip: offset,
           })
         : await prisma.characterWaifu.findMany({
             take: LIMIT,
@@ -83,12 +87,11 @@ export async function LastRandomCharacter(
             orderBy: {
               id: "desc",
             },
-            //      skip: offset,
           });
 
     return lastCharacter[0] || null;
-  } catch (error) {
-    console.error("Erro ao buscar último personagem:", error);
+  } catch (e) {
+    error("LastRandomCharacter - erro ao buscar último personagem", e);
     return null;
   }
 }

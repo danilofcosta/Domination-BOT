@@ -18,9 +18,11 @@ import { callbacks } from "./callbackQuery.js";
 import { privateCommands } from "./CommandesManage/private.js";
 import { botCommands } from "./CommandesManage/User.js";
 import { adminCommands } from "./CommandesManage/adminCommands_bot.js";
+import { adminGroupsCommands } from "./CommandesManage/admin_groups.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
 import { customCommands } from "./CommandesManage/custom_commands.js";
+import { error } from "./utils/log.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,30 +84,31 @@ export default async function initializeBot(
   bot.use(privateCommands);
   bot.use(botCommands);
   bot.use(adminCommands);
-   bot.use(devCommands);
+  bot.use(adminGroupsCommands);
+  bot.use(devCommands);
   bot.use(customCommands);
 
-//   // //LISTENERS
- bot.use(listeners);
- bot.use(callbacks);
+  // //LISTENERS
+  bot.use(listeners);
+  bot.use(callbacks);
 
   if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-    await privateCommands.setCommands(bot);
-    await botCommands.setCommands(bot);
-    await devCommands.setCommands(bot);
- 
-
-
+    console.log("Bot iniciado production waifu");
+    // await privateCommands.setCommands(bot);
+    // await botCommands.setCommands(bot);
+    // await adminGroupsCommands.setCommands(bot);
+    // await devCommands.setCommands(bot);
+    // await adminCommands.setCommands(bot);
+    // await customCommands.setCommands(bot);
+    await bot.api.setMyCommands([
+        { command: "about", description: "Sobre o bot" },
+    ])
   }
 
   // Error handling
   bot.catch((err) => {
     const ctx = err.ctx;
-    console.error(`Erro no update ${ctx.update.update_id}:`, err.error);
-
-    if (err.error instanceof Error) {
-      console.error(err.error.message);
-    }
+    error(`Erro no update ${ctx.update.update_id}`, err.error);
   });
 
   return bot;

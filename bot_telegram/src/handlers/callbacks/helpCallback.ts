@@ -2,6 +2,7 @@ import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../utils/customTypes.js";
 import { ComandosUser } from "../../CommandesManage/User.js";
 import { botPrefix } from "../../CommandesManage/botConfigCommands.js";
+import { error, debug } from "../../utils/log.js";
 
 const ComandosAdmin = [
     { command: `addchar${botPrefix}`, description: "Add a character to the database (admin)" },
@@ -16,7 +17,11 @@ const ComandosAdmin = [
 
 export async function helpCallback(ctx: MyContext) {
     if (!ctx.callbackQuery?.data) return;
+    
     const [command, btn, action, ...rest] = ctx.callbackQuery.data.split("_");
+    
+    debug(`helpCallback`, { action, rest, userId: ctx.from?.id });
+
     if (action === "comandos") {
         if (!ctx.callbackQuery.message?.text) {
             await ctx.editMessageCaption({
@@ -25,7 +30,7 @@ export async function helpCallback(ctx: MyContext) {
                 reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
             }).catch(err => {
                 if (err.description?.includes("message is not modified")) return;
-                console.error("Error editing caption:", err);
+                error("helpCallback - erro ao editar caption", err);
             });
         }
         else
@@ -34,9 +39,8 @@ export async function helpCallback(ctx: MyContext) {
                     parse_mode: "HTML",
                     reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
                 });
-
-            } catch (error) {
-
+            } catch (e) {
+                error("helpCallback - erro ao editar texto", e);
             }
     }
     if (action === "comandos" && rest[0] === "user") {
@@ -44,17 +48,14 @@ export async function helpCallback(ctx: MyContext) {
             return `/${value.command} - ${value.description}`;
         }).join("\n");
 
-
         if (!ctx.callbackQuery.message?.text) {
-
-
             await ctx.editMessageCaption({
                 caption: comandosText,
                 parse_mode: "HTML",
                 reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
             }).catch(err => {
                 if (err.description?.includes("message is not modified")) return;
-                console.error("Error editing user commands caption:", err);
+                error("helpCallback - erro ao editar caption (user)", err);
             });
         }
         else
@@ -63,8 +64,8 @@ export async function helpCallback(ctx: MyContext) {
                     parse_mode: "HTML",
                     reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
                 });
-            } catch (error) {
-                console.log(error)
+            } catch (e) {
+                error("helpCallback - erro ao editar texto (user)", e);
             }
     }
 
@@ -80,7 +81,7 @@ export async function helpCallback(ctx: MyContext) {
                 reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
             }).catch(err => {
                 if (err.description?.includes("message is not modified")) return;
-                console.error("Error editing admin commands caption:", err);
+                error("helpCallback - erro ao editar caption (admin)", err);
             });
         }
         else
@@ -89,8 +90,8 @@ export async function helpCallback(ctx: MyContext) {
                     parse_mode: "HTML",
                     reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
                 });
-            } catch (error) {
-                console.log(error)
+            } catch (e) {
+                error("helpCallback - erro ao editar texto (admin)", e);
             }
     }
     await ctx.answerCallbackQuery();

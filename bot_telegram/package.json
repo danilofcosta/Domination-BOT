@@ -41,6 +41,8 @@
     "kysely": "^0.28.8",
     "lru-cache": "^11.2.6",
     "pg": "^8.20.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }

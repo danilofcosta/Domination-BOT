@@ -5,7 +5,7 @@ import { haremInlineQuery } from "./handlers/inline_query/harem_inline_query.js"
 import { getCharacters, getCharactersall } from "./handlers/inline_query/inline_query.js";
 import { getCharacter, setCharacter } from "./cache/cache.js";
 import { addCharacter_edit_CallbackData } from "./handlers/Comandos/admin_bot/add_character_edit.js";
-import { debug } from "./utils/log.js";
+import { debug, info } from "./utils/log.js";
 
 const listeners = new Composer<MyContext>();
 
@@ -38,40 +38,23 @@ listeners.on("message:text", async (ctx, next) => {
 
 listeners.chatType(["group", "supergroup"]).on("message", contarMensagens);
 
-
-
-
 listeners.on("inline_query", async (ctx) => {
-  debug("inline query:", ctx.inlineQuery?.query);
   const query = ctx.inlineQuery.query || "";
+  debug("inline_query", { query, userId: ctx.from?.id });
 
   if (query.startsWith("harem_user_")) {
     return haremInlineQuery(ctx);
   }
 
   if (query !== "" && !isNaN(Number(query))) {
-  await  getCharacters(ctx);
+    await getCharacters(ctx);
   }
   if (query === "") {
-    console.log("consuta vazia");
-     await  getCharactersall(ctx);
+    info("inline_query vazia", { userId: ctx.from?.id });
+    await getCharactersall(ctx);
   }
 
   return;
 });
-
-// listeners.chatType("private")
-// .on("my_chat_member", myPrivateChatMemberHandler); //
-
-// listeners.filter((ctx) => {
-//   const msg = ctx.message;
-//   if (!msg) return false;
-//   const caption = msg.caption || "";
-//   const regex1 = new RegExp(`^[/!]${botPrefix}up[wWhH]?\\s*`, "i");
-//   const regex2 = new RegExp(`^[/!]up[wWhH]?\\s*`, "i");
-//   const matches = regex1.test(caption) || regex2.test(caption);
-//   console.log("[Upload Filter] Prefixo:", botPrefix, "| Caption:", caption, "| Corresponde:", matches);
-//   return matches;
-// }).on("message", UploadMediaMiddleware, UploadMediaHandler);
 
 export { listeners };

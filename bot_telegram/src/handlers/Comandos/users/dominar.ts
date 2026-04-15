@@ -1,9 +1,9 @@
-import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type Character, type Collection, type MyContext, type RarityType } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
 import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
+import { info, error, debug, warn } from "../../../utils/log.js";
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = [
@@ -111,81 +111,138 @@ function successDominarMessage(ctx: MyContext, character: Character, collection:
   return success_dominar;
 }
 
+const LOCK_TIMEOUT = 10000;
+
 export async function CapturarCharacter(ctx: MyContext) {
   const tentativa = String(ctx.match).trim();
   const character = ctx.session.grupo.character;
   const type = ctx.session.settings.genero || process.env.TYPE_BOT
+  const userId = Number(ctx.from?.id);
 
-  if (!character || !tentativa) {
-    try {
-    //  await ctx.answerCallbackQuery(ctx.t("not-charater-to-dominar"));
-    console.log("not-charater-to-dominar");
-      return;
-    } catch (e) {
-      console.log("Erro ao enviar resposta de callback query", e);
+  info(`CapturarCharacter - tentativa: "${tentativa}"`, {
+    userId,
+    chatId: ctx.chat?.id,
+    usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
+    hasCharacter: !!character,
+    type
+  });
+
+  if (ctx.session.lock) {
+    const lockAge = Date.now() - ctx.session.lock.timestamp;
+    if (lockAge < LOCK_TIMEOUT && ctx.session.lock.userId !== userId) {
+      warn(`CapturarCharacter - operação bloqueada (lock ativo)`, {
+        lockOwner: ctx.session.lock.userId,
+        lockAge,
+        requestedBy: userId
+      });
+    //  await ctx.reply(ctx.t("dominar_locked"));
       return;
     }
   }
 
-  // ❌ nome errado
-  if (!verificarNome(character.name, tentativa)) {
-    const url = LinkMsg(Number(ctx.chat?.id), Number(ctx.session.grupo.dropId));
+  ctx.session.lock = { userId, timestamp: Date.now() };
 
-    const msg = await ctx.reply(ctx.t("name-not-found"), {
+  try {
+    if (!character || !tentativa) {
+      warn(`CapturarCharacter - character ou tentativa vazio`, {
+        userId,
+        chatId: ctx.chat?.id,
+        hasCharacter: !!character,
+        tentativa
+      });
+      if (character && !tentativa) {
+        try {
+          await ctx.reply(ctx.t("drop_character_attempt_empty", {
+            genero: type === ChatType.WAIFU ? "waifu" : "husbando",
+          }));
+        } catch (e) {
+          error("Erro ao enviar mensagem de nome vazio", e);
+        }
+      }
+      return;
+    }
+    if (!verificarNome(character.name, tentativa)) {
+      debug(`CapturarCharacter - nome incorreto`, {
+        tentativa,
+        characterName: character.name,
+        userId
+      });
+
+      const url = LinkMsg(Number(ctx.chat?.id), Number(ctx.session.grupo.dropId));
+
+      try {
+        const msg = await ctx.reply(ctx.t("name-not-found"), {
+          parse_mode: "HTML",
+          reply_markup: {
+            inline_keyboard: [[{ text: ctx.t("bt-tentative-again"), url }]],
+          },
+        });
+
+        setTimeout(() => {
+          ctx.api.deleteMessage(ctx.chat!.id, msg.message_id).catch((e) => {
+            warn(`Falha ao deletar mensagem`, { msgId: msg.message_id, error: e });
+          });
+        }, 120000);
+      } catch (e) {
+        error("Erro ao enviar mensagem de nome incorreto", e);
+      }
+
+      return;
+    }
+    
+    ctx.session.grupo.character = null;
+    ctx.session.grupo.dropId = null;
+    ctx.session.grupo.cont = 0;
+ 
+    info(`CapturarCharacter - nome correto, adicionando personagem`, {
+      userId,
+      characterId: character.id,
+      characterName: character.name
+    });
+
+    const character_collection : Collection | null = await AddCharacterCollection({
+      type,
+      userId,
+      from: ctx.from || {},
+      Charater_id: character.id
+    });
+
+    if (!character_collection) {
+      error(`AddCharacterCollection retornou null`, { userId, characterId: character.id });
+      return ctx.reply(ctx.t("error_add_character"));
+    }
+
+    info(`Personagem adicionado com sucesso`, {
+      userId,
+      characterId: character.id,
+      collectionId: character_collection.id,
+      count: character_collection.count
+    });
+
+    await ctx.reply(successDominarMessage(ctx, character, character_collection), {
       parse_mode: "HTML",
       reply_markup: {
-        inline_keyboard: [[{ text: ctx.t("bt-tentative-again"), url }]],
+        inline_keyboard: [
+          [
+            {
+              text: ctx.t("success_dominar_btn"),
+              switch_inline_query_current_chat: "harem_user_" + ctx.from?.id,
+            },
+          ],
+        ],
       },
     });
 
-    setTimeout(() => {
-      ctx.api.deleteMessage(ctx.chat!.id, msg.message_id).catch(() => {});
-    }, 120000);
-
-    return;
+    ctx.session.grupo = {
+      cont: 0,
+      dropId: null,
+      character: null,
+      data: null,
+      title: ctx.chat?.title || "",
+      directMessagesTopicId: ctx.session.grupo.directMessagesTopicId , 
+    };
+    return true;
+  } finally {
+    delete ctx.session.lock;
   }
-  
-  ctx.session.grupo.character = null;
-  ctx.session.grupo.dropId = null;
-  ctx.session.grupo.cont = 0;
- 
-  // ✅ nome correto
-
-  let userId = Number(ctx.from?.id);
-
-  const character_collection : Collection = await AddCharacterCollection({
-    type,
-    userId,
-    from: ctx.from || {},
-    Charater_id: character.id
-  });
-
-  if (!character_collection) {
-    return ctx.reply(ctx.t("error_add_character"));
-  }
-
-  await ctx.reply(successDominarMessage(ctx, character, character_collection), {
-    parse_mode: "HTML",
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: ctx.t("success_dominar_btn"),
-            switch_inline_query_current_chat: "harem_user_" + ctx.from?.id,
-          },
-        ],
-      ],
-    },
-  });
-
-  //limpar sessao
- ctx.session.grupo = {
-    cont: 0,
-    dropId: null,
-    character: null,
-    data: null,
-    title: ctx.chat?.title || "",
-    directMessagesTopicId: ctx.session.grupo.directMessagesTopicId , 
-  };
-  return true
 }

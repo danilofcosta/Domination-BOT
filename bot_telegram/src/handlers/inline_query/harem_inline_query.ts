@@ -90,6 +90,6 @@ export async function haremInlineQuery(ctx: MyContext) {
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-    text: `${ctx.t("Logo_bt")} : ${total}`,
+    text: `${ctx.t("Logo_bt")}  : ${total}`,
   });
 }

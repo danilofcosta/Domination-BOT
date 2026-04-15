@@ -3,6 +3,8 @@ import type { Character, MyContext } from "./customTypes.js";
 import { InputFile, InlineKeyboard } from "grammy";
 
 import { MediaType } from "../../generated/prisma/client.js";
+import { error, debug } from "./log.js";
+
 interface ParamsSendMedia {
   chat_id?: string | number | undefined;
   message_thread_id?: number | undefined;
@@ -36,7 +38,6 @@ export async function Sendmedia(params: ParamsSendMedia) {
     ...(topicId && { message_thread_id: topicId }),
   };
 
-  // 🔥 helpers seguros
   const sendPhoto = async (photo: any) => {
     if (chat_id) {
       return api.sendPhoto(targetChatId, photo, options);
@@ -58,7 +59,6 @@ export async function Sendmedia(params: ParamsSendMedia) {
     return ctx.reply(text, options);
   };
 
-  // 📌 fallback sem mídia
   if (!per) {
     return sendText(caption ?? "");
   }
@@ -70,11 +70,11 @@ export async function Sendmedia(params: ParamsSendMedia) {
       return sendText(caption ?? "");
     }
 
-    // 🖼 IMAGEM
+    debug(`Sendmedia - enviando`, { type, chatId: targetChatId });
+
     if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID) {
       return await sendPhoto(media);
     }
-    // 🎥 VÍDEO
     if (type === MediaType.VIDEO_URL || type === MediaType.VIDEO_FILEID) {
       return await sendVideo(media);
     }
@@ -88,7 +88,7 @@ export async function Sendmedia(params: ParamsSendMedia) {
 
     return sendText("Tipo de mídia não suportado.");
   } catch (err) {
-    console.error("Erro ao enviar mídia:", err);
+    error("Sendmedia - erro ao enviar mídia", err);
     return sendText(caption ?? "");
   }
 }

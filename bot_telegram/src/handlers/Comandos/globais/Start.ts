@@ -1,7 +1,7 @@
 import type { MyContext } from "../../../utils/customTypes.js";
 import {
   LastRandomCharacter,
-  RandomCharacter,
+  
 } from "../../../utils/chareter/randomCharacter.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";

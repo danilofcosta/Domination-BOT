@@ -15,6 +15,7 @@ import type {
   ChatType,
   Collection,
 } from "../../utils/customTypes.ts";
+import { warn, error } from "../../utils/log.js";
 
 export interface Params {
   ctx: MyContext | any;
@@ -25,12 +26,11 @@ export interface Params {
   user_id?: string | undefined;
   no_format?: boolean | undefined | null;
 }
-// Função para criar um resultado de consulta inline com base no tipo de mídia do personagem
+
 export function createResult(params: Params) {
   let character = params.character as Character;
   const capiton = create_caption(params);
-  // const capiton = '[titulo](tg://user?id=123456789)';
-  // console.log(capiton)
+
   if (
     params.character &&
     typeof params.character === "object" &&
@@ -94,8 +94,23 @@ export function createResult(params: Params) {
       } as InlineQueryResultCachedVideo;
 
     default:
-      const url =
-        "https://i.pinimg.com/avif/736x/58/2d/9b/582d9be3d56b3f46ba7a540d761ea6e2.avfhttps://i.pinimg.com/avif/736x/58/2d/9b/582d9be3d56b3f46ba7a540d761ea6e2.avf";
+      warn(`createResult - mediaType desconhecido, usando fallback`, { 
+        charId: character.id, 
+        mediaType: character.mediaType 
+      });
+      const url = process.env.DEFAULT_IMAGE_URL;
+      if (!url) {
+        error(`createResult - DEFAULT_IMAGE_URL não configurada`, { charId: character.id });
+        return {
+          type: "text",
+          id: "txt" + `${character.id}`,
+          title: character.name,
+          input_message_content: {
+            message_text: capiton,
+            parse_mode: "HTML" as ParseMode,
+          },
+        };
+      }
       return {
         type: "photo",
         id: "url" + `${character.id}`,

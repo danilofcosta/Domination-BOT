@@ -49,6 +49,10 @@ export interface SessionData {
     action: "edit_nome" | "edit_anime" | null;
     targetId: string | null;
   };
+  lock?: {
+    userId: number;
+    timestamp: number;
+  };
 }
 
 /* =========================

@@ -2,6 +2,7 @@ import { type MiddlewareFn } from "grammy";
 import { type MyContext } from "./customTypes.js";
 import { prisma } from "../../lib/prisma.js";
 import { ProfileType } from "../../generated/prisma/client.js";
+import { warn, error, debug, info } from "./log.js";
 
 /**
  * Weights for the profile types to handle hierarchy.
@@ -16,15 +17,14 @@ export const roleWeights: Record<ProfileType, number> = {
   [ProfileType.SUPREME]: 4,
 };
 
-// Simple in-memory cache for group admin status
 type CacheEntry = {
   isAdmin: boolean;
   timestamp: number;
 };
 
 const adminCache = new Map<string, CacheEntry>();
-const CACHE_TTL = 60 * 1000; // 60 seconds
-const MAX_CACHE_SIZE = 1000; // Prevent memory leak
+const CACHE_TTL = 60 * 1000;
+const MAX_CACHE_SIZE = 1000;
 
 function cleanupCache() {
   if (adminCache.size >= MAX_CACHE_SIZE) {
@@ -44,13 +44,10 @@ function cleanupCache() {
   }
 }
 
-/**
- * Checks if a user is an admin of the designated management group with caching.
- */
 async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
   const adminGroupId = process.env.GROUP_ADM;
   if (!adminGroupId) {
-    console.warn("[Permissions] GROUP_ADM is not defined in environment variables.");
+    warn("[Permissions] GROUP_ADM não definido");
     return false;
   }
 
@@ -70,15 +67,12 @@ async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
     
     adminCache.set(cacheKey, { isAdmin, timestamp: now });
     return isAdmin;
-  } catch (error) {
-    console.error(`[Permissions] Error checking group admin for user ${userId}:`, error);
+  } catch (e) {
+    error(`[Permissions] Erro ao verificar admin do grupo para usuário ${userId}`, e);
     return false;
   }
 }
 
-/**
- * Fetches the user's role from the database.
- */
 export async function getUserRole(userId: number): Promise<ProfileType> {
   try {
     const user = await prisma.user.findUnique({
@@ -87,8 +81,8 @@ export async function getUserRole(userId: number): Promise<ProfileType> {
     });
 
     return user?.profileType || ProfileType.USER;
-  } catch (error) {
-    console.error(`[Permissions] Error fetching role for user ${userId}:`, error);
+  } catch (e) {
+    error(`[Permissions] Erro ao buscar role para usuário ${userId}`, e);
     return ProfileType.USER;
   }
 }
@@ -98,52 +92,42 @@ export async function isUserBanned(userId: number): Promise<boolean> {
   return roleWeights[role] === roleWeights[ProfileType.BANNED];
 }
 
-/**
- * Middleware factory for role-based access control.
- * Grants access if:
- * 1. User is an admin of the GROUP_ADM group.
- * 2. User has a database profileType >= requiredRole.
- * 
- * @param requiredRole The minimum role required to access the command.
- */
 export function onlyRoleBotAdmin(requiredRole: ProfileType): MiddlewareFn<MyContext> {
   return async (ctx, next) => {
     try {
       const from = ctx.from;
       if (!from) {
-        console.debug("[Permissions] Access denied: ctx.from is undefined.");
+        debug("[Permissions] Access denied: ctx.from is undefined.");
         return;
       }
 
       const userId = from.id;
-      console.log(`[Permissions] Checking permissions for user ${userId} (${from.username || "no-username"}). Required: ${requiredRole}`);
+      debug(`[Permissions] Verificando permissões para usuário ${userId} (${from.username || "no-username"}). Required: ${requiredRole}`);
 
-      // 1. Check Group Admin Status (Special bypass)
       const isGroupAdm = await isGroupAdmin(ctx, userId);
       if (isGroupAdm) {
-        console.log(`[Permissions] Access granted: User ${userId} is group admin.`);
+        info(`[Permissions] Acesso concedido: Usuário ${userId} é admin do grupo.`);
         return await next();
       }
 
-      // 2. Check Database Role Hierarchy
       const userRole = await getUserRole(userId);
       const userWeight = roleWeights[userRole];
       const requiredWeight = roleWeights[requiredRole];
 
       if (userWeight >= requiredWeight) {
-        console.log(`[Permissions] Access granted: User ${userId} has role ${userRole} (required: ${requiredRole}).`);
+        info(`[Permissions] Acesso concedido: Usuário ${userId} tem role ${userRole} (requerido: ${requiredRole}).`);
         return await next();
       }
 
-      console.log(`[Permissions] Access denied: User ${userId} has role ${userRole} (required: ${requiredRole}).`);
+      debug(`[Permissions] Acesso negado: Usuário ${userId} tem role ${userRole} (requerido: ${requiredRole}).`);
       
       const message = ctx.t 
-        ? ctx.t("errors.no_permission") // Assuming i18n is used
+        ? ctx.t("errors.no_permission")
         : "❌ Você não tem permissão suficiente para usar este comando.";
 
       return await ctx.reply(message);
-    } catch (error) {
-      console.error("[Permissions] Middleware error:", error);
+    } catch (e) {
+      error("[Permissions] Erro no middleware", e);
       return await ctx.reply("❌ Ocorreu um erro interno ao verificar suas permissões.");
     }
   };

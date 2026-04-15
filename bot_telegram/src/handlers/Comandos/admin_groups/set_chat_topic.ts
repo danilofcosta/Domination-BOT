@@ -1,7 +1,10 @@
 import type { MyContext } from "../../../utils/customTypes.js";
+import { info, warn, debug } from "../../../utils/log.js";
 
 export async function setChatTopicHandler(ctx: MyContext) {
   const chat = ctx.chat;
+  const userId = ctx.from?.id;
+
   if (!chat || !("id" in chat)) {
     await ctx.reply("❌ Este comando deve ser usado em um grupo.");
     return;
@@ -12,11 +15,13 @@ export async function setChatTopicHandler(ctx: MyContext) {
     return;
   }
 
+  debug(`setChatTopicHandler - verificando admin do grupo`, { userId, chatId: chat.id });
+
   const admins = await ctx.api.getChatAdministrators(chat.id);
-  const userId = ctx.from?.id;
   const isAdmin = admins.some((admin) => admin.user?.id === userId);
 
   if (!isAdmin) {
+    warn(`setChatTopicHandler - usuário não é admin do grupo`, { userId, chatId: chat.id });
     await ctx.reply("❌ Apenas administradores do grupo podem usar este comando.");
     return;
   }
@@ -30,6 +35,8 @@ export async function setChatTopicHandler(ctx: MyContext) {
   }
 
   ctx.session.grupo.directMessagesTopicId = topicId;
+
+  info(`setChatTopicHandler - topic configurado`, { userId, chatId: chat.id, topicId });
 
   await ctx.reply(
     `✅ Topic configurado!\n\n📝 Topic ID: ${topicId}\n\nAgora todas as mensagens de drop serão enviadas nesta topic.`

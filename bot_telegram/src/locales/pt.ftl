@@ -44,51 +44,13 @@ help-caption =
     Selecione uma categoria abaixo para ver os comandos disponíveis.
     ───────────────
      
-help-group-redirect = 📩 Clique aqui para ajuda!
+help-group-redirect =  Clique aqui para ajuda!
 
-help-btn-comandos = 📜 Comandos
-help-btn-admin = ⚙️ Admin
-
-help-commands-list =
-    📜 <b>Comandos</b>
-    ───────────────
-    
-    🗡 <b>/dominar</b> <code>nome</code>
-    → Capture um personagem
-    
-    🏯 <b>/mywaifus</b> / <b>/myhusbandos</b>
-    → Ver seu harém
-    
-    ⭐ <b>/fav</b>
-    → Favoritar personagem (responda)
-    
-    🎁 <b>/gift</b> <code>ID</code>
-    → Presentear personagem (responda)
-    
-    📊 <b>/info</b>
-    → Suas informações
-    
-    🏆 <b>/top</b>
-    → Ranking global
-
-help-admin-commands-list =
-    ⚙️ <b>Comandos Admin</b>
-    ───────────────
-    
-    ➕ <b>/addchar</b>
-    → Adicionar personagem
-    
-    ✨ <b>/addrarity</b>
-    → Adicionar raridade
-    
-    ✏️ <b>/editrarity</b>
-    → Editar raridade
-    
-    🗑 <b>/delrarity</b>
-    → Deletar raridade
+help-btn-comandos = Comandos
+help-btn-admin = Admin
 
 help-btn-open-pm = pm
-help-btn-back = ◀️ Voltar
+help-btn-back = Voltar
 help-btn-close = 🗑 Fechar
 
 # Botões de comando (teclado)
@@ -180,7 +142,7 @@ new_character_secret_caption={$emoji_raridade} {$charater_genero}  apareceu!
 drop_character_secret_caption =  {$charater_genero}  ja fugiu !
     O nome é <code> {$charater_nome} - {$charater_anime} </code>
 
-
+drop_character_attempt_empty = Ok mais qual nome do {$genero} ?
 
 ###############
 # fav character#
@@ -205,6 +167,7 @@ gift_success= Presente enviado com sucesso!
 # DOMINAR #
 ############
 not-charater-to-dominar=Nenhum personagem disponível para dominar no momento.
+dominar_locked=⏳ Outra captura está em andamento, aguarde um momento.
 name-not-found= <tg-emoji emoji-id="5210952531676504517">❌</tg-emoji> Nome incorreto!
 bt-tentative-again= Tente novamente
 #genero ( uma waifu/um husbando)

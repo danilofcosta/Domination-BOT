@@ -4,6 +4,7 @@ import { bts_yes_or_no } from "../../../utils/bts.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function giftHandler(ctx: MyContext) {
   if (!ctx.message?.reply_to_message) {
@@ -13,6 +14,7 @@ export async function giftHandler(ctx: MyContext) {
 
   const giftid = Number(ctx.match);
   if (!giftid || isNaN(giftid)) {
+    warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, giftid });
     await ctx.reply(ctx.t("error-not-id"));
     return;
   }
@@ -20,20 +22,24 @@ export async function giftHandler(ctx: MyContext) {
   const mentionedUser = ctx.message.reply_to_message.from;
 
   if (!mentionedUser?.id) {
+    warn(`giftHandler - usuário inválido`, { userId: ctx.from?.id });
     await ctx.reply("Usuário inválido.");
     return;
   }
 
   if (mentionedUser.id === ctx.from?.id) {
+    warn(`giftHandler - tentativa de auto-presente`, { userId: ctx.from?.id });
     await ctx.reply("Você não pode enviar presente para si mesmo.");
     return;
   }
   if (mentionedUser.id === ctx.me?.id) {
+    warn(`giftHandler - tentativa de presente ao bot`, { userId: ctx.from?.id });
     await ctx.reply("agradeço, Mais não posso receber presentes ");
     return;
   }
 
   const mention = mentionUser(mentionedUser.first_name, mentionedUser.id);
+  info(`giftHandler - enviando presente`, { senderId: ctx.from?.id, receiverId: mentionedUser.id, giftid });
 
   const GiftCharacter =
     ctx.session.settings.genero === ChatType.WAIFU
@@ -67,6 +73,7 @@ export async function giftHandler(ctx: MyContext) {
         });
 
   if (!GiftCharacter) {
+    warn(`giftHandler - personagem não encontrado na coleção`, { userId: ctx.from?.id, giftid });
     await ctx.reply(
       ctx.t("fav-not-found", {
         genero: ctx.session.settings.genero.toLowerCase(),
@@ -95,10 +102,14 @@ export async function giftHandler(ctx: MyContext) {
     fromuser: mentionedUser,
   });
 
-  return await Sendmedia({
-    ctx,
-    per: characterData,
-    caption: text,
-    reply_markup,
-  });
+  try {
+    await Sendmedia({
+      ctx,
+      per: characterData,
+      caption: text,
+      reply_markup,
+    });
+  } catch (e) {
+    error(`giftHandler - erro ao enviar mídia`, e);
+  }
 }

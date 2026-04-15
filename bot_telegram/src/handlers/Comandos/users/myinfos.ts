@@ -1,11 +1,20 @@
 import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
+
 export async function Myinfos(ctx: MyContext) {
-  const loading = await ctx.reply(ctx.t("loading"));
+  info(`Myinfos - carregando informações`, { userId: ctx.from?.id });
 
+  let loading;
+  try {
+    loading = await ctx.reply(ctx.t("loading"));
+  } catch (e) {
+    error(`Myinfos - erro ao enviar loading`, e);
+    return;
+  }
 
-  const isWaifu = ctx.session.settings.genero ===ChatType.WAIFU;
+  const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
 
   const user = await prisma.user.findUnique({
     where: {
@@ -18,13 +27,12 @@ export async function Myinfos(ctx: MyContext) {
   });
 
   if (!user) {
+    warn(`Myinfos - usuário não registrado`, { userId: ctx.from?.id });
     try {
       await ctx.api.deleteMessage(loading.chat.id, loading.message_id);
     } catch {}
     return ctx.reply(ctx.t("error-not-registered"));
   }
-
-
 
   const totalDB = isWaifu
     ? await prisma.characterWaifu.count()
@@ -62,15 +70,23 @@ export async function Myinfos(ctx: MyContext) {
 
   try {
     await ctx.api.deleteMessage(loading.chat.id, loading.message_id);
-  } catch {}
+  } catch (e) {
+    debug(`Myinfos - erro ao deletar loading`, { error: e });
+  }
 
-  const msg = await ctx.reply(text, {
-    parse_mode: "HTML",
-  });
+  try {
+    const msg = await ctx.reply(text, {
+      parse_mode: "HTML",
+    });
 
-  if (percent === "100.00") {
-    await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
-      { type: "emoji", emoji: "🎉" },
-    ]);
+    debug(`Myinfos - informações enviadas`, { userId: ctx.from?.id, percent });
+
+    if (percent === "100.00") {
+      await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
+        { type: "emoji", emoji: "🎉" },
+      ]).catch(() => {});
+    }
+  } catch (e) {
+    error(`Myinfos - erro ao enviar reply`, e);
   }
 }

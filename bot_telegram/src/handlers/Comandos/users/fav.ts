@@ -2,6 +2,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import { bts_yes_or_no } from "../../../utils/bts.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function favCharacter(ctx: MyContext) {
   let favid: number | undefined;
@@ -22,11 +23,13 @@ export async function favCharacter(ctx: MyContext) {
   }
 
   if (!favid || isNaN(favid)) {
+    warn(`favCharacter - ID inválido`, { userId: ctx.from?.id, favid, match: ctx.match });
     return ctx.reply(ctx.t("error-not-id"));
   }
 
   const userid = ctx.from!.id;
-  // Busca do personagem favorito na coleção do usuário
+  info(`favCharacter - buscando personagem`, { userId: userid, favid });
+
   const FavCharacter =
     ctx.session.settings.genero === ChatType.WAIFU
       ? await prisma.waifuCollection.findFirst({
@@ -58,6 +61,7 @@ export async function favCharacter(ctx: MyContext) {
           },
         });
   if (!FavCharacter) {
+    warn(`favCharacter - personagem não encontrado na coleção`, { userId: userid, favid });
     return ctx.reply(
       ctx.t("fav-not-found", {
         genero: ctx.session.settings.genero.toLocaleLowerCase(),
@@ -65,7 +69,8 @@ export async function favCharacter(ctx: MyContext) {
     );
   }
 
-  // Gerar a legenda usando i18n
+  debug(`favCharacter - personagem encontrado`, { userId: userid, favid, charName: FavCharacter.Character.name });
+
   const text = ctx.t("fav-character", {
     id_personagem: favid || "",
     character_name: FavCharacter.Character.name || "",
@@ -78,10 +83,14 @@ export async function favCharacter(ctx: MyContext) {
     `fav_no_${favid}_${userid}`,
   );
 
-  return await Sendmedia({
-    ctx: ctx,
-    per: FavCharacter.Character,
-    caption: `<b>${text.trim()}</b>`,
-    reply_markup,
-  });
+  try {
+    await Sendmedia({
+      ctx: ctx,
+      per: FavCharacter.Character,
+      caption: `<b>${text.trim()}</b>`,
+      reply_markup,
+    });
+  } catch (e) {
+    error(`favCharacter - erro ao enviar mídia`, e);
+  }
 }
