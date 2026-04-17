@@ -1,10 +1,13 @@
 import { prisma } from "@/lib/prisma";
-import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl ";
+import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl";
 import { Characterdb } from "@/lib/types";
 
 type WithDisplay<T> = T & { displayUrl: string | null };
 
-async function resolveDisplayUrl(item: Characterdb, type: "waifu" | "husbando"): Promise<string | null> {
+async function resolveDisplayUrl(
+  item: Characterdb,
+  type: "waifu" | "husbando",
+): Promise<string | null> {
   const media = await resolveMediaUrl(item, type);
   return media.displayUrl;
 }
@@ -79,7 +82,7 @@ export async function GET(req: Request) {
 
   if (!type || type === "waifu") {
     const waifuWhere: any = { ...whereClause };
-    
+
     if (rarityId) {
       waifuWhere.WaifuRarity = { some: { rarityId: parseInt(rarityId) } };
     }
@@ -98,7 +101,7 @@ export async function GET(req: Request) {
 
   if (!type || type === "husbando") {
     const husbandoWhere: any = { ...whereClause };
-    
+
     if (rarityId) {
       husbandoWhere.HusbandoRarity = { some: { rarityId: parseInt(rarityId) } };
     }

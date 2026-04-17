@@ -24,7 +24,7 @@ import {
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/telegram/create_slug";
-import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl ";
+import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl";
 import { DialogFooter, DialogClose } from "@/components/ui/dialog";
 
 interface CharacterFormProps {
@@ -223,7 +223,8 @@ export function CharacterForm({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     setPreviewUrl(url);
-    const isVideo = /\.(mp4|webm|mov|avi|mkv)$/i.test(url) || url.includes("video");
+    const isVideo =
+      /\.(mp4|webm|mov|avi|mkv)$/i.test(url) || url.includes("video");
     setIsVideoPreview(isVideo);
     if (isVideo) {
       setMediaType("VIDEO_URL");
@@ -271,7 +272,9 @@ export function CharacterForm({
           if (file) {
             setMediaEntry("upload");
             setIsProcessingFile(true);
-            const isVideo = file.type.includes("video") || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
+            const isVideo =
+              file.type.includes("video") ||
+              /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
             setMediaType(isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL");
             setIsVideoPreview(isVideo);
             processFile(file);
@@ -293,9 +296,9 @@ export function CharacterForm({
 
   const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     if (isSubmitting || isProcessingFile) return;
-    
+
     setIsSubmitting(true);
 
     try {
