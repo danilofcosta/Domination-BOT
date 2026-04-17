@@ -5,7 +5,7 @@ import { DropCharacter } from "./doprar_per.js";
 import { error, log } from "../../utils/log.js";
 
 const DROP = 100;
-const UNDROP = DROP + 0;
+const UNDROP = DROP +20  ;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function contarMensagens(ctx: MyContext) {
