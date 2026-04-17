@@ -78,7 +78,7 @@ function formatMessage(...args: any[]): string {
 
 export function log(...messages: any[]) {
   const formatted = formatMessage(...messages);
-  console.log(formatted);
+ 
   logger.info(formatted);
 }
 

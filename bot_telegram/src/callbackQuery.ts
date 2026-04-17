@@ -10,6 +10,7 @@ import { helpCommand } from "./handlers/Comandos/globais/help.js";
 import { helpCallback } from "./handlers/callbacks/helpCallback.js";
 import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/add_charecter_callback_data.js";
 import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/edit_character_callbacks.js";
+import { ClickByDetail_Callback } from "./handlers/callbacks/cickCallback.js";
 
 const callbacks = new Composer<MyContext>();
 
@@ -28,6 +29,7 @@ callbacks.callbackQuery(/^start_help_/, helpCommand);
 callbacks.callbackQuery(/^help_/, helpCallback);
 callbacks.callbackQuery(/^topuser_/, topCallbackQuery);
 callbacks.callbackQuery("stat_refresh", StatRefresh);
+callbacks.callbackQuery(/^click_/, ClickByDetail_Callback);
 
 //admin
 callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);

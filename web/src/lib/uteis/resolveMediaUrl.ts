@@ -21,6 +21,13 @@ export async function resolveMediaUrl(character: Characterdb, type: Genero) {
   ) {
     displayUrl = character.media || null;
   }
+  // 🔹 Arquivo local (salvo em /uploads/)
+  else if (
+    character.mediaType === MediaType.IMAGE_LOCAL ||
+    character.mediaType === MediaType.VIDEO_LOCAL
+  ) {
+    displayUrl = character.media || null;
+  }
   // 🔹 Telegram
   else if (
     character.mediaType === MediaType.IMAGE_FILEID ||

@@ -1,4 +1,4 @@
-n web0
+
 bot_telegram/.vscode/launch.json
 bot_telegram/src/testes/
 stack.env
@@ -8,7 +8,7 @@ stack_sever.env
 bot_telegram/D/
 bot_telegram/dist/
 db.txt
-bot_telegram/data/logs/waifu/.1d79fbb17cbf8a5d7f500bcde7d9552f46e5c0db-audit.json
-bot_telegram/data/logs/waifu/.d5c767121e29ed73299d7e8ac18627432098f031-audit.json
-bot_telegram/data/logs/waifu/combined-2026-04-15.log
-bot_telegram/data/logs/waifu/error-2026-04-15.log
+bot_telegram/data/logs/
+web/scripts/
+web/public/waifus/
+web/public/husbandos/

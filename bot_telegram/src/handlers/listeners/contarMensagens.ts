@@ -5,7 +5,7 @@ import { DropCharacter } from "./doprar_per.js";
 import { error, log } from "../../utils/log.js";
 
 const DROP = 100;
-const UNDROP = DROP + 40;
+const UNDROP = DROP + 0;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function contarMensagens(ctx: MyContext) {
@@ -99,7 +99,20 @@ export async function contarMensagens(ctx: MyContext) {
 
     try {
       await ctx.api.deleteMessage(ctx.chat.id, grupo.dropId);
-      await ctx.reply(txt, { parse_mode: "HTML" });
+      
+  await ctx.reply(txt, {
+    parse_mode: "HTML",
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: 'Mais detalhes',
+            callback_data: `click_${character?.id ?? "0"}`,
+          },
+        ],
+      ],
+    },
+  });
       log("undrop com sucesso");
     } catch (err) {
       error("Erro ao deletar mensagem:", err)
