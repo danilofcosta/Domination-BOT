@@ -1,6 +1,7 @@
 import type { MyContext } from "../../utils/customTypes.js";
 import { prisma } from "../../../lib/prisma.js";
 import { ChatType } from "../../utils/customTypes.js";
+import { InlineKeyboard } from "grammy";
 
 export async function haremmodeCallback(ctx: MyContext) {
   if (!ctx.callbackQuery?.data) return;
@@ -21,6 +22,15 @@ export async function haremmodeCallback(ctx: MyContext) {
   
   if (typeof config !== "object") config = {}; // safety
 
+  const currentMode = config.haremMode || "latest";
+  if (currentMode === modeMatch) {
+    await ctx.answerCallbackQuery({
+      text: "Não atualizou, talvez seu harém esteja vazio ou você escolheu o mesmo modo novamente.",
+      show_alert: true
+    });
+    return;
+  }
+
   config.haremMode = modeMatch;
 
   await prisma.user.update({
@@ -30,9 +40,11 @@ export async function haremmodeCallback(ctx: MyContext) {
 
   const modeText = modeMatch === "latest" ? "Recentes" : modeMatch === "rarity" ? "Por Raridade" : "Por Evento";
 
-  await ctx.editMessageText(`Seu modo de organização do harém foi alterado para: **${modeText}**`, {
-    parse_mode: "Markdown",
+  await ctx.editMessageCaption({
+    caption: `Modo selecionado: <b>${modeText}</b>`,
+    parse_mode: "HTML",
+    reply_markup: new InlineKeyboard() // Isso remove os botões
   }).catch(() => {});
   
-  await ctx.answerCallbackQuery("Modo atualizado com sucesso!");
+  await ctx.answerCallbackQuery(`Modo atualizado com sucesso para: ${modeText}`);
 }

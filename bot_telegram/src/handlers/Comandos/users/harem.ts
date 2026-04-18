@@ -59,7 +59,7 @@ export async function HaremHandler(ctx: MyContext) {
 
   const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
   const config = isHusbando ? (user.husbandoConfig as any) || {} : (user.waifuConfig as any) || {};
-  const mode = config.haremMode || "latest";
+  const mode = config.haremMode || "default";// modo padrão
 
   const data = isHusbando ? (user as any).CharacterHusbando : (user as any).CharacterWaifu;
   const colletion = isHusbando ? (user as any).HusbandoCollection : (user as any).WaifuCollection;
@@ -69,13 +69,22 @@ export async function HaremHandler(ctx: MyContext) {
     pages = Harem_mode_rarity(colletion || [], ctx);
   } else if (mode === "event") {
     pages = Harem_mode_event(colletion || [], ctx);
-  } else {
+  } else if (mode === "latest") {
     pages = Harem_mode_latest(colletion || [], ctx);
+  } else {
+    // Modo padrão (Anime grouping)
+    const countsData = isHusbando 
+      ? await prisma.characterHusbando.groupBy({ by: ['origem'], _count: { id: true }})
+      : await prisma.characterWaifu.groupBy({ by: ['origem'], _count: { id: true }});
+    
+    const dbAnimeCounts = new Map(countsData.map(c => [c.origem, c._count.id]));
+    pages = Harem_mode_default(colletion || [], ctx, dbAnimeCounts);
   }
 
   debug(`HaremHandler - páginas geradas`, { userId: ctx.from?.id, pageCount: pages.length });
-
+// busca no cache 
   setHarem(Number(ctx.from?.id), pages);
+
   const harem_logo = ctx.t("harem_logo", {
     usermention:
       mentionUser(
@@ -262,4 +271,65 @@ function Harem_mode_event(list_character: any[], ctx: MyContext) {
   if (pages.length === 0) pages.push("Nenhum personagem.");
 
   return pages;
+}
+
+
+
+function Harem_mode_default(list_character: any[], ctx: MyContext, dbAnimeCounts: Map<string, number>) {
+  // Agrupar e garantir chaves limpas
+  const grouped = new Map<string, any[]>();
+  for (const char of list_character) {
+      const character = char.Character;
+      const animeName = character?.origem ?? "Desconhecido";
+      if (!grouped.has(animeName)) grouped.set(animeName, []);
+      grouped.get(animeName)!.push(char);
+  }
+
+  let pages: string[] = [];
+  let perPage: string[] = [];
+  let charCountInPage = 0;
+  
+  // Ordenar alfabeticamente os animes
+  const sortedAnimes = Array.from(grouped.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+  for (const [animeName, chars] of sortedAnimes) {
+      const userHasCount = chars.length;
+      const dbTotalCount = dbAnimeCounts.get(animeName) || 0;
+      
+      let header = `\n☛ <b>${animeName}</b> (${userHasCount}/${dbTotalCount})\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n`;
+      perPage.push(header);
+
+      for (const char of chars) {
+          const character = char.Character;
+          const repete = char.count; // quantidade (ex: 1x, 2x)
+          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+          
+          const rarityIcon = rarityEmojis.length ? rarityEmojis[0] : "❔";
+          const eventBrackets = eventEmojis.length ? ` [${eventEmojis.join("")}]` : "";
+
+          // ➢ ꙳ 845 ꙳ 🥉 ꙳ nico robin [❄️] 1x
+          let line = `➢ ꙳ <code>${character.id}</code> ꙳ ${rarityIcon} ꙳ <b>${character.name}</b>${eventBrackets} ${repete}x\n`;
+          perPage.push(line);
+          charCountInPage++;
+
+          if (charCountInPage >= 15) {
+              perPage.push("✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n");
+              pages.push(perPage.join(""));
+              perPage = [];
+              charCountInPage = 0;
+              if (chars.indexOf(char) < chars.length - 1) {
+                  perPage.push(`\n☛ <b>${animeName} (cont.)</b>\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n`);
+              }
+          }
+      }
+      if (perPage.length > 0 && charCountInPage > 0) {
+        perPage.push("✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n");
+      }
+  }
+
+  if (perPage.length > 0 && perPage.join("").trim() !== "") pages.push(perPage.join(""));
+  if (pages.length === 0) pages.push("Nenhum personagem.");
+
+  // Remove trailing line breaks
+  return pages.map(p => p.replace(/\n\n✧✧✧✧✧/g, "\n✧✧✧✧✧"));
 }

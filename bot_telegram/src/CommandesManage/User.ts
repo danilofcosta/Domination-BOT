@@ -79,15 +79,15 @@ export const ComandosUser = {
     handler: topHandler,
     scope: "all_group_chats",
   },
-//   haremmode: {
-//     command: "haremmode",
-//     description: {
-//       pt: "Altera o modo de visualização do seu Harem",
-//       en: "Change the display mode of your Harem",
-//     },
-//     handler: HaremmodeHandler,
-//     scope: "all_group_chats",
-//   },
+  haremmode: {
+    command: "haremmode",
+    description: {
+      pt: "Altera o modo de visualização do seu Harem",
+      en: "Change the display mode of your Harem",
+    },
+    handler: HaremmodeHandler,
+    scope: "all_group_chats",
+  },
 } as const;
 
 
@@ -108,3 +108,4 @@ for (const [key, value] of Object.entries(ComandosUser)) {
 
 
 export { botCommands };
+
