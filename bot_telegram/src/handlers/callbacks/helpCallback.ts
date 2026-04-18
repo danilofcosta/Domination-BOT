@@ -23,9 +23,11 @@ export async function helpCallback(ctx: MyContext) {
     debug(`helpCallback`, { action, rest, userId: ctx.from?.id });
 
     if (action === "comandos") {
-        if (!ctx.callbackQuery.message?.text) {
+        const currentText = ctx.callbackQuery.message?.text || ctx.callbackQuery.message?.caption;
+        
+        if (!currentText) {
             await ctx.editMessageCaption({
-                caption: "comandos",
+                caption: "Selecione uma categoria:",
                 parse_mode: "HTML",
                 reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
             }).catch(err => {
@@ -33,22 +35,32 @@ export async function helpCallback(ctx: MyContext) {
                 error("helpCallback - erro ao editar caption", err);
             });
         }
-        else
+        else {
             try {
-                await ctx.editMessageText("comandos", {
+                if (currentText === "Selecione uma categoria:") {
+                    await ctx.answerCallbackQuery();
+                    return;
+                }
+                await ctx.editMessageText("Selecione uma categoria:", {
                     parse_mode: "HTML",
                     reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
                 });
             } catch (e) {
+                if ((e as any).description?.includes("message is not modified")) {
+                    await ctx.answerCallbackQuery();
+                    return;
+                }
                 error("helpCallback - erro ao editar texto", e);
             }
+        }
     }
     if (action === "comandos" && rest[0] === "user") {
+        const currentText = ctx.callbackQuery.message?.text || ctx.callbackQuery.message?.caption;
         const comandosText = Object.entries(ComandosUser).map(([key, value]) => {
             return `/${value.command} - ${value.description}`;
         }).join("\n");
 
-        if (!ctx.callbackQuery.message?.text) {
+        if (!currentText) {
             await ctx.editMessageCaption({
                 caption: comandosText,
                 parse_mode: "HTML",
@@ -58,23 +70,33 @@ export async function helpCallback(ctx: MyContext) {
                 error("helpCallback - erro ao editar caption (user)", err);
             });
         }
-        else
+        else {
             try {
+                if (currentText.trim() === comandosText.trim()) {
+                    await ctx.answerCallbackQuery();
+                    return;
+                }
                 await ctx.editMessageText(comandosText, {
                     parse_mode: "HTML",
                     reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
                 });
             } catch (e) {
+                if ((e as any).description?.includes("message is not modified")) {
+                    await ctx.answerCallbackQuery();
+                    return;
+                }
                 error("helpCallback - erro ao editar texto (user)", e);
             }
+        }
     }
 
     if (action === "comandos" && rest[0] === "admin") {
+        const currentText = ctx.callbackQuery.message?.text || ctx.callbackQuery.message?.caption;
+        const comandosText = ComandosAdmin.map((cmd) => {
+            return `/${cmd.command} - ${cmd.description}`;
+        }).join("\n");
 
-        if (!ctx.callbackQuery.message?.text) {
-            const comandosText = ComandosAdmin.map((cmd) => {
-                return `/${cmd.command} - ${cmd.description}`;
-            }).join("\n");
+        if (!currentText) {
             await ctx.editMessageCaption({
                 caption: comandosText,
                 parse_mode: "HTML",
@@ -84,15 +106,25 @@ export async function helpCallback(ctx: MyContext) {
                 error("helpCallback - erro ao editar caption (admin)", err);
             });
         }
-        else
+        else {
             try {
-                await ctx.editMessageText("comandos admin", {
+                if (currentText.trim() === comandosText.trim()) {
+                    await ctx.answerCallbackQuery();
+                    return;
+                }
+                await ctx.editMessageText(comandosText, {
                     parse_mode: "HTML",
                     reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
                 });
             } catch (e) {
+                if ((e as any).description?.includes("message is not modified")) {
+                    await ctx.answerCallbackQuery();
+                    return;
+                }
                 error("helpCallback - erro ao editar texto (admin)", e);
             }
+        }
+    } else {
+        await ctx.answerCallbackQuery();
     }
-    await ctx.answerCallbackQuery();
 }

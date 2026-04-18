@@ -40,7 +40,7 @@ export interface SessionData {
   grupo: {
     cont: number;
     dropId: number | null;
-    data: Date | null;
+    data: number | null;
     character: Character | null;
     title:string|null|undefined
     directMessagesTopicId:number|null|undefined

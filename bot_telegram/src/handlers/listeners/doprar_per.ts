@@ -41,7 +41,7 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
     grupo.dropId = message.message_id;
     grupo.cont = 100;
     grupo.character = character;
-    grupo.data = new Date();
+    grupo.data = message.date
     grupo.title = ctx.chat?.title || "";
     return true;
   } catch (e) {

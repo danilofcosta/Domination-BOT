@@ -1,13 +1,16 @@
-import { type MyContext, ChatType } from "../../../utils/customTypes.js";
-import { prisma } from "../../../../lib/prisma.js";
-import { MediaType, Prisma, ProfileType } from "../../../../generated/prisma/client.js";
-import { create_caption } from "../../../utils/manege_caption/create_caption.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
-import { botPrefix } from "../../../CommandesManage/botConfigCommands.js";
+import { type MyContext, ChatType } from "../../../../utils/customTypes.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import {
+  MediaType,
+  Prisma,
+  ProfileType,
+} from "../../../../../generated/prisma/client.js";
+import { create_caption } from "../../../../utils/manege_caption/create_caption.js";
+import { mentionUser } from "../../../../utils/manege_caption/metion_user.js";
+import { botPrefix } from "../../../../CommandesManage/botConfigCommands.js";
 
-import { Sendmedia } from "../../../utils/sendmedia.js";
-import { onlyRoleBotAdmin } from "../../../utils/permissions.js";
-
+import { Sendmedia } from "../../../../utils/sendmedia.js";
+import { onlyRoleBotAdmin } from "../../../../utils/permissions.js";
 
 const MAX_BATCH_SIZE = 100;
 const DELAY_MS = 3000;
@@ -30,7 +33,7 @@ function getUploadCommandPattern(): RegExp {
 
 function getSuffixFromCaption(caption: string): "w" | "h" | null {
   const match = caption.match(new RegExp(`^[/!]${botPrefix}up([wWhH])`, "i"));
-  return match && match[1] ? match[1].toLowerCase() as "w" | "h" : null;
+  return match && match[1] ? (match[1].toLowerCase() as "w" | "h") : null;
 }
 
 function hasUploadCommand(caption: string): boolean {
@@ -41,9 +44,15 @@ function hasUploadCommand(caption: string): boolean {
   return patterns.some((p) => p.test(caption));
 }
 
-function parseUploadCommand(caption: string): { suffix: "w" | "h" | null; pattern: string } {
+function parseUploadCommand(caption: string): {
+  suffix: "w" | "h" | null;
+  pattern: string;
+} {
   const patterns = [
-    { regex: new RegExp(`^([/!]${botPrefix}up)([wWhH])?(.*)`, "is"), prefix: botPrefix },
+    {
+      regex: new RegExp(`^([/!]${botPrefix}up)([wWhH])?(.*)`, "is"),
+      prefix: botPrefix,
+    },
     { regex: new RegExp(`^([/!]up)([wWhH])?(.*)`, "is"), prefix: "" },
   ];
 
@@ -51,7 +60,7 @@ function parseUploadCommand(caption: string): { suffix: "w" | "h" | null; patter
     const match = caption.match(p.regex);
     if (match) {
       return {
-        suffix: match[2] ? match[2].toLowerCase() as "w" | "h" : null,
+        suffix: match[2] ? (match[2].toLowerCase() as "w" | "h") : null,
         pattern: match[1] || "",
       };
     }
@@ -65,7 +74,14 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseCaption(caption: string): { nome: string; anime: string; rarities: number[]; events: number[] } | null {
+function parseCaption(
+  caption: string,
+): {
+  nome: string;
+  anime: string;
+  rarities: number[];
+  events: number[];
+} | null {
   const text = caption
     .replace(new RegExp(`^[/!]${botPrefix}up[wWhH]?\\s*`, "i"), "")
     .replace(new RegExp(`^[/!]up[wWhH]?\\s*`, "i"), "")
@@ -137,7 +153,7 @@ async function processSingleUpload(
   rarities: number[],
   events: number[],
   usermention: string,
-  charType: ChatType
+  charType: ChatType,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const isVideo = mediaType === MediaType.VIDEO_FILEID;
@@ -258,7 +274,9 @@ export async function UploadMediaHandler(ctx: MyContext) {
   const parsed = parseCaption(caption);
   console.log("[UploadHandler] Parseado:", parsed);
   if (!parsed) {
-    await ctx.reply(`Formato inválido. Use: /${botPrefix}upw nome, anime, r1 e1\n ou /${botPrefix}uph nome, anime, r1 e1\n ou /upw nome, anime, r1 e1`);
+    await ctx.reply(
+      `Formato inválido. Use: /${botPrefix}upw nome, anime, r1 e1\n ou /${botPrefix}uph nome, anime, r1 e1\n ou /upw nome, anime, r1 e1`,
+    );
     return;
   }
 
@@ -314,11 +332,11 @@ export async function UploadMediaHandler(ctx: MyContext) {
 
   const usermention = mentionUser(
     ctx.from?.first_name || "user",
-    ctx.from?.id || 0
+    ctx.from?.id || 0,
   );
 
   const statusMsg = await ctx.reply(
-    `⏳ Processando ${totalFiles} arquivo(s)...`
+    `⏳ Processando ${totalFiles} arquivo(s)...`,
   );
 
   let successCount = 0;
@@ -343,7 +361,7 @@ export async function UploadMediaHandler(ctx: MyContext) {
         parsed.rarities,
         parsed.events,
         usermention,
-        charType
+        charType,
       );
 
       if (result.success) {
@@ -355,10 +373,13 @@ export async function UploadMediaHandler(ctx: MyContext) {
       await ctx.api.editMessageText(
         chatId,
         statusMsg.message_id,
-        `⏳ Processando ${i + 1}/${totalFiles}... (✅ ${successCount} | ❌ ${errorCount})`
+        `⏳ Processando ${i + 1}/${totalFiles}... (✅ ${successCount} | ❌ ${errorCount})`,
       );
     } catch (error) {
-      console.error(`Erro ao processar mensagem ${targetMsg?.messageId}:`, error);
+      console.error(
+        `Erro ao processar mensagem ${targetMsg?.messageId}:`,
+        error,
+      );
       errorCount++;
     }
   }
@@ -366,6 +387,6 @@ export async function UploadMediaHandler(ctx: MyContext) {
   await ctx.api.editMessageText(
     chatId,
     statusMsg.message_id,
-    `✅ Concluído!\n\nTotal: ${totalFiles}\nAdicionados: ${successCount}\nErros: ${errorCount}`
+    `✅ Concluído!\n\nTotal: ${totalFiles}\nAdicionados: ${successCount}\nErros: ${errorCount}`,
   );
 }

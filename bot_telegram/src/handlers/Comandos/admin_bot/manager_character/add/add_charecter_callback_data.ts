@@ -1,10 +1,10 @@
-import { prisma } from "../../../../lib/prisma.js";
-import { Prisma } from "../../../../generated/prisma/client.js";
-import { getCharacter } from "../../../cache/cache.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
-import { Sendmedia } from "../../../utils/sendmedia.js";
-import { create_caption } from "../../../utils/manege_caption/create_caption.js";
+import { prisma } from "../../../../../../lib/prisma.js";
+import { Prisma } from "../../../../../../generated/prisma/client.js";
+import { getCharacter } from "../../../../../cache/cache.js";
+import type { MyContext } from "../../../../../utils/customTypes.js";
+import { mentionUser } from "../../../../../utils/manege_caption/metion_user.js";
+import { Sendmedia } from "../../../../../utils/sendmedia.js";
+import { create_caption } from "../../../../../utils/manege_caption/create_caption.js";
 import { addCharacter_edit_CallbackData } from "./add_character_edit.js";
 
 export async function addCharacterCallbackData(ctx: MyContext) {

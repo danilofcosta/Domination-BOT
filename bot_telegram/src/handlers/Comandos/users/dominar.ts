@@ -33,12 +33,22 @@ function verificarNome(personagem: string, tentativa: string) {
   return false;
 }
 
-function calcularTempo(per: { data: Date | string | null }) {
+function calcularTempo(per: { data: any }) {
   if (!per.data) return "desconhecido";
 
-  const agora = new Date();
-  const data = typeof per.data === "string" ? new Date(per.data) : per.data;
-  const diferenca = agora.getTime() - data.getTime();
+  const agora = Date.now();
+  let dataMs = 0;
+  
+  if (typeof per.data === "string") {
+    dataMs = new Date(per.data).getTime();
+  } else if (per.data instanceof Date) {
+    dataMs = per.data.getTime();
+  } else if (typeof per.data === "number") {
+    // If it's a 10-digit number, it's likely a Telegram unix timestamp in seconds
+    dataMs = per.data < 10000000000 ? per.data * 1000 : per.data;
+  }
+
+  const diferenca = Math.max(0, agora - dataMs);
 
   const segundos = Math.floor(diferenca / 1000);
   const minutos = Math.floor(diferenca / 60000);

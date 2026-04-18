@@ -1,8 +1,8 @@
 import { InlineKeyboard } from "grammy";
-import { prisma } from "../../../../lib/prisma.js";
-import { getCharacter, setCharacter } from "../../../cache/cache.js";
-import type { MyContext } from "../../../utils/customTypes.js";
-import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import { getCharacter, setCharacter } from "../../../../cache/cache.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
+import { LinkMsg } from "../../../../utils/manege_caption/link_msg.js";
 
 function getCharacterConfirmText(data_character: any, ctx: MyContext) {
   const { nome, anime, rarities, events, genero, mediatype, idchat } =

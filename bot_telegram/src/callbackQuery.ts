@@ -8,9 +8,10 @@ import { topCallbackQuery } from "./handlers/callbacks/topCallbackQuery.js";
 import { StatRefresh } from "./handlers/Comandos/globais/status.js";
 import { helpCommand } from "./handlers/Comandos/globais/help.js";
 import { helpCallback } from "./handlers/callbacks/helpCallback.js";
-import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/add_charecter_callback_data.js";
-import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/edit_character_callbacks.js";
+import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/manager_character/add/add_charecter_callback_data.js";
+import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/off/edit_character_callbacks.js";
 import { ClickByDetail_Callback } from "./handlers/callbacks/cickCallback.js";
+import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
 
 const callbacks = new Composer<MyContext>();
 
@@ -34,5 +35,6 @@ callbacks.callbackQuery(/^click_/, ClickByDetail_Callback);
 //admin
 callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);
 callbacks.callbackQuery(/^edit_character_/, editCharacterCallbackData);
+callbacks.callbackQuery(/^addcolletion_/, addcolletionCallback);
 
 export { callbacks };

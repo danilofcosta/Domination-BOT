@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../../../lib/prisma.js";
 
 interface EventInput {
   id?: number;
@@ -8,7 +8,6 @@ interface EventInput {
   description?: string | null;
   emoji_id?: string | null;
 }
-
 
 export async function addEvent(data: EventInput) {
   try {
@@ -20,7 +19,6 @@ export async function addEvent(data: EventInput) {
     return null;
   }
 }
-
 
 export async function addManyEvents(list: EventInput[]) {
   try {
@@ -45,7 +43,6 @@ export async function addManyEvents(list: EventInput[]) {
   }
 }
 
-
 // async function Reset_id_Event() {
 //    //ALTER SEQUENCE "Event_id_seq" RESTART WITH 1;
 //    await prisma.event.deleteMany({ where: {} });
@@ -53,8 +50,6 @@ export async function addManyEvents(list: EventInput[]) {
 // }
 
 // Reset_id_Event();
-
-
 
 // async function main() {
 //   await addManyEvents(event);

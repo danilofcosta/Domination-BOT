@@ -10,6 +10,8 @@ import { Ramdon_Character_Handler } from "../handlers/Comandos/globais/random_ch
 import { topHandler } from "../handlers/Comandos/users/top.js";
 import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
 import { debug } from "../utils/log.js";
+import type { BotCommandScope, BotCommandScopeChatAdministrators, BotCommandScopeAllGroupChats} from "grammy/types";
+
 
 const botCommands = new CommandGroup<MyContext>();
 export const ComandosUser = {
@@ -17,7 +19,7 @@ export const ComandosUser = {
     command: "dominar",
     description: "Dominate a character",
     handler: CapturarCharacter,
-    scope: "all_group_chats",
+    scope: { type: "all_group_chats" } as BotCommandScopeAllGroupChats,
   },
   harem: {
     command: `my${typeBot}s`,

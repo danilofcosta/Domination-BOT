@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 RUN  npm install --omit dev
-RUN   npx tsc
+RUN  npm run build
 RUN mkdir -p data/logs/waifu data/logs/husbando
 COPY src/locales dist/src/locales
 
