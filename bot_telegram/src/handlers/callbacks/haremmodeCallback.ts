@@ -41,7 +41,7 @@ export async function haremmodeCallback(ctx: MyContext) {
   const modeText = modeMatch === "latest" ? "Recentes" : modeMatch === "rarity" ? "Por Raridade" : "Por Evento";
 
   await ctx.editMessageCaption({
-    caption: `Modo selecionado: <b>${modeText}</b>`,
+    caption: `Modo selecionado: <b>${modeMatch}</b>`,
     parse_mode: "HTML",
     reply_markup: new InlineKeyboard() // Isso remove os botões
   }).catch(() => {});
