@@ -113,8 +113,7 @@ export async function contarMensagens(ctx: MyContext) {
   if (cont >= UNDROP && grupo.dropId != null) {
     const character = grupo.character;
 
-    const character_genero =
-      ctx.session.settings.genero || process.env.TYPE_BOT === ChatType.HUSBANDO
+    const character_genero =process.env.TYPE_BOT === ChatType.HUSBANDO
         ? "o husbando"
         : "a waifu";
 
