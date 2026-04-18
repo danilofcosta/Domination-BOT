@@ -80,7 +80,7 @@ export const ComandosUser = {
     scope: "all_group_chats",
   },
   haremmode: {
-    command: "haremmode",
+    command: `${botPrefix}haremmode`,
     description: {
       pt: "Altera o modo de visualização do seu Harem",
       en: "Change the display mode of your Harem",
