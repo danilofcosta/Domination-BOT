@@ -3,17 +3,8 @@ import type { MyContext } from "../../utils/customTypes.js";
 import { ComandosUser } from "../../CommandesManage/User.js";
 import { botPrefix } from "../../CommandesManage/botConfigCommands.js";
 import { error, debug } from "../../utils/log.js";
+import { adminCommands_bot_dict } from "../../CommandesManage/adminCommands_bot.js";
 
-const ComandosAdmin = [
-    { command: `addchar${botPrefix}`, description: "Add a character to the database (admin)" },
-    { command: `addrarity${botPrefix}`, description: "Add a new rarity (admin)" },
-    { command: `editrarity${botPrefix}`, description: "Edit an existing rarity (admin)" },
-    { command: `delrarity${botPrefix}`, description: "Delete a rarity (admin)" },
-    { command: `reloadadms${botPrefix}`, description: "Atualiza todos os admins do grupo como ADMIN no banco" },
-    { command: `banuser${botPrefix}`, description: "Banir usuário" },
-    { command: `unbanuser${botPrefix}`, description: "Desbanir usuário" },
-    { command: `listbanned${botPrefix}`, description: "Listar usuários banidos" },
-] as const;
 
 export async function helpCallback(ctx: MyContext) {
     if (!ctx.callbackQuery?.data) return;
@@ -22,109 +13,49 @@ export async function helpCallback(ctx: MyContext) {
     
     debug(`helpCallback`, { action, rest, userId: ctx.from?.id });
 
+    const handleEditOrReply = async (textToUse: string, reply_markup: InlineKeyboard) => {
+        const msg = ctx.callbackQuery?.message;
+        const currentText = msg?.text || msg?.caption;
+
+        if (currentText && currentText.trim() === textToUse.trim()) {
+            await ctx.answerCallbackQuery().catch(() => {});
+            return;
+        }
+
+        try {
+            if (!msg) {
+                await ctx.reply(textToUse, { parse_mode: "HTML", reply_markup });
+            } else if (msg.text !== undefined) {
+                await ctx.editMessageText(textToUse, { parse_mode: "HTML", reply_markup });
+            } else if (msg.caption !== undefined) {
+                await ctx.editMessageCaption({ caption: textToUse, parse_mode: "HTML", reply_markup });
+            } else {
+                await ctx.reply(textToUse, { parse_mode: "HTML", reply_markup });
+            }
+        } catch (e: any) {
+            if (e.description?.includes("message is not modified")) {
+                await ctx.answerCallbackQuery().catch(() => {});
+                return;
+            }
+            error(`helpCallback - erro ao editar/enviar ${action}`, e);
+        }
+    };
+
     if (action === "comandos") {
-        const currentText = ctx.callbackQuery.message?.text || ctx.callbackQuery.message?.caption;
-        
-        if (!currentText) {
-            await ctx.editMessageCaption({
-                caption: "Selecione uma categoria:",
-                parse_mode: "HTML",
-                reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
-            }).catch(err => {
-                if (err.description?.includes("message is not modified")) return;
-                error("helpCallback - erro ao editar caption", err);
-            });
+        if (!rest.length) {
+            await handleEditOrReply(
+                "Selecione uma categoria:", 
+                new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close')
+            );
+        } else if (rest[0] === "user") {
+            const comandosText = Object.entries(ComandosUser).map(([key, value]) => `/${value.command} - ${value.description}`).join("\n");
+            await handleEditOrReply(comandosText, new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'));
+        } else if (rest[0] === "admin") {
+            const comandosText = Object.values(adminCommands_bot_dict).map((value) => `/${value.command} - ${value.description.pt}`).join("\n");
+            await handleEditOrReply(comandosText, new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'));
         }
-        else {
-            try {
-                if (currentText === "Selecione uma categoria:") {
-                    await ctx.answerCallbackQuery();
-                    return;
-                }
-                await ctx.editMessageText("Selecione uma categoria:", {
-                    parse_mode: "HTML",
-                    reply_markup: new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close'),
-                });
-            } catch (e) {
-                if ((e as any).description?.includes("message is not modified")) {
-                    await ctx.answerCallbackQuery();
-                    return;
-                }
-                error("helpCallback - erro ao editar texto", e);
-            }
-        }
-    }
-    if (action === "comandos" && rest[0] === "user") {
-        const currentText = ctx.callbackQuery.message?.text || ctx.callbackQuery.message?.caption;
-        const comandosText = Object.entries(ComandosUser).map(([key, value]) => {
-            return `/${value.command} - ${value.description}`;
-        }).join("\n");
-
-        if (!currentText) {
-            await ctx.editMessageCaption({
-                caption: comandosText,
-                parse_mode: "HTML",
-                reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
-            }).catch(err => {
-                if (err.description?.includes("message is not modified")) return;
-                error("helpCallback - erro ao editar caption (user)", err);
-            });
-        }
-        else {
-            try {
-                if (currentText.trim() === comandosText.trim()) {
-                    await ctx.answerCallbackQuery();
-                    return;
-                }
-                await ctx.editMessageText(comandosText, {
-                    parse_mode: "HTML",
-                    reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
-                });
-            } catch (e) {
-                if ((e as any).description?.includes("message is not modified")) {
-                    await ctx.answerCallbackQuery();
-                    return;
-                }
-                error("helpCallback - erro ao editar texto (user)", e);
-            }
-        }
+        return;
     }
 
-    if (action === "comandos" && rest[0] === "admin") {
-        const currentText = ctx.callbackQuery.message?.text || ctx.callbackQuery.message?.caption;
-        const comandosText = ComandosAdmin.map((cmd) => {
-            return `/${cmd.command} - ${cmd.description}`;
-        }).join("\n");
-
-        if (!currentText) {
-            await ctx.editMessageCaption({
-                caption: comandosText,
-                parse_mode: "HTML",
-                reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
-            }).catch(err => {
-                if (err.description?.includes("message is not modified")) return;
-                error("helpCallback - erro ao editar caption (admin)", err);
-            });
-        }
-        else {
-            try {
-                if (currentText.trim() === comandosText.trim()) {
-                    await ctx.answerCallbackQuery();
-                    return;
-                }
-                await ctx.editMessageText(comandosText, {
-                    parse_mode: "HTML",
-                    reply_markup: new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'),
-                });
-            } catch (e) {
-                if ((e as any).description?.includes("message is not modified")) {
-                    await ctx.answerCallbackQuery();
-                    return;
-                }
-                error("helpCallback - erro ao editar texto (admin)", e);
-            }
-        }
-    } else {
-        await ctx.answerCallbackQuery();
-    }
+    await ctx.answerCallbackQuery().catch(() => {});
 }

@@ -6,10 +6,6 @@ import { onlyRoleBotAdmin } from "../utils/permissions.js";
 import { AddCharacterHandler } from "../handlers/Comandos/admin_bot/manager_character/add/add_charecter.js";
 import { debug, warn } from "../utils/log.js";
 import { getUserRole, roleWeights } from "../utils/permissions.js";
-import type {
-  BotCommandScope,
-  BotCommandScopeChatAdministrators,
-} from "grammy/types";
 import { add_in_colletion } from "../handlers/Comandos/admin_bot/manage_users/add_in_colletion.js";
 
 type AdminCommand = {
@@ -21,7 +17,7 @@ type AdminCommand = {
   botAdminOnly?: boolean;
 };
 
-const adminCommands_bot_dict: Record<string, AdminCommand> = {
+export const adminCommands_bot_dict: Record<string, AdminCommand> = {
   addchar: {
     minPermission: ProfileType.ADMIN,
     command: `addchar${botPrefix}`,

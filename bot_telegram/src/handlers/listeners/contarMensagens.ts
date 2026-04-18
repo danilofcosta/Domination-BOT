@@ -5,43 +5,55 @@ import { DropCharacter } from "./doprar_per.js";
 import { error, log } from "../../utils/log.js";
 
 const DROP = 100;
-const UNDROP = DROP +20  ;
+const UNDROP = DROP + 20;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
+
+// Cache em memória para evitar que o Grammy Middleware faça update no banco de dados
+// do Prisma a cada mensagem enviada no grupo (o que derruba a performance)
+const counters = new Map<number, number>();
+const titles = new Map<number, string | null>();
 
 export async function contarMensagens(ctx: MyContext) {
   if (!ctx.chat) return;
 
   const grupo = ctx.session.grupo;
   if (!grupo) {
-    return log("Grupo não encontrado");
+    return; // removido log para não travar disk io
   }
   const isDev = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
   const isTestGroup = TEST_GROUP_ID
     ? ctx.chat.id === Number(TEST_GROUP_ID)
     : false;
 
+  const chatId = ctx.chat.id;
+
+  if (!counters.has(chatId)) counters.set(chatId, grupo.cont ?? 0);
+  if (!titles.has(chatId)) titles.set(chatId, grupo.title ?? null);
+
+  let cont = counters.get(chatId)!;
+  let title = titles.get(chatId)!;
+
   /* =========================
-   * CONTADOR
+   * CONTADOR EM MEMÓRIA
    * ========================= */
   if (isDev && isTestGroup) {
-    const cont = grupo.cont ?? 0;
-
-    grupo.cont = cont < 97 ? 97 : cont + 1;
-    grupo.title = ctx.chat.title || null;
-
+    cont = cont < 97 ? 97 : cont + 1;
   } else {
-    grupo.title = ctx.chat.title || null;
-    grupo.cont = (grupo.cont ?? 0) + 1;
+    cont += 1;
   }
 
-  log(
-    "log", ctx.session.settings.genero
-    ,
-    ctx.chat.id,
-    ctx.chat.type,
-    ctx.chat.title,
-    grupo.cont,
-  );
+  // Apenas salva o novo título se ele de fato mudar. Reduz I/O de session middleware.
+  const currentTitle = ctx.chat.title || null;
+  if (title !== currentTitle) {
+    grupo.title = currentTitle;
+    titles.set(chatId, currentTitle);
+  }
+
+  // Persiste a nova contagem APENAS no cache de memória, sem sujar a sessão por enquanto
+  counters.set(chatId, cont);
+
+  // [REMOVIDO log(ctx.chat.id, ...) AQUI]
+  // Logar a cada única mensagem trava inteiramente o console (bottleneck) e gasta HD com os arquivos diarios.
 
   /* =========================
    * BOT ADICIONADO NO GRUPO
@@ -60,18 +72,22 @@ export async function contarMensagens(ctx: MyContext) {
     * DROP
     * ========================= */
 
-  // se o contador for maior ou igual a 100 e não tiver dropId
-  if (grupo.cont >= DROP && !grupo.dropId) {
+  // se o contador for maior ou igual a DROP e não tiver dropId
+  if (cont >= DROP && !grupo.dropId) {
+    // Agora suja a sessão pois queremos gravar o status base para o Drop
+    grupo.cont = cont;
     const result = await DropCharacter(ctx);
     if (!result) {
-      // caso não retorna a mensagem
-      grupo.cont = DROP - 10;
+      // caso o drop falhe
+      cont = DROP - 10;
+      counters.set(chatId, cont);
+      grupo.cont = cont; // sync back to session db
       return;
     }
 
     if (result) {
-      //log terminal
-      log("dopre com sucesso");
+      log("Drop executado com sucesso no chat", chatId);
+      counters.set(chatId, grupo.cont ?? 100); // recarrega o contador mexido pelo arquivo doprar_per.ts
     }
 
     return;
@@ -82,8 +98,8 @@ export async function contarMensagens(ctx: MyContext) {
    * ========================= */
 
 
-  //caso o contador seja maior ou igual a 140 e tiver dropId
-  if (grupo.cont >= UNDROP && grupo.dropId != null) {
+  //caso o contador seja maior ou igual ao UNDROP e tiver dropId
+  if (cont >= UNDROP && grupo.dropId != null) {
     const character = grupo.character;
 
     const character_genero =
@@ -100,39 +116,36 @@ export async function contarMensagens(ctx: MyContext) {
     try {
       await ctx.api.deleteMessage(ctx.chat.id, grupo.dropId);
       
-  await ctx.reply(txt, {
-    parse_mode: "HTML",
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: 'Mais detalhes',
-            callback_data: `click_${character?.id ?? "0"}`,
-          },
-        ],
-      ],
-    },
-  });
-      log("undrop com sucesso");
+      await ctx.reply(txt, {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: 'Mais detalhes',
+                callback_data: `click_${character?.id ?? "0"}`,
+              },
+            ],
+          ],
+        },
+      });
+      log("undrop com sucesso no chat", chatId);
     } catch (err) {
       error("Erro ao deletar mensagem:", err)
     }
 
-
-
     /* =========================
-          * RESET
-          * ========================= */
-    //caso o contador seja maior ou igual a 180 e tiver dropId resetar o grupo
-
+     * RESET
+     * ========================= */
     ctx.session.grupo = {
       cont: 0,
       dropId: null,
       character: null,
       data: null,
-      title: ctx.chat.title || "-",
+      title: currentTitle || "-",
       directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
-
-    }
+    };
+    // reseta tb cache
+    counters.set(chatId, 0);
   }
 }

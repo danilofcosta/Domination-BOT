@@ -3,7 +3,15 @@ import { ChatType, type MyContext } from "../../utils/customTypes.js";
 import { showResults } from "./show_results_inline.js";
 import { createResult } from "./create_inline_result.js";
 import { prisma } from "../../../lib/prisma.js";
+import { log } from "../../utils/log.js";
 const LIMIT = 25;
+
+declare global {
+  var cachedTotalWaifu: number;
+  var lastCountWaifuUpdate: number;
+  var cachedTotalHusbando: number;
+  var lastCountHusbUpdate: number;
+}
 
 // busca um personagem em modo inline
 export async function getCharacters(ctx: MyContext) {
@@ -57,7 +65,21 @@ export async function getCharactersall(ctx: MyContext) {
     ? { count: () => prisma.characterHusbando.count(), findMany: (args: any) => prisma.characterHusbando.findMany(args) }
     : { count: () => prisma.characterWaifu.count(), findMany: (args: any) => prisma.characterWaifu.findMany(args) };
 
-  const [pers, total] = await Promise.all([
+  let total = chatType === ChatType.HUSBANDO ? global.cachedTotalHusbando : global.cachedTotalWaifu;
+  const lastUpdate = chatType === ChatType.HUSBANDO ? global.lastCountHusbUpdate : global.lastCountWaifuUpdate;
+  
+  if (!total || Date.now() - (lastUpdate || 0) > 60000) {
+    total = await model.count();
+    if (chatType === ChatType.HUSBANDO) {
+      global.cachedTotalHusbando = total;
+      global.lastCountHusbUpdate = Date.now();
+    } else {
+      global.cachedTotalWaifu = total;
+      global.lastCountWaifuUpdate = Date.now();
+    }
+  }
+
+  const [pers] = await Promise.all([
     model.findMany({
       include: chatType === ChatType.HUSBANDO
         ? { HusbandoEvent: { include: { Event: true } }, HusbandoRarity: { include: { Rarity: true } } }
@@ -65,8 +87,7 @@ export async function getCharactersall(ctx: MyContext) {
       take: LIMIT,
       orderBy: { id: "desc" },
       skip: offset,
-    }),
-    model.count(),
+    })
   ]);
 
   if (!pers) return;
@@ -103,7 +124,7 @@ function Get_chatType(
     try {
     chatType = ctx.session.settings.genero
   } catch (e) {
-    console.log("erro ao buscar chat type");
+    log("erro ao buscar chat type");
     process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU
       ? (chatType = ChatType.WAIFU)
       : (chatType = ChatType.HUSBANDO);
