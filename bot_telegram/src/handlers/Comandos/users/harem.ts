@@ -57,15 +57,21 @@ export async function HaremHandler(ctx: MyContext) {
     return;
   }
 
-  const data =
-    ctx.session.settings.genero === ChatType.HUSBANDO
-      ? (user as any).CharacterHusbando
-      : (user as any).CharacterWaifu;
-  const colletion =
-    ctx.session.settings.genero === ChatType.HUSBANDO
-      ? (user as any).HusbandoCollection
-      : (user as any).WaifuCollection;
-  const pages = Harem_mode_latest(colletion || [], ctx);
+  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+  const config = isHusbando ? (user.husbandoConfig as any) || {} : (user.waifuConfig as any) || {};
+  const mode = config.haremMode || "latest";
+
+  const data = isHusbando ? (user as any).CharacterHusbando : (user as any).CharacterWaifu;
+  const colletion = isHusbando ? (user as any).HusbandoCollection : (user as any).WaifuCollection;
+  
+  let pages: string[] = [];
+  if (mode === "rarity") {
+    pages = Harem_mode_rarity(colletion || [], ctx);
+  } else if (mode === "event") {
+    pages = Harem_mode_event(colletion || [], ctx);
+  } else {
+    pages = Harem_mode_latest(colletion || [], ctx);
+  }
 
   debug(`HaremHandler - páginas geradas`, { userId: ctx.from?.id, pageCount: pages.length });
 
@@ -170,6 +176,90 @@ function Harem_mode_latest(list_character: any[], ctx: MyContext) {
 
     cont++;
   }
+
+  return pages;
+}
+
+function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
+  const grouped = new Map<string, any[]>();
+  for (const char of list_character) {
+      const character = char.Character;
+      const rarities = character?.WaifuRarity ?? character?.HusbandoRarity ?? [];
+      const rarityName = rarities?.[0]?.Rarity?.name ?? "No Rarity";
+      if (!grouped.has(rarityName)) grouped.set(rarityName, []);
+      grouped.get(rarityName)!.push(char);
+  }
+
+  let pages: string[] = [];
+  let perPage: string[] = [];
+  let charCountInPage = 0;
+  
+  for (const [rarityName, chars] of Array.from(grouped.entries()).sort()) {
+      perPage.push(`\n🔸 <b>${rarityName}</b>\n`);
+      for (const char of chars) {
+          const character = char.Character;
+          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+          
+          let line = ` - ${character.name} <code>${character.id}</code>`;
+          if (eventEmojis.length) line += ` [${eventEmojis.join("")}]`;
+          perPage.push(line + "\n");
+          charCountInPage++;
+
+          if (charCountInPage >= 15) {
+              pages.push(perPage.join(""));
+              perPage = [];
+              charCountInPage = 0;
+              if (chars.indexOf(char) < chars.length - 1) {
+                  perPage.push(`\n🔸 <b>${rarityName} (cont.)</b>\n`);
+              }
+          }
+      }
+  }
+
+  if (perPage.length > 0) pages.push(perPage.join(""));
+  if (pages.length === 0) pages.push("Nenhum personagem.");
+
+  return pages;
+}
+
+function Harem_mode_event(list_character: any[], ctx: MyContext) {
+  const grouped = new Map<string, any[]>();
+  for (const char of list_character) {
+      const character = char.Character;
+      const events = character?.WaifuEvent ?? character?.HusbandoEvent ?? [];
+      const eventName = events?.[0]?.Event?.name ?? "Sem Evento";
+      if (!grouped.has(eventName)) grouped.set(eventName, []);
+      grouped.get(eventName)!.push(char);
+  }
+
+  let pages: string[] = [];
+  let perPage: string[] = [];
+  let charCountInPage = 0;
+  
+  for (const [eventName, chars] of Array.from(grouped.entries()).sort()) {
+      perPage.push(`\n🔹 <b>${eventName}</b>\n`);
+      for (const char of chars) {
+          const character = char.Character;
+          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+          
+          let line = ` - ${character.name} <code>${character.id}</code>`;
+          if (rarityEmojis.length) line += ` [${rarityEmojis.join("")}]`;
+          perPage.push(line + "\n");
+          charCountInPage++;
+
+          if (charCountInPage >= 15) {
+              pages.push(perPage.join(""));
+              perPage = [];
+              charCountInPage = 0;
+              if (chars.indexOf(char) < chars.length - 1) {
+                  perPage.push(`\n🔹 <b>${eventName} (cont.)</b>\n`);
+              }
+          }
+      }
+  }
+
+  if (perPage.length > 0) pages.push(perPage.join(""));
+  if (pages.length === 0) pages.push("Nenhum personagem.");
 
   return pages;
 }

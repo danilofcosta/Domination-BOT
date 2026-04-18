@@ -3,6 +3,7 @@ import type { MyContext } from "./utils/customTypes.js";
 import { favConfirmHandler } from "./handlers/callbacks/favCallback.js";
 import { giftConfirmHandler } from "./handlers/callbacks/giftCallback.js";
 import { haremCallback } from "./handlers/callbacks/haremCallback.js";
+import { haremmodeCallback } from "./handlers/callbacks/haremmodeCallback.js";
 
 import { topCallbackQuery } from "./handlers/callbacks/topCallbackQuery.js";
 import { StatRefresh } from "./handlers/Comandos/globais/status.js";
@@ -25,6 +26,7 @@ callbacks.callbackQuery("close", async (ctx) => {
 callbacks.callbackQuery(/^fav_/, favConfirmHandler);
 callbacks.callbackQuery(/^gift_/, giftConfirmHandler);
 callbacks.callbackQuery(/^harem_/, haremCallback);
+callbacks.callbackQuery(/^haremmode_/, haremmodeCallback);
 
 callbacks.callbackQuery(/^start_help_/, helpCommand);
 callbacks.callbackQuery(/^help_/, helpCallback);

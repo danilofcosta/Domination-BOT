@@ -6,6 +6,7 @@ import { HaremHandler } from "../handlers/Comandos/users/harem.js";
 import { favCharacter } from "../handlers/Comandos/users/fav.js";
 import { Myinfos } from "../handlers/Comandos/users/myinfos.js";
 import { giftHandler } from "../handlers/Comandos/users/gift.js";
+import { HaremmodeHandler } from "../handlers/Comandos/users/haremmode.js";
 import { Ramdon_Character_Handler } from "../handlers/Comandos/globais/random_character.js";
 import { topHandler } from "../handlers/Comandos/users/top.js";
 import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
@@ -63,6 +64,12 @@ export const ComandosUser = {
     handler: StartGreetings,
     scope: "all_group_chats",
   },
+  haremmode: {
+    command: "haremmode",
+    description: "Altera o modo de visualização do seu Harem",
+    handler: HaremmodeHandler,
+    scope: "all_group_chats",
+  },
 } as const;
 
 const localizedCommands: Record<string, { es: { command: string; description: string }; pt: { command: string; description: string } }> = {
@@ -97,6 +104,10 @@ const localizedCommands: Record<string, { es: { command: string; description: st
   start: {
     es: { command: "start", description: "Iniciar el bot" },
     pt: { command: "start", description: "Iniciar o bot" }
+  },
+  haremmode: {
+    es: { command: "haremmode", description: "Cambiar modo del harem" },
+    pt: { command: "haremmode", description: "Alterar modo do harem" }
   },
 };
 
