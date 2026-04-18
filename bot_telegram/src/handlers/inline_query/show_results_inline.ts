@@ -18,7 +18,7 @@ export async function showResults({
 
   try {
     await ctx.answerInlineQuery(results, {
-      cache_time: 0,
+     // cache_time: 0,
       is_personal: true,
       ...(next_offset !== undefined && { next_offset }),
       button: {

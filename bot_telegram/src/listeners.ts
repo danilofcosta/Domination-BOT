@@ -75,7 +75,7 @@ listeners.on("inline_query", async (ctx) => {
     return haremInlineQuery(ctx);
   }
 
-  await ctx.answerInlineQuery([]);
+ 
 
   if (query !== "" && !isNaN(Number(query))) {
     await getCharacters(ctx);
@@ -85,7 +85,7 @@ listeners.on("inline_query", async (ctx) => {
     await getCharactersall(ctx);
   }
 
-  return;
+ return   await ctx.answerInlineQuery([]);
 });
 
 export { listeners };
