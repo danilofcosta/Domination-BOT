@@ -94,15 +94,15 @@ export default async function initializeBot(
 
   if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
     console.log("Bot iniciado production waifu");
-    // await privateCommands.setCommands(bot);
-    // await botCommands.setCommands(bot);
-    // await adminGroupsCommands.setCommands(bot);
-    // await devCommands.setCommands(bot);
-    // await adminCommands.setCommands(bot);
-    // await customCommands.setCommands(bot);
-    await bot.api.setMyCommands([
-        { command: "about", description: "Sobre o bot" },
-    ])
+    await privateCommands.setCommands(bot);
+    await botCommands.setCommands(bot);
+    await adminGroupsCommands.setCommands(bot);
+    await devCommands.setCommands(bot);
+    await adminCommands.setCommands(bot);
+    await customCommands.setCommands(bot);
+    // await bot.api.setMyCommands([
+    //     { command: "about", description: "Sobre o bot" },
+    // ])
   }
 
   // Error handling
