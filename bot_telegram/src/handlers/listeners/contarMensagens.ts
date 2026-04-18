@@ -13,6 +13,11 @@ const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 const counters = new Map<number, number>();
 const titles = new Map<number, string | null>();
 
+export function resetContadorCache(chatId: number) {
+  counters.set(chatId, 0);
+  titles.set(chatId, null);
+}
+
 export async function contarMensagens(ctx: MyContext) {
   if (!ctx.chat) return;
 
@@ -54,7 +59,9 @@ export async function contarMensagens(ctx: MyContext) {
 
   // [REMOVIDO log(ctx.chat.id, ...) AQUI]
   // Logar a cada única mensagem trava inteiramente o console (bottleneck) e gasta HD com os arquivos diarios.
-
+  if (isDev){
+    console.log(title,cont)
+  }
   /* =========================
    * BOT ADICIONADO NO GRUPO
    * ========================= */
@@ -74,6 +81,8 @@ export async function contarMensagens(ctx: MyContext) {
 
   // se o contador for maior ou igual a DROP e não tiver dropId
   if (cont >= DROP && !grupo.dropId) {
+    await new Promise(r => setTimeout(r, 50));
+    if (ctx.session.grupo.dropId) return;
     // Agora suja a sessão pois queremos gravar o status base para o Drop
     grupo.cont = cont;
     const result = await DropCharacter(ctx);
@@ -87,7 +96,9 @@ export async function contarMensagens(ctx: MyContext) {
 
     if (result) {
       log("Drop executado com sucesso no chat", chatId);
-      counters.set(chatId, grupo.cont ?? 100); // recarrega o contador mexido pelo arquivo doprar_per.ts
+      const newCont = grupo.cont ?? DROP;
+      counters.set(chatId, newCont);
+      cont = newCont;
     }
 
     return;
