@@ -51,7 +51,7 @@ help-btn-admin = Admin
 
 help-btn-open-pm = pm
 help-btn-back = Voltar
-help-btn-close = 🗑 Fechar
+help-btn-close = 🗑 
 
 # Botões de comando (teclado)
 help-cmd-dominar = 🗡 Dominar

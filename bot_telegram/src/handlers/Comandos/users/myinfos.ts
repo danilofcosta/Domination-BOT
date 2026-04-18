@@ -75,9 +75,22 @@ export async function Myinfos(ctx: MyContext) {
   }
 
   try {
-    const msg = await ctx.reply(text, {
-      parse_mode: "HTML",
-    });
+    const photos = await ctx.api.getUserProfilePhotos(ctx.from!.id, { limit: 1 }).catch(() => null);
+    let msg;
+
+    if (photos && photos.total_count > 0 && photos.photos.length > 0 && photos.photos[0] && photos.photos[0].length > 0) {
+      // Pega a resolução de melhor qualidade da primeira foto
+      const photoArray = photos.photos[0]!;
+      const bestPhoto = photoArray[photoArray.length - 1]!.file_id;
+      msg = await ctx.replyWithPhoto(bestPhoto, {
+        caption: text,
+        parse_mode: "HTML",
+      });
+    } else {
+      msg = await ctx.reply(text, {
+        parse_mode: "HTML",
+      });
+    }
 
     debug(`Myinfos - informações enviadas`, { userId: ctx.from?.id, percent });
 
@@ -86,6 +99,11 @@ export async function Myinfos(ctx: MyContext) {
         { type: "emoji", emoji: "🎉" },
       ]).catch(() => {});
     }
+
+    // Excluir a mensagem após 30 segundos
+    setTimeout(() => {
+      ctx.api.deleteMessage(msg.chat.id, msg.message_id).catch(() => {});
+    }, 30000);
   } catch (e) {
     error(`Myinfos - erro ao enviar reply`, e);
   }

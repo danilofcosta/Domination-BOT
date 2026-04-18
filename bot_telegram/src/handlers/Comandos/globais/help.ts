@@ -19,7 +19,7 @@ export async function helpCommand(ctx: MyContext) {
 
   const reply_markup = new InlineKeyboard()
     .text(ctx.t("help-btn-comandos"), "help_btn_comandos")
-    .text(ctx.t("help-btn-admin"), "help_btn_admin")
+ //   .text(ctx.t("help-btn-admin"), "help_btn_admin")
     .row()
     .text(ctx.t("btn-close"), "close");
 

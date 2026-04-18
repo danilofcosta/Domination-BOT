@@ -48,11 +48,11 @@ export async function helpCallback(ctx: MyContext) {
                 new InlineKeyboard().text("user", 'help_btn_comandos_user').text("admin", 'help_btn_comandos_admin').row().text("close", 'close')
             );
         } else if (rest[0] === "user") {
-            const comandosText = Object.entries(ComandosUser).map(([key, value]) => `/${value.command} - ${value.description}`).join("\n");
-            await handleEditOrReply(comandosText, new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'));
+            const comandosText = Object.entries(ComandosUser).map(([key, value]) => `/${value.command} - ${value.description.pt}`).join("\n");
+            await handleEditOrReply(comandosText, new InlineKeyboard().text(ctx.t("help-btn-back"), 'help_btn_comandos').text(ctx.t("help-btn-close"), 'close'));
         } else if (rest[0] === "admin") {
             const comandosText = Object.values(adminCommands_bot_dict).map((value) => `/${value.command} - ${value.description.pt}`).join("\n");
-            await handleEditOrReply(comandosText, new InlineKeyboard().text("voltar", 'help_btn_comandos').text("close", 'close'));
+            await handleEditOrReply(comandosText, new InlineKeyboard().text(ctx.t("help-btn-back"), 'help_btn_comandos').text(ctx.t("help-btn-close"), 'close'));
         }
         return;
     }
