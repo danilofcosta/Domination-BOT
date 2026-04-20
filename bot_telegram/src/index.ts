@@ -1,46 +1,39 @@
 import initializeBot from "./initializeBot.js";
 import "dotenv/config";
+
 import { Environment_validation } from "./utils/testes/environment_validation.js";
 import { testDBConnection } from "./utils/testes/test_db_Connection.js";
-import { ChatType } from "./utils/customTypes.js";
+import { ChatType, NODE_ENV } from "./utils/customTypes.js";
 import { fatal, info } from "./utils/log.js";
-// Validar variáveis de ambiente
+import { RunPolling } from "./index_Polling.js";
+import { RunWebHook } from "./index_webhook.js";
+
 await Environment_validation();
+await testDBConnection();
 
-// Testar conexão com o banco de dados
-const dbtest = await testDBConnection();
-
-let BOT_TOKEN: string | undefined =
+const BOT_TOKEN =
   process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU
     ? process.env.BOT_TOKEN_WAIFU
     : process.env.BOT_TOKEN_HUSBANDO;
 
-const bot = await initializeBot(
-  process.env.TYPE_BOT as ChatType,
-  BOT_TOKEN as string,
-);
+if (!BOT_TOKEN) {
+  fatal("BOT_TOKEN não definido nas variáveis de ambiente");
+  process.exit(1);
+}
 
-//await bot.api.deleteWebhook({ drop_pending_updates: true });
-// console.log('Bot instanciado com sucesso');
+const bot = await initializeBot(process.env.TYPE_BOT as ChatType, BOT_TOKEN);
 
-await bot.start({
-  drop_pending_updates: true,
-  onStart: async () => {
-    if (process.env.CHAT_ID_DEV) {
-      await bot.api.sendMessage(
-        process.env.CHAT_ID_DEV as string,
-        `Bot Iniciado ${process.env.TYPE_BOT}\nModo : ${process.env.NODE_ENV}\nConectado ao banco: ${dbtest}`,
-      );
-      info("Bot iniciado", process.env.NODE_ENV, process.env.TYPE_BOT);
-    }
-  },
-});
+// await bot.api.deleteWebhook({ drop_pending_updates: true });
+// info("Bot instanciado com sucesso");
 
-// parar o bot
-process.once("SIGINT", async () => {
-  if (process.env.CHAT_ID) {
-    await bot.api.sendMessage(process.env.CHAT_ID_DEV as string, "Bot parado");
-    fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
-  }
-  await bot.stop();
-});
+if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT ||  !process.env.ENDPOINT) {
+  await RunPolling(bot, true);
+} else if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
+  await RunWebHook(
+    process.env.TYPE_BOT?.toLowerCase() ?? "waifu",
+    bot,
+    process.env.ENDPOINT!,
+  );
+} else {
+  info("NODE_ENV não definido corretamente");
+}
