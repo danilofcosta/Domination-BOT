@@ -1,6 +1,7 @@
 import { Bot, session } from "grammy";
 import { I18n } from "@grammyjs/i18n";
 import { limit } from "@grammyjs/ratelimiter";
+import { autoRetry } from "@grammyjs/auto-retry";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PrismaAdapter } from "@grammyjs/storage-prisma";
@@ -33,6 +34,13 @@ export default async function initializeBot(
   BOT_TOKEN: string,
 ) {
   const bot = new Bot<MyContext>(BOT_TOKEN);
+
+  bot.use(
+    autoRetry({
+      maxRetryAttempts: 3,
+      maxDelaySeconds: 5,
+    }),
+  );
 
   bot.use(
     session({
