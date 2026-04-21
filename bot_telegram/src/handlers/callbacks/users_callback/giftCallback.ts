@@ -1,7 +1,7 @@
-import { prisma } from "../../../lib/prisma.js";
-import { getGiftUser } from "../../cache/cache.js";
-import { ChatType, type MyContext } from "../../utils/customTypes.js";
-import { info, warn, error, debug } from "../../utils/log.js";
+import { prisma } from "../../../../lib/prisma.js";
+import { getGiftUser } from "../../../cache/cache.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function giftConfirmHandler(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
@@ -13,7 +13,10 @@ export async function giftConfirmHandler(ctx: MyContext) {
   const senderId = Number(senderIdRaw);
 
   if (ctx.from?.id !== senderId) {
-    warn(`giftConfirmHandler - usuário não autorizado`, { expected: senderId, actual: ctx.from?.id });
+    warn(`giftConfirmHandler - usuário não autorizado`, {
+      expected: senderId,
+      actual: ctx.from?.id,
+    });
     await ctx.answerCallbackQuery(
       ctx.t("error-action-not-autoauthorized-by-id"),
     );
@@ -26,7 +29,12 @@ export async function giftConfirmHandler(ctx: MyContext) {
   }
 
   const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
-  info(`giftConfirmHandler - processando presente`, { senderId, receiverId, giftid, isWaifu });
+  info(`giftConfirmHandler - processando presente`, {
+    senderId,
+    receiverId,
+    giftid,
+    isWaifu,
+  });
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -97,7 +105,11 @@ export async function giftConfirmHandler(ctx: MyContext) {
       }
     });
 
-    debug(`giftConfirmHandler - transação concluída`, { senderId, receiverId, giftid });
+    debug(`giftConfirmHandler - transação concluída`, {
+      senderId,
+      receiverId,
+      giftid,
+    });
   } catch (e) {
     error(`giftConfirmHandler - erro na transação`, e);
   }

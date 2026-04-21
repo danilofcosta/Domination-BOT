@@ -5,7 +5,7 @@ import { DropCharacter } from "./doprar_per.js";
 import { error, info, log } from "../../utils/log.js";
 
 const DROP = 100;
-const UNDROP = DROP + 20;
+const UNDROP = DROP + 40;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 const PERSIST_EVERY = 10; // A cada 10 mensagens, persiste para DB
 

@@ -150,8 +150,9 @@ drop_character_attempt_empty = Ok mais qual nome do {$genero} ?
 
 fav-character=Deseja tornar este personagem seu favorito?
     <code> {$id_personagem}  {$character_name} - {$character_anime} </code>
+    
 fav-character-success=favorito atualizado
-fav-not-found= Você não possui essa {$genero}
+fav-not-found= Você não possui essa {$genero} no seu Harem 
 
 
 ###############

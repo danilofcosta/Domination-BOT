@@ -1,17 +1,17 @@
 import { Composer } from "grammy";
 import type { MyContext } from "./utils/customTypes.js";
-import { favConfirmHandler } from "./handlers/callbacks/favCallback.js";
-import { giftConfirmHandler } from "./handlers/callbacks/giftCallback.js";
-import { haremCallback } from "./handlers/callbacks/haremCallback.js";
-import { haremmodeCallback } from "./handlers/callbacks/haremmodeCallback.js";
+import { favConfirmHandler } from "./handlers/callbacks/users_callback/favCallback.js";
+import { giftConfirmHandler } from "./handlers/callbacks/users_callback/giftCallback.js";
+import { haremCallback } from "./handlers/callbacks/users_callback/haremCallback.js";
+import { haremmodeCallback } from "./handlers/callbacks/users_callback/haremmodeCallback.js";
 
-import { topCallbackQuery } from "./handlers/callbacks/topCallbackQuery.js";
+import { topCallbackQuery } from "./handlers/callbacks/users_callback/topCallbackQuery.js";
 import { StatRefresh } from "./handlers/Comandos/globais/status.js";
 import { helpCommand } from "./handlers/Comandos/globais/help.js";
-import { helpCallback } from "./handlers/callbacks/helpCallback.js";
+import { helpCallback } from "./handlers/callbacks/users_callback/helpCallback.js";
 import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/manager_character/add/add_charecter_callback_data.js";
 import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/off/edit_character_callbacks.js";
-import { ClickByDetail_Callback } from "./handlers/callbacks/cickCallback.js";
+import { ClickByDetail_Callback } from "./handlers/callbacks/users_callback/cickCallback.js";
 import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
 
 const callbacks = new Composer<MyContext>();

@@ -1,17 +1,21 @@
 import { InlineKeyboard } from "grammy";
-import { getHarem } from "../../cache/cache.js";
-import type { MyContext } from "../../utils/customTypes.js";
-import { info, warn, error, debug } from "../../utils/log.js";
+import { getHarem } from "../../../cache/cache.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function haremCallback(ctx: MyContext) {
   const match = ctx.match as any;
-  const parts = (typeof match === "string" ? match : match?.input)?.split("_") ?? [];
+  const parts =
+    (typeof match === "string" ? match : match?.input)?.split("_") ?? [];
   const [tag, userTag, userid, action, pageRaw, jumpRaw] = parts;
 
   const userId = Number(userid);
 
   if (ctx.from?.id !== userId) {
-    warn(`haremCallback - usuário não autorizado`, { expected: userId, actual: ctx.from?.id });
+    warn(`haremCallback - usuário não autorizado`, {
+      expected: userId,
+      actual: ctx.from?.id,
+    });
     await ctx.answerCallbackQuery(
       ctx.t("error-action-not-autoauthorized-by-id"),
     );
@@ -63,7 +67,10 @@ export async function haremCallback(ctx: MyContext) {
     )
     .text(ctx.t("harem_btn_next_page"), `harem_user_${userId}_next_${page}`)
     .row()
-    .switchInlineCurrent(ctx.t("harem_btn_inline_query"), `harem_user_${userId}`)
+    .switchInlineCurrent(
+      ctx.t("harem_btn_inline_query"),
+      `harem_user_${userId}`,
+    )
     .text(
       ctx.t("harem_btn_fast_page") + ` x${jump}`,
       `harem_user_${userId}_jump_${page}_${nextJump}`,

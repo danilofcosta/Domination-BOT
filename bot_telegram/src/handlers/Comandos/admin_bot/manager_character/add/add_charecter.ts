@@ -21,8 +21,11 @@ export interface PreCharacter {
 export async function AddCharacterHandler(ctx: MyContext) {
   console.log("add per");
   let text_command: string | undefined;
-  const reply = ctx.message?.reply_to_message;
+  let reply = ctx.message?.reply_to_message;
 
+  if (ctx.message?.caption && (ctx.message?.photo || ctx.message?.video)) {
+    reply = ctx?.message as any ?? undefined;
+  }
   // ❌ Não respondeu mensagem
   if (!reply) {
     ctx.reply(ctx.t("add_character_not_reply"));
@@ -61,7 +64,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
   const { rarities, events } = parseTokens(rest);
 
   await confirmCharacter(ctx, {
-    idchat: ctx.message?.message_id,
+    idchat: ctx.message!.message_id,
     nome: nome.trim(),
     anime: anime.trim(),
     rarities,

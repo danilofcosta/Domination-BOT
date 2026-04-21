@@ -74,6 +74,8 @@ export default async function initializeBot(
 //    }),
 //  );
 
+
+// ingnora mensagem de user banido
   bot.use(async (ctx, next) => {
     if (!ctx.from) return;
     const banned = await isUserBanned(ctx.from.id);

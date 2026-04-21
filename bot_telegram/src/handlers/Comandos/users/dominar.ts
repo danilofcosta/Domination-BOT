@@ -165,7 +165,9 @@ export async function CapturarCharacter(ctx: MyContext) {
         try {
           await ctx.reply(ctx.t("drop_character_attempt_empty", {
             genero: type === ChatType.WAIFU ? "waifu" : "husbando",
-          }));
+          }), {
+            message_thread_id: ctx.session.grupo.directMessagesTopicId,
+          });
         } catch (e) {
           error("Erro ao enviar mensagem de nome vazio", e);
         }
@@ -187,6 +189,7 @@ export async function CapturarCharacter(ctx: MyContext) {
           reply_markup: {
             inline_keyboard: [[{ text: ctx.t("bt-tentative-again"), url }]],
           },
+          message_thread_id: ctx.session.grupo.directMessagesTopicId,
         });
 
         setTimeout(() => {
@@ -220,7 +223,9 @@ export async function CapturarCharacter(ctx: MyContext) {
 
     if (!character_collection) {
       error(`AddCharacterCollection retornou null`, { userId, characterId: character.id });
-      return ctx.reply(ctx.t("error_add_character"));
+      return ctx.reply(ctx.t("error_add_character"), {
+        message_thread_id: ctx.session.grupo.directMessagesTopicId,
+      });
     }
 
     info(`Personagem adicionado com sucesso`, {
@@ -242,6 +247,7 @@ export async function CapturarCharacter(ctx: MyContext) {
           ],
         ],
       },
+      message_thread_id: ctx.session.grupo.directMessagesTopicId,
     });
 
     ctx.session.grupo = {

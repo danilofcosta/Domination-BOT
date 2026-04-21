@@ -1,7 +1,7 @@
-import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../utils/customTypes.js";
-import { create_caption } from "../../utils/manege_caption/create_caption.js";
-import { info, warn, error, debug } from "../../utils/log.js";
+import { prisma } from "../../../../lib/prisma.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { create_caption } from "../../../utils/manege_caption/create_caption.js";
+import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function favConfirmHandler(ctx: MyContext) {
   const [_, action, favid, userid] = ctx.match
@@ -9,7 +9,10 @@ export async function favConfirmHandler(ctx: MyContext) {
     : [];
 
   if (ctx.from?.id !== Number(userid)) {
-    warn(`favConfirmHandler - usuário não autorizado`, { expected: userid, actual: ctx.from?.id });
+    warn(`favConfirmHandler - usuário não autorizado`, {
+      expected: userid,
+      actual: ctx.from?.id,
+    });
     await ctx.answerCallbackQuery(
       ctx.t("error-action-not-autoauthorized-by-id"),
     );
@@ -58,7 +61,10 @@ export async function favConfirmHandler(ctx: MyContext) {
       });
 
   if (!collection) {
-    warn(`favConfirmHandler - usuário não possui personagem`, { userId, favId });
+    warn(`favConfirmHandler - usuário não possui personagem`, {
+      userId,
+      favId,
+    });
     return ctx.answerCallbackQuery({
       text: "usuário não possui personagem",
       show_alert: true,

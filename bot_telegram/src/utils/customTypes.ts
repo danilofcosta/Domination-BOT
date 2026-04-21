@@ -4,6 +4,7 @@ import type { I18nFlavor } from "@grammyjs/i18n";
 import type { SessionFlavor } from "grammy";
 
 import type { CharacterWaifu, CharacterHusbando, WaifuCollection, HusbandoCollection, MediaType, HusbandoEvent, WaifuEvent, HusbandoRarity, WaifuRarity } from "../../generated/prisma/client.js";
+import type { User } from "grammy/types";
 
 export type TypeMidia = MediaType;
 export type Character = CharacterWaifu | CharacterHusbando ;
@@ -62,3 +63,54 @@ export interface SessionData {
 export type MyContext = Context &
   I18nFlavor &
   SessionFlavor<SessionData>;
+
+export type TipoMessageEntity =
+  | "mention"
+  | "hashtag"
+  | "cashtag"
+  | "bot_command"
+  | "url"
+  | "email"
+  | "phone_number"
+  | "bold"
+  | "italic"
+  | "underline"
+  | "strikethrough"
+  | "spoiler"
+  | "blockquote"
+  | "expandable_blockquote"
+  | "code"
+  | "pre"
+  | "text_link"
+  | "text_mention"
+  | "custom_emoji"
+  | "date_time";
+
+export interface MessageEntity {
+  /** Tipo da entidade */
+  type: TipoMessageEntity;
+
+  /** Posição inicial no texto (UTF-16) */
+  offset: number;
+
+  /** Tamanho da entidade (UTF-16) */
+  length: number;
+
+  /** Apenas para "text_link" */
+  url?: string;
+
+  /** Apenas para "text_mention" */
+  user?: User;
+
+  /** Apenas para "pre" */
+  language?: string;
+
+  /** Apenas para "custom_emoji" */
+  custom_emoji_id?: string;
+
+  /** Apenas para "date_time" */
+  unix_time?: number;
+
+  /** Apenas para "date_time" */
+  date_time_format?: string;
+}
