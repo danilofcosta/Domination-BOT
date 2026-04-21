@@ -67,12 +67,12 @@ export default async function initializeBot(
 
   bot.use(i18n.middleware());
 
-  bot.use(
-    limit({
-      timeFrame: 1000,
-      limit: 3,
-    }),
-  );
+//  bot.use(
+//limit({
+//      timeFrame: 1000,
+//      limit: 3,
+//    }),
+//  );
 
   bot.use(async (ctx, next) => {
     if (!ctx.from) return;

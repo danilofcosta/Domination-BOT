@@ -229,8 +229,8 @@ export async function CapturarCharacter(ctx: MyContext) {
       collectionId: character_collection.id,
       count: character_collection.count
     });
-
-    await ctx.reply(successDominarMessage(ctx, character, character_collection), {
+    const successDominarMessageResult = successDominarMessage(ctx, character, character_collection)
+    await ctx.reply(successDominarMessageResult, {
       parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
