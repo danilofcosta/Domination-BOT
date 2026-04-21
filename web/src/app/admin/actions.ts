@@ -736,8 +736,9 @@ export async function updateCharacter(
     finalMedia = mediaUrlInput;
     isVideo = mediaUrlInput.match(/\.(mp4|webm|mov|avi|mkv)$/i) !== null;
     finalMediaType = isVideo ? "VIDEO_URL" : "IMAGE_URL";
-  } else if (mediaTypeInput) {
+  } else if (mediaTypeInput && existingCharacter) {
     finalMediaType = mediaTypeInput as any;
+    finalMedia = existingCharacter.media;
     isVideo = finalMediaType.includes("VIDEO");
   } else if (existingCharacter) {
     finalMedia = existingCharacter.media;

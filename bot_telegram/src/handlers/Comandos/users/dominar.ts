@@ -239,20 +239,43 @@ export async function CapturarCharacter(ctx: MyContext) {
     });
     const successDominarMessageResult = successDominarMessage(ctx, character, character_collection)
     const topicId = ctx.session.grupo.directMessagesTopicId;
-    await ctx.reply(successDominarMessageResult, {
-      parse_mode: "HTML",
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: ctx.t("success_dominar_btn"),
-              switch_inline_query_current_chat: "harem_user_" + ctx.from?.id,
-            },
-          ],
-        ],
-      },
-      ...(topicId && { message_thread_id: topicId }),
+    
+    info(`Dominando - enviando mensagem de sucesso`, {
+      userId,
+      characterId: character.id,
+      characterName: character.name,
+      chatId: ctx.chat?.id,
+      topicId,
+      messageLength: successDominarMessageResult.length,
+      hasReplyMarkup: true
     });
+
+    try {
+      await ctx.reply(successDominarMessageResult, {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: ctx.t("success_dominar_btn"),
+                switch_inline_query_current_chat: "harem_user_" + ctx.from?.id,
+              },
+            ],
+          ],
+        },
+        ...(topicId && { message_thread_id: topicId }),
+      });
+      info(`Dominando - mensagem de sucesso enviada com sucesso`, { userId });
+    } catch (replyError) {
+      error(`Dominando - ERRO ao enviar mensagem de sucesso`, {
+        userId,
+        characterId: character.id,
+        chatId: ctx.chat?.id,
+        topicId,
+        replyError: replyError instanceof Error ? replyError.message : String(replyError),
+        stack: replyError instanceof Error ? replyError.stack : undefined
+      });
+    }
 
     ctx.session.grupo = {
       cont: 0,

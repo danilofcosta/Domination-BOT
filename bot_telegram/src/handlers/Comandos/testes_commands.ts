@@ -1,6 +1,12 @@
 import { ProfileType } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
 import type { MyContext } from "../../utils/customTypes.js";
+import fs from "node:fs";
+import path from "node:path";
+import { InputFile } from "grammy";
+
+const botType = process.env.TYPE_BOT?.toLowerCase() || "bot";
+const logDir = path.join(process.cwd(), "data", "logs", botType);
 
 interface CustomEmojiResult {
   id: string;
@@ -148,4 +154,22 @@ export async function createSecureServer(ctx: MyContext) {
 
     await ctx.reply("Erro ao criar usuário ❌");
   }
+}
+
+export async function enviarLogs(ctx: MyContext) {
+  const command = ctx.match || "";
+  let logPath: string;
+
+  if (command.includes("erros")) {
+    logPath = path.join(logDir, "error-" + new Date().toISOString().split("T")[0] + ".log");
+  } else {
+    logPath = path.join(logDir, "combined-" + new Date().toISOString().split("T")[0] + ".log");
+  }
+
+  if (!fs.existsSync(logPath)) {
+    await ctx.reply(`Log não encontrado para hoje.`);
+    return;
+  }
+
+  await ctx.replyWithDocument(new InputFile(logPath));
 }

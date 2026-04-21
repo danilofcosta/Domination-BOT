@@ -9,6 +9,7 @@ import { getUserRole, roleWeights } from "../utils/permissions.js";
 import { add_in_colletion } from "../handlers/Comandos/admin_bot/manage_users/add_in_colletion.js";
 import { SetRarityHandler } from "../handlers/Comandos/admin_bot/configs/set_rarity.js";
 import { SetEventHandler } from "../handlers/Comandos/admin_bot/configs/set_event.js";
+import { enviarLogs } from "../handlers/Comandos/testes_commands.js";
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -60,6 +61,26 @@ export const adminCommands_bot_dict: Record<string, AdminCommand> = {
       pt: "Editar configurações de evento (emoji, nome, emoji_id)",
     },
     handler: SetEventHandler,
+    scope: "all_group_chats" as const,
+  },
+  logserros: {
+    minPermission: ProfileType.ADMIN,
+    command: `logserros${botPrefix}`,
+    description: {
+      en: "Send error logs",
+      pt: "Enviar logs de erros",
+    },
+    handler: enviarLogs,
+    scope: "all_group_chats" as const,
+  },
+  logs: {
+    minPermission: ProfileType.ADMIN,
+    command: `logs${botPrefix}`,
+    description: {
+      en: "Send combined logs",
+      pt: "Enviar logs gerais",
+    },
+    handler: enviarLogs,
     scope: "all_group_chats" as const,
   },
 } as const;
