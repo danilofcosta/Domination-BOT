@@ -158,7 +158,7 @@ async function showEventsMenu(
       .row();
   }
 
-  const navRow = [];
+  const navRow: { text: string; callback_data: string }[] = [];
   if (page > 1) {
     navRow.push({
       text: "⬅️",
@@ -217,7 +217,7 @@ async function showRaritiesMenu(
       .row();
   }
 
-  const navRow = [];
+  const navRow: { text: string; callback_data: string }[] = [];
   if (page > 1) {
     navRow.push({
       text: "⬅️",
