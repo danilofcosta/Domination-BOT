@@ -1,11 +1,10 @@
 import { Bot, session } from "grammy";
 import { I18n } from "@grammyjs/i18n";
 import { limit } from "@grammyjs/ratelimiter";
-import { autoRetry } from "@grammyjs/auto-retry";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { PrismaAdapter } from "@grammyjs/storage-prisma";
 import { prisma } from "../lib/prisma.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import localeNegotiator from "./utils/localeNegotiator.js";
 import {
@@ -23,11 +22,27 @@ import { adminGroupsCommands } from "./CommandesManage/admin_groups.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
 import { customCommands } from "./CommandesManage/custom_commands.js";
-import { error } from "./utils/log.js";
+import { error, warn } from "./utils/log.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export const localesDir = path.join(__dirname, "locales");
+
+const fallbackSession = new Map<string, SessionData>();
+
+function getInitialSession(chatTypeBot: string): SessionData {
+  return {
+    settings: { genero: chatTypeBot as any },
+    grupo: {
+      title: null,
+      directMessagesTopicId: null,
+      cont: 0,
+      dropId: null,
+      data: null,
+      character: null,
+    },
+  };
+}
 
 export default async function initializeBot(
   ChatTypeBot: ChatType,
@@ -36,28 +51,9 @@ export default async function initializeBot(
   const bot = new Bot<MyContext>(BOT_TOKEN);
 
   bot.use(
-    autoRetry({
-      maxRetryAttempts: 3,
-      maxDelaySeconds: 5,
-    }),
-  );
-
-  bot.use(
     session({
       getSessionKey: (ctx) => `${ChatTypeBot}_${ctx.chat?.id || ctx.from?.id}`,
-      initial: (): SessionData => ({
-        settings: {
-          genero: ChatTypeBot,
-        },
-        grupo: {
-          title: null,
-          directMessagesTopicId: null,
-          cont: 0,
-          dropId: null,
-          data: null,
-          character: null,
-        },
-      }),
+      initial: () => getInitialSession(ChatTypeBot),
       storage: new PrismaAdapter(prisma.session as any),
     }),
   );
@@ -69,7 +65,6 @@ export default async function initializeBot(
     localeNegotiator,
   });
 
-  // i18n middleware
   bot.use(i18n.middleware());
 
   bot.use(
@@ -88,34 +83,58 @@ export default async function initializeBot(
     await next();
   });
 
-  // comandos
   bot.use(privateCommands);
   bot.use(botCommands);
   bot.use(adminCommands);
   bot.use(adminGroupsCommands);
   bot.use(devCommands);
   bot.use(customCommands);
-
-  // //LISTENERS
   bot.use(listeners);
   bot.use(callbacks);
 
-  if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-    console.log("Bot iniciado production waifu");
+if (process.env.NODE_ENV === "production") {
+  try {
+    console.log("Configurando comandos do bot...");
+
     await privateCommands.setCommands(bot);
     await botCommands.setCommands(bot);
     await adminGroupsCommands.setCommands(bot);
     await devCommands.setCommands(bot);
     await adminCommands.setCommands(bot);
     await customCommands.setCommands(bot);
-    // await bot.api.setMyCommands([
-    //     { command: "about", description: "Sobre o bot" },
-    // ])
-  }
 
-  // Error handling
-  bot.catch((err) => {
+  } catch (e: any) {
+    if (e.error_code === 429) {
+      const wait = e.parameters?.retry_after ?? 60;
+      console.log(`Rate limit atingido. Aguardando ${wait}s...`);
+
+      await new Promise(res => setTimeout(res, wait * 1000));
+
+      console.log("Tentando novamente...");
+
+      // tenta de novo (uma vez só)
+      await privateCommands.setCommands(bot);
+      await botCommands.setCommands(bot);
+      await adminGroupsCommands.setCommands(bot);
+      await devCommands.setCommands(bot);
+      await adminCommands.setCommands(bot);
+      await customCommands.setCommands(bot);
+
+    } else {
+      console.error("Erro ao configurar comandos:", e);
+    }
+  }
+}
+  bot.catch((err: any) => {
     const ctx = err.ctx;
+    const msg = err.error?.message || "";
+    
+    if (msg.includes("timeout") || err.error?.code === "P2010") {
+      warn(`Timeout no banco, inicializando sessão em memória`);
+      ctx.session = getInitialSession(ChatTypeBot);
+      return;
+    }
+    
     error(`Erro no update ${ctx.update.update_id}`, err.error);
   });
 

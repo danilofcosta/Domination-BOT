@@ -158,9 +158,16 @@ fav-not-found= Você não possui essa {$genero}
 # GIFT #
 ###############
 
-gift_confirmation_message = Você tem certeza que deseja presentear <code> {$character_name} - {$character_anime} </code> para { $username }?
+gift_confirmation_message = Você tem certeza que deseja presentear 
+
+ <code> {$character_name} - {$character_anime} </code> 
+ 
+  para { $username }?
+
 gift_reply_instruction= Manda em reposta a uma pessoa
 gift_success= Presente enviado com sucesso!
+gift_success_multi = Você enviou { $count } presentes para { $user }!
+gift_confirmation_message_multi = Você tem certeza que deseja presentear { $qty }x <code> {$character_name} - {$character_anime} </code> para { $username }?
 
 
 ############

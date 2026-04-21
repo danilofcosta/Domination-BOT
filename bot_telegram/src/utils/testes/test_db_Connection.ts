@@ -1,6 +1,7 @@
 import { prisma } from "../../../lib/prisma.js";
 
 export async function testDBConnection() {
+  console.log('teste de conexão com db')
   try {
     await prisma.$connect();
 
@@ -11,7 +12,6 @@ export async function testDBConnection() {
 
     return true;
   } catch (error) {
-    console.error("❌ Erro ao conectar no banco:");
     console.error(error);
     return false;
   } finally {

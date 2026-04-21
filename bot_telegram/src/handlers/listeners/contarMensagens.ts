@@ -2,20 +2,62 @@ import type { User } from "grammy/types";
 import { ChatType, NODE_ENV, type MyContext } from "../../utils/customTypes.js";
 import { botNewgroupMember } from "./botNewgroupMember.js";
 import { DropCharacter } from "./doprar_per.js";
-import { error, log } from "../../utils/log.js";
+import { error, info, log } from "../../utils/log.js";
 
 const DROP = 100;
 const UNDROP = DROP + 20;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
+const PERSIST_EVERY = 10; // A cada 10 mensagens, persiste para DB
 
-// Cache em memória para evitar que o Grammy Middleware faça update no banco de dados
-// do Prisma a cada mensagem enviada no grupo (o que derruba a performance)
-const counters = new Map<number, number>();
-const titles = new Map<number, string | null>();
+const CACHE_TTL_MS = 3600000; // 1 hora
+
+interface CacheEntry<T> {
+  value: T;
+  expiry: number;
+}
+
+// Cache em memória com TTL para evitar memory leak
+const counters = new Map<number, CacheEntry<number>>();
+const titles = new Map<number, CacheEntry<string | null>>();
+
+// Lock em memória para evitar race condition no mesmo processo
+const dropLocks = new Map<number, NodeJS.Timeout>();
+
+function cleanExpiredEntries() {
+  const now = Date.now();
+  for (const [key, entry] of counters) {
+    if (entry.expiry < now) counters.delete(key);
+  }
+  for (const [key, entry] of titles) {
+    if (entry.expiry < now) titles.delete(key);
+  }
+}
+
+setInterval(cleanExpiredEntries, CACHE_TTL_MS);
+
+function getCounter(chatId: number, fallback: number): number {
+  const entry = counters.get(chatId);
+  if (entry && entry.expiry > Date.now()) return entry.value;
+  return fallback;
+}
+
+function setCounter(chatId: number, value: number) {
+  counters.set(chatId, { value, expiry: Date.now() + CACHE_TTL_MS });
+}
+
+function getTitle(chatId: number): string | null {
+  const entry = titles.get(chatId);
+  if (entry && entry.expiry > Date.now()) return entry.value;
+  return null;
+}
+
+function setTitle(chatId: number, value: string | null) {
+  titles.set(chatId, { value, expiry: Date.now() + CACHE_TTL_MS });
+}
 
 export function resetContadorCache(chatId: number) {
-  counters.set(chatId, 0);
-  titles.set(chatId, null);
+  setCounter(chatId, 0);
+  setTitle(chatId, null);
 }
 
 export async function contarMensagens(ctx: MyContext) {
@@ -32,11 +74,8 @@ export async function contarMensagens(ctx: MyContext) {
 
   const chatId = ctx.chat.id;
 
-  if (!counters.has(chatId)) counters.set(chatId, grupo.cont ?? 0);
-  if (!titles.has(chatId)) titles.set(chatId, grupo.title ?? null);
-
-  let cont = counters.get(chatId)!;
-  let title = titles.get(chatId)!;
+  let cont = getCounter(chatId, grupo.cont ?? 0);
+  let title = getTitle(chatId);
 
   /* =========================
    * CONTADOR EM MEMÓRIA
@@ -47,15 +86,21 @@ export async function contarMensagens(ctx: MyContext) {
     cont += 1;
   }
 
-  // Apenas salva o novo título se ele de fato mudar. Reduz I/O de session middleware.
+  // Apenas salva o novo título se ele de fato mudar. Reduz I/O de sessão.
   const currentTitle = ctx.chat.title || null;
   if (title !== currentTitle) {
     grupo.title = currentTitle;
-    titles.set(chatId, currentTitle);
+    setTitle(chatId, currentTitle);
   }
 
-  // Persiste a nova contagem APENAS no cache de memória, sem sujar a sessão por enquanto
-  counters.set(chatId, cont);
+  // Persiste a nova contagem APENAS no cache de memória
+  setCounter(chatId, cont);
+
+  // Persiste para DB a cada 10 mensagens (otimização para múltiplas instâncias)
+  // PrismaAdapter faz auto-save automaticamente
+  if (cont % PERSIST_EVERY === 0) {
+    grupo.cont = cont;
+  }
 
   // [REMOVIDO log(ctx.chat.id, ...) AQUI]
   // Logar a cada única mensagem trava inteiramente o console (bottleneck) e gasta HD com os arquivos diarios.
@@ -81,6 +126,10 @@ export async function contarMensagens(ctx: MyContext) {
 
   // se o contador for maior ou igual a DROP e não tiver dropId
   if (cont >= DROP && !grupo.dropId) {
+    // Previne race condition no mesmo processo
+    if (dropLocks.has(chatId)) return;
+    dropLocks.set(chatId, setTimeout(() => dropLocks.delete(chatId), 5000));
+
     await new Promise(r => setTimeout(r, 50));
     if (ctx.session.grupo.dropId) return;
     // Agora suja a sessão pois queremos gravar o status base para o Drop
@@ -89,16 +138,18 @@ export async function contarMensagens(ctx: MyContext) {
     if (!result) {
       // caso o drop falhe
       cont = DROP - 10;
-      counters.set(chatId, cont);
-      grupo.cont = cont; // sync back to session db
+      setCounter(chatId, cont);
+      grupo.cont = cont;
+      dropLocks.delete(chatId);
       return;
     }
 
     if (result) {
       log("Drop executado com sucesso no chat", chatId);
       const newCont = grupo.cont ?? DROP;
-      counters.set(chatId, newCont);
+      setCounter(chatId, newCont);
       cont = newCont;
+      dropLocks.delete(chatId);
     }
 
     return;
@@ -156,6 +207,6 @@ export async function contarMensagens(ctx: MyContext) {
       directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
     };
     // reseta tb cache
-    counters.set(chatId, 0);
+    setCounter(chatId, 0);
   }
 }
