@@ -1,4 +1,4 @@
-import { fatal, info } from "./utils/log";
+import { fatal, info } from "./utils/log.js";
 
 export async function RunPolling( bot:any,dbtest:Boolean) {
   await bot.start({
