@@ -7,6 +7,8 @@ import { AddCharacterHandler } from "../handlers/Comandos/admin_bot/manager_char
 import { debug, warn } from "../utils/log.js";
 import { getUserRole, roleWeights } from "../utils/permissions.js";
 import { add_in_colletion } from "../handlers/Comandos/admin_bot/manage_users/add_in_colletion.js";
+import { SetRarityHandler } from "../handlers/Comandos/admin_bot/configs/set_rarity.js";
+import { SetEventHandler } from "../handlers/Comandos/admin_bot/configs/set_event.js";
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -38,6 +40,26 @@ export const adminCommands_bot_dict: Record<string, AdminCommand> = {
     },
 
     handler: add_in_colletion,
+    scope: "all_group_chats" as const,
+  },
+  setrarity: {
+    minPermission: ProfileType.ADMIN,
+    command: `setrarity${botPrefix}`,
+    description: {
+      en: "Edit rarity settings (emoji, name, emoji_id)",
+      pt: "Editar configurações de raridade (emoji, nome, emoji_id)",
+    },
+    handler: SetRarityHandler,
+    scope: "all_group_chats" as const,
+  },
+  setevent: {
+    minPermission: ProfileType.ADMIN,
+    command: `setevent${botPrefix}`,
+    description: {
+      en: "Edit event settings (emoji, name, emoji_id)",
+      pt: "Editar configurações de evento (emoji, nome, emoji_id)",
+    },
+    handler: SetEventHandler,
     scope: "all_group_chats" as const,
   },
 } as const;

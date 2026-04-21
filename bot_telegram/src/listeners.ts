@@ -13,16 +13,27 @@ import { prisma } from "../lib/prisma.js";
 import { ChatType } from "./utils/customTypes.js";
 import type { InlineQueryResult } from "grammy/types";
 import { inline_per } from "./handlers/inline_query/inline_by_id.js";
+import { SetRarityReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
+import { SetEventReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_event.js";
 
 const listeners = new Composer<MyContext>();
 
 listeners.on("message:text", async (ctx, next) => {
   if (ctx.session.adminSetup?.action && ctx.session.adminSetup?.targetId) {
     const action = ctx.session.adminSetup.action;
-    const targetId = Number(ctx.session.adminSetup.targetId);
+    const targetId = ctx.session.adminSetup.targetId;
     const text = ctx.message.text;
 
-    let character = getCharacter(targetId);
+    if (action.startsWith("setrarity_")) {
+      return SetRarityReplyHandler(ctx);
+    }
+
+    if (action.startsWith("setevent_")) {
+      return SetEventReplyHandler(ctx);
+    }
+
+    const numTargetId = Number(targetId);
+    let character = getCharacter(numTargetId);
     if (!character) {
       ctx.session.adminSetup = { action: null, targetId: null };
       return;
@@ -34,10 +45,10 @@ listeners.on("message:text", async (ctx, next) => {
       character.anime = text;
     }
 
-    setCharacter(targetId, character);
+    setCharacter(numTargetId, character);
     ctx.session.adminSetup = { action: null, targetId: null };
 
-    await addCharacter_edit_CallbackData(ctx, String(targetId));
+    await addCharacter_edit_CallbackData(ctx, String(numTargetId));
     return;
   }
   return next();

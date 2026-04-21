@@ -47,9 +47,23 @@ export interface SessionData {
     directMessagesTopicId:number|null|undefined
   };
   adminSetup?: {
-    action: "edit_nome" | "edit_anime" | null;
+    action: "edit_nome" | "edit_anime" | `setrarity_${string}` | `setevent_${string}` | null;
     targetId: string | null;
   };
+  rarityEdits?: Record<string, {
+    name?: string;
+    emoji?: string;
+    emoji_id?: string;
+    description?: string;
+  }>;
+  eventEdits?: Record<string, {
+    name?: string;
+    emoji?: string;
+    emoji_id?: string;
+    description?: string;
+  }>;
+  rarityListPage?: number;
+  eventListPage?: number;
   lock?: {
     userId: number;
     timestamp: number;

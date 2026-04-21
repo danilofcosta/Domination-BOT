@@ -2,13 +2,31 @@ import { ProfileType } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
 import type { MyContext } from "../../utils/customTypes.js";
 
-
-interface Entities {
-  offset:number
-  length:number
-  type:string
-custom_emoji_id:string|null|undefined
+interface CustomEmojiResult {
+  id: string;
+  emoji: string;
 }
+
+export function extrair_customid(ctx: MyContext): CustomEmojiResult | null {
+  const msg = ctx.message?.reply_to_message;
+  if (!msg) return null;
+
+  const text = msg.text || "";
+  const entities = msg.entities || [];
+
+  for (const entity of entities) {
+    if (entity.type === "custom_emoji") {
+      const emoji = text.slice(entity.offset, entity.offset + entity.length);
+      const id = (entity as any).custom_emoji_id;
+      if (id) {
+        return { id, emoji };
+      }
+    }
+  }
+
+return null;
+}
+
 export async function emoji_id(ctx: MyContext) {
   if (!ctx.message?.reply_to_message) return;
 

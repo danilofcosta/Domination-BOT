@@ -163,10 +163,11 @@ export async function CapturarCharacter(ctx: MyContext) {
       });
       if (character && !tentativa) {
         try {
-          await ctx.reply(ctx.t("drop_character_attempt_empty", {
+          const topicId = ctx.session.grupo.directMessagesTopicId;
+        await ctx.reply(ctx.t("drop_character_attempt_empty", {
             genero: type === ChatType.WAIFU ? "waifu" : "husbando",
           }), {
-            message_thread_id: ctx.session.grupo.directMessagesTopicId,
+            ...(topicId && { message_thread_id: topicId }),
           });
         } catch (e) {
           error("Erro ao enviar mensagem de nome vazio", e);
@@ -184,12 +185,13 @@ export async function CapturarCharacter(ctx: MyContext) {
       const url = LinkMsg(Number(ctx.chat?.id), Number(ctx.session.grupo.dropId));
 
       try {
+        const topicId = ctx.session.grupo.directMessagesTopicId;
         const msg = await ctx.reply(ctx.t("name-not-found"), {
           parse_mode: "HTML",
           reply_markup: {
             inline_keyboard: [[{ text: ctx.t("bt-tentative-again"), url }]],
           },
-          message_thread_id: ctx.session.grupo.directMessagesTopicId,
+          ...(topicId && { message_thread_id: topicId }),
         });
 
         setTimeout(() => {
@@ -223,8 +225,9 @@ export async function CapturarCharacter(ctx: MyContext) {
 
     if (!character_collection) {
       error(`AddCharacterCollection retornou null`, { userId, characterId: character.id });
+      const topicId = ctx.session.grupo.directMessagesTopicId;
       return ctx.reply(ctx.t("error_add_character"), {
-        message_thread_id: ctx.session.grupo.directMessagesTopicId,
+        ...(topicId && { message_thread_id: topicId }),
       });
     }
 
@@ -235,6 +238,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       count: character_collection.count
     });
     const successDominarMessageResult = successDominarMessage(ctx, character, character_collection)
+    const topicId = ctx.session.grupo.directMessagesTopicId;
     await ctx.reply(successDominarMessageResult, {
       parse_mode: "HTML",
       reply_markup: {
@@ -247,7 +251,7 @@ export async function CapturarCharacter(ctx: MyContext) {
           ],
         ],
       },
-      message_thread_id: ctx.session.grupo.directMessagesTopicId,
+      ...(topicId && { message_thread_id: topicId }),
     });
 
     ctx.session.grupo = {

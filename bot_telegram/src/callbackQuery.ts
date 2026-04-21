@@ -13,6 +13,8 @@ import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/manager_
 import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/off/edit_character_callbacks.js";
 import { ClickByDetail_Callback } from "./handlers/callbacks/users_callback/cickCallback.js";
 import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
+import { SetRarityCallback } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
+import { SetEventCallback } from "./handlers/Comandos/admin_bot/configs/set_event.js";
 
 const callbacks = new Composer<MyContext>();
 
@@ -38,5 +40,7 @@ callbacks.callbackQuery(/^click_/, ClickByDetail_Callback);
 callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);
 callbacks.callbackQuery(/^edit_character_/, editCharacterCallbackData);
 callbacks.callbackQuery(/^addcolletion_/, addcolletionCallback);
+callbacks.callbackQuery(/^setrarity_/, SetRarityCallback);
+callbacks.callbackQuery(/^setevent_/, SetEventCallback);
 
 export { callbacks };

@@ -28,8 +28,10 @@ export function extractListEmojisCharacter(
   return { emoji_event, emoji_raridade };
 }
 
-function Id_to_enomji(id?: string, emoji?: string) {
-  if (!id) return emoji ?? "";
+export function Id_to_enomji(id?: string, emoji?: string) {
+  if (!id || isNaN(Number(id)) || id.length > 5) {
+    return emoji ?? "";
+  }
   return `<tg-emoji emoji-id="${id}">${emoji}</tg-emoji>`;
 }
 export function extrair_emojis(
