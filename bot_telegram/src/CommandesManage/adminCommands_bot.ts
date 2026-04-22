@@ -1,121 +1,144 @@
-import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
-import type { MyContext } from "../utils/customTypes.js";
-import { botPrefix, options } from "./botConfigCommands.js";
-import { ProfileType } from "../../generated/prisma/client.js";
-import { onlyRoleBotAdmin } from "../utils/permissions.js";
-import { AddCharacterHandler } from "../handlers/Comandos/admin_bot/manager_character/add/add_charecter.js";
-import { debug, warn } from "../utils/log.js";
-import { getUserRole, roleWeights } from "../utils/permissions.js";
-import { add_in_colletion } from "../handlers/Comandos/admin_bot/manage_users/add_in_colletion.js";
-import { SetRarityHandler } from "../handlers/Comandos/admin_bot/configs/set_rarity.js";
-import { SetEventHandler } from "../handlers/Comandos/admin_bot/configs/set_event.js";
-import { enviarLogs } from "../handlers/Comandos/testes_commands.js";
+import { CommandGroup, LanguageCodes } from '@grammyjs/commands';
+import type { MyContext } from '../utils/customTypes.js';
+import { botPrefix, options } from './botConfigCommands.js';
+import { ProfileType } from '../../generated/prisma/client.js';
+import { onlyRoleBotAdmin } from '../utils/permissions.js';
+import { AddCharacterHandler } from '../handlers/Comandos/admin_bot/manager_character/add/add_charecter.js';
+import { debug, warn } from '../utils/log.js';
+import { getUserRole, roleWeights } from '../utils/permissions.js';
+import { add_in_colletion } from '../handlers/Comandos/admin_bot/manage_users/add_in_colletion.js';
+import { SetRarityHandler } from '../handlers/Comandos/admin_bot/configs/set_rarity.js';
+import { SetEventHandler } from '../handlers/Comandos/admin_bot/configs/set_event.js';
+import { enviarLogs } from '../handlers/Comandos/testes_commands.js';
+import { banHandler, unbanHandler, listBannedHandler } from '../handlers/Comandos/admin_bot/manage_users/ban_user_handler.js';
+import { statusUserHandler } from '../handlers/Comandos/admin_bot/manage_users/status_user.js';
 
 type AdminCommand = {
   minPermission: ProfileType;
   command: string;
   description: { en: string; pt: string };
   handler: (ctx: MyContext) => Promise<any>;
-  scope: "all_group_chats";
+  scope: 'all_group_chats';
   botAdminOnly?: boolean;
 };
 
 export const adminCommands_bot_dict: Record<string, AdminCommand> = {
   addchar: {
     minPermission: ProfileType.ADMIN,
-    command: `addchar${botPrefix}`,
+    command: 'addchar' + botPrefix,
     description: {
-      en: "Add a character to the database (admin)",
-
-      pt: "Adicionar um personagem ao banco de dados (admin)",
+      en: 'Add a character to the database (admin)',
+      pt: 'Adicionar um personagem ao banco de dados (admin)',
     },
     handler: AddCharacterHandler,
-    scope: "all_group_chats" as const,
+    scope: 'all_group_chats' as const,
   },
   add_in_colletion: {
     minPermission: ProfileType.ADMIN,
-    command: `addcolleton${botPrefix}`,
+    command: 'addcolleton' + botPrefix,
     description: {
-      en: "Add a character to the colletion user (admin)",
-      pt: "Adicionar um personagem ao harem de um user (admin)",
+      en: 'Add a character to the collection user (admin)',
+      pt: 'Adicionar um personagem ao harem de um user (admin)',
     },
-
     handler: add_in_colletion,
-    scope: "all_group_chats" as const,
+    scope: 'all_group_chats' as const,
   },
   setrarity: {
     minPermission: ProfileType.ADMIN,
-    command: `setrarity${botPrefix}`,
+    command: 'setrarity' + botPrefix,
     description: {
-      en: "Edit rarity settings (emoji, name, emoji_id)",
-      pt: "Editar configurações de raridade (emoji, nome, emoji_id)",
+      en: 'Edit rarity settings (emoji, name, emoji_id)',
+      pt: 'Editar configuracoes de raridade (emoji, nome, emoji_id)',
     },
     handler: SetRarityHandler,
-    scope: "all_group_chats" as const,
+    scope: 'all_group_chats' as const,
   },
   setevent: {
     minPermission: ProfileType.ADMIN,
-    command: `setevent${botPrefix}`,
+    command: 'setevent' + botPrefix,
     description: {
-      en: "Edit event settings (emoji, name, emoji_id)",
-      pt: "Editar configurações de evento (emoji, nome, emoji_id)",
+      en: 'Edit event settings (emoji, name, emoji_id)',
+      pt: 'Editar configuracoes de evento (emoji, nome, emoji_id)',
     },
     handler: SetEventHandler,
-    scope: "all_group_chats" as const,
+    scope: 'all_group_chats' as const,
   },
   logserros: {
     minPermission: ProfileType.ADMIN,
-    command: `logserros${botPrefix}`,
+    command: 'logserros' + botPrefix,
     description: {
-      en: "Send error logs",
-      pt: "Enviar logs de erros",
+      en: 'Send error logs',
+      pt: 'Enviar logs de erros',
     },
     handler: enviarLogs,
-    scope: "all_group_chats" as const,
+    scope: 'all_group_chats' as const,
   },
   logs: {
     minPermission: ProfileType.ADMIN,
-    command: `logs${botPrefix}`,
+    command: 'logs' + botPrefix,
     description: {
-      en: "Send combined logs",
-      pt: "Enviar logs gerais",
+      en: 'Send combined logs',
+      pt: 'Enviar logs gerais',
     },
     handler: enviarLogs,
-    scope: "all_group_chats" as const,
+    scope: 'all_group_chats' as const,
+  },
+  banuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'banuser' + botPrefix,
+    description: {
+      en: 'Ban a user from the bot',
+      pt: 'Banir um usuario do bot',
+    },
+    handler: banHandler,
+    scope: 'all_group_chats' as const,
+  },
+  unbanuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'unbanuser' + botPrefix,
+    description: {
+      en: 'Unban a user from the bot',
+      pt: 'Desbanir um usuario do bot',
+    },
+    handler: unbanHandler,
+    scope: 'all_group_chats' as const,
+  },
+  listbanned: {
+    minPermission: ProfileType.ADMIN,
+    command: 'listeban' + botPrefix,
+    description: {
+      en: 'List all banned users',
+      pt: 'Listar todos os usuarios banidos',
+    },
+    handler: listBannedHandler,
+    scope: 'all_group_chats' as const,
+  },
+  statususer: {
+    minPermission: ProfileType.ADMIN,
+    command: 'statususer' + botPrefix,
+    description: {
+      en: 'Get user status information',
+      pt: 'Ver informacoes de status do usuario',
+    },
+    handler: statusUserHandler,
+    scope: 'all_group_chats' as const,
   },
 } as const;
 
-const adminCommands = new CommandGroup<MyContext>();
+const adminCommands_bot = new CommandGroup<MyContext>();
 
 for (const [key, value] of Object.entries(adminCommands_bot_dict)) {
-  adminCommands
+  adminCommands_bot
     .command(value.command, value.description.en, options)
     .addToScope({ type: value.scope }, async (ctx: MyContext) => {
       const userId = ctx.from?.id;
+
       debug(
-        "Comando admin",
+        'Comando admin',
         value.command,
-        "executado por",
+        'executado por',
         ctx.from?.username || ctx.from?.id,
       );
-
-      if (value.botAdminOnly) {
-        const userRole = await getUserRole(userId!);
-        if (roleWeights[userRole] < roleWeights[value.minPermission!]) {
-          warn(
-            `[Permissions] Acesso negado (bot admin only): usuário ${userId} tentou usar ${value.command}`,
-          );
-          await ctx.reply(
-            "❌ Apenas administradores do bot podem usar este comando.",
-          );
-          return;
-        }
-        debug(
-          `[Permissions] Bot admin verificado: usuário ${userId} tem role ${userRole}`,
-        );
-        await value.handler(ctx);
-        return;
-      }
 
       const next = async () => {
         await value.handler(ctx);
@@ -131,4 +154,4 @@ for (const [key, value] of Object.entries(adminCommands_bot_dict)) {
     .localize(LanguageCodes.Portuguese, value.command, value.description.pt);
 }
 
-export { adminCommands };
+export { adminCommands_bot };

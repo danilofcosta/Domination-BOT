@@ -72,74 +72,6 @@ async function extractUserId(ctx: MyContext): Promise<ExtractUserResult> {
   return { userId: null, source: 'invalid_format' };
 }
 
-async function banUser(ctx: MyContext, userId: number, userData?: Record<string, any>) {
-  const targetRole = await getUserRole(userId);
-  if (roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
-    warn('banHandler - tentativa de banir admin', {
-      adminId: ctx.from?.id,
-      targetId: userId,
-      targetRole
-    });
-    await ctx.reply('Nao e possivel banir um administrador do bot.');
-    return false;
-  }
-
-  info('banHandler - banindo usuario', { adminId: ctx.from?.id, targetId: userId });
-
-  await prisma.user.upsert({
-    where: { telegramId: BigInt(userId) },
-    update: { profileType: ProfileType.BANNED },
-    create: {
-      telegramId: BigInt(userId),
-      profileType: ProfileType.BANNED,
-      telegramData: userData || {},
-      favoriteWaifuId: null,
-      favoriteHusbandoId: null,
-      waifuConfig: {},
-      husbandoConfig: {},
-    },
-  });
-
-  const targetName = userData?.first_name || userData?.username || userId.toString();
-  await ctx.reply('Usuario ' + targetName + ' (' + userId + ') banido com sucesso!');
-  return true;
-}
-
-async function unbanUser(ctx: MyContext, userId: number) {
-  const targetRole = await getUserRole(userId);
-  if (targetRole && roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
-    warn('unbanHandler - tentativa de desbanir admin', {
-      adminId: ctx.from?.id,
-      targetId: userId,
-      targetRole
-    });
-    await ctx.reply('Nao e possivel desbanir um administrador do bot.');
-    return false;
-  }
-
-  info('unbanHandler - desbanindo usuario', { adminId: ctx.from?.id, targetId: userId });
-
-  const user = await prisma.user.findUnique({
-    where: { telegramId: BigInt(userId) },
-    select: { telegramData: true },
-  });
-
-  if (!user) {
-    await ctx.reply('Usuario nao encontrado no banco de dados.');
-    return false;
-  }
-
-  await prisma.user.update({
-    where: { telegramId: BigInt(userId) },
-    data: { profileType: ProfileType.USER },
-  });
-
-  const targetData = user?.telegramData as Record<string, any> | null;
-  const targetName = targetData?.first_name || targetData?.username || userId.toString();
-  await ctx.reply('Usuario ' + targetName + ' (' + userId + ') desbanido com sucesso!');
-  return true;
-}
-
 export async function banHandler(ctx: MyContext) {
   const result = await extractUserId(ctx);
 
@@ -149,31 +81,77 @@ export async function banHandler(ctx: MyContext) {
     return;
   }
 
-  try {
-    const success = await banUser(ctx, result.userId, result.userData);
-    if (!success) return;
-  } catch (err) {
-    error('banHandler - erro ao banir usuario ' + result.userId, err);
-    await ctx.reply('Erro ao banir');
+  const targetRole = await getUserRole(result.userId);
+  if (roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
+    warn('banHandler - tentativa de banir admin', {
+      adminId: ctx.from?.id,
+      targetId: result.userId,
+      targetRole
+    });
+    await ctx.reply('Nao e possivel banir um administrador do bot.');
+    return;
   }
+
+  info('banHandler - banindo usuario', { adminId: ctx.from?.id, targetId: result.userId });
+
+  await prisma.user.upsert({
+    where: { telegramId: BigInt(result.userId) },
+    update: { profileType: ProfileType.BANNED },
+    create: {
+      telegramId: BigInt(result.userId),
+      profileType: ProfileType.BANNED,
+      telegramData: result.userData || {},
+      favoriteWaifuId: null,
+      favoriteHusbandoId: null,
+      waifuConfig: {},
+      husbandoConfig: {},
+    },
+  });
+
+  const targetName = result.userData?.first_name || result.userData?.username || result.userId.toString();
+  await ctx.reply('Usuario ' + targetName + ' (' + result.userId + ') banido com sucesso!');
 }
 
 export async function unbanHandler(ctx: MyContext) {
   const result = await extractUserId(ctx);
 
   if (!result.userId) {
-    const usage = 'Use: /unbanuser <opcao>\n\nOpcoes:\n- ID numerico (ex: /unbanuser 123456789)\n- @username (ex: /unbanuser @usuario)\n- Responder a mensagem do usuario';
+    const usage = 'Use: /unbanuser' + botPrefix + ' <opcao>\n\nOpcoes:\n- ID numerico (ex: /unbanuser 123456789)\n- @username (ex: /unbanuser @usuario)\n- Responder a mensagem do usuario';
     await ctx.reply(usage);
     return;
   }
 
-  try {
-    const success = await unbanUser(ctx, result.userId);
-    if (!success) return;
-  } catch (err) {
-    error('unbanHandler - erro ao desbanir usuario ' + result.userId, err);
-    await ctx.reply('Erro ao desbanir');
+  const targetRole = await getUserRole(result.userId);
+  if (targetRole && roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
+    warn('unbanHandler - tentativa de desbanir admin', {
+      adminId: ctx.from?.id,
+      targetId: result.userId,
+      targetRole
+    });
+    await ctx.reply('Nao e possivel desbanir um administrador do bot.');
+    return;
   }
+
+  info('unbanHandler - desbanindo usuario', { adminId: ctx.from?.id, targetId: result.userId });
+
+  const user = await prisma.user.findUnique({
+    where: { telegramId: BigInt(result.userId) },
+    select: { telegramData: true },
+  });
+
+  if (!user) {
+    await ctx.reply('Usuario nao encontrado no banco de dados.');
+    return;
+  }
+
+  await prisma.user.update({
+    where: { telegramId: BigInt(result.userId) },
+    data: { profileType: ProfileType.USER },
+  });
+
+  const targetData = user?.telegramData as Record<string, any> | null;
+  const targetName = targetData?.first_name || targetData?.username || result.userId.toString();
+  await ctx.reply('Usuario ' + targetName + ' (' + result.userId + ') desbanido com sucesso!');
 }
 
 export async function listBannedHandler(ctx: MyContext) {

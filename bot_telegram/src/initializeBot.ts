@@ -16,8 +16,8 @@ import {
 import { listeners } from "./listeners.js";
 import { callbacks } from "./callbackQuery.js";
 import { privateCommands } from "./CommandesManage/private.js";
-import { botCommands } from "./CommandesManage/User.js";
-import { adminCommands } from "./CommandesManage/adminCommands_bot.js";
+import {  UserCommands } from "./CommandesManage/User.js";
+import { adminCommands_bot } from "./CommandesManage/adminCommands_bot.js";
 import { adminGroupsCommands } from "./CommandesManage/admin_groups.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
@@ -86,11 +86,12 @@ export default async function initializeBot(
   });
 
   bot.use(privateCommands);
-  bot.use(botCommands);
-  bot.use(adminCommands);
+  bot.use(adminCommands_bot);
+  bot.use(adminCommands_bot);
   bot.use(adminGroupsCommands);
   bot.use(devCommands);
   bot.use(customCommands);
+
   bot.use(listeners);
   bot.use(callbacks);
 
@@ -98,11 +99,11 @@ if (process.env.NODE_ENV === "production") {
   try {
     console.log("Configurando comandos do bot...");
 
-    await privateCommands.setCommands(bot);
-    await botCommands.setCommands(bot);
-    await adminGroupsCommands.setCommands(bot);
-    await devCommands.setCommands(bot);
-    await adminCommands.setCommands(bot);
+    await privateCommands.setCommands(bot);//comandos privado
+    await UserCommands.setCommands(bot); // comandos publicos
+    await adminGroupsCommands.setCommands(bot);// comandos para adms do grupos
+   // await devCommands.setCommands(bot);// comandos dev
+   // await adminCommands_bot.setCommands(bot); // comando para adms do bot
     await customCommands.setCommands(bot);
 
   } catch (e: any) {
@@ -116,10 +117,10 @@ if (process.env.NODE_ENV === "production") {
 
       // tenta de novo (uma vez só)
       await privateCommands.setCommands(bot);
-      await botCommands.setCommands(bot);
+      await UserCommands.setCommands(bot);
       await adminGroupsCommands.setCommands(bot);
       await devCommands.setCommands(bot);
-      await adminCommands.setCommands(bot);
+      await adminCommands_bot.setCommands(bot);
       await customCommands.setCommands(bot);
 
     } else {
