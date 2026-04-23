@@ -6,7 +6,7 @@ services:
     image: docker.io/bitnami/postgresql:latest
     container_name: postgres
     restart: unless-stopped
-    command: postgres -c max_connections=200
+   
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
