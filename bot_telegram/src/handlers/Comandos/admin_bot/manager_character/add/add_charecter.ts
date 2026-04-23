@@ -1,9 +1,12 @@
-﻿import { MediaType } from '../../../../../../generated/prisma/client.js';
+import { MediaType } from '../../../../../../generated/prisma/client.js';
 import { prisma } from '../../../../../../lib/prisma.js';
 import { setCharacter } from '../../../../../cache/cache.js';
 import { type MyContext } from '../../../../../utils/customTypes.js';
 import { LinkMsg } from '../../../../../utils/manege_caption/link_msg.js';
-import type { ChatType } from '../../../../../utils/customTypes.js';
+import { mentionUser } from '../../../../../utils/manege_caption/metion_user.js';
+import { create_caption } from '../../../../../utils/manege_caption/create_caption.js';
+import { Sendmedia } from '../../../../../utils/sendmedia.js';
+import { ChatType } from '../../../../../utils/customTypes.js';
 
 export interface PreCharacter {
   idchat?: number;
@@ -133,7 +136,7 @@ async function getRandomRarity(genero: ChatType): Promise<number | undefined> {
     ? await prisma.husbandoRarity.findMany({ select: { rarityId: true } })
     : await prisma.waifuRarity.findMany({ select: { rarityId: true } });
 
-  if (!rarities || rarities.length === 0) return undefined;
+  if (rarities.length === 0) return undefined;
 
   const randomIndex = Math.floor(Math.random() * rarities.length);
   return rarities[randomIndex]?.rarityId;
@@ -182,7 +185,15 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
         }
       }
 
-      await ctx.reply('Personagem adicionado!\n\nID: ' + char.id + '\nNome: ' + data.nome + '\nAnime: ' + data.anime);
+      const character_db = await prisma.characterHusbando.findUnique({
+        where: { id: char.id },
+        include: {
+          HusbandoRarity: { include: { Rarity: true } },
+          HusbandoEvent: { include: { Event: true } },
+        },
+      });
+
+      await sendAddedNotification(ctx, character_db, data);
     } else {
       const char = await prisma.characterWaifu.create({
         data: {
@@ -211,12 +222,56 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
         }
       }
 
-      await ctx.reply('Personagem adicionado!\n\nID: ' + char.id + '\nNome: ' + data.nome + '\nAnime: ' + data.anime);
+      const character_db = await prisma.characterWaifu.findUnique({
+        where: { id: char.id },
+        include: {
+          WaifuRarity: { include: { Rarity: true } },
+          WaifuEvent: { include: { Event: true } },
+        },
+      });
+
+      await sendAddedNotification(ctx, character_db, data);
     }
   } catch (e: any) {
     console.error('addCharacterDirect error:', e);
     await ctx.reply('Erro ao adicionar personagem: ' + (e?.message || 'erro desconhecido'));
   }
+}
+
+async function sendAddedNotification(
+  ctx: MyContext,
+  character_db: any,
+  data: PreCharacter,
+) {
+  const chatId = process.env.DATABASE_TELEGREM_ID;
+
+  if (!chatId) {
+    console.log('sendAddedNotification - DATABASE_TELEGREM_ID nao configurado, pulando envio');
+    await ctx.reply('Personagem adicionado com sucesso!');
+    return;
+  }
+
+  const usermention = mentionUser(data.username || 'user', data.user_id);
+
+  const caption = create_caption({
+    ctx,
+    chatType: data.genero,
+    character: character_db,
+    username: null,
+    user_id: null,
+    noformat: false,
+  });
+
+  const fullCaption = caption + '\n\n' + ctx.t('add_character_confirm', {
+    usermention,
+  });
+
+  await Sendmedia({
+    ctx,
+    chat_id: chatId,
+    caption: fullCaption,
+    per: character_db,
+  });
 }
 
 function generateSlug(nome: string, anime: string): string {

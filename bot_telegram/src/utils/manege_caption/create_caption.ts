@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   HusbandoEvent,
   WaifuEvent,
   Event,
@@ -67,7 +67,7 @@ export function create_caption({
   const events = char?.WaifuEvent ?? char?.HusbandoEvent ?? [];
   const rarities = char?.WaifuRarity ?? char?.HusbandoRarity ?? [];
   const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
-    extractListEmojisCharacter(ctx, char as any);
+    extractListEmojisCharacter(ctx, char as any, !!noformat);
 
   const title = ctx.t("harem_inline_caption_title", {
     genero,

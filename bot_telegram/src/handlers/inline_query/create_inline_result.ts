@@ -22,9 +22,9 @@ export interface Params {
   chatType: ChatType;
   character: Character | Collection;
   noformat: boolean | undefined | null;
-  username?: string | undefined;
-  user_id?: string | undefined;
-  no_format?: boolean | undefined | null;
+  username?: string | undefined| null;
+  user_id?: string | undefined|null;
+  no_format?: boolean ;
 }
 
 export function createResult(params: Params) {

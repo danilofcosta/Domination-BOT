@@ -1,4 +1,4 @@
-import { InlineKeyboard } from "grammy";
+﻿import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
@@ -146,7 +146,7 @@ function Harem_mode_latest(list_character: any[], ctx: MyContext) {
     // const rarityEmojis = extrair_emojis(rarities);
 
     const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
-      extractListEmojisCharacter(ctx, character);
+      extractListEmojisCharacter(ctx, character, false);
 
     const sourceType = character.sourceType;
     const anime = character.origem;
@@ -207,7 +207,7 @@ function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
       perPage.push(`\n🔸 <b>${rarityName}</b>\n`);
       for (const char of chars) {
           const character = char.Character;
-          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character, false);
           
           let line = ` - ${character.name} <code>${character.id}</code>`;
           if (eventEmojis.length) line += ` [${eventEmojis.join("")}]`;
@@ -249,7 +249,7 @@ function Harem_mode_event(list_character: any[], ctx: MyContext) {
       perPage.push(`\n🔹 <b>${eventName}</b>\n`);
       for (const char of chars) {
           const character = char.Character;
-          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character, false);
           
           let line = ` - ${character.name} <code>${character.id}</code>`;
           if (rarityEmojis.length) line += ` [${rarityEmojis.join("")}]`;
@@ -302,7 +302,7 @@ function Harem_mode_default(list_character: any[], ctx: MyContext, dbAnimeCounts
       for (const char of chars) {
           const character = char.Character;
           const repete = char.count; // quantidade (ex: 1x, 2x)
-          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character);
+          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character, false);
           
           const rarityIcon = rarityEmojis.length ? rarityEmojis[0] : "❔";
           const eventBrackets = eventEmojis.length ? ` [${eventEmojis.join("")}]` : "";

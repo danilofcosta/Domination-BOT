@@ -1,9 +1,24 @@
+/**
+ * Admin Groups Commands
+ * 
+ * Comandos executáveis apenas por administradores do grupo Telegram.
+ * Verifica se o usuário é admin do grupo via getChatMember.
+ * 
+ * Comandos disponíveis:
+ *   /setchattopic{prefix} - Define o topic para mensagens de drop
+ */
+
 import { CommandGroup, LanguageCodes } from '@grammyjs/commands';
 import type { MyContext } from '../utils/customTypes.js';
 import { setChatTopicHandler } from '../handlers/Comandos/admin_groups/set_chat_topic.js';
 import { botPrefix, options } from './botConfigCommands.js';
 import { debug, warn } from '../utils/log.js';
 
+/**
+ * Verifica se o usuário é admin do grupo
+ * @param ctx - Contexto do Grammy
+ * @returns true se for admin ou creator do grupo
+ */
 async function isGroupAdmin(ctx: MyContext): Promise<boolean> {
   const userId = ctx.from?.id;
   const chatId = ctx.chat?.id;
@@ -19,6 +34,11 @@ async function isGroupAdmin(ctx: MyContext): Promise<boolean> {
   }
 }
 
+/**
+ * Middleware que verifica se o usuário é admin do grupo
+ * @param ctx - Contexto do Grammy
+ * @param next - Função a executar se for admin
+ */
 async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
   if (await isGroupAdmin(ctx)) {
     await next();
@@ -27,6 +47,9 @@ async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
   }
 }
 
+/**
+ * Dicionário de comandos admin do grupo
+ */
 const adminGroupsCommands = new CommandGroup<MyContext>();
 
 export const adminGroupsCommands_dict = {
@@ -40,6 +63,7 @@ export const adminGroupsCommands_dict = {
   },
 } as const;
 
+/** Registra comandos */
 for (const [key, value] of Object.entries(adminGroupsCommands_dict)) {
   adminGroupsCommands
     .command(value.command, value.description.en, options)

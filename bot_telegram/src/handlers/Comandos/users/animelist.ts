@@ -1,20 +1,56 @@
-import { prisma } from '../../../../lib/prisma';
+/**
+ * Animelist Command
+ * 
+ * Lista de personagens por anime com navegação por letras do alfabeto.
+ * 
+ * Fluxo:
+ * 1. /animelist - Mostra teclado com letras A-Z
+ * 2. Clica letra - Lista animes começando com essa letra
+ * 3. Clica anime - Abre inline query para buscar personagens
+ * 
+ * Uso:
+ *   /animelist
+ * 
+ * Cache:
+ *   - Chave: {userId}_al
+ *   - TTL: 5 minutos
+ *   - Dados: letter, animes, genero, userId
+ */
+
+import { prisma } from '../../../../lib/prisma.js';
 import { ChatType, type MyContext } from '../../../utils/customTypes.js';
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+/** Cache em memória para navegação de animes */
 const animeCache = new Map<string, { letter: string; animes: string[]; genero: ChatType; userId: number }>();
 
+/**
+ * Salva dados no cache
+ * @param key - Chave do cache (userId + '_al')
+ * @param data - Dados do anime (letter, animes, genero, userId)
+ */
 function setCache(key: string, data: { letter: string; animes: string[]; genero: ChatType; userId: number }) {
   animeCache.delete(key);
   animeCache.set(key, data);
   setTimeout(() => animeCache.delete(key), 300000);
 }
 
+/**
+ * Recupera dados do cache
+ * @param key - Chave do cache
+ * @returns Dados do anime ou undefined
+ */
 function getCache(key: string) {
   return animeCache.get(key);
 }
 
+/**
+ * Busca lista de animes por letra inicial
+ * @param letter - Primeira letra do nome
+ * @param genero - 'husbando' ou 'waifu'
+ * @returns Array de nomes de anime distintos
+ */
 async function getAnimeList(letter: string, genero: ChatType): Promise<string[]> {
   const characters = genero === ChatType.HUSBANDO
     ? await prisma.characterHusbando.findMany({
@@ -33,6 +69,11 @@ async function getAnimeList(letter: string, genero: ChatType): Promise<string[]>
   return characters.map(c => c.origem);
 }
 
+/**
+ * Constrói teclado com letras do alfabeto (4 por linha)
+ * @param cacheKey - Chave para callbacks
+ * @returns Matriz de botões
+ */
 function buildLetterKeyboard(cacheKey: string) {
   const keyboard: any[] = [];
   let row: any[] = [];
@@ -50,23 +91,30 @@ function buildLetterKeyboard(cacheKey: string) {
   return keyboard;
 }
 
-async function safeEditMessage(ctx: MyContext, text: string, keyboard: any[]) {
+/**
+ * Mostra teclado de letras (menu principal)
+ * @param ctx - Contexto do Grammy
+ * @param cacheKey - Chave do cache
+ */
+async function showLetterKeyboard(ctx: MyContext, cacheKey: string) {
+  const text = 'Selecione uma letra do alfabeto:\n\n';
+  const keyboard = buildLetterKeyboard(cacheKey);
   try {
     await ctx.editMessageText(text, { reply_markup: { inline_keyboard: keyboard } });
   } catch (e: any) {
-    const errCode = e?.parameters?.error_code || e?.errorCode;
-    if (errCode !== 400) {
+    if (e?.parameters?.error_code !== 400) {
       console.error('Edit message error:', e?.message);
     }
   }
 }
 
-async function showLetterKeyboard(ctx: MyContext, cacheKey: string) {
-  const text = 'Selecione uma letra do alfabeto:\n\n';
-  const keyboard = buildLetterKeyboard(cacheKey);
-  await safeEditMessage(ctx, text, keyboard);
-}
-
+/**
+ * Mostra lista de animes com paginação
+ * @param ctx - Contexto do Grammy
+ * @param letter - Letra selecionada
+ * @param cacheKey - Chave do cache
+ * @param page - Número da página (default: 1)
+ */
 async function showAnimeList(ctx: MyContext, letter: string, cacheKey: string, page: number = 1) {
   const userId = ctx.from?.id ?? 0;
   const envType = process.env.TYPE_BOT || 'waifu';
@@ -117,9 +165,19 @@ async function showAnimeList(ctx: MyContext, letter: string, cacheKey: string, p
   keyboard.push([{ text: '🔙 Menu', callback_data: 'al_back_' + cacheKey }]);
 
   await ctx.answerCallbackQuery();
-  await safeEditMessage(ctx, text, keyboard);
+  try {
+    await ctx.editMessageText(text, { reply_markup: { inline_keyboard: keyboard } });
+  } catch (e: any) {
+    if (e?.parameters?.error_code !== 400) {
+      console.error('Edit message error:', e?.message);
+    }
+  }
 }
 
+/**
+ * Handler do comando /animelist
+ * @param ctx - Contexto do Grammy
+ */
 export async function animelistCommand(ctx: MyContext) {
   const userId = ctx.from?.id ?? 0;
   const envType = process.env.TYPE_BOT || 'waifu';
@@ -134,6 +192,16 @@ export async function animelistCommand(ctx: MyContext) {
   await ctx.reply(text, { reply_markup: { inline_keyboard: keyboard } });
 }
 
+/**
+ * Handler de callbacks do animelist
+ * Callbacks esperados:
+ *   - al_{letter}_{cacheKey} - Selecionar letra
+ *   - alp_{page}_{cacheKey} - Navegar páginas
+ *   - al_back_{cacheKey} - Voltar ao menu
+ *   - al_letter_{cacheKey} - Voltar ao menu de letras
+ * 
+ * @param ctx - Contexto do Grammy
+ */
 export async function animelistCallback(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;
   if (!data || !data.startsWith('al_')) return;

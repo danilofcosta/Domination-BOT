@@ -85,6 +85,11 @@ export async function contarMensagens(ctx: MyContext) {
   } else {
     cont += 1;
   }
+  console.log('-------------')
+  console.log(ctx)
+  console.log(ctx.from)
+  console.log('-------------')
+
 
   // Apenas salva o novo título se ele de fato mudar. Reduz I/O de sessão.
   const currentTitle = ctx.chat.title || null;

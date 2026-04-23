@@ -5,6 +5,7 @@ import { ChatType, type Character, type EventType, type MyContext, type RarityTy
 export function extractListEmojisCharacter(
   ctx: MyContext,
   character: Character,
+  noformat:boolean
 ): { emoji_event: string[]; emoji_raridade: string[] } {
   if (!character) {
     return { emoji_event: [], emoji_raridade: [] };
@@ -22,8 +23,8 @@ export function extractListEmojisCharacter(
       ? char.WaifuRarity
       : char.HusbandoRarity;
 
-  const emoji_event = extrair_emojis(ListEmojsEventRaw ?? []);
-  const emoji_raridade = extrair_emojis(ListEmojsRarityRaw ?? []);
+  const emoji_event = extrair_emojis(ListEmojsEventRaw ?? [],noformat);
+  const emoji_raridade = extrair_emojis(ListEmojsRarityRaw ?? [],noformat);
 
   return { emoji_event, emoji_raridade };
 }

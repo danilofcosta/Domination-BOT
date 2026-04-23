@@ -1,4 +1,4 @@
-import { ChatType, type Character, type Collection, type MyContext, type RarityType } from "../../../utils/customTypes.js";
+﻿import { ChatType, type Character, type Collection, type MyContext, type RarityType } from "../../../utils/customTypes.js";
 import { resetContadorCache } from "../../listeners/contarMensagens.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
@@ -83,7 +83,7 @@ function successDominarMessage(ctx: MyContext, character: Character, collection:
   const success_dominar_anime = ctx.t("success_dominar_anime", {
     anime: `${character.origem} ${collection.count}x`,
   });
-  const { emoji_event, emoji_raridade: rarityEmojis } =  extractListEmojisCharacter(ctx, character);
+  const { emoji_event, emoji_raridade: rarityEmojis } =  extractListEmojisCharacter(ctx, character, false);
   const char = character as any;
   const raritys: RarityType[] = process.env.TYPE_BOT === ChatType.WAIFU
       ? char.WaifuRarity
