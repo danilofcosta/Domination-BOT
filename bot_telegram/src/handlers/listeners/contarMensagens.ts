@@ -85,10 +85,10 @@ export async function contarMensagens(ctx: MyContext) {
   } else {
     cont += 1;
   }
-  console.log('-------------')
-  console.log(ctx)
-  console.log(ctx.from)
-  console.log('-------------')
+  // console.log('-------------')
+  // console.log(ctx)
+  // console.log(ctx.from)
+  // console.log('-------------')
 
 
   // Apenas salva o novo título se ele de fato mudar. Reduz I/O de sessão.
@@ -125,12 +125,12 @@ export async function contarMensagens(ctx: MyContext) {
 
   }
 
-  /* =========================
-    * DROP
-    * ========================= */
+/* =========================
+     * DROP
+     * ========================= */
 
-  // se o contador for maior ou igual a DROP e não tiver dropId
-  if (cont >= DROP && !grupo.dropId) {
+  // se o contador for maior ou igual a DROP e não tiver dropId E não houver personagem pendente
+  if (cont >= DROP && !grupo.dropId && !grupo.character) {
     // Previne race condition no mesmo processo
     if (dropLocks.has(chatId)) return;
     dropLocks.set(chatId, setTimeout(() => dropLocks.delete(chatId), 5000));

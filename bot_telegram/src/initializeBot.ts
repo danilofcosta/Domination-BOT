@@ -86,7 +86,7 @@ export default async function initializeBot(
   });
 
   bot.use(privateCommands);
-  bot.use(adminCommands_bot);
+  bot.use(UserCommands);
   bot.use(adminCommands_bot);
   bot.use(adminGroupsCommands);
   bot.use(devCommands);
