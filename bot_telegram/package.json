@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "node dist/src/index.js ",
+    "run": "tsx src/run.ts" ",
     "build": "tsc",
     "dev": "tsx watch src/index.ts"
   },
