@@ -1,69 +1,70 @@
-// import initializeBot from "./initializeBot.js";
-// import "dotenv/config";
+import initializeBot from "./initializeBot.js";
+import "dotenv/config";
 
-// import { Environment_validation } from "./utils/testes/environment_validation.js";
-// import { testDBConnection } from "./utils/testes/test_db_Connection.js";
-// import { ChatType, NODE_ENV } from "./utils/customTypes.js";
-// import { fatal, info } from "./utils/log.js";
-// import { RunPolling } from "./index_Polling.js";
-// // import { RunWebHook } from "./index_webhook.js";
+import { Environment_validation } from "./utils/testes/environment_validation.js";
+import { testDBConnection } from "./utils/testes/test_db_Connection.js";
+import { ChatType, NODE_ENV } from "./utils/customTypes.js";
+import { fatal, info } from "./utils/log.js";
+import { RunPolling } from "./index_Polling.js";
+// import { RunWebHook } from "./index_webhook.js";
 
-// await Environment_validation();
-// await testDBConnection();
+await Environment_validation();
+await testDBConnection();
 
-// // 🔐 tokens
-// const BOT_TOKEN_WAIFU = process.env.BOT_TOKEN_WAIFU;
-// const BOT_TOKEN_HUSBANDO = process.env.BOT_TOKEN_HUSBANDO;
+// 🔐 tokens
+const BOT_TOKEN_WAIFU = process.env.BOT_TOKEN_WAIFU;
+const BOT_TOKEN_HUSBANDO = process.env.BOT_TOKEN_HUSBANDO;
 
-// if (!BOT_TOKEN_WAIFU || !BOT_TOKEN_HUSBANDO) {
-//   fatal("Tokens não definidos no .env");
-//   process.exit(1);
-// }
+if (!BOT_TOKEN_WAIFU || !BOT_TOKEN_HUSBANDO) {
+  fatal("Tokens não definidos no .env");
+  process.exit(1);
+}
 
-// // 🤖 bots
-// const bots = {
-//   waifu: await initializeBot(ChatType.WAIFU, BOT_TOKEN_WAIFU),
-//   husbando: await initializeBot(ChatType.HUSBANDO, BOT_TOKEN_HUSBANDO),
-// };
+// 🤖 bots
+const bots = {
+  waifu: await initializeBot(ChatType.WAIFU, BOT_TOKEN_WAIFU),
+  husbando: await initializeBot(ChatType.HUSBANDO, BOT_TOKEN_HUSBANDO),
+};
 
-// // 🚀 bootstrap
-// async function main() {
-//   const env = process.env.NODE_ENV;
+// 🚀 bootstrap
+async function main() {
+  const env = process.env.NODE_ENV;
 
-//   if (!env) {
-//     fatal("NODE_ENV não definido");
-//     process.exit(1);
-//   }
+  if (!env) {
+    fatal("NODE_ENV não definido");
+    process.exit(1);
+  }
 
-//   if (env === NODE_ENV.DEVELOPMENT) {
-//     // roda ambos em polling no dev
-//     await Promise.all([
-//       RunPolling(bots.waifu, true),
-//       RunPolling(bots.husbando, true),
-//     ]);
-//     info("Bots rodando em polling (dev)");
-//     return;
-//   }
+ // if (env === NODE_ENV.DEVELOPMENT) {
+  if (true) {
+    // roda ambos em polling no dev
+    await Promise.all([
+      RunPolling(bots.waifu, true),
+      RunPolling(bots.husbando, true),
+    ]);
+    info("Bots rodando em polling (dev)");
+    return;
+  }
 
-//   if (env === NODE_ENV.PRODUCTION) {
-//     const endpoint = process.env.ENDPOINT;
+  if (env === NODE_ENV.PRODUCTION) {
+    const endpoint = process.env.ENDPOINT;
 
-//     if (!endpoint) {
-//       fatal("ENDPOINT não definido");
-//       process.exit(1);
-//     }
+    if (!endpoint) {
+      fatal("ENDPOINT não definido");
+      process.exit(1);
+    }
 
-//     // roda ambos com webhook
-//     await Promise.all([
-//       RunWebHook("waifu", bots.waifu, endpoint),
-//       RunWebHook("husbando", bots.husbando, endpoint),
-//     ]);
+    // // roda ambos com webhook
+    // await Promise.all([
+    //   RunWebHook("waifu", bots.waifu, endpoint),
+    //   RunWebHook("husbando", bots.husbando, endpoint),
+    // ]);
 
-//     info("Bots rodando com webhook (prod)");
-//     return;
-//   }
+    info("Bots rodando com webhook (prod)");
+    return;
+  }
 
-//   info("NODE_ENV inválido");
-// }
+  info("NODE_ENV inválido");
+}
 
-// await main();
+await main();
