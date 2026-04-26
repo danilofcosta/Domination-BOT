@@ -1,4 +1,4 @@
-bot_telegram/.vscode/launch.json
+agbot_telegram/.vscode/launch.json
 bot_telegram/src/testes/
 stack.env
 stack sever.env
@@ -12,3 +12,4 @@ web/scripts/
 web/public/waifus/
 web/public/husbandos/
 bot_telegram/src/dev/
+bot_telegram/scrip/set_web_hook.ts

@@ -18,6 +18,10 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "noImplicitAny": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }
