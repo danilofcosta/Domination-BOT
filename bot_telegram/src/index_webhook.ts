@@ -6,17 +6,13 @@ const app = express();
 app.use(express.json());
 
 export async function RunWebHook(bot: any) {
-  app.all("/webhook", webhookCallback(bot, "express"));
+console.log('RODANDO BOT Webhool')
 
-  app.get("/health", (req, res) => {
-    res.json({ status: "ok" });
-  });
+const app = express(); // or whatever you're using
+app.use(express.json()); // parse the JSON request body
 
-  app.get("/", (req, res) => {
-    res.json({ status: "DominarBot running", bot: process.env.TYPE_BOT });
-  });
-
-  return app;
+// "express" is also used as default if no argument is given.
+app.use(webhookCallback(bot, "express"));
 }
 
-export default app;
+

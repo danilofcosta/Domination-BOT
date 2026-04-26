@@ -5,10 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "start": "node dist/src/index.js",
-    "starts": "tsx src/index.js",
-    "run": "tsx src/run.ts",
     "build": "tsc",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "webhook": "tsx scrip/set_web_hook.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,7 @@
 import { fatal, info } from "./utils/log.js";
 
 export async function RunPolling( bot:any,dbtest:Boolean) {
+  console.log('RODANDO BOT Polling')
   await bot.start({
     drop_pending_updates: true,
     onStart: async () => {
