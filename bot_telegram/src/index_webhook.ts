@@ -1,6 +1,6 @@
 import express from "express";
 import { webhookCallback } from "grammy";
-import { info } from "./utils/log.js";
+//import { info } from "./utils/log.js";
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use(webhookCallback(bot, "express"));
           process.env.CHAT_ID_DEV as string,
           `Bot Iniciado ${process.env.TYPE_BOT}\nModo : ${process.env.NODE_ENV}`,
         );
-        info("Bot iniciado", process.env.NODE_ENV, process.env.TYPE_BOT);
+      //  info("Bot iniciado", process.env.NODE_ENV, process.env.TYPE_BOT);
       }
 }
 
