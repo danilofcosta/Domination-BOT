@@ -1,9 +1,8 @@
 import winston from "winston";
-import DailyRotateFile from "winston-daily-rotate-file";
 import path from "path";
 
 const botType = process.env.TYPE_BOT?.toLowerCase() || "bot";
-const logDir = path.join(process.cwd(), "data", "logs", botType);
+const isProduction = process.env.NODE_ENV === "production";
 
 const { combine, timestamp, printf, colorize, errors } = winston.format;
 
@@ -18,37 +17,58 @@ function safeStringify(obj: any): string {
 
 const logFormat = printf(({ level, message, timestamp, stack, ...metadata }) => {
   let msg = `${timestamp} [${level}]: ${message}`;
-  if (Object.keys(metadata).length > 0 && metadata[0] !== undefined) {
+
+  if (Object.keys(metadata).length > 0) {
     try {
       msg += ` ${safeStringify(metadata)}`;
     } catch {
       msg += ` ${String(metadata)}`;
     }
   }
+
   if (stack) {
     msg += `\n${stack}`;
   }
+
   return msg;
 });
 
+// 🔥 TRANSPORTS DINÂMICOS
 const transports: winston.transport[] = [
   new winston.transports.Console({
-    format: combine(colorize({ all: true }), timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat),
-  }),
-  new DailyRotateFile({
-    filename: path.join(logDir, "error-%DATE%.log"),
-    datePattern: "YYYY-MM-DD",
-    level: "error",
-    maxFiles: "14d",
-    maxSize: "20m",
-  }),
-  new DailyRotateFile({
-    filename: path.join(logDir, "combined-%DATE%.log"),
-    datePattern: "YYYY-MM-DD",
-    maxFiles: "14d",
-    maxSize: "20m",
+    format: combine(
+      colorize({ all: !isProduction }),
+      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      logFormat
+    ),
   }),
 ];
+
+// ✅ Só usa arquivo LOCAL (NUNCA na Vercel)
+if (!isProduction) {
+  const DailyRotateFile = require("winston-daily-rotate-file");
+
+  const logDir = path.join(process.cwd(), "data", "logs", botType);
+
+  transports.push(
+    new DailyRotateFile({
+      filename: path.join(logDir, "error-%DATE%.log"),
+      datePattern: "YYYY-MM-DD",
+      level: "error",
+      maxFiles: "14d",
+      maxSize: "20m",
+    })
+  );
+
+  transports.push(
+    new DailyRotateFile({
+      filename: path.join(logDir, "combined-%DATE%.log"),
+      datePattern: "YYYY-MM-DD",
+      maxFiles: "14d",
+      maxSize: "20m",
+    })
+  );
+}
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || "info",
@@ -61,55 +81,53 @@ const logger = winston.createLogger({
   transports,
 });
 
+// =====================
+// HELPERS
+// =====================
+
 function formatMessage(...args: any[]): string {
-  return args.map(arg => {
-    if (arg === undefined) return "";
-    if (typeof arg === "bigint") return arg.toString();
-    if (typeof arg === "object") {
-      try {
-        return safeStringify(arg);
-      } catch {
-        return String(arg);
+  return args
+    .map((arg) => {
+      if (arg === undefined) return "";
+      if (typeof arg === "bigint") return arg.toString();
+      if (typeof arg === "object") {
+        try {
+          return safeStringify(arg);
+        } catch {
+          return String(arg);
+        }
       }
-    }
-    return String(arg);
-  }).join(" ");
+      return String(arg);
+    })
+    .join(" ");
 }
 
 export function log(...messages: any[]) {
-  const formatted = formatMessage(...messages);
- 
-  logger.info(formatted);
+  logger.info(formatMessage(...messages));
 }
 
 export function error(message: string, err?: unknown) {
   if (err instanceof Error) {
-    logger.error(message, { stack: err.stack, errorName: err.name, errorMessage: err.message });
+    logger.error(message, {
+      stack: err.stack,
+      errorName: err.name,
+      errorMessage: err.message,
+    });
   } else {
     logger.error(message, { extra: err });
   }
 }
 
 export function warn(message: string, ...meta: any[]) {
-  if (meta.length > 0 && meta[0] !== undefined) {
-    logger.warn(message, ...meta);
-  } else {
-    logger.warn(message);
-  }
+  logger.warn(formatMessage(message, ...meta));
 }
 
 export function info(message: string, ...meta: any[]) {
-  if (meta.length > 0 && meta[0] !== undefined) {
-    logger.info(message, ...meta);
-  } else {
-    logger.info(message);
-  }
+  logger.info(formatMessage(message, ...meta));
 }
 
 export function debug(message: string, ...meta: any[]) {
-  const formatted = formatMessage(message, ...meta);
-  console.log(formatted);
-  logger.debug(formatted);
+  logger.debug(formatMessage(message, ...meta));
 }
 
 export function trace(message: string, ...meta: any[]) {
@@ -117,7 +135,11 @@ export function trace(message: string, ...meta: any[]) {
 }
 
 export function fatal(message: string, ...args: any[]) {
-  logger.error(message, { args: args.map(a => typeof a === "object" ? safeStringify(a) : String(a)) });
+  logger.error(message, {
+    args: args.map((a) =>
+      typeof a === "object" ? safeStringify(a) : String(a)
+    ),
+  });
   process.exit(1);
 }
 
