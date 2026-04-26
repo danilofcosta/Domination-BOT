@@ -68,6 +68,17 @@ help-text-comment-harem = <b>Harem</b>
     <b>Modo do Harem</b>
     O harem tem alguns modos disponíveis que podem ser alterados com o comando <code>/{$command_modeharem}</code>
 
+
+help-text-comment-topic= topicos
+    Gerir as definições dos tópicos através do bot!
+
+    Os tópicos introduzem muitas pequenas diferenças nos supergrupos normais; isto pode afetar a forma como geralmente usa o bot  em seu chat.
+    Por exemplo, certos fóruns podem querer personalizar o tópico no qual o bot envia mensagens , para que estas não acabem no chat "geral" por defeito.
+
+    Também pode utilizar o bot para criar, renomear, fechar e eliminar os seus tópicos.
+
+
+
 help-label-commmads-user = Usuario
 help-label-commmads-admin-gruop = Admin Grupo
 help-label-commmads-admin-bt = Admin Bot

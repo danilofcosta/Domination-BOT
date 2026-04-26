@@ -24,7 +24,7 @@ export async function helpCallback(ctx: MyContext) {
     return;
   }
 
-  if (action === 'comment' && rest[0] === 'harem') {
+  if (action ===  'harem') {
     const keyboard = new InlineKeyboard()
       .text(ctx.t('help-btn-back'), 'help_helpmain')
       .text(ctx.t('btn-close'), 'close');
@@ -109,6 +109,18 @@ export async function helpCallback(ctx: MyContext) {
         reply_markup: keyboard,
       });
     }
+  }
+
+  if (action === 'topic'){
+
+    const keyboard = new InlineKeyboard()
+      .text(ctx.t('help-btn-back'), 'help_helpmain')
+      .text(ctx.t('btn-close'), 'close');
+    const caption = ctx.t('help-text-comment-topic')
+    await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+    await ctx.answerCallbackQuery().catch(() => {});
+    return;
+
   }
 
   await ctx.answerCallbackQuery().catch(() => {});

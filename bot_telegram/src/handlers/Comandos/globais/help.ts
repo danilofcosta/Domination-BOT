@@ -10,7 +10,11 @@ const help_dict = {
   },
   como_presentear: {
     title: "help-btn-comment-harem",
-    callback: "help_comment_harem",
+    callback: "help_harem",
+  },
+    topic: {
+    title: "help-btn-comment-topic",
+    callback: "help_topic",
   },
 };
 
