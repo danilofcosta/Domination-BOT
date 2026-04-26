@@ -1,19 +1,15 @@
 import { prisma } from "../../../../lib/prisma.js";
 import { SetGiftUser } from "../../../cache/cache.js";
-import { bts_yes_or_no } from "../../../utils/bts.js";
+import { bts_yes_or_no } from "../../../utils/btns.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
-import { get_id_mention_User, mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import {
+  get_id_mention_User,
+  mentionUser,
+} from "../../../utils/manege_caption/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 
-
-
-
 export async function giftHandler(ctx: MyContext) {
-
-
-
-
   if (!ctx.message?.reply_to_message) {
     await ctx.reply(ctx.t("gift_reply_instruction"));
     return;
@@ -40,13 +36,19 @@ export async function giftHandler(ctx: MyContext) {
     return;
   }
   if (mentionedUser.id === ctx.me?.id) {
-    warn(`giftHandler - tentativa de presente ao bot`, { userId: ctx.from?.id });
+    warn(`giftHandler - tentativa de presente ao bot`, {
+      userId: ctx.from?.id,
+    });
     await ctx.reply("agradeço, Mais não posso receber presentes ");
     return;
   }
 
   const mention = mentionUser(mentionedUser.first_name, mentionedUser.id);
-  info(`giftHandler - enviando presente`, { senderId: ctx.from?.id, receiverId: mentionedUser.id, giftid });
+  info(`giftHandler - enviando presente`, {
+    senderId: ctx.from?.id,
+    receiverId: mentionedUser.id,
+    giftid,
+  });
 
   const GiftCharacter =
     ctx.session.settings.genero === ChatType.WAIFU
@@ -80,7 +82,10 @@ export async function giftHandler(ctx: MyContext) {
         });
 
   if (!GiftCharacter) {
-    warn(`giftHandler - personagem não encontrado na coleção`, { userId: ctx.from?.id, giftid });
+    warn(`giftHandler - personagem não encontrado na coleção`, {
+      userId: ctx.from?.id,
+      giftid,
+    });
     await ctx.reply(
       ctx.t("fav-not-found", {
         genero: ctx.session.settings.genero.toLowerCase(),

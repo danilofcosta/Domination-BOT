@@ -1,11 +1,19 @@
 import winston from "winston";
 import path from "path";
+import DailyRotateFilePkg from "winston-daily-rotate-file";
+
+// Compatibilidade ESM/CommonJS
+const DailyRotateFile =
+  (DailyRotateFilePkg as any).default || DailyRotateFilePkg;
 
 const botType = process.env.TYPE_BOT?.toLowerCase() || "bot";
 const isProduction = process.env.NODE_ENV === "production";
 
 const { combine, timestamp, printf, colorize, errors } = winston.format;
 
+// =====================
+// SAFE STRINGIFY
+// =====================
 function safeStringify(obj: any): string {
   return JSON.stringify(obj, (_, value) => {
     if (typeof value === "bigint") {
@@ -15,6 +23,9 @@ function safeStringify(obj: any): string {
   });
 }
 
+// =====================
+// FORMAT
+// =====================
 const logFormat = printf(({ level, message, timestamp, stack, ...metadata }) => {
   let msg = `${timestamp} [${level}]: ${message}`;
 
@@ -33,7 +44,9 @@ const logFormat = printf(({ level, message, timestamp, stack, ...metadata }) => 
   return msg;
 });
 
-// 🔥 TRANSPORTS DINÂMICOS
+// =====================
+// TRANSPORTS
+// =====================
 const transports: winston.transport[] = [
   new winston.transports.Console({
     format: combine(
@@ -44,10 +57,7 @@ const transports: winston.transport[] = [
   }),
 ];
 
-// ✅ Só usa arquivo LOCAL (NUNCA na Vercel)
 if (!isProduction) {
-  const DailyRotateFile = require("winston-daily-rotate-file");
-
   const logDir = path.join(process.cwd(), "data", "logs", botType);
 
   transports.push(
@@ -70,6 +80,7 @@ if (!isProduction) {
   );
 }
 
+
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || "info",
   format: combine(
@@ -81,9 +92,6 @@ const logger = winston.createLogger({
   transports,
 });
 
-// =====================
-// HELPERS
-// =====================
 
 function formatMessage(...args: any[]): string {
   return args
@@ -101,6 +109,7 @@ function formatMessage(...args: any[]): string {
     })
     .join(" ");
 }
+
 
 export function log(...messages: any[]) {
   logger.info(formatMessage(...messages));

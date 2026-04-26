@@ -1,5 +1,5 @@
 import { prisma } from "../../../../lib/prisma.js";
-import { bts_yes_or_no } from "../../../utils/bts.js";
+import { bts_yes_or_no } from "../../../utils/btns.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
@@ -23,7 +23,11 @@ export async function favCharacter(ctx: MyContext) {
   }
 
   if (!favid || isNaN(favid)) {
-    warn(`favCharacter - ID inválido`, { userId: ctx.from?.id, favid, match: ctx.match });
+    warn(`favCharacter - ID inválido`, {
+      userId: ctx.from?.id,
+      favid,
+      match: ctx.match,
+    });
     return ctx.reply(ctx.t("error-not-id"));
   }
 
@@ -61,7 +65,10 @@ export async function favCharacter(ctx: MyContext) {
           },
         });
   if (!FavCharacter) {
-    warn(`favCharacter - personagem não encontrado na coleção`, { userId: userid, favid });
+    warn(`favCharacter - personagem não encontrado na coleção`, {
+      userId: userid,
+      favid,
+    });
     return ctx.reply(
       ctx.t("fav-not-found", {
         genero: ctx.session.settings.genero.toLocaleLowerCase(),
@@ -69,7 +76,11 @@ export async function favCharacter(ctx: MyContext) {
     );
   }
 
-  debug(`favCharacter - personagem encontrado`, { userId: userid, favid, charName: FavCharacter.Character.name });
+  debug(`favCharacter - personagem encontrado`, {
+    userId: userid,
+    favid,
+    charName: FavCharacter.Character.name,
+  });
 
   const text = ctx.t("fav-character", {
     id_personagem: favid || "",

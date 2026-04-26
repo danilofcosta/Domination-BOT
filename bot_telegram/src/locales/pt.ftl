@@ -26,7 +26,7 @@ btn-close=🗑 Fechar
 ###############
 ### WELCOME ###
 ###############
-start-greeting-header= Saudações, Eu sou {$botname}
+start-greeting-header= Saudações, Eu sou {$botName}
 start-greeting-body=  O que eu faço:Eu faço aparecer {$genero} no seu chat para os usuários capturarem
 start-greeting-extra-body= Como me usar:Adicione-me ao seu grupo
 
@@ -38,11 +38,19 @@ start-btn-colaboradores = colaboradores
 ###############
 ## HELP ##
 ###############
-help-caption =
-    ℹ️ <b>𝗖𝗲𝗻𝘁𝗿𝗮𝗹 𝗱𝗲 𝗔𝗷𝘂𝗱𝗮</b>
-    ───────────────
-    Selecione uma categoria abaixo para ver os comandos disponíveis.
-    ───────────────
+help-caption =Ajuda
+
+    Olá! O meu nome é { $botName }. Eu sou  gerador  de  {$genero},  para que o membros posso dominar ,
+    Tenho muitas funcionalidades úteis, como  top com user, um sistema de avisos, um sistema de anotações e sistema de coleção entre outras funcionalidades .
+    
+    Comandos úteis:
+    - /start: Inicia-me! Provavelmente já utilizaste este comando.
+    - /help: Envia esta mensagem; vou dizer-te mais sobre mim!
+    - /dominar: envia esse comando mais o nome do persogem para capturar 
+    - /donate: Fornece-te informações sobre como apoiar-me e o meu criador.
+    Se tiveres quaisquer erros ou perguntas sobre como utilizar-me, dá uma vista de olhos no meu website, ou dirige-te para @.
+
+    Todos os comandos podem ser utilizados com o seguinte: /
      
 help-group-redirect =  Clique aqui para ajuda!
 
@@ -53,62 +61,7 @@ help-btn-open-pm = pm
 help-btn-back = Voltar
 help-btn-close = 🗑 
 
-# Botões de comando (teclado)
-help-cmd-dominar = 🗡 Dominar
-help-cmd-harem = 🏯 Harém
-help-cmd-info = 📊 Info
-help-cmd-top = 🏆 Top
-help-cmd-fav = ⭐ Fav
-help-cmd-gift = 🎁 Gift
 
-# Seções de detalhe
-help-section-dominar =
-    🗡 <b>Dominar Personagem</b>
-    ───────────────
-    Use no <b>grupo</b> quando um personagem aparecer.
-
-    <code>/dominar Nome</code>
-    → Digita o nome correto do personagem para capturá-lo!
-
-help-section-harem =
-    🏯 <b>Meu Harém</b>
-    ───────────────
-    Veja todos os personagens que você dominou.
-
-    <code>/mywaifus</code> ou <code>/myhusbandos</code>
-    → Lista sua coleção com raridade e anime.
-
-help-section-info =
-    📊 <b>Minhas Informações</b>
-    ───────────────
-    Veja seu perfil e progresso no jogo.
-
-    <code>/info</code>
-    → Exibe total de personagens, progresso e mais.
-
-help-section-top =
-    🏆 <b>Ranking Global</b>
-    ───────────────
-    Veja quem tem mais personagens no servidor.
-
-    <code>/top</code>
-    → Lista os melhores jogadores.
-
-help-section-fav =
-    ⭐ <b>Favoritar Personagem</b>
-    ───────────────
-    Defina um personagem como seu favorito.
-
-    Use em <b>resposta</b> a uma mensagem do harém.
-    <code>/fav</code>
-
-help-section-gift =
-    🎁 <b>Presentear</b>
-    ───────────────
-    Dê um personagem seu para outro jogador.
-
-    Use em <b>resposta</b> à mensagem de alguém.
-    <code>/gift ID</code>
 
 
 

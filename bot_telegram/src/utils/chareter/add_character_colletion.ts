@@ -16,63 +16,81 @@ export async function AddCharacterCollection({
   Charater_id
 }: AddCharacterCollectionForm) {
   const isWaifu = type === "waifu";
-  info(`AddCharacterCollection - adicionando à coleção`, { userId, characterId: Charater_id, isWaifu });
+
+  info(`AddCharacterCollection`, { userId, characterId: Charater_id, isWaifu });
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const existingUser = await tx.user.findUnique({
-        where: { telegramId: userId },
-      });
-
-      const shouldSetFavorite = isWaifu
-        ? existingUser?.favoriteWaifuId === null || !existingUser
-        : existingUser?.favoriteHusbandoId === null || !existingUser;
-
-      const user = await tx.user.upsert({
-        where: { telegramId: userId },
-        update: shouldSetFavorite
-          ? isWaifu
-            ? { favoriteWaifuId: Charater_id }
-            : { favoriteHusbandoId: Charater_id }
-          : {},
-        create: {
-          telegramId: userId,
-          telegramData: (from ?? {}),
-          favoriteWaifuId: isWaifu ? Charater_id : null,
-          favoriteHusbandoId: !isWaifu ? Charater_id : null,
-          waifuConfig: {},
-          husbandoConfig: {},
-        },
-      });
-
-      debug(`AddCharacterCollection - usuário salvo/criado`, { userId, isNew: !existingUser });
-
-      const upsertData = {
-        where: {
-          userId_characterId: {
-            userId,
-            characterId: Charater_id,
+    // 🚀 1. Upsert do usuário (sem query prévia)
+    await prisma.user.upsert({
+      where: { telegramId: userId },
+      update: {
+        ...(isWaifu && {
+          favoriteWaifuId: {
+            // só define se ainda for null
+            set: Charater_id,
           },
-        },
-        update: {
-          count: { increment: 1 },
-        },
-        create: {
-          userId,
-          characterId: Charater_id,
-          count: 1,
-        },
-      };
-
-      return isWaifu
-        ? await tx.waifuCollection.upsert(upsertData)
-        : await tx.husbandoCollection.upsert(upsertData);
+        }),
+        ...(!isWaifu && {
+          favoriteHusbandoId: {
+            set: Charater_id,
+          },
+        }),
+      },
+      create: {
+        telegramId: userId,
+        telegramData: (from ?? {}),
+        favoriteWaifuId: isWaifu ? Charater_id : null,
+        favoriteHusbandoId: !isWaifu ? Charater_id : null,
+        waifuConfig: {},
+        husbandoConfig: {},
+      },
     });
 
-    debug(`AddCharacterCollection - transação concluída`, { userId, characterId: Charater_id, count: result.count });
+    // 🚀 2. Upsert da coleção (única operação crítica)
+    const result = isWaifu
+      ? await prisma.waifuCollection.upsert({
+          where: {
+            userId_characterId: {
+              userId,
+              characterId: Charater_id,
+            },
+          },
+          update: {
+            count: { increment: 1 },
+          },
+          create: {
+            userId,
+            characterId: Charater_id,
+            count: 1,
+          },
+        })
+      : await prisma.husbandoCollection.upsert({
+          where: {
+            userId_characterId: {
+              userId,
+              characterId: Charater_id,
+            },
+          },
+          update: {
+            count: { increment: 1 },
+          },
+          create: {
+            userId,
+            characterId: Charater_id,
+            count: 1,
+          },
+        });
+
+    debug(`AddCharacterCollection OK`, {
+      userId,
+      characterId: Charater_id,
+      count: result.count
+    });
+
     return result;
+
   } catch (e) {
-    error(`AddCharacterCollection - erro na transação`, e);
+    error(`AddCharacterCollection ERROR`, e);
     return null;
   }
 }

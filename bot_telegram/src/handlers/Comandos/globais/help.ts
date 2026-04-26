@@ -1,5 +1,14 @@
 import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../utils/customTypes.js";
+import { EditOrSendText } from "../../../utils/EditOrSendText.js";
+import { buildKeyboard } from "../../../utils/btns.js";
+
+const help_dict = {
+  comandos: {
+    title: "help-btn-comandos",
+    callback: "comandos",
+  },
+};
 
 export async function helpCommand(ctx: MyContext) {
   const isPrivate = ctx.chat?.type === "private";
@@ -17,52 +26,28 @@ export async function helpCommand(ctx: MyContext) {
     return;
   }
 
-  const reply_markup = new InlineKeyboard()
-    .text(ctx.t("help-btn-comandos"), "help_btn_comandos")
- //   .text(ctx.t("help-btn-admin"), "help_btn_admin")
-    .row()
-    .text(ctx.t("btn-close"), "close");
+  // const reply_markup = new InlineKeyboard()
+  //   .text(
+  //     ctx.t("help-btn-comandos", {
+  //       botName: ctx.me.first_name,
+  //       genero: ctx.session.settings.genero,
+  //     }),
+  //     "help_btn_comandos",
+  //   )
+  //   //   .text(ctx.t("help-btn-admin"), "help_btn_admin")
+  //   .row()
+  //   .text(ctx.t("btn-close"), "close");
 
-  const caption = ctx.t("help-caption");
+  const caption = ctx.t("help-caption", {
+    botName: ctx.me.first_name,
+    genero: ctx.session.settings.genero,
+  });
 
-  // If it's a direct command call (not a callback button interaction)
-  if (!ctx.callbackQuery) {
-    return ctx.reply(caption, {
-      parse_mode: "HTML",
-      reply_markup,
-    });
-  }
+  const reply_markup = buildKeyboard(ctx, help_dict);
 
-  if (!ctx.callbackQuery?.message?.text) {
-    await ctx.editMessageCaption({
-      caption,
-      parse_mode: "HTML",
-      reply_markup,
-    }).catch(err => {
-      // console.log("error edit message text", err)
-      ctx.reply(caption, {
-        parse_mode: "HTML",
-        reply_markup,
-      });
-    });
-    await ctx.answerCallbackQuery();
-  } else if (ctx.msg) {
-    // console.log("error edit message text", ctx.msg.caption)
-    await ctx.editMessageText(caption, {
-      parse_mode: "HTML",
-      reply_markup,
-    }).catch((err) => {
-      // console.log("error edit message text", err  )
-      ctx.reply(caption, {
-        parse_mode: "HTML",
-        reply_markup,
-      });
-    });
-  } else {
-    await ctx.reply(caption, {
-      parse_mode: "HTML",
-      reply_markup,
-    });
-  }
+  await EditOrSendText({
+    ctx,
+    reply_markup,
+    caption,
+  });
 }
-
