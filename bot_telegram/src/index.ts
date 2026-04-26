@@ -7,7 +7,6 @@ import { ChatType, NODE_ENV } from "./utils/customTypes.js";
 import { fatal, info } from "./utils/log.js";
 import { RunPolling } from "./index_Polling.js";
 import { RunWebHook } from "./index_webhook.js";
-import express from "express";
 
 await Environment_validation();
 await testDBConnection();

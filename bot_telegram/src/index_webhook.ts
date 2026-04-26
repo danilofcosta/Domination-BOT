@@ -1,6 +1,6 @@
 import express from "express";
 import { webhookCallback } from "grammy";
-import { info } from "./utils/log";
+import { info } from "./utils/log.js";
 
 const app = express();
 
