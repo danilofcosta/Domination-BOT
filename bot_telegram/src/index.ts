@@ -28,9 +28,7 @@ info("Bot instanciado com sucesso");
 
 if (process.env.VERCEL === "true" || process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
   const app = await RunWebHook(bot);
-  // if (app) {
-  //   module.exports = app;
-  // }
+  module.exports = app;
 } else if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
   await RunPolling(bot, true);
 } else {

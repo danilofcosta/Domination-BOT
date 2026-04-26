@@ -1,10 +1,7 @@
 import express from "express";
 import { webhookCallback } from "grammy";
-//import { info } from "./utils/log.js";
-let init  :boolean = false
-const app = express();
 
-app.use(express.json());
+let init = false;
 
 export async function RunWebHook(bot: any) {
 console.log('RODANDO BOT Webhook')
@@ -19,7 +16,7 @@ app.use(webhookCallback(bot, "express"));
           process.env.CHAT_ID_DEV as string,
           `Bot Iniciado ${process.env.TYPE_BOT}\nModo : ${process.env.NODE_ENV}`,
         );
-        init =true
+        init = true;
       }
 
       return app;
