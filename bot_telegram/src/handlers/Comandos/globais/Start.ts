@@ -19,8 +19,14 @@ export async function StartGreetings(ctx: MyContext) {
     helpCommand(ctx);
     return;
   }
-  ctx.react("⚡");
-  const header = ctx.t("start-greeting-header", { botname: ctx.me.first_name });
+try {
+  await ctx.react("⚡");
+} catch (error: any) {
+  if (!error.description?.includes("message to react not found")) {
+    console.error("Erro ao reagir com ⚡:", error);
+  }
+}
+  const header = ctx.t("start-greeting-header", { botName: ctx.me.first_name });
   const boby = ctx.t("start-greeting-body", {
     genero: ctx.session.settings.genero,
   });

@@ -6,7 +6,11 @@ import { buildKeyboard } from "../../../utils/btns.js";
 const help_dict = {
   comandos: {
     title: "help-btn-comandos",
-    callback: "comandos",
+    callback: "help_comandos",
+  },
+  como_presentear: {
+    title: "help-btn-comment-harem",
+    callback: "help_comment_harem",
   },
 };
 
@@ -25,18 +29,6 @@ export async function helpCommand(ctx: MyContext) {
     });
     return;
   }
-
-  // const reply_markup = new InlineKeyboard()
-  //   .text(
-  //     ctx.t("help-btn-comandos", {
-  //       botName: ctx.me.first_name,
-  //       genero: ctx.session.settings.genero,
-  //     }),
-  //     "help_btn_comandos",
-  //   )
-  //   //   .text(ctx.t("help-btn-admin"), "help_btn_admin")
-  //   .row()
-  //   .text(ctx.t("btn-close"), "close");
 
   const caption = ctx.t("help-caption", {
     botName: ctx.me.first_name,

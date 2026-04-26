@@ -40,13 +40,13 @@ start-btn-colaboradores = colaboradores
 ###############
 help-caption =Ajuda
 
-    Olá! O meu nome é { $botName }. Eu sou  gerador  de  {$genero},  para que o membros posso dominar ,
-    Tenho muitas funcionalidades úteis, como  top com user, um sistema de avisos, um sistema de anotações e sistema de coleção entre outras funcionalidades .
+    Olá! O meu nome é { $botName }. Eu sou  gerador  de  {$genero},  para que o membros posso dominar ,Tenho muitas funcionalidades úteis, como  top com user, um sistema de avisos, um sistema de anotações e sistema de coleção entre outras funcionalidades.
     
     Comandos úteis:
     - /start: Inicia-me! Provavelmente já utilizaste este comando.
     - /help: Envia esta mensagem; vou dizer-te mais sobre mim!
-    - /dominar: envia esse comando mais o nome do persogem para capturar 
+    - /dominar: envia esse comando mais o nome do persogem para capturar.
+
     - /donate: Fornece-te informações sobre como apoiar-me e o meu criador.
     Se tiveres quaisquer erros ou perguntas sobre como utilizar-me, dá uma vista de olhos no meu website, ou dirige-te para @.
 
@@ -54,12 +54,33 @@ help-caption =Ajuda
      
 help-group-redirect =  Clique aqui para ajuda!
 
-help-btn-comandos = Comandos
-help-btn-admin = Admin
 
-help-btn-open-pm = pm
+#btn comands (help-btn-comandos )
+help-btn-comandos = Comandos
+help-btn-comment-harem = harem
+
+help-text-comment-harem = <b>Harem</b>
+
+    O Harem é uma coleção de personagens que você coleta usando o comando <code>/dominar</code>. Usando os comandos <code>/{$commandharem}</code> ou <code>/{$commandharem2}</code> ele abre listando os personagens que estão na sua coleção.\n\n
+    A mídia que aparece quando usa é a sua favorita definida como o primeiro personagem dominado.\n\n
+    Posso mudar o favorito? Sim. Use o comando <code>/{$commandFav}</code> junto ao ID de um personagem que está em sua coleção.
+   
+    <b>Modo do Harem</b>
+    O harem tem alguns modos disponíveis que podem ser alterados com o comando <code>/{$command_modeharem}</code>
+
+help-label-commmads-user = Usuario
+help-label-commmads-admin-gruop = Admin Grupo
+help-label-commmads-admin-bt = Admin Bot
+
+help-btn-open-pm = Abrir no PM
 help-btn-back = Voltar
-help-btn-close = 🗑 
+help-btn-close = 🗑
+
+help-select-category = Selecione uma categoria:
+help-title-commands-user = <b>Comandos de Usuario</b>\n\n
+help-title-commands-admin = <b>Comandos Admin do Grupo</b>\n\n
+help-title-commands-botadmin = <b>Comandos Admin do Bot</b>\n\n
+help-error-botadmin = Apenas admins do bot podem ver estes comandos. 
 
 
 
@@ -119,7 +140,7 @@ gift_confirmation_message = Você tem certeza que deseja presentear
   para { $username }?
 
 gift_reply_instruction= Manda em reposta a uma pessoa
-gift_success= Presente enviado com sucesso!
+gift_success= Presente enviado com sucesso para { $user }!
 gift_success_multi = Você enviou { $count } presentes para { $user }!
 gift_confirmation_message_multi = Você tem certeza que deseja presentear { $qty }x <code> {$character_name} - {$character_anime} </code> para { $username }?
 

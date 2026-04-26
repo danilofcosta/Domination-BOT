@@ -94,12 +94,17 @@ export async function Myinfos(ctx: MyContext) {
 
     debug(`Myinfos - informações enviadas`, { userId: ctx.from?.id, percent });
 
-    if (percent === "100.00") {
-      await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
-        { type: "emoji", emoji: "🎉" },
-      ]).catch(() => {});
+if (percent === "100.00") {
+  try {
+    await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
+      { type: "emoji", emoji: "🎉" },
+    ]);
+  } catch (error: any) {
+    if (!error.description?.includes("message to react not found")) {
+      console.error("Erro inesperado:", error);
     }
-
+  }
+}
     // Excluir a mensagem após 30 segundos
     setTimeout(() => {
       ctx.api.deleteMessage(msg.chat.id, msg.message_id).catch(() => {});

@@ -20,8 +20,7 @@ function verificarNome(personagem: string, tentativa: string) {
     "&",
   ];
 
-  const partes = personagem
-    .toLowerCase()
+  const partes = personagem.toLowerCase()
     .split(/\s+/)
     .filter((p) => !ignorar.includes(p));
 
@@ -125,7 +124,7 @@ function successDominarMessage(ctx: MyContext, character: Character, collection:
 const LOCK_TIMEOUT = 10000;
 
 export async function CapturarCharacter(ctx: MyContext) {
-  const tentativa = String(ctx.match).trim();
+  const tentativa = String(ctx.match).trim().toLocaleLowerCase();
   const character = ctx.session.grupo.character;
   const type = ctx.session.settings.genero || process.env.TYPE_BOT
   const userId = Number(ctx.from?.id);

@@ -2,6 +2,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import { getGiftUser } from "../../../cache/cache.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
+import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 
 export async function giftConfirmHandler(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
@@ -110,13 +111,22 @@ export async function giftConfirmHandler(ctx: MyContext) {
       receiverId,
       giftid,
     });
+
+    const receiverUser = await prisma.user.findUnique({
+      where: { telegramId: BigInt(receiverId) },
+      select: { telegramData: true },
+    });
+
+    const telegramData = receiverUser?.telegramData as { first_name?: string } | null;
+    const receiverUsername = telegramData?.first_name || "Usuário";
+    const mention = mentionUser(receiverUsername, receiverId);
+
+    await ctx
+      .editMessageCaption({
+        caption: ctx.t("gift_success", { user: mention }),
+      })
+      .catch(() => {});
   } catch (e) {
     error(`giftConfirmHandler - erro na transação`, e);
   }
-
-  await ctx
-    .editMessageCaption({
-      caption: ctx.t("gift_success"),
-    })
-    .catch(() => {});
 }

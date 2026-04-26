@@ -7,13 +7,19 @@ export function buildKeyboard(
 ): InlineKeyboard {
   const keyboard = new InlineKeyboard();
 
+  let count = 0;
+
   for (const [, value] of Object.entries(buttons)) {
     keyboard.text(ctx.t(value.title), value.callback);
+    count++;
+
+    if (count % 4 === 0) {
+      keyboard.row(); // quebra a linha a cada 4 botões
+    }
   }
 
   return keyboard;
 }
-
 export function bts_yes_or_no(
   ctx: MyContext,
   yes: string,
