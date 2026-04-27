@@ -5,12 +5,17 @@
  * Verifica se o usuário é admin do grupo via getChatMember.
  * 
  * Comandos disponíveis:
+ *   /newtopic{prefix} - Criar um novo topic
+ *   /renametopic{prefix} - Renomear um topic
+ *   /closetopic{prefix} - Fechar um topic
+ *   /deletetopic{prefix} - Eliminar um topic
  *   /setchattopic{prefix} - Define o topic para mensagens de drop
  */
 
 import { CommandGroup, LanguageCodes } from '@grammyjs/commands';
 import type { MyContext } from '../utils/customTypes.js';
-import { setChatTopicHandler } from '../handlers/Comandos/admin_groups/set_chat_topic.js';
+import { newTopicHandler, renameTopicHandler, closeTopicHandler, deleteTopicHandler, setActionTopicHandler } from '../handlers/Comandos/admin_groups/topic/topic_handlers.js';
+import { setChatTopicHandler } from '../handlers/Comandos/admin_groups/topic/set_chat_topic.js';
 import { botPrefix, options } from './botConfigCommands.js';
 import { debug, warn } from '../utils/log.js';
 
@@ -53,6 +58,46 @@ async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
 const adminGroupsCommands = new CommandGroup<MyContext>();
 
 export const adminGroupsCommands_dict = {
+  newtopic: {
+    command: 'newtopic' + botPrefix,
+    description: {
+      en: 'Create a new forum topic',
+      pt: 'Criar um novo topic',
+    },
+    handler: newTopicHandler,
+  },
+  renametopic: {
+    command: 'renametopic' + botPrefix,
+    description: {
+      en: 'Rename the current topic',
+      pt: 'Renomear o tópico atual',
+    },
+    handler: renameTopicHandler,
+  },
+  setactiontopic: {
+    command: 'setactiontopic' + botPrefix,
+    description: {
+      en: 'Set current topic as default action topic',
+      pt: 'Definir o tópico atual como padrão para ações',
+    },
+    handler: setActionTopicHandler,
+  },
+  closetopic: {
+    command: 'closetopic' + botPrefix,
+    description: {
+      en: 'Close a forum topic',
+      pt: 'Fechar um topic',
+    },
+    handler: closeTopicHandler,
+  },
+  deletetopic: {
+    command: 'deletetopic' + botPrefix,
+    description: {
+      en: 'Delete a forum topic',
+      pt: 'Eliminar um topic',
+    },
+    handler: deleteTopicHandler,
+  },
   setchattopic: {
     command: 'setchattopic' + botPrefix,
     description: {

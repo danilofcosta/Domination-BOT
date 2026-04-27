@@ -128,3 +128,17 @@ export interface MessageEntity {
   /** Apenas para "date_time" */
   date_time_format?: string;
 }
+
+export interface PreCharacter {
+  idchat?: number;
+  nome: string;
+  anime: string;
+  rarities?: number[] | undefined;
+  events?: number[] | undefined;
+  genero: ChatType;
+  mediatype: MediaType;
+  media: string;
+  username: string;
+  user_id: number;
+  extras?: Record<string, any>;
+}

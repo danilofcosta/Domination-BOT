@@ -48,7 +48,7 @@ type AdminCommand = {
  * Dicionário de comandos admin do bot
  * Cada comando especifica a role mínima necessária (minPermission)
  */
-export const adminCommands_bot_dict: Record<string, AdminCommand> = {
+export const adminCommands_bot_dict = {
   addchar: {
     minPermission: ProfileType.ADMIN,
     command: 'addchar' + botPrefix,

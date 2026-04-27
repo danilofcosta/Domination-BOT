@@ -13,6 +13,36 @@ error-not-registered = Voce ainda nao esta registrado no sistema.
 error-not-id=Manda o ID Também
 error-not-found-collection= ID { $id } Não esta presente na sua Coleçaõa
 error-action-not-autoauthorized-by-id = Não autorizado
+error-group-only = Este comando deve ser usado em um grupo.
+error-forum-only = Este comando só pode ser usado em chats de tópicos.
+error-admin-group-only = Apenas administradores do grupo podem usar este comando.
+error-admin-bot-only = Apenas administradores do bot podem usar este comando.
+error-need-id = Forneça o ID do personagem.
+
+edit_char_prompt = Editar Personagem: { $name } ({ $anime })
+
+Selecione o que deseja editar:
+
+btn-edit-name = Nome
+btn-edit-anime = Origem
+btn-edit-media = Mídia
+btn-edit-rarity = Raridade
+
+edit_char_select = Editando: <b>{ $name }</b> ({ $anime })
+error-bot-no-permission-topics = O bot não tem permissão para gerir tópicos. Dê permissão de gerir tópicos ao bot.
+error-reply-topic = Responda a uma mensagem da topic que deseja modificar.
+error-topic-name = Forneça o novo nome para a topic.
+error-topic-id = ID da topic inválido.
+error-topic-create = Erro ao criar topic.
+error-topic-rename = Erro ao renomear topic.
+error-topic-close = Erro ao fechar topic.
+error-topic-delete = Erro ao eliminar topic.
+
+newtopic-success = Topic "{ $topicName }" criado com sucesso!
+renametopic-success = Topic renomeado para "{ $topicName }"!
+closetopic-success = Topic fechado com sucesso!
+deletetopic-success = Topic eliminado com sucesso!
+setactiontopic-success = Tópico de ação predefinido configurado!
 
 ###############
 ### BUTTONS ###
@@ -55,14 +85,11 @@ help-caption =Ajuda
 help-group-redirect =  Clique aqui para ajuda!
 
 
-#btn comands (help-btn-comandos )
-help-btn-comandos = Comandos
-help-btn-comment-harem = harem
-
 help-text-comment-harem = <b>Harem</b>
 
-    O Harem é uma coleção de personagens que você coleta usando o comando <code>/dominar</code>. Usando os comandos <code>/{$commandharem}</code> ou <code>/{$commandharem2}</code> ele abre listando os personagens que estão na sua coleção.\n\n
-    A mídia que aparece quando usa é a sua favorita definida como o primeiro personagem dominado.\n\n
+    O Harem é uma coleção de personagens que você coleta usando o comando <code>/dominar</code>. Usando os comandos <code>/{$commandharem}</code> ou <code>/{$commandharem2}</code> ele abre listando os personagens que estão na sua coleção.
+
+    A mídia que aparece quando usa é a sua favorita definida como o primeiro personagem dominado.
     Posso mudar o favorito? Sim. Use o comando <code>/{$commandFav}</code> junto ao ID de um personagem que está em sua coleção.
    
     <b>Modo do Harem</b>
@@ -77,6 +104,59 @@ help-text-comment-topic= topicos
 
     Também pode utilizar o bot para criar, renomear, fechar e eliminar os seus tópicos.
 
+help-text-comment-dominar = dominar
+
+    o comando é usado para capturar um personagem / adionar ele em suas coleção 
+    exemplo: /dominar naruto 
+    
+    caso acerta o nome ou sobre nome do persogem ele sera adicionado a sua coleção e sera exibida um mensagem de feedback
+
+help-text-comment-adm-bot = <b>Admin do Bot</b>
+
+Comandos disponíveis para admins do bot:
+help-btn-admBot-manager-character = Gerir Personagens
+help-btn-admBot-add = Adicionar
+help-btn-admBot-edit = Editar
+help-btn-admBot-del = Remover
+
+help-text-comment-admBot-manager-character = <b>Gerir Personagens</b> 
+
+    Gerencie os personagens do banco de dados.
+
+help-text-comment-admBot-manager-character-add = <b>Adicionar Personagem</b>
+
+    Use o comando <code>/{$commandaddchar} nome , (anime/filme/...)</code>
+
+    O comando deve ser utilizado em resposta a uma mídia (foto ou vídeo) ou enviado na legenda da mídia.
+    Caso seja um administrador, será exibida uma mensagem de confirmação permitindo editar as informações antes de salvar.
+
+    Se você informar o código de raridade (<code>r00 </code>) ou edição (<code>e00</code>), eles serão definidos automaticamente:
+    <code>{$commandaddchar} nome, (anime...), r5</code>
+    <code>{$commandaddchar} nome, (anime...), r5, e6</code>
+
+    Ao adicionar <code>noconf</code>, a mídia será salva sem confirmação.
+    Caso não sejam informados <code>r5</code> ou <code>e6</code>, os valores serão definidos aleatoriamente.
+
+
+
+
+help-text-comment-admBot-manager-character-edit = <b>Editar Personagem</b>
+
+    Use <code>/editchar id</code> para editar um personagem existente.
+
+help-text-comment-admBot-manager-character-del = <b>Remover Personagem</b>
+
+    Use <code>/rmchar id</code> para remover um personagem.
+    
+#btn comands (help-btn-comandos )
+help-btn-comandos = Comandos
+help-btn-comment-harem = harem
+help-btn-comment-topic = topic
+help-btn-comment-dominar = dominar
+help-btn-comment-admBot= adms bot
+help-btn-comment-admBot-manager-character= adicinar personagem
+
+
 
 
 help-label-commmads-user = Usuario
@@ -88,10 +168,13 @@ help-btn-back = Voltar
 help-btn-close = 🗑
 
 help-select-category = Selecione uma categoria:
-help-title-commands-user = <b>Comandos de Usuario</b>\n\n
-help-title-commands-admin = <b>Comandos Admin do Grupo</b>\n\n
-help-title-commands-botadmin = <b>Comandos Admin do Bot</b>\n\n
-help-error-botadmin = Apenas admins do bot podem ver estes comandos. 
+help-title-commands-user = <b>Comandos de Usuario</b>
+
+help-title-commands-admin = <b>Comandos Admin do Grupo</b>
+
+help-title-commands-botadmin = <b>Comandos Admin do Bot</b>
+help-error-botadmin = Apenas admins do bot podem ver estes comandos.
+help-error-botadmin-user = Você é { $level }, apenas admins podem ver estes comandos. 
 
 
 

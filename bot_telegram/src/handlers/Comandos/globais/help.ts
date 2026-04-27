@@ -2,6 +2,7 @@ import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { buildKeyboard } from "../../../utils/btns.js";
+import { AddCharacterHandler } from "../admin_bot/manager_character/add/add_charecter.js";
 
 const help_dict = {
   comandos: {
@@ -12,9 +13,17 @@ const help_dict = {
     title: "help-btn-comment-harem",
     callback: "help_harem",
   },
-    topic: {
+  topic: {
     title: "help-btn-comment-topic",
     callback: "help_topic",
+  },
+  dominar: {
+    title: "help-btn-comment-dominar",
+    callback: "help_dominar",
+  },
+  admBot: {
+    title: "help-btn-comment-admBot",
+    callback: "help_admBot",
   },
 };
 

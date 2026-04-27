@@ -13,7 +13,7 @@ export function buildKeyboard(
     keyboard.text(ctx.t(value.title), value.callback);
     count++;
 
-    if (count % 4 === 0) {
+    if (count %  3=== 0) {
       keyboard.row(); // quebra a linha a cada 4 botões
     }
   }

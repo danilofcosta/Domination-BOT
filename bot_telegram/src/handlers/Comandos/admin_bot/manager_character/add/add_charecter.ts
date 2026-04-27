@@ -1,26 +1,14 @@
 import { MediaType } from '../../../../../../generated/prisma/client.js';
 import { prisma } from '../../../../../../lib/prisma.js';
 import { setCharacter } from '../../../../../cache/cache.js';
-import { type MyContext } from '../../../../../utils/customTypes.js';
+import { type MyContext, type PreCharacter } from '../../../../../utils/customTypes.js';
 import { LinkMsg } from '../../../../../utils/manege_caption/link_msg.js';
 import { mentionUser } from '../../../../../utils/manege_caption/metion_user.js';
 import { create_caption } from '../../../../../utils/manege_caption/create_caption.js';
 import { Sendmedia } from '../../../../../utils/sendmedia.js';
 import { ChatType } from '../../../../../utils/customTypes.js';
 
-export interface PreCharacter {
-  idchat?: number;
-  nome: string;
-  anime: string;
-  rarities?: number[] | undefined;
-  events?: number[] | undefined;
-  genero: ChatType;
-  mediatype: MediaType;
-  media: string;
-  username: string;
-  user_id: number;
-  extras?: Record<string, any>;
-}
+
 
 export async function AddCharacterHandler(ctx: MyContext) {
   console.log('add per');

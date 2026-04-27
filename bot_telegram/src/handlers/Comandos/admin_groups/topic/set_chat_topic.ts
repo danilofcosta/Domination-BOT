@@ -1,5 +1,5 @@
-import type { MyContext } from "../../../utils/customTypes.js";
-import { info, warn, debug } from "../../../utils/log.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
+import { info, warn, debug } from "../../../../utils/log.js";
 
 export async function setChatTopicHandler(ctx: MyContext) {
   const chat = ctx.chat;

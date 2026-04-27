@@ -9,6 +9,7 @@ import { typeBot } from '../../../CommandesManage/botConfigCommands.js';
 import { helpCommand } from '../../Comandos/globais/help.js';
 import { EditOrSendText } from '../../../utils/EditOrSendText.js';
 
+
 const ADMIN_ROLE = 3;
 
 export async function helpCallback(ctx: MyContext) {
@@ -120,7 +121,94 @@ export async function helpCallback(ctx: MyContext) {
     await EditOrSendText({ ctx, caption, reply_markup: keyboard });
     await ctx.answerCallbackQuery().catch(() => {});
     return;
+  }
+  if (action === 'dominar'){
+        const keyboard = new InlineKeyboard()
+      .text(ctx.t('help-btn-back'), 'help_helpmain')
+      .text(ctx.t('btn-close'), 'close');
 
+    
+    const caption = ctx.t('help-text-comment-dominar')
+     await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+    await ctx.answerCallbackQuery().catch(() => {});
+    return;
+}
+
+
+if (action === 'admBot'){
+    const userId = ctx.from?.id;
+    const userRole = userId ? await getUserRole(userId) : 'USER';
+    const isBotAdmin = roleWeights[userRole] >= ADMIN_ROLE;
+
+    if (!isBotAdmin) {
+      const levelName = "membro";
+      await ctx.answerCallbackQuery(ctx.t('help-error-botadmin-user', { level: levelName }));
+      return;
+    }
+
+    if (!rest.length) {
+      const keyboard = new InlineKeyboard()
+        .text(ctx.t('help-btn-admBot-manager-character'), 'help_admBot_managerCharacter')
+        .text(ctx.t('help-btn-back'), 'help_helpmain')
+        .text(ctx.t('btn-close'), 'close');
+
+      const caption = ctx.t('help-text-comment-adm-bot');
+      await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+      await ctx.answerCallbackQuery().catch(() => {});
+      return;
+    }
+
+    if (rest[0] === 'managerCharacter') {
+      if (!rest[1]) {
+        const keyboard = new InlineKeyboard()
+          .text(ctx.t('help-btn-admBot-add'), 'help_admBot_managerCharacter_add')
+          .text(ctx.t('help-btn-admBot-edit'), 'help_admBot_managerCharacter_edit')
+          .text(ctx.t('help-btn-admBot-del'), 'help_admBot_managerCharacter_del')
+          .row()
+          .text(ctx.t('help-btn-back'), 'help_admBot')
+          .text(ctx.t('btn-close'), 'close');
+
+        const caption = ctx.t('help-text-comment-admBot-manager-character');
+        await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+        await ctx.answerCallbackQuery().catch(() => {});
+        return;
+      }
+
+      if (rest[1] === 'add') {
+        const keyboard = new InlineKeyboard()
+          .text(ctx.t('help-btn-back',), 'help_admBot_managerCharacter')
+          .text(ctx.t('btn-close'), 'close');
+        const caption = ctx.t('help-text-comment-admBot-manager-character-add',{
+            commandaddchar:`${adminCommands_bot_dict.addchar.command}`
+          });
+        await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+        await ctx.answerCallbackQuery().catch(() => {});
+        return;
+      }
+
+      if (rest[1] === 'edit') {
+        const keyboard = new InlineKeyboard()
+          .text(ctx.t('help-btn-back'), 'help_admBot_managerCharacter')
+          .text(ctx.t('btn-close'), 'close');
+        const caption = ctx.t('help-text-comment-admBot-manager-character-edit');
+        await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+        await ctx.answerCallbackQuery().catch(() => {});
+        return;
+      }
+
+      if (rest[1] === 'del') {
+        const keyboard = new InlineKeyboard()
+          .text(ctx.t('help-btn-back'), 'help_admBot_managerCharacter')
+          .text(ctx.t('btn-close'), 'close');
+        const caption = ctx.t('help-text-comment-admBot-manager-character-del');
+        await EditOrSendText({ ctx, caption, reply_markup: keyboard });
+        await ctx.answerCallbackQuery().catch(() => {});
+        return;
+      }
+    }
+
+    await ctx.answerCallbackQuery().catch(() => {});
+    return;
   }
 
   await ctx.answerCallbackQuery().catch(() => {});

@@ -117,7 +117,9 @@ export async function giftConfirmHandler(ctx: MyContext) {
       select: { telegramData: true },
     });
 
-    const telegramData = receiverUser?.telegramData as { first_name?: string } | null;
+    const telegramData = receiverUser?.telegramData as {
+      first_name?: string;
+    } | null;
     const receiverUsername = telegramData?.first_name || "Usuário";
     const mention = mentionUser(receiverUsername, receiverId);
 
