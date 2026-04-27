@@ -1,5 +1,4 @@
 ﻿import { ChatType, type Character, type Collection, type MyContext, type RarityType } from "../../../utils/customTypes.js";
-import { resetContadorCache } from "../../listeners/contarMensagens.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
@@ -284,9 +283,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       title: ctx.chat?.title || "",
       directMessagesTopicId: ctx.session.grupo.directMessagesTopicId , 
     };
-    if (ctx.chat?.id) {
-      resetContadorCache(ctx.chat.id);
-    }
+  
     return true;
   } finally {
     delete ctx.session.lock;

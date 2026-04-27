@@ -1,6 +1,5 @@
 import { getCharacter } from "../../../../../cache/cache.js";
-import type { MyContext } from "../../../../../utils/customTypes.js";
-import type { PreCharacter } from "./add_charecter.js";
+import type { MyContext, PreCharacter } from "../../../../../utils/customTypes.js";
 
 export async function addCharacter_edit_CallbackData(
   ctx: MyContext,
