@@ -99,7 +99,7 @@ export async function giftHandler(ctx: MyContext) {
       ? (GiftCharacter as any).Character
       : (GiftCharacter as any).Character;
 
-  const text = ctx.t("gift_confirmation_message", {
+  const text = await ctx.t("gift_confirmation_message", {
     username: mention,
     character_name: characterData.name,
     character_anime: characterData.origem,

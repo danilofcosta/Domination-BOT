@@ -109,13 +109,19 @@ export async function Sendmedia(params: ParamsSendMedia) {
           if (!exists) error(`Sendmedia - Arquivo local não encontrado: ${path}`);
           return exists;
         } else if (type === MediaType.IMAGE_URL || type === MediaType.VIDEO_URL) {
-          // fetch to validate if it exists. some urls might not support HEAD properly so we fallback gracefully
-          const res = await fetch(media, { method: "HEAD" }).catch(() => fetch(media));
-          if (!res.ok) {
-            error(`Sendmedia - URL inacessível antes do envio: ${media} [${res.status}]`);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+          try {
+            const res = await fetch(media, { method: "HEAD", signal: controller.signal });
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}`);
+            }
+            return true;
+          } catch {
             return false;
+          } finally {
+            clearTimeout(timeoutId);
           }
-          return true;
         }
         return true;
       } catch (e) {

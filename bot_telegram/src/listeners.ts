@@ -70,6 +70,12 @@ listeners.chatType(['group', 'supergroup']).on('message', contarMensagens);
 
 const userLatestQuery = new Map<number, string>();
 
+setInterval(() => {
+  if (userLatestQuery.size > 100) {
+    userLatestQuery.clear();
+  }
+}, 60000);
+
 async function animeInlineQuery(ctx: MyContext) {
   const query = ctx.inlineQuery?.query || '';
   const genero = (ctx.session.settings?.genero || process.env.TYPE_BOT || 'waifu') as ChatType;

@@ -29,9 +29,9 @@ export async function HaremmodeHandler(ctx: MyContext) {
     
     .text(`${currentMode === "event" ? "✅ " : ""}Por Evento`, "haremmode_event")
     .row()
-    .text(ctx.t("close"), "close");
+    .text(await ctx.t("close"), "close");
 
-await  Sendmedia({
+await Sendmedia({
   ctx: ctx,
   per: character,
   caption: "Escolha como você deseja ver seu harém",

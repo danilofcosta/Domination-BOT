@@ -35,8 +35,8 @@ export async function AddCharacterHandler(ctx: MyContext) {
     text_command = '';
   }
 
-  const isNoconf = text_command.toLowerCase().includes('noconf');
-  const cleanCommand = text_command.replace(/noconf/gi, '').trim();
+  const isNoconf = (text_command || '').toLowerCase().includes('noconf');
+  const cleanCommand = (text_command || '').replace(/noconf/gi, '').trim();
 
   if (!cleanCommand.includes(',')) {
     ctx.reply('Use: nome, anime, extras');
@@ -145,32 +145,32 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
 
   try {
     if (data.genero === 'husbando') {
-      const char = await prisma.characterHusbando.create({
-        data: {
-          name: data.nome,
-          origem: data.anime,
-          mediaType: data.mediatype,
-          media: data.media,
-          slug,
-          addby: extras,
-        },
+      const char = await prisma.$transaction(async (tx) => {
+        const created = await tx.characterHusbando.create({
+          data: {
+            name: data.nome,
+            origem: data.anime,
+            mediaType: data.mediatype,
+            media: data.media,
+            slug,
+            addby: extras,
+          },
+        });
+
+        if (rarities && rarities.length > 0) {
+          await tx.husbandoRarity.createMany({
+            data: rarities.map((rarityId) => ({ characterId: created.id, rarityId })),
+          });
+        }
+
+        if (data.events && data.events.length > 0) {
+          await tx.husbandoEvent.createMany({
+            data: data.events.map((eventId) => ({ characterId: created.id, eventId })),
+          });
+        }
+
+        return created;
       });
-
-      if (rarities && rarities.length > 0) {
-        for (const rarityId of rarities) {
-          await prisma.husbandoRarity.create({
-            data: { characterId: char.id, rarityId },
-          });
-        }
-      }
-
-      if (data.events && data.events.length > 0) {
-        for (const eventId of data.events) {
-          await prisma.husbandoEvent.create({
-            data: { characterId: char.id, eventId },
-          });
-        }
-      }
 
       const character_db = await prisma.characterHusbando.findUnique({
         where: { id: char.id },
@@ -182,32 +182,32 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
 
       await sendAddedNotification(ctx, character_db, data);
     } else {
-      const char = await prisma.characterWaifu.create({
-        data: {
-          name: data.nome,
-          origem: data.anime,
-          mediaType: data.mediatype,
-          media: data.media,
-          slug,
-          addby: extras,
-        },
+      const char = await prisma.$transaction(async (tx) => {
+        const created = await tx.characterWaifu.create({
+          data: {
+            name: data.nome,
+            origem: data.anime,
+            mediaType: data.mediatype,
+            media: data.media,
+            slug,
+            addby: extras,
+          },
+        });
+
+        if (rarities && rarities.length > 0) {
+          await tx.waifuRarity.createMany({
+            data: rarities.map((rarityId) => ({ characterId: created.id, rarityId })),
+          });
+        }
+
+        if (data.events && data.events.length > 0) {
+          await tx.waifuEvent.createMany({
+            data: data.events.map((eventId) => ({ characterId: created.id, eventId })),
+          });
+        }
+
+        return created;
       });
-
-      if (rarities && rarities.length > 0) {
-        for (const rarityId of rarities) {
-          await prisma.waifuRarity.create({
-            data: { characterId: char.id, rarityId },
-          });
-        }
-      }
-
-      if (data.events && data.events.length > 0) {
-        for (const eventId of data.events) {
-          await prisma.waifuEvent.create({
-            data: { characterId: char.id, eventId },
-          });
-        }
-      }
 
       const character_db = await prisma.characterWaifu.findUnique({
         where: { id: char.id },
@@ -230,10 +230,10 @@ async function sendAddedNotification(
   character_db: any,
   data: PreCharacter,
 ) {
-  const chatId = process.env.DATABASE_TELEGREM_ID;
+  const chatId = process.env.DATABASE_TELEGRAM_ID;
 
   if (!chatId) {
-    console.log('sendAddedNotification - DATABASE_TELEGREM_ID nao configurado, pulando envio');
+    console.log('sendAddedNotification - DATABASE_TELEGRAM_ID nao configurado, pulando envio');
     await ctx.reply('Personagem adicionado com sucesso!');
     return;
   }

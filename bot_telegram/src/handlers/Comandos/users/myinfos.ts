@@ -30,7 +30,9 @@ export async function Myinfos(ctx: MyContext) {
     warn(`Myinfos - usuário não registrado`, { userId: ctx.from?.id });
     try {
       await ctx.api.deleteMessage(loading.chat.id, loading.message_id);
-    } catch {}
+    } catch {
+      error('erro ao apagar mensgem')
+    }
     return ctx.reply(ctx.t("error-not-registered"));
   }
 

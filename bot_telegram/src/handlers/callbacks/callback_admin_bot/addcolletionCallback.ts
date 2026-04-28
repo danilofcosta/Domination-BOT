@@ -1,4 +1,4 @@
-import { debug, warn, info, error } from "console";
+
 import { InlineKeyboard } from "grammy";
 import { ProfileType } from "../../../../generated/prisma/enums.js";
 import { getAddToCollectionMulti, getHarem } from "../../../cache/cache.js";
@@ -6,6 +6,7 @@ import { AddCharacterCollection } from "../../../utils/chareter/add_character_co
 import { type MyContext, ChatType } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
+import { debug, error, info, warn } from "../../../utils/log.js";
 
 
 export async function addcolletionCallback(ctx: MyContext) {
@@ -96,7 +97,9 @@ export async function addcolletionCallback(ctx: MyContext) {
       }
       try {
         await ctx.deleteMessage();
-      } catch {}
+      } catch {
+        error('errro ao apagar mensagem ')
+      }
     }
 
     await ctx.answerCallbackQuery();

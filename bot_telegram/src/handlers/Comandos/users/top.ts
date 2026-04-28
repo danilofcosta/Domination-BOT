@@ -42,43 +42,30 @@ export async function topHandler(ctx: MyContext) {
 
   debug(`topHandler - usuários no ranking`, { count: ranking.length });
 
-  const users = await prisma.user.findMany({
-    where: {
-      telegramId: {
-        in: ranking.map((r) => r.userId),
+  const [users, character] = await Promise.all([
+    prisma.user.findMany({
+      where: {
+        telegramId: { in: ranking.map((r) => r.userId) },
       },
-    },
-    select: {
-      telegramId: true,
-      telegramData: true,
-    },
-  });
+      select: { telegramId: true, telegramData: true },
+    }),
+    isHusbando
+      ? prisma.characterHusbando.findFirst({ orderBy: { id: "desc" } })
+      : prisma.characterWaifu.findFirst({ orderBy: { id: "desc" } }),
+  ]);
 
   const userMap = new Map(
     users.map((u) => [Number(u.telegramId), u.telegramData as any]),
   );
 
-  const top_users: string[] = [];
-
-  ranking.forEach((item, index) => {
+  const topUsers: string[] = ranking.map((item, index) => {
     const userData = userMap.get(Number(item.userId)) ?? {};
-
     const name = userData.first_name || userData.username || "user";
-
     const mention = mentionUser(name, Number(item.userId));
-
-    top_users.push(` ${index + 1}. ${mention} — ${item._count.characterId}`);
+    return ` ${index + 1}. ${mention} — ${item._count.characterId}`;
   });
 
-  const text = [ctx.t("top_header"), "", ...top_users].join("\n");
-
-  const character = isHusbando
-    ? await prisma.characterHusbando.findFirst({
-        orderBy: { id: "desc" },
-      })
-    : await prisma.characterWaifu.findFirst({
-        orderBy: { id: "desc" },
-      });
+  const text = [ctx.t("top_header"), "", ...topUsers].join("\n");
 
   const reply_markup = new InlineKeyboard()
     .text(ctx.t("top_user_btn"), "topuser_position")

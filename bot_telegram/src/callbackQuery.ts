@@ -15,13 +15,16 @@ import { ClickByDetail_Callback } from "./handlers/callbacks/users_callback/cick
 import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
 import { SetRarityCallback } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
 import { SetEventCallback } from "./handlers/Comandos/admin_bot/configs/set_event.js";
+import { error } from "./utils/log.js";
 
 const callbacks = new Composer<MyContext>();
 
 callbacks.callbackQuery("close", async (ctx) => {
   try {
     await ctx.deleteMessage();
-  } catch {}
+  } catch {
+    error('erro ao deletar mensagem')
+  }
   await ctx.answerCallbackQuery();
 });
 

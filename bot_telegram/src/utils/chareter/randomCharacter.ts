@@ -64,32 +64,25 @@ export async function LastRandomCharacter(
   genero: ChatType,
 ): Promise<Character | null> {
   info(`LastRandomCharacter - buscando último personagem`, { genero });
-  const LIMIT = 1;
   try {
     const lastCharacter =
       genero === ChatType.HUSBANDO
-        ? await prisma.characterHusbando.findMany({
+        ? await prisma.characterHusbando.findFirst({
             include: {
               HusbandoEvent: { include: { Event: true } },
               HusbandoRarity: { include: { Rarity: true } },
             },
-            take: LIMIT,
-            orderBy: {
-              id: "desc",
-            },
+            orderBy: { id: "desc" },
           })
-        : await prisma.characterWaifu.findMany({
-            take: LIMIT,
+        : await prisma.characterWaifu.findFirst({
             include: {
               WaifuEvent: { include: { Event: true } },
               WaifuRarity: { include: { Rarity: true } },
             },
-            orderBy: {
-              id: "desc",
-            },
+            orderBy: { id: "desc" },
           });
 
-    return lastCharacter[0] || null;
+    return lastCharacter;
   } catch (e) {
     error("LastRandomCharacter - erro ao buscar último personagem", e);
     return null;

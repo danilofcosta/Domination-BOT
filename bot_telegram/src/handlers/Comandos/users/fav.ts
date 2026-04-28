@@ -31,7 +31,11 @@ export async function favCharacter(ctx: MyContext) {
     return ctx.reply(ctx.t("error-not-id"));
   }
 
-  const userid = ctx.from!.id;
+  const userid = ctx.from?.id;
+  if (!userid) {
+    warn(`favCharacter - usuário não identificado`, { ctxFrom: ctx.from });
+    return ctx.reply(ctx.t("error-user-not-found"));
+  }
   info(`favCharacter - buscando personagem`, { userId: userid, favid });
 
   const FavCharacter =
@@ -39,7 +43,7 @@ export async function favCharacter(ctx: MyContext) {
       ? await prisma.waifuCollection.findFirst({
           where: {
             characterId: favid,
-            userId: ctx.from!.id,
+            userId: userid,
           },
           include: {
             Character: {
@@ -53,7 +57,7 @@ export async function favCharacter(ctx: MyContext) {
       : await prisma.husbandoCollection.findFirst({
           where: {
             characterId: favid,
-            userId: ctx.from!.id,
+            userId: userid,
           },
           include: {
             Character: {
@@ -69,9 +73,10 @@ export async function favCharacter(ctx: MyContext) {
       userId: userid,
       favid,
     });
+    const genero = ctx.session.settings.genero?.toLocaleLowerCase() || 'waifu';
     return ctx.reply(
       ctx.t("fav-not-found", {
-        genero: ctx.session.settings.genero.toLocaleLowerCase(),
+        genero,
       }),
     );
   }
@@ -82,7 +87,7 @@ export async function favCharacter(ctx: MyContext) {
     charName: FavCharacter.Character.name,
   });
 
-  const text = ctx.t("fav-character", {
+  const text = await ctx.t("fav-character", {
     id_personagem: favid || "",
     character_name: FavCharacter.Character.name || "",
     character_anime: FavCharacter.Character.origem || "",

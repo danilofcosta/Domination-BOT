@@ -35,9 +35,7 @@ async function main() {
     process.exit(1);
   }
 
- // if (env === NODE_ENV.DEVELOPMENT) {
-  if (true) {
-    // roda ambos em polling no dev
+  if (env === NODE_ENV.DEVELOPMENT) {
     await Promise.all([
       RunPolling(bots.waifu, true),
       RunPolling(bots.husbando, true),
@@ -54,17 +52,12 @@ async function main() {
       process.exit(1);
     }
 
-    // // roda ambos com webhook
-    // await Promise.all([
-    //   RunWebHook("waifu", bots.waifu, endpoint),
-    //   RunWebHook("husbando", bots.husbando, endpoint),
-    // ]);
-
     info("Bots rodando com webhook (prod)");
     return;
   }
 
-  info("NODE_ENV inválido");
+  fatal("NODE_ENV inválido:", env);
+  process.exit(1);
 }
 
 await main();

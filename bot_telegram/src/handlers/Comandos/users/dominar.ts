@@ -122,10 +122,21 @@ function successDominarMessage(ctx: MyContext, character: Character, collection:
 
 const LOCK_TIMEOUT = 10000;
 
+function acquireLock(session: any, userId: number, now: number): boolean {
+  const currentLock = session.lock;
+  if (currentLock && 
+      (now - currentLock.timestamp < LOCK_TIMEOUT) && 
+      currentLock.userId !== userId) {
+    return false;
+  }
+  session.lock = { userId, timestamp: now };
+  return true;
+}
+
 export async function CapturarCharacter(ctx: MyContext) {
   const tentativa = String(ctx.match).trim().toLocaleLowerCase();
   const character = ctx.session.grupo.character;
-  const type = ctx.session.settings.genero || process.env.TYPE_BOT
+  const type = ctx.session.settings.genero || process.env.TYPE_BOT || ChatType.WAIFU;
   const userId = Number(ctx.from?.id);
 
   info(`CapturarCharacter - tentativa: "${tentativa}"`, {
@@ -136,20 +147,16 @@ export async function CapturarCharacter(ctx: MyContext) {
     type
   });
 
-  if (ctx.session.lock) {
-    const lockAge = Date.now() - ctx.session.lock.timestamp;
-    if (lockAge < LOCK_TIMEOUT && ctx.session.lock.userId !== userId) {
-      warn(`CapturarCharacter - operação bloqueada (lock ativo)`, {
-        lockOwner: ctx.session.lock.userId,
-        lockAge,
-        requestedBy: userId
-      });
-    //  await ctx.reply(ctx.t("dominar_locked"));
-      return;
-    }
+  const now = Date.now();
+  if (!acquireLock(ctx.session, userId, now)) {
+    const lockAge = now - ctx.session.lock.timestamp;
+    warn(`CapturarCharacter - operação bloqueada (lock ativo)`, {
+      lockOwner: ctx.session.lock.userId,
+      lockAge,
+      requestedBy: userId
+    });
+    return;
   }
-
-  ctx.session.lock = { userId, timestamp: Date.now() };
 
   try {
     if (!character || !tentativa) {

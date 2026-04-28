@@ -101,9 +101,9 @@ export const ComandosUser = {
 } as const;
 
 for (const [key, value] of Object.entries(ComandosUser)) {
-  const handlerWrapper = (ctx: MyContext) => {
+  const handlerWrapper = async (ctx: MyContext) => {
     debug('Comando', value.command, 'executado por', ctx.from?.username);
-    value.handler(ctx);
+    await value.handler(ctx);
   };
 
   UserCommands.command(value.command, value.description.pt)
