@@ -12,4 +12,4 @@ web/scripts/
 web/public/waifus/
 web/public/husbandos/
 bot_telegram/src/dev/
-bot_telegram/scrip/set_web_hook.ts
+bot_telegram/scrip/
