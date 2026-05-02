@@ -6,30 +6,20 @@ import { extractListEmojisCharacter } from "../../../utils/manege_caption/extrac
 import { info, error, debug, warn } from "../../../utils/log.js";
 
 function verificarNome(personagem: string, tentativa: string) {
-  const ignorar = [
-    "da",
-    "de",
-    "do",
-    "dos",
-    "das",
-    "the",
-    "a",
-    "an",
-    "the",
-    "&",
-  ];
+  const ignorar = ["da","de","do","dos","das","the","a","an","&","x"];
 
-  const partes = personagem.toLowerCase()
-    .split(/\s+/)
-    .filter((p) => !ignorar.includes(p));
+  const normalize = (str: string) =>
+    str
+      .toLowerCase()
+      .replace(/[^\w\s]/g, "")
+      .split(/\s+/)
+      .filter((p) => p && !ignorar.includes(p));
 
-  tentativa = tentativa.toLowerCase().trim();
+  const nomeParts = normalize(personagem);
+  const tentativaParts = normalize(tentativa);
 
-  if (partes.includes(tentativa)) return true;
 
-  if (tentativa === partes.join(" ")) return true;
-
-  return false;
+  return tentativaParts.every((p) => nomeParts.includes(p));
 }
 
 function calcularTempo(per: { data: any }) {
