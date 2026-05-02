@@ -139,9 +139,9 @@ export async function CapturarCharacter(ctx: MyContext) {
 
   const now = Date.now();
   if (!acquireLock(ctx.session, userId, now)) {
-    const lockAge = now - ctx.session.lock.timestamp;
+    const lockAge = now - ctx.session.lock!.timestamp;
     warn(`CapturarCharacter - operação bloqueada (lock ativo)`, {
-      lockOwner: ctx.session.lock.userId,
+      lockOwner: ctx.session.lock!.userId,
       lockAge,
       requestedBy: userId
     });
