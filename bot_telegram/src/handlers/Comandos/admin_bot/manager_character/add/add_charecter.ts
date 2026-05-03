@@ -7,6 +7,29 @@ import { create_caption } from '../../../../../utils/manege_caption/create_capti
 import { Sendmedia } from '../../../../../utils/sendmedia.js';
 import { ChatType, type MyContext, type PreCharacter } from '../../../../../utils/customTypes.js';
 
+const processingQueue: (() => Promise<void>)[] = [];
+let isProcessing = false;
+const TELEGRAM_API_DELAY_MS = 3000;
+
+async function processQueue() {
+  if (isProcessing || processingQueue.length === 0) return;
+  isProcessing = true;
+
+  while (processingQueue.length > 0) {
+    const task = processingQueue.shift()!;
+    try {
+      await task();
+    } catch (err) {
+      console.error('[AddCharacterQueue] Error processing task:', err);
+    }
+    if (processingQueue.length > 0) {
+      await new Promise((resolve) => setTimeout(resolve, TELEGRAM_API_DELAY_MS));
+    }
+  }
+
+  isProcessing = false;
+}
+
 
 
 export async function AddCharacterHandler(ctx: MyContext) {
@@ -36,7 +59,8 @@ export async function AddCharacterHandler(ctx: MyContext) {
   }
 
   const isNoconf = (text_command || '').toLowerCase().includes('noconf');
-  const cleanCommand = (text_command || '').replace(/noconf/gi, '').trim();
+  const isNoautor = (text_command || '').toLowerCase().includes('noautor');
+  const cleanCommand = (text_command || '').replace(/noconf|noautor/gi, '').trim();
 
   if (!cleanCommand.includes(',')) {
     ctx.reply('Use: nome, anime, extras');
@@ -67,7 +91,14 @@ export async function AddCharacterHandler(ctx: MyContext) {
   };
 
   if (isNoconf) {
-    await addCharacterDirect(ctx, charData);
+    const queuePosition = processingQueue.length;
+    await ctx.reply(`📦 Personagem adicionado à fila (posição ${queuePosition + 1}). Processando em breve...`);
+
+    processingQueue.push(async () => {
+      await addCharacterDirect(ctx, charData, isNoautor);
+    });
+
+    void processQueue();
     return;
   }
 
@@ -129,7 +160,7 @@ async function getRandomRarity(genero: ChatType): Promise<number | undefined> {
   return rarities[randomIndex]?.rarityId;
 }
 
-async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
+async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor: boolean) {
   let rarities = data.rarities;
 
   if (!rarities || rarities.length === 0) {
@@ -180,7 +211,7 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
         },
       });
 
-      await sendAddedNotification(ctx, character_db, data);
+      await sendAddedNotification(ctx, character_db, data, isNoautor);
     } else {
       const char = await prisma.$transaction(async (tx) => {
         const created = await tx.characterWaifu.create({
@@ -217,7 +248,7 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter) {
         },
       });
 
-      await sendAddedNotification(ctx, character_db, data);
+      await sendAddedNotification(ctx, character_db, data, isNoautor);
     }
   } catch (e: any) {
     console.error('addCharacterDirect error:', e);
@@ -229,6 +260,7 @@ async function sendAddedNotification(
   ctx: MyContext,
   character_db: any,
   data: PreCharacter,
+  isNoautor: boolean,
 ) {
   const chatId = process.env.DATABASE_TELEGRAM_ID;
 
@@ -249,9 +281,11 @@ async function sendAddedNotification(
     noformat: false,
   });
 
-  const fullCaption = caption + '\n\n' + ctx.t('add_character_confirm', {
-    usermention,
-  });
+  const fullCaption = isNoautor
+    ? caption
+    : caption + '\n\n' + ctx.t('add_character_confirm', {
+        usermention,
+      });
 
   await Sendmedia({
     ctx,
@@ -261,13 +295,16 @@ async function sendAddedNotification(
   });
 }
 
+let slugCounter = 0;
+
 function generateSlug(nome: string, anime: string): string {
+  slugCounter++;
   const base = (nome + '-' + anime)
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
-  return base + '-' + Date.now();
+  return base + '-' + Date.now() + '-' + slugCounter;
 }
 
 async function confirmCharacter(ctx: MyContext, data: PreCharacter) {
