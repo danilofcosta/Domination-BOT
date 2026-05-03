@@ -28,6 +28,7 @@ import {
   SparklesIcon,
   FileJsonIcon,
   TrophyIcon,
+  X,
 } from "lucide-react";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -70,10 +71,40 @@ const navItems = [
   },
 ];
 
+function SidebarHeader({ onClose }: { onClose?: () => void }) {
+  const { toggleSidebar, isMobile } = useSidebar();
+
+  return (
+    <div className="px-3 py-4 flex items-center justify-between border-b border-primary/10">
+      <button
+        onClick={toggleSidebar}
+        className="flex items-center gap-3 p-2 rounded-xl hover:bg-primary/10 transition-all duration-200 active:scale-95"
+      >
+        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
+          <CommandIcon className="size-5 text-primary" />
+        </div>
+        <div className="hidden md:flex flex-col items-start">
+          <span className="font-bold text-sm">Administração</span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Domination Bot</span>
+        </div>
+      </button>
+      {isMobile && onClose && (
+        <button
+          onClick={onClose}
+          className="p-2 rounded-lg hover:bg-primary/10 transition-colors md:hidden"
+          aria-label="Fechar menu"
+        >
+          <X className="size-5" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function AppSidebar({ sessionUser, ...props }: AppSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   const isActive = React.useCallback((url: string) => {
     if (url === "/admin") return pathname === "/admin" && !searchParams.has("tab");
@@ -82,31 +113,28 @@ export function AppSidebar({ sessionUser, ...props }: AppSidebarProps) {
     return tab ? searchParams.get("tab") === tab : false;
   }, [pathname, searchParams]);
 
-  return (
-    <Sidebar collapsible="icon" {...props} className="border-r border-primary/10 bg-gradient-to-b from-amber-900/30 to-background">
-      <SidebarContent className="py-2">
-        <SidebarMenuButton asChild className="mb-2 mx-2">
-          <button
-            onClick={toggleSidebar}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors"
-          >
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center">
-              <CommandIcon className="size-5 text-primary" />
-            </div>
-            <div className="flex flex-col items-start">
-              <span className="font-bold text-sm">Administração</span>
-              <span className="text-xs text-muted-foreground">Domination Bot</span>
-            </div>
-          </button>
-        </SidebarMenuButton>
+  const handleNavClick = React.useCallback(() => {
+    if (isMobile) {
+      toggleSidebar();
+    }
+  }, [isMobile, toggleSidebar]);
 
+  return (
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className="border-r border-primary/10 bg-gradient-to-b from-amber-900/20 via-background to-background"
+    >
+      <SidebarHeader onClose={isMobile ? toggleSidebar : undefined} />
+      
+      <SidebarContent className="py-2 px-1">
         {navItems.map((group) => (
-          <SidebarGroup key={group.title} className="px-2">
-            <SidebarGroupLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 px-3 mb-1">
+          <SidebarGroup key={group.title} className="px-1 py-2">
+            <SidebarGroupLabel className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 px-3 mb-2">
               {group.title}
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu className="gap-1">
+              <SidebarMenu className="gap-0.5">
                 {group.items.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item.url);
@@ -115,11 +143,28 @@ export function AppSidebar({ sessionUser, ...props }: AppSidebarProps) {
                       <SidebarMenuButton
                         asChild
                         isActive={active}
-                        className={`rounded-lg transition-all ${active ? "bg-primary/15 text-primary font-semibold" : "hover:bg-primary/5"}`}
+                        className={`rounded-xl transition-all duration-200 group ${
+                          active
+                            ? "bg-primary/15 text-primary font-semibold shadow-sm"
+                            : "hover:bg-primary/5 text-muted-foreground hover:text-foreground"
+                        }`}
                       >
-                        <Link href={item.url} className="flex items-center gap-3 px-3 py-2">
-                          <Icon className={`size-4 ${active ? "text-primary" : ""}`} />
-                          <span className="text-sm">{item.title}</span>
+                        <Link
+                          href={item.url}
+                          onClick={handleNavClick}
+                          className="flex items-center gap-3 px-3 py-2.5"
+                        >
+                          <Icon
+                            className={`size-4 shrink-0 transition-colors duration-200 ${
+                              active
+                                ? "text-primary"
+                                : "text-muted-foreground/70 group-hover:text-foreground"
+                            }`}
+                          />
+                          <span className="text-sm font-medium truncate">{item.title}</span>
+                          {active && (
+                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -131,8 +176,8 @@ export function AppSidebar({ sessionUser, ...props }: AppSidebarProps) {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-primary/10 p-3 space-y-3">
-        <div className="flex items-center justify-center">
+      <SidebarFooter className="border-t border-primary/10 p-3 space-y-2">
+        <div className="flex items-center justify-center py-1">
           <ThemeToggle />
         </div>
         <div className="pt-2 border-t border-primary/10">
