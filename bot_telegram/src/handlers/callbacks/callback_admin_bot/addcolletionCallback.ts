@@ -58,7 +58,7 @@ export async function addcolletionCallback(ctx: MyContext) {
           type: (isMulti ? getAddToCollectionMulti(userId)?.genero : ctx.session.settings.genero) as ChatType || ChatType.WAIFU,
           userId,
           from: isMulti ? getAddToCollectionMulti(userId)?.from : ctx.from,
-          Charater_id: charId,
+          characterId: charId,
         });
 
         if (result) {

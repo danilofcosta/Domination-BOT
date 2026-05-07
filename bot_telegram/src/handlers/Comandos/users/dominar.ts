@@ -1,4 +1,10 @@
-﻿import { ChatType, type Character, type Collection, type MyContext, type RarityType } from "../../../utils/customTypes.js";
+﻿import {
+  ChatType,
+  type Character,
+  type Collection,
+  type MyContext,
+  type RarityType,
+} from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
@@ -6,7 +12,7 @@ import { extractListEmojisCharacter } from "../../../utils/manege_caption/extrac
 import { info, error, debug, warn } from "../../../utils/log.js";
 
 function verificarNome(personagem: string, tentativa: string) {
-  const ignorar = ["da","de","do","dos","das","the","a","an","&","x"];
+  const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x"];
 
   const normalize = (str: string) =>
     str
@@ -18,7 +24,6 @@ function verificarNome(personagem: string, tentativa: string) {
   const nomeParts = normalize(personagem);
   const tentativaParts = normalize(tentativa);
 
-
   return tentativaParts.every((p) => nomeParts.includes(p));
 }
 
@@ -27,7 +32,7 @@ function calcularTempo(per: { data: any }) {
 
   const agora = Date.now();
   let dataMs = 0;
-  
+
   if (typeof per.data === "string") {
     dataMs = new Date(per.data).getTime();
   } else if (per.data instanceof Date) {
@@ -54,7 +59,11 @@ function calcularTempo(per: { data: any }) {
   return `${horas} h`;
 }
 
-function successDominarMessage(ctx: MyContext, character: Character, collection: Collection) {
+function successDominarMessage(
+  ctx: MyContext,
+  character: Character,
+  collection: Collection,
+) {
   if (!collection || !character) return "vc tem um personagem novo!";
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
@@ -71,18 +80,20 @@ function successDominarMessage(ctx: MyContext, character: Character, collection:
   const success_dominar_anime = ctx.t("success_dominar_anime", {
     anime: `${character.origem} ${collection.count}x`,
   });
-  const { emoji_event, emoji_raridade: rarityEmojis } =  extractListEmojisCharacter(ctx, character, false);
+  const { emoji_event, emoji_raridade: rarityEmojis } =
+    extractListEmojisCharacter(ctx, character, false);
   const char = character as any;
-  const raritys: RarityType[] = process.env.TYPE_BOT === ChatType.WAIFU
+  const raritys: RarityType[] =
+    process.env.TYPE_BOT === ChatType.WAIFU
       ? char.WaifuRarity
       : char.HusbandoRarity;
 
-  const rarity_name = raritys.length > 1
-        ? `[${raritys.map((r: any) => r.Rarity?.name || r.rarity?.name).join(", ")}]`
-        : raritys.length === 1
-          ? (raritys[0] as any).Rarity?.name || (raritys[0] as any).rarity?.name
-          : "";
-
+  const rarity_name =
+    raritys.length > 1
+      ? `[${raritys.map((r: any) => r.Rarity?.name || r.rarity?.name).join(", ")}]`
+      : raritys.length === 1
+        ? (raritys[0] as any).Rarity?.name || (raritys[0] as any).rarity?.name
+        : "";
 
   const success_dominar_rarity = ctx.t("success_dominar_rarity", {
     rarity_name: rarity_name,
@@ -92,9 +103,9 @@ function successDominarMessage(ctx: MyContext, character: Character, collection:
         : rarityEmojis.length === 1
           ? rarityEmojis.join(", ")
           : "",
-    
-    
-     emoji_event: emoji_event.length > 1
+
+    emoji_event:
+      emoji_event.length > 1
         ? `[${emoji_event.join(", ")}]`
         : emoji_event.length === 1
           ? emoji_event.join(", ")
@@ -114,9 +125,11 @@ const LOCK_TIMEOUT = 10000;
 
 function acquireLock(session: any, userId: number, now: number): boolean {
   const currentLock = session.lock;
-  if (currentLock && 
-      (now - currentLock.timestamp < LOCK_TIMEOUT) && 
-      currentLock.userId !== userId) {
+  if (
+    currentLock &&
+    now - currentLock.timestamp < LOCK_TIMEOUT &&
+    currentLock.userId !== userId
+  ) {
     return false;
   }
   session.lock = { userId, timestamp: now };
@@ -126,7 +139,8 @@ function acquireLock(session: any, userId: number, now: number): boolean {
 export async function CapturarCharacter(ctx: MyContext) {
   const tentativa = String(ctx.match).trim().toLocaleLowerCase();
   const character = ctx.session.grupo.character;
-  const type = ctx.session.settings.genero || process.env.TYPE_BOT || ChatType.WAIFU;
+  const type =
+    ctx.session.settings.genero || process.env.TYPE_BOT || ChatType.WAIFU;
   const userId = Number(ctx.from?.id);
 
   info(`CapturarCharacter - tentativa: "${tentativa}"`, {
@@ -134,7 +148,7 @@ export async function CapturarCharacter(ctx: MyContext) {
     chatId: ctx.chat?.id,
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
     hasCharacter: !!character,
-    type
+    type,
   });
 
   const now = Date.now();
@@ -143,7 +157,7 @@ export async function CapturarCharacter(ctx: MyContext) {
     warn(`CapturarCharacter - operação bloqueada (lock ativo)`, {
       lockOwner: ctx.session.lock!.userId,
       lockAge,
-      requestedBy: userId
+      requestedBy: userId,
     });
     return;
   }
@@ -154,16 +168,19 @@ export async function CapturarCharacter(ctx: MyContext) {
         userId,
         chatId: ctx.chat?.id,
         hasCharacter: !!character,
-        tentativa
+        tentativa,
       });
       if (character && !tentativa) {
         try {
           const topicId = ctx.session.grupo.directMessagesTopicId;
-        await ctx.reply(ctx.t("drop_character_attempt_empty", {
-            genero: type === ChatType.WAIFU ? "waifu" : "husbando",
-          }), {
-            ...(topicId && { message_thread_id: topicId }),
-          });
+          await ctx.reply(
+            ctx.t("drop_character_attempt_empty", {
+              genero: type === ChatType.WAIFU ? "waifu" : "husbando",
+            }),
+            {
+              ...(topicId && { message_thread_id: topicId }),
+            },
+          );
         } catch (e) {
           error("Erro ao enviar mensagem de nome vazio", e);
         }
@@ -174,10 +191,13 @@ export async function CapturarCharacter(ctx: MyContext) {
       debug(`CapturarCharacter - nome incorreto`, {
         tentativa,
         characterName: character.name,
-        userId
+        userId,
       });
 
-      const url = LinkMsg(Number(ctx.chat?.id), Number(ctx.session.grupo.dropId));
+      const url = LinkMsg(
+        Number(ctx.chat?.id),
+        Number(ctx.session.grupo.dropId),
+      );
 
       try {
         const topicId = ctx.session.grupo.directMessagesTopicId;
@@ -191,7 +211,10 @@ export async function CapturarCharacter(ctx: MyContext) {
 
         setTimeout(() => {
           ctx.api.deleteMessage(ctx.chat!.id, msg.message_id).catch((e) => {
-            warn(`Falha ao deletar mensagem`, { msgId: msg.message_id, error: e });
+            warn(`Falha ao deletar mensagem`, {
+              msgId: msg.message_id,
+              error: e,
+            });
           });
         }, 120000);
       } catch (e) {
@@ -200,26 +223,30 @@ export async function CapturarCharacter(ctx: MyContext) {
 
       return;
     }
-    
+
     ctx.session.grupo.character = null;
     ctx.session.grupo.dropId = null;
     ctx.session.grupo.cont = 0;
- 
+
     info(`CapturarCharacter - nome correto, adicionando personagem`, {
       userId,
       characterId: character.id,
-      characterName: character.name
+      characterName: character.name,
     });
 
-    const character_collection : Collection | null = await AddCharacterCollection({
-      type,
-      userId,
-      from: ctx.from || {},
-      Charater_id: character.id
-    });
+    const character_collection: Collection | null =
+      await AddCharacterCollection({
+        type,
+        userId,
+        from: ctx.from || {},
+        characterId: character.id,
+      });
 
     if (!character_collection) {
-      error(`AddCharacterCollection retornou null`, { userId, characterId: character.id });
+      error(`AddCharacterCollection retornou null`, {
+        userId,
+        characterId: character.id,
+      });
       const topicId = ctx.session.grupo.directMessagesTopicId;
       return ctx.reply(ctx.t("error_add_character"), {
         ...(topicId && { message_thread_id: topicId }),
@@ -230,11 +257,15 @@ export async function CapturarCharacter(ctx: MyContext) {
       userId,
       characterId: character.id,
       collectionId: character_collection.id,
-      count: character_collection.count
+      count: character_collection.count,
     });
-    const successDominarMessageResult = successDominarMessage(ctx, character, character_collection)
+    const successDominarMessageResult = successDominarMessage(
+      ctx,
+      character,
+      character_collection,
+    );
     const topicId = ctx.session.grupo.directMessagesTopicId;
-    
+
     info(`Dominando - enviando mensagem de sucesso`, {
       userId,
       characterId: character.id,
@@ -242,7 +273,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       chatId: ctx.chat?.id,
       topicId,
       messageLength: successDominarMessageResult.length,
-      hasReplyMarkup: true
+      hasReplyMarkup: true,
     });
 
     try {
@@ -267,8 +298,9 @@ export async function CapturarCharacter(ctx: MyContext) {
         characterId: character.id,
         chatId: ctx.chat?.id,
         topicId,
-        replyError: replyError instanceof Error ? replyError.message : String(replyError),
-        stack: replyError instanceof Error ? replyError.stack : undefined
+        replyError:
+          replyError instanceof Error ? replyError.message : String(replyError),
+        stack: replyError instanceof Error ? replyError.stack : undefined,
       });
     }
 
@@ -278,9 +310,9 @@ export async function CapturarCharacter(ctx: MyContext) {
       character: null,
       data: null,
       title: ctx.chat?.title || "",
-      directMessagesTopicId: ctx.session.grupo.directMessagesTopicId , 
+      directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
     };
-  
+
     return true;
   } finally {
     delete ctx.session.lock;

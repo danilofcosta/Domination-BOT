@@ -126,6 +126,7 @@ export async function giftConfirmHandler(ctx: MyContext) {
     await ctx
       .editMessageCaption({
         caption: ctx.t("gift_success", { user: mention }),
+        parse_mode: "HTML",
       })
       .catch(() => {});
   } catch (e) {

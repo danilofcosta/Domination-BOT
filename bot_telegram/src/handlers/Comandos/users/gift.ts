@@ -8,10 +8,11 @@ import {
 } from "../../../utils/manege_caption/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
+import { ComandosUser } from "../../../CommandesManage/User.js";
 
 export async function giftHandler(ctx: MyContext) {
   if (!ctx.message?.reply_to_message) {
-    await ctx.reply(ctx.t("gift_reply_instruction"));
+    await ctx.reply(ctx.t("gift_reply_instruction",{command: ComandosUser.gift.command}));;
     return;
   }
 

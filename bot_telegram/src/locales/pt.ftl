@@ -233,7 +233,7 @@ gift_confirmation_message = Você tem certeza que deseja presentear
  
   para { $username }?
 
-gift_reply_instruction= Manda em reposta a uma pessoa
+gift_reply_instruction= Manda em reposta a uma pessoa <code>/{$command} 46 </code>
 gift_success= Presente enviado com sucesso para { $user }!
 gift_success_multi = Você enviou { $count } presentes para { $user }!
 gift_confirmation_message_multi = Você tem certeza que deseja presentear { $qty }x <code> {$character_name} - {$character_anime} </code> para { $username }?
