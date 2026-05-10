@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Nunito_Sans, Manrope } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 
 const manropeHeading = Manrope({ subsets: ["latin"], variable: "--font-heading" });
 
@@ -26,7 +25,6 @@ export default function RootLayout({
         <main className="min-h-screen lg:ml-60">
           {children}
         </main>
-        <Toaster />
       </body>
     </html>
   );
