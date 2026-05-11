@@ -9,11 +9,15 @@ export async function RunWebHook(bot) {
   const app = express();
   app.use(express.json());
 
+  app.get("/", (req, res) => {
+    res.status(200).json({ message: "Bot Telegram Webhook on" });
+  }); 
+
   // 🔥 rota específica (ESSENCIAL)
   app.post("/webhook", webhookCallback(bot, "express"));
 
 
-  app.post("/ping", (req, res) => {
+  app.get("/ping", (req, res) => {
     res.status(200).json({ message: "pong" });
   });
 
