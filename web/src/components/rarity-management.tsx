@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { getRarities, createRarity, deleteRarity, updateRarity } from "@/app/admin/actions"
+import { ProfileType } from "@/lib/profile-type"
 import {
   Table,
   TableBody,
@@ -27,7 +28,7 @@ import { SearchIcon, Loader2Icon, PlusIcon, Trash2Icon, RefreshCwIcon, StarIcon,
 import { toast } from "sonner"
 
 interface RarityManagementProps {
-  currentUser?: { profileType?: string } | null;
+  currentUser?: { profileType?: ProfileType } | null;
 }
 
 export function RarityManagement({ currentUser }: RarityManagementProps) {

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { getTelegramGroups, updateTelegramGroup, deleteTelegramGroup } from "@/app/admin/actions"
+import { ProfileType } from "@/lib/profile-type"
 import {
   Table,
   TableBody,
@@ -19,7 +20,7 @@ import { SearchIcon, Loader2Icon, SettingsIcon, Trash2Icon, RefreshCwIcon, Users
 import { toast } from "sonner"
 
 interface TelegramGroupManagementProps {
-  currentUser?: { profileType?: string } | null;
+  currentUser?: { profileType?: ProfileType } | null;
 }
 
 export function TelegramGroupManagement({ currentUser }: TelegramGroupManagementProps) {

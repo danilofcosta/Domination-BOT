@@ -5,6 +5,7 @@ import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
 
 import { UserDetailsDialog } from "./user-details-dialog";
 import { SessionPayload } from "@/lib/auth/auth";
+import { ProfileType } from "@/lib/profile-type";
 
 async function getUsersFromServer() {
   const res = await fetch("/api/admin/users", { cache: "no-store" });
@@ -24,18 +25,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-const PROFILE_TYPE_LOCAL = {
-  SUPREME: "SUPREME",
-  ADMIN: "ADMIN",
-  MODERATOR: "MODERATOR",
-  USER: "USER",
-} as const;
+
 
 type User = {
   id: number;
   telegramId: string;
   telegramData: any;
-  profileType: string;
+  profileType: ProfileType;
   coins: number;
   avatarUrl?: string;
   language: string;
@@ -89,11 +85,11 @@ export function UserManagementTable_page({
 
   const getProfileBadgeVariant = (type: string) => {
     switch (type) {
-      case PROFILE_TYPE_LOCAL.SUPREME:
+      case ProfileType.SUPREME:
         return "default";
-      case PROFILE_TYPE_LOCAL.ADMIN:
+      case ProfileType.ADMIN:
         return "secondary";
-      case PROFILE_TYPE_LOCAL.USER:
+      case ProfileType.USER:
         return "outline";
       default:
         return "outline";

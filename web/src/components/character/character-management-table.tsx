@@ -22,13 +22,14 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import { ProfileType } from "@/lib/profile-type";
 import { DataTable } from "./data-table"
 import { getColumns, Character } from "./columns"
 import { VisibilityState } from "@tanstack/react-table"
 
 interface CharacterManagementTableProps {
   initialType?: "waifu" | "husbando";
-  currentUser?: { profileType?: string } | null;
+  currentUser?: { profileType?: ProfileType } | null;
 }
 
 export function CharacterManagementTable({ initialType = "waifu", currentUser }: CharacterManagementTableProps) {

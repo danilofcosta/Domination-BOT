@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ProfileType } from "@/lib/profile-type"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -34,7 +35,7 @@ export interface Character {
 
 interface ColumnsProps {
   type: "waifu" | "husbando"
-  currentUser?: { profileType?: string } | null
+  currentUser?: { profileType?: ProfileType } | null
   onDelete: (id: number) => void
   onComplete: () => void
   isDeleting: number | null

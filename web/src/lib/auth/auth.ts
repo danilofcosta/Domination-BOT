@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import { ProfileType } from "@/components/user/user-details-dialog";
+import { ProfileType } from "@/lib/profile-type";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -38,7 +38,7 @@ export interface TelegramAuthData {
 
 export interface SessionPayload {
   telegramId: string;
-  profileType: string;
+  profileType: ProfileType;
   firstName: string;
   photoUrl?: string;
 }
@@ -118,7 +118,7 @@ export async function verifySessionToken(
 
     return {
       telegramId: payload.telegramId as string,
-      profileType: payload.profileType as string,
+      profileType: payload.profileType as ProfileType,
       firstName: payload.firstName as string,
       photoUrl: payload.photoUrl as string | undefined,
     };

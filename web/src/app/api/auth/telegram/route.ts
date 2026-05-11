@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     }
 
     // 3. Verificar se tem role admin
-    if (!ADMIN_ROLES.includes(user.profileType as any)) {
+    if (!ADMIN_ROLES.includes(user.profileType)) {
       recordFailedAttempt(`telegram:${clientIp}`);
       return NextResponse.json(
         { error: "Acesso negado. Você não tem permissão de administrador." },

@@ -56,12 +56,8 @@ export async function POST(req: Request) {
         { status: 401 },
       );
     }
-
-    if (
-      !ADMIN_ROLES.includes(
-        user.profileType as "ADMIN" | "SUPER_ADMIN" | "SUPREME",
-      )
-    ) {
+    console.log(user.profileType);
+    if (!ADMIN_ROLES.includes(user.profileType)) {
       recordFailedAttempt(`login:${clientIp}`);
       return NextResponse.json(
         { error: "Acesso negado. Você não tem permissão de administrador." },

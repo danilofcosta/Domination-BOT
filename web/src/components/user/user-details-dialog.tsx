@@ -46,16 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-const PROFILE_TYPE = {
-  USER: "USER",
-  MODERATOR: "MODERATOR",
-  ADMIN: "ADMIN",
-  SUPER_ADMIN: "SUPER_ADMIN",
-  SUPREME: "SUPREME",
-} as const;
-
-export const ProfileType = PROFILE_TYPE;
-export type ProfileType = (typeof PROFILE_TYPE)[keyof typeof PROFILE_TYPE];
+import { ProfileType } from "@/lib/profile-type";
 
 export interface UserDetailsDialogProps {
   user: User & {
@@ -146,7 +137,7 @@ export function UserDetailsDialog({
     window.location.reload();
   };
 
-  const handleUpdateType = async (newType: string) => {
+  const handleUpdateType = async (newType: ProfileType) => {
     setTypeUpdating(newType);
     const result = await updateUserProfileType(
       BigInt(user.telegramId),

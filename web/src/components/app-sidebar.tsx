@@ -83,7 +83,7 @@ function SidebarHeader({ onClose }: { onClose?: () => void }) {
         <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
           <CommandIcon className="size-5 text-primary" />
         </div>
-        <div className="hidden md:flex flex-col items-start">
+        <div className="hidden md:group-data-[collapsible=icon]:hidden md:flex flex-col items-start">
           <span className="font-bold text-sm">Administração</span>
           <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Domination Bot</span>
         </div>

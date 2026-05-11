@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { ADMIN_ROLES } from "@/lib/auth/auth";
+import { ProfileType } from "@/lib/profile-type";
 
 const AUTH_SECRET = process.env.AUTH_SECRET;
-const ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN", "SUPREME"];
 
 const ADMIN_API_ROUTES = [
   "/api/admin/users",
@@ -111,7 +112,7 @@ async function verifySessionToken(token: string) {
 
     return {
       telegramId: payload.telegramId as string,
-      profileType: payload.profileType as string,
+      profileType: payload.profileType as ProfileType,
       firstName: payload.firstName as string,
       photoUrl: payload.photoUrl as string | undefined,
     };

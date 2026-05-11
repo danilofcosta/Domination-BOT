@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { SourceType } from "../../../generated/prisma/client";
+import { SourceType, ProfileType } from "../../../generated/prisma/client";
 import { slugify } from "@/lib/telegram/create_slug";
 import { revalidatePath } from "next/cache";
 import fs from "fs/promises";
@@ -16,11 +16,9 @@ import {
 import { createCaption } from "@/lib/telegram/create_caption";
 import { DELETE_ROLES } from "@/lib/auth/constants";
 
-function canDelete(currentUserProfileType?: string): boolean {
+function canDelete(currentUserProfileType?: ProfileType): boolean {
   if (!currentUserProfileType) return false;
-  return DELETE_ROLES.includes(
-    currentUserProfileType as (typeof DELETE_ROLES)[number],
-  );
+  return (DELETE_ROLES as readonly ProfileType[]).includes(currentUserProfileType);
 }
 import { getSession } from "@/lib/auth/auth";
 
@@ -294,14 +292,14 @@ export async function getUsers() {
 
 export async function deleteUser(
   telegramId: string,
-  currentUserProfileType?: string,
-  targetUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
+  targetUserProfileType?: ProfileType,
 ) {
-  if (currentUserProfileType !== "SUPREME") {
+  if (currentUserProfileType !== ProfileType.SUPREME) {
     return { success: false, error: "Apenas o SUPREME pode excluir usuários" };
   }
 
-  if (targetUserProfileType === "SUPREME") {
+  if (targetUserProfileType === ProfileType.SUPREME) {
     return {
       success: false,
       error: "Não é possível excluir um usuário com perfil SUPREME",
@@ -321,17 +319,17 @@ export async function deleteUser(
 
 export async function updateUserProfileType(
   telegramId: bigint,
-  newProfileType: string,
-  currentUserProfileType?: string,
+  newProfileType: ProfileType,
+  currentUserProfileType?: ProfileType,
 ) {
-  if (currentUserProfileType !== "SUPREME") {
+  if (currentUserProfileType !== ProfileType.SUPREME) {
     return {
       success: false,
       error: "Apenas o SUPREME pode alterar perfis de usuários",
     };
   }
 
-  const validTypes = ["USER", "MODERATOR", "ADMIN", "SUPER_ADMIN"];
+  const validTypes: ProfileType[] = [ProfileType.USER, ProfileType.MODERATOR, ProfileType.ADMIN, ProfileType.SUPER_ADMIN];
   if (!validTypes.includes(newProfileType)) {
     return { success: false, error: "Tipo de perfil inválido" };
   }
@@ -341,7 +339,7 @@ export async function updateUserProfileType(
       where: { telegramId },
     });
 
-    if (targetUser?.profileType === "SUPREME") {
+    if (targetUser?.profileType === ProfileType.SUPREME) {
       return {
         success: false,
         error: "Não é possível alterar o perfil de um usuário SUPREME",
@@ -350,7 +348,7 @@ export async function updateUserProfileType(
 
     await prisma.user.update({
       where: { telegramId },
-      data: { profileType: newProfileType as any },
+      data: { profileType: newProfileType as ProfileType },
     });
     revalidatePath("/admin");
     revalidatePath("/admin/users");
@@ -394,7 +392,7 @@ export async function createEvent(formData: FormData) {
   }
 }
 
-export async function deleteEvent(id: number, currentUserProfileType?: string) {
+export async function deleteEvent(id: number, currentUserProfileType?: ProfileType) {
   if (!canDelete(currentUserProfileType)) {
     return {
       success: false,
@@ -467,7 +465,7 @@ export async function createRarity(formData: FormData) {
 
 export async function deleteRarity(
   id: number,
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
@@ -824,7 +822,7 @@ export async function updateCharacter(
 export async function deleteCharacter(
   id: number,
   type: "waifu" | "husbando",
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
@@ -862,7 +860,7 @@ export async function bulkUpdateCharacters(
   type: "waifu" | "husbando",
   eventIds?: number[],
   rarityIds?: number[],
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return { success: false, error: "Sem permissão" };
@@ -1113,7 +1111,7 @@ export async function updateTelegramGroup(id: number, formData: FormData) {
 
 export async function deleteTelegramGroup(
   id: number,
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
@@ -1136,7 +1134,7 @@ export async function adjustUserCoins(
   telegramId: string,
   amount: number,
   operation: "add" | "subtract" | "set",
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
@@ -1184,7 +1182,7 @@ export async function reduceDuplicateCharacter(
   characterId: number,
   type: "waifu" | "husbando",
   reduceBy: number,
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
@@ -1275,7 +1273,7 @@ export async function setUserFavorite(
   telegramId: string,
   characterId: number,
   type: "waifu" | "husbando",
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
@@ -1308,7 +1306,7 @@ export async function setUserFavorite(
 export async function removeUserFavorite(
   telegramId: string,
   type: "waifu" | "husbando",
-  currentUserProfileType?: string,
+  currentUserProfileType?: ProfileType,
 ) {
   if (!canDelete(currentUserProfileType)) {
     return {
