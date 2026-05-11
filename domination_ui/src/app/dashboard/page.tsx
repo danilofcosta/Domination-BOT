@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { fetchAllCharacters, fetchRarities, fetchEvents } from "@/lib/api"
+import { fetchAllCharacters, fetchRarities, fetchEvents, fetchUsers, fetchCollections } from "@/lib/api"
 import type { Character, Rarity, Event } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -16,6 +16,8 @@ interface DashboardData {
   totalHusbandos: number
   rarities: Rarity[]
   events: Event[]
+  totalUsers: number
+  totalCollections: number
 }
 
 const sourceTypeColors: Record<string, string> = {
@@ -96,12 +98,14 @@ export default function DashboardPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [chars, rarities, events] = await Promise.all([
+        const [chars, rarities, events, usersRes, collectionsRes] = await Promise.all([
           fetchAllCharacters(),
           fetchRarities(),
           fetchEvents(),
+          fetchUsers(1, 1),
+          fetchCollections(1, 1)
         ])
-        setData({ ...chars, rarities, events })
+        setData({ ...chars, rarities, events, totalUsers: usersRes.total, totalCollections: collectionsRes.total })
       } catch (e) {
         setError(e instanceof Error ? e.message : "Falha ao carregar dados")
       } finally {
@@ -146,11 +150,13 @@ export default function DashboardPage() {
           </p>
         </header>
 
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {statCard("Total Waifus", data?.totalWaifus ?? 0, loading)}
           {statCard("Total Husbandos", data?.totalHusbandos ?? 0, loading)}
           {statCard("Raridades", data?.rarities.length ?? 0, loading)}
           {statCard("Eventos", data?.events.length ?? 0, loading)}
+          {statCard("Coleções", data?.totalCollections ?? 0, loading)}
+          {statCard("Usuários", data?.totalUsers ?? 0, loading)}
         </div>
 
         <div className="mb-8 grid gap-6 lg:grid-cols-2">

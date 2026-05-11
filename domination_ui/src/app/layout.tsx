@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description: "Painel de controle do Domination BOT",
 };
 
+import { SidebarProvider } from "@/components/sidebar-provider";
+import { LayoutContent } from "@/components/layout-content";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,10 +25,12 @@ export default function RootLayout({
   return (
     <html lang="pt" className={cn("h-full", nunitoSans.variable, manropeHeading.variable)}>
       <body className="min-h-full font-sans antialiased">
-        <Sidebar />
-        <main className="min-h-screen lg:ml-60">
-          {children}
-        </main>
+        <SidebarProvider>
+          <Sidebar />
+          <LayoutContent>
+            {children}
+          </LayoutContent>
+        </SidebarProvider>
         <Toaster />
       </body>
     </html>

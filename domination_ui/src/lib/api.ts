@@ -1,4 +1,4 @@
-import type { Character, Rarity, Event, PaginatedResponse } from './types'
+import type { Character, Rarity, Event, PaginatedResponse, User, Collection } from './types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'
 
@@ -32,12 +32,25 @@ export async function fetchCharacter(id: number, type?: string): Promise<Charact
   return fetchJson<Character>(`/character/${id}${params}`)
 }
 
+export async function fetchCharacterBySlug(slug: string, type?: string): Promise<Character> {
+  const params = type ? `?type=${type}` : ''
+  return fetchJson<Character>(`/character/slug/${slug}${params}`)
+}
+
 export async function fetchRarities(): Promise<Rarity[]> {
   return fetchJson<Rarity[]>('/rarity')
 }
 
 export async function fetchEvents(): Promise<Event[]> {
   return fetchJson<Event[]>('/event')
+}
+
+export async function fetchUsers(page = 1, limit = 100): Promise<PaginatedResponse<User>> {
+  return fetchJson<PaginatedResponse<User>>(`/user?page=${page}&limit=${limit}`)
+}
+
+export async function fetchCollections(page = 1, limit = 100): Promise<PaginatedResponse<Collection>> {
+  return fetchJson<PaginatedResponse<Collection>>(`/collection?page=${page}&limit=${limit}`)
 }
 
 export async function createCharacter(

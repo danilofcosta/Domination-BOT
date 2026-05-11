@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import { ProfileType } from "../../../generated/prisma/client";
+import { ProfileType } from "@/components/user/user-details-dialog";
 
 const BCRYPT_ROUNDS = 12;
 

@@ -105,7 +105,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
   await confirmCharacter(ctx, charData);
 }
 
-function getMedia(reply: any): { file_id: string; type: MediaType } | undefined {
+export  function getMedia(reply: any): { file_id: string; type: MediaType } | undefined {
   if (reply.photo?.length) {
     return {
       file_id: reply.photo.at(-1).file_id,

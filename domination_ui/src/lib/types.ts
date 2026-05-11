@@ -71,6 +71,27 @@ export interface HusbandoRarity {
   Rarity: Rarity
 }
 
+export interface User {
+  id: number
+  telegramId: string | number
+  webLogin: string | null
+  coins: number
+  profileType: string
+  language: string
+}
+
+export interface Collection {
+  id: number
+  userId: string | number
+  characterId: number
+  count: number
+  createdAt: string
+  updatedAt: string
+  type: 'waifu' | 'husbando'
+  CharacterWaifu?: CharacterWaifu
+  CharacterHusbando?: CharacterHusbando
+}
+
 export interface PaginatedResponse<T> {
   data: T[]
   total: number
