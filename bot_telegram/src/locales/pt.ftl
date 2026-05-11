@@ -341,3 +341,5 @@ add_character_edit_btn_rarities=reridades
 add_character_edit_btn_confirm=salvarades
 add_character_edit_btn_confirm=salvar
 
+query_not_fould = Nenhum resultado encontrado
+

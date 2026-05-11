@@ -5,17 +5,17 @@ import { haremInlineQuery } from './handlers/inline_query/harem_inline_query.js'
 import {
   getCharacters,
   getCharactersall,
+  QueryCharacet,
 } from './handlers/inline_query/inline_query.js';
 import { getCharacter, setCharacter, getCharList } from './cache/cache.js';
 import { addCharacter_edit_CallbackData } from './handlers/Comandos/admin_bot/manager_character/add/add_character_edit.js';
 import { debug, info, error as logError } from './utils/log.js';
-import { prisma } from '../lib/prisma.js';
 import { ChatType } from './utils/customTypes.js';
 import { inline_per } from './handlers/inline_query/inline_by_id.js';
+import { animeInlineQuery } from './handlers/inline_query/anime_inline_query.js';
 import { SetRarityReplyHandler } from './handlers/Comandos/admin_bot/configs/set_rarity.js';
 import { SetEventReplyHandler } from './handlers/Comandos/admin_bot/configs/set_event.js';
 import { animelistCallback } from './handlers/Comandos/users/animelist.js';
-import { createResult } from './handlers/inline_query/create_inline_result.js';
 
 const listeners = new Composer<MyContext>();
 
@@ -75,49 +75,6 @@ setInterval(() => {
     userLatestQuery.clear();
   }
 }, 60000);
-
-async function animeInlineQuery(ctx: MyContext) {
-  const query = ctx.inlineQuery?.query || '';
-  const genero = (ctx.session.settings?.genero || process.env.TYPE_BOT || 'waifu') as ChatType;
-
-  const animeName = query.replace('anime_', '');
-
-  const characters = genero === ChatType.HUSBANDO
-    ? await prisma.characterHusbando.findMany({
-        where: { origem: animeName },
-        take: 50,
-        orderBy: { name: 'asc' },
-        include: {
-          HusbandoRarity: { include: { Rarity: true } },
-          HusbandoEvent: { include: { Event: true } },
-        },
-      })
-    : await prisma.characterWaifu.findMany({
-        where: { origem: animeName },
-        take: 50,
-        orderBy: { name: 'asc' },
-        include: {
-          WaifuRarity: { include: { Rarity: true } },
-          WaifuEvent: { include: { Event: true } },
-        },
-      });
-
-  if (characters.length === 0) {
-    return await ctx.answerInlineQuery([]);
-  }
-
-  const results = characters.map((char: any) => {
-    return createResult({
-      character: char,
-      ctx,
-      noformat: true,
-      chatType: genero,
-    });
-  });
-
-  return await ctx.answerInlineQuery(results as any);
-}
-
 listeners.on('inline_query', async (ctx) => {
   const start = Date.now();
   const query = ctx.inlineQuery?.query || '';
@@ -180,7 +137,8 @@ listeners.on('inline_query', async (ctx) => {
       return;
     }
 
-    return await ctx.answerInlineQuery([]);
+    await QueryCharacet(ctx);
+    return;
   };
 
   try {

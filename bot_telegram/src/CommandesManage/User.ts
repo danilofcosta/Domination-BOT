@@ -108,7 +108,7 @@ for (const [key, value] of Object.entries(ComandosUser)) {
 
   UserCommands.command(value.command, value.description.pt)
     .addToScope({ type: 'all_group_chats' }, handlerWrapper)
-    .addToScope({ type: 'all_private_chats' }, handlerWrapper);
+    .addToScope({ type: 'all_chat_administrators' }, handlerWrapper);
 }
 
 export { UserCommands };

@@ -57,7 +57,7 @@ export const adminCommands_bot_dict = {
       pt: 'Adicionar um personagem ao banco de dados (admin)',
     },
     handler: AddCharacterHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   add_in_colletion: {
     minPermission: ProfileType.ADMIN,
@@ -67,7 +67,7 @@ export const adminCommands_bot_dict = {
       pt: 'Adicionar um personagem ao harem de um user (admin)',
     },
     handler: add_in_colletion,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   setrarity: {
     minPermission: ProfileType.ADMIN,
@@ -77,7 +77,7 @@ export const adminCommands_bot_dict = {
       pt: 'Editar configuracoes de raridade (emoji, nome, emoji_id)',
     },
     handler: SetRarityHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   setevent: {
     minPermission: ProfileType.ADMIN,
@@ -87,7 +87,7 @@ export const adminCommands_bot_dict = {
       pt: 'Editar configuracoes de evento (emoji, nome, emoji_id)',
     },
     handler: SetEventHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   logserros: {
     minPermission: ProfileType.ADMIN,
@@ -97,7 +97,7 @@ export const adminCommands_bot_dict = {
       pt: 'Enviar logs de erros',
     },
     handler: enviarLogs,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   logs: {
     minPermission: ProfileType.ADMIN,
@@ -107,7 +107,7 @@ export const adminCommands_bot_dict = {
       pt: 'Enviar logs gerais',
     },
     handler: enviarLogs,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   banuser: {
     minPermission: ProfileType.ADMIN,
@@ -117,7 +117,7 @@ export const adminCommands_bot_dict = {
       pt: 'Banir um usuario do bot',
     },
     handler: banHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   unbanuser: {
     minPermission: ProfileType.ADMIN,
@@ -127,7 +127,7 @@ export const adminCommands_bot_dict = {
       pt: 'Desbanir um usuario do bot',
     },
     handler: unbanHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   listbanned: {
     minPermission: ProfileType.ADMIN,
@@ -137,7 +137,7 @@ export const adminCommands_bot_dict = {
       pt: 'Listar todos os usuarios banidos',
     },
     handler: listBannedHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
   statususer: {
     minPermission: ProfileType.ADMIN,
@@ -147,7 +147,7 @@ export const adminCommands_bot_dict = {
       pt: 'Ver informacoes de status do usuario',
     },
     handler: statusUserHandler,
-    scope: 'all_group_chats' as const,
+    scope: 'all_chat_administrators' as const,
   },
 } as const;
 

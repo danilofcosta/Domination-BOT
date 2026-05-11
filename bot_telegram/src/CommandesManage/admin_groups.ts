@@ -112,7 +112,7 @@ export const adminGroupsCommands_dict = {
 for (const [key, value] of Object.entries(adminGroupsCommands_dict)) {
   adminGroupsCommands
     .command(value.command, value.description.en, options)
-    .addToScope({ type: 'all_group_chats' }, async (ctx: MyContext) => {
+    .addToScope({ type: 'all_chat_administrators' }, async (ctx: MyContext) => {
       const userId = ctx.from?.id;
       debug('Comando adminGroups ' + value.command + ' executado por', ctx.from?.username || userId);
 

@@ -53,6 +53,46 @@ export async function getCharacters(ctx: MyContext) {
 }
 
 
+export async function QueryCharacet(ctx: MyContext) {
+  if (!ctx.inlineQuery) return;
+  const query = ctx.inlineQuery.query.trim();
+  const offset = Number(ctx.inlineQuery.offset || "0");
+  const chatType = Get_chatType(ctx);
+  const isHusbando = chatType === ChatType.HUSBANDO;
+
+  const model = isHusbando
+    ? { count: (args: any) => prisma.characterHusbando.count(args), findMany: (args: any) => prisma.characterHusbando.findMany(args) }
+    : { count: (args: any) => prisma.characterWaifu.count(args), findMany: (args: any) => prisma.characterWaifu.findMany(args) };
+  const include = isHusbando
+    ? { HusbandoEvent: { include: { Event: true } }, HusbandoRarity: { include: { Rarity: true } } }
+    : { WaifuEvent: { include: { Event: true } }, WaifuRarity: { include: { Rarity: true } } };
+
+  const where = {
+    OR: [
+      { name: { contains: query, mode: 'insensitive' as const } },
+      { origem: { contains: query, mode: 'insensitive' as const } },
+    ],
+  };
+
+  const [characters, total] = await Promise.all([
+    model.findMany({ where, take: LIMIT, skip: offset, orderBy: { id: 'desc' }, include }),
+    model.count({ where }),
+  ]);
+
+  const results = characters.map((char) =>
+    createResult({ character: char, ctx, noformat: true, chatType })
+  );
+
+  await showResults({
+    ctx,
+    results,
+    next_offset: offset + LIMIT < total ? String(offset + LIMIT) : undefined,
+    text: results.length === 0
+      ? ctx.t('query_not_fould')
+      : `${ctx.t('Logo_bt')} : ${total}`,
+  });
+}
+
 // busca todos os personagens em modo inline
 export async function getCharactersall(ctx: MyContext) {
   let chatType = Get_chatType(ctx);
