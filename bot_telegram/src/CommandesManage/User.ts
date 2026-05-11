@@ -106,9 +106,8 @@ for (const [key, value] of Object.entries(ComandosUser)) {
     await value.handler(ctx);
   };
 
-  UserCommands.command(value.command, value.description.pt)
-    .addToScope({ type: 'all_group_chats' }, handlerWrapper)
-    .addToScope({ type: 'all_chat_administrators' }, handlerWrapper);
+  UserCommands.command(value.command, value.description.pt,handlerWrapper, options)
+  
 }
 
 export { UserCommands };
