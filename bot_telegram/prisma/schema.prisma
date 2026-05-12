@@ -130,7 +130,9 @@ model User {
   webLogin           String?              @unique
   webPassword        String?
   husbandoLikes      Int[]
+  husbandoDislikes   Int[]
   waifuLikes         Int[]
+  waifuDislikes      Int[]
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])

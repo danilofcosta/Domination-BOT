@@ -67,13 +67,13 @@ async function main() {
 
   // WAIFU
   await deleteWebhook(waifuToken, "WAIFU");
-  await setWebhook(waifuToken, "WAIFU", "https://domination-bot-waifu.vercel.app/webhook");
+  await setWebhook(waifuToken, "WAIFU", process.env.setWebhook_UR_waifu || "https://domination-bot.onrender.com/webhook-waifu");
 
   // HUSBANDO
   const husbandoToken = process.env.BOT_TOKEN_HUSBANDO?.trim();
   if (husbandoToken) {
     await deleteWebhook(husbandoToken, "HUSBANDO");
-    await setWebhook(husbandoToken, "HUSBANDO", "https://domination-bot-husbando.vercel.app/webhook");
+    await setWebhook(husbandoToken, "HUSBANDO", process.env.setWebhook_UR_husbando || "https://domination-bot.onrender.com/webhook-husbando");
   }
 
   // Mostra resultado final

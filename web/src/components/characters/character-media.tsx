@@ -65,7 +65,7 @@ export function CharacterMedia({
     };
   }, [item?.media, item?.linkweb, type, isFileId]);
 
-  const baseClasses = cn(
+  const baseClasses = cn( 
     "w-full h-full object-cover transition-all duration-700",
     className,
   );

@@ -1,17 +1,12 @@
 import type { MyContext } from "../../../utils/customTypes.js";
-import {
-  LastRandomCharacter,
-  
-} from "../../../utils/chareter/randomCharacter.js";
+import { LastRandomCharacter } from "../../../utils/chareter/randomCharacter.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
 import { helpCommand } from "./help.js";
 import { prisma } from "../../../../lib/prisma.js";
 import { formatUptime } from "./status.js";
 
-
 let lastRefreshTime = Date.now();
-
 
 export async function StartGreetings(ctx: MyContext) {
   const startTime = Date.now();
@@ -19,13 +14,13 @@ export async function StartGreetings(ctx: MyContext) {
     helpCommand(ctx);
     return;
   }
-try {
-  await ctx.react("⚡");
-} catch (error: any) {
-  if (!error.description?.includes("message to react not found")) {
-    console.error("Erro ao reagir com ⚡:", error);
+  try {
+    await ctx.react("⚡");
+  } catch (error: any) {
+    if (!error.description?.includes("message to react not found")) {
+      console.error("Erro ao reagir com ⚡:", error);
+    }
   }
-}
   const header = ctx.t("start-greeting-header", { botName: ctx.me.first_name });
   const boby = ctx.t("start-greeting-body", {
     genero: ctx.session.settings.genero,
@@ -42,12 +37,11 @@ try {
 
   let greeting = ` ${header}\n <blockquote>${boby}</blockquote>\n\n <blockquote>${extra_body} </blockquote>`;
 
-
-  const status = `➺ <b>ᴘɪɴɢ:</b>  ${dbPing}ms\n➺ <b>ᴜᴘᴛɪᴍᴇ:</b> ${uptime}`.trim()
-  greeting = `${greeting}\n\n ${status}`
+  const status =
+    `➺ <b>ᴘɪɴɢ:</b>  ${dbPing}ms\n➺ <b>ᴜᴘᴛɪᴍᴇ:</b> ${uptime}`.trim();
+  greeting = `${greeting}\n\n ${status}`;
   const character = await LastRandomCharacter(
-    ctx
-    .session.settings.genero || process.env.TYPE_BOT,
+    ctx.session.settings.genero || process.env.TYPE_BOT,
   );
 
   const replaymarkup = new InlineKeyboard()
@@ -69,9 +63,9 @@ try {
     );
 
   if (!character)
-    return ctx.reply(greeting, {
-      parse_mode: "HTML",
-      reply_markup: replaymarkup,
+    return await Sendmedia({
+      ctx,
+      caption: greeting,
     });
   await Sendmedia({
     ctx: ctx,
@@ -80,4 +74,3 @@ try {
     reply_markup: replaymarkup,
   });
 }
-

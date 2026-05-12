@@ -7,7 +7,10 @@ import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function topHandler(ctx: MyContext) {
   const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
-  info(`topHandler - carregando ranking`, { userId: ctx.from?.id, genero: ctx.session.settings.genero });
+  info(`topHandler - carregando ranking`, {
+    userId: ctx.from?.id,
+    genero: ctx.session.settings.genero,
+  });
 
   const ranking = isHusbando
     ? await prisma.husbandoCollection.groupBy({
@@ -37,7 +40,7 @@ export async function topHandler(ctx: MyContext) {
 
   if (!ranking.length) {
     warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
-    return ctx.reply("Nenhum usuário no ranking ainda.");
+    return Sendmedia({ ctx, caption: "Nenhum usuário no ranking ainda." });
   }
 
   debug(`topHandler - usuários no ranking`, { count: ranking.length });
@@ -82,9 +85,15 @@ export async function topHandler(ctx: MyContext) {
       });
     } catch (e) {
       error(`topHandler - erro ao enviar mídia`, e);
-      return ctx.reply(text);
+      return Sendmedia({
+        ctx,
+        caption: "Nenhum usuário no ranking ainda.",
+      });
     }
   }
 
-  return ctx.reply(text);
+  return Sendmedia({
+    ctx,
+    caption: text,
+  });
 }

@@ -1,4 +1,5 @@
 ﻿import {
+  BTN_TYPE,
   ChatType,
   type Character,
   type Collection,
@@ -10,6 +11,8 @@ import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
 import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
 import { info, error, debug, warn } from "../../../utils/log.js";
+import { Sendmedia } from "../../../utils/sendmedia.js";
+import { CreateOneBtn } from "../../../utils/btns.js";
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x"];
@@ -26,39 +29,30 @@ function verificarNome(personagem: string, tentativa: string) {
 
   return tentativaParts.every((p) => nomeParts.includes(p));
 }
+function calcularTempo({ inicio, fim }) {
+  let diff = Math.abs(fim - inicio);
 
-function calcularTempo(per: { data: any }) {
-  if (!per.data) return "desconhecido";
+  const unidades = [
+    { nome: "a", valor: 60 * 60 * 24 * 365 },
+    { nome: "d", valor: 60 * 60 * 24 },
+    { nome: "h", valor: 60 * 60 },
+    { nome: "m", valor: 60 },
+    { nome: "s", valor: 1 },
+  ];
 
-  const agora = Date.now();
-  let dataMs = 0;
+  const partes: string[] = [];
 
-  if (typeof per.data === "string") {
-    dataMs = new Date(per.data).getTime();
-  } else if (per.data instanceof Date) {
-    dataMs = per.data.getTime();
-  } else if (typeof per.data === "number") {
-    // If it's a 10-digit number, it's likely a Telegram unix timestamp in seconds
-    dataMs = per.data < 10000000000 ? per.data * 1000 : per.data;
+  for (const unidade of unidades) {
+    const quantidade = Math.floor(diff / unidade.valor);
+
+    if (quantidade > 0) {
+      partes.push(`${quantidade}${unidade.nome}`);
+      diff %= unidade.valor;
+    }
   }
 
-  const diferenca = Math.max(0, agora - dataMs);
-
-  const segundos = Math.floor(diferenca / 1000);
-  const minutos = Math.floor(diferenca / 60000);
-  const horas = Math.floor(diferenca / 3600000);
-
-  if (segundos < 60) {
-    return `${segundos} seg`;
-  }
-
-  if (minutos < 60) {
-    return `${minutos} min`;
-  }
-
-  return `${horas} h`;
+  return partes.length ? partes.join(" ") : "0s";
 }
-
 function successDominarMessage(
   ctx: MyContext,
   character: Character,
@@ -111,9 +105,9 @@ function successDominarMessage(
           ? emoji_event.join(", ")
           : "",
   });
-
+const time:string = calcularTempo({ inicio: ctx.message?.date || 0, fim: ctx.session.grupo.data || 0 }) || '0'
   const success_dominar_time = ctx.t("success_dominar_time", {
-    time: calcularTempo({ data: ctx.session.grupo.data }),
+    time:time
   });
 
   const success_dominar = `${success_dominar_title}\n\n${success_dominar_name}\n${success_dominar_anime}\n${success_dominar_rarity}\n\n${success_dominar_time}`;
@@ -172,15 +166,12 @@ export async function CapturarCharacter(ctx: MyContext) {
       });
       if (character && !tentativa) {
         try {
-          const topicId = ctx.session.grupo.directMessagesTopicId;
-          await ctx.reply(
-            ctx.t("drop_character_attempt_empty", {
+          await Sendmedia({
+            ctx,
+            caption: ctx.t("drop_character_attempt_empty", {
               genero: type === ChatType.WAIFU ? "waifu" : "husbando",
             }),
-            {
-              ...(topicId && { message_thread_id: topicId }),
-            },
-          );
+          });
         } catch (e) {
           error("Erro ao enviar mensagem de nome vazio", e);
         }
@@ -200,13 +191,14 @@ export async function CapturarCharacter(ctx: MyContext) {
       );
 
       try {
-        const topicId = ctx.session.grupo.directMessagesTopicId;
-        const msg = await ctx.reply(ctx.t("name-not-found"), {
-          parse_mode: "HTML",
-          reply_markup: {
-            inline_keyboard: [[{ text: ctx.t("bt-tentative-again"), url }]],
-          },
-          ...(topicId && { message_thread_id: topicId }),
+        const msg = await Sendmedia({
+          ctx,
+          caption: ctx.t("drop_character_attempt_incorrect"),
+          reply_markup: CreateOneBtn({
+            text: ctx.t("drop_character_attempt_incorrect_btn"),
+            callback: "drop_" + ctx.session.grupo.dropId,
+            typeBtn: BTN_TYPE.url,
+          }),
         });
 
         setTimeout(() => {
@@ -233,7 +225,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       characterId: character.id,
       characterName: character.name,
     });
-
+    // Adicionar personagem à coleção do usuário
     const character_collection: Collection | null =
       await AddCharacterCollection({
         type,
@@ -247,49 +239,43 @@ export async function CapturarCharacter(ctx: MyContext) {
         userId,
         characterId: character.id,
       });
-      const topicId = ctx.session.grupo.directMessagesTopicId;
-      return ctx.reply(ctx.t("error_add_character"), {
-        ...(topicId && { message_thread_id: topicId }),
+      return Sendmedia({
+        ctx,
+        caption: ctx.t("error_adding_character"),
       });
     }
-
+    const successDominarMessageResult = successDominarMessage(
+      ctx,
+      character,
+      character_collection,
+    );
     info(`Personagem adicionado com sucesso`, {
       userId,
       characterId: character.id,
       collectionId: character_collection.id,
       count: character_collection.count,
     });
-    const successDominarMessageResult = successDominarMessage(
-      ctx,
-      character,
-      character_collection,
-    );
-    const topicId = ctx.session.grupo.directMessagesTopicId;
+
 
     info(`Dominando - enviando mensagem de sucesso`, {
       userId,
       characterId: character.id,
       characterName: character.name,
       chatId: ctx.chat?.id,
-      topicId,
+
       messageLength: successDominarMessageResult.length,
       hasReplyMarkup: true,
     });
 
     try {
-      await ctx.reply(successDominarMessageResult, {
-        parse_mode: "HTML",
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: ctx.t("success_dominar_btn"),
-                switch_inline_query_current_chat: "harem_user_" + ctx.from?.id,
-              },
-            ],
-          ],
-        },
-        ...(topicId && { message_thread_id: topicId }),
+      await Sendmedia({
+        ctx,
+        caption: successDominarMessageResult,
+        reply_markup: CreateOneBtn({
+          text: ctx.t("success_dominar_btn"),
+          callback: "harem_user_" + ctx.from?.id,
+          typeBtn: BTN_TYPE.switch_inline_query_current_chat,
+        }),
       });
       info(`Dominando - mensagem de sucesso enviada com sucesso`, { userId });
     } catch (replyError) {
@@ -297,7 +283,6 @@ export async function CapturarCharacter(ctx: MyContext) {
         userId,
         characterId: character.id,
         chatId: ctx.chat?.id,
-        topicId,
         replyError:
           replyError instanceof Error ? replyError.message : String(replyError),
         stack: replyError instanceof Error ? replyError.stack : undefined,

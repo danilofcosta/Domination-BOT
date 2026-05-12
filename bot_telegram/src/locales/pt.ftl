@@ -342,4 +342,10 @@ add_character_edit_btn_confirm=salvarades
 add_character_edit_btn_confirm=salvar
 
 query_not_fould = Nenhum resultado encontrado
+#############################
+random-character
 
+###########################
+
+random-character-yes-text=ㅤㅤ
+random-character-no-text =ㅤㅤ

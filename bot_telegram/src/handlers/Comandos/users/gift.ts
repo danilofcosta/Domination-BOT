@@ -12,14 +12,23 @@ import { ComandosUser } from "../../../CommandesManage/User.js";
 
 export async function giftHandler(ctx: MyContext) {
   if (!ctx.message?.reply_to_message) {
-    await ctx.reply(ctx.t("gift_reply_instruction",{command: ComandosUser.gift.command}));;
+    await Sendmedia({
+      ctx,
+      caption: ctx.t("gift_reply_instruction", {
+        command: ComandosUser.gift.command,
+      }),
+    });
     return;
   }
 
   const giftid = Number(ctx.match);
   if (!giftid || isNaN(giftid)) {
     warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, giftid });
-    await ctx.reply(ctx.t("error-not-id"));
+
+    await Sendmedia({
+      ctx,
+      caption: ctx.t("error-not-id"),
+    });
     return;
   }
 
@@ -27,20 +36,32 @@ export async function giftHandler(ctx: MyContext) {
 
   if (!mentionedUser?.id) {
     warn(`giftHandler - usuário inválido`, { userId: ctx.from?.id });
-    await ctx.reply("Usuário inválido.");
+
+    await Sendmedia({
+      ctx,
+      caption: "Usuário inválido.",
+    });
     return;
   }
 
   if (mentionedUser.id === ctx.from?.id) {
     warn(`giftHandler - tentativa de auto-presente`, { userId: ctx.from?.id });
-    await ctx.reply("Você não pode enviar presente para si mesmo.");
+
+    await Sendmedia({
+      ctx,
+      caption: "Você não pode enviar presente para si mesmo.",
+    });
     return;
   }
   if (mentionedUser.id === ctx.me?.id) {
     warn(`giftHandler - tentativa de presente ao bot`, {
       userId: ctx.from?.id,
     });
-    await ctx.reply("agradeço, Mais não posso receber presentes ");
+
+    await Sendmedia({
+      ctx,
+      caption: "agradeço, Mais não posso receber presentes ",
+    });
     return;
   }
 
@@ -87,11 +108,13 @@ export async function giftHandler(ctx: MyContext) {
       userId: ctx.from?.id,
       giftid,
     });
-    await ctx.reply(
-      ctx.t("fav-not-found", {
+
+    await Sendmedia({
+      ctx,
+      caption: ctx.t("fav-not-found", {
         genero: ctx.session.settings.genero.toLowerCase(),
       }),
-    );
+    });
     return;
   }
 

@@ -23,7 +23,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: allowedDevOriginsList,
+  allowedDevOrigins: ['192.168.0.102'],
   poweredByHeader: false,
   experimental: {
     serverActions: {

@@ -18,6 +18,7 @@ import { newTopicHandler, renameTopicHandler, closeTopicHandler, deleteTopicHand
 import { setChatTopicHandler } from '../handlers/Comandos/admin_groups/topic/set_chat_topic.js';
 import { botPrefix, options } from './botConfigCommands.js';
 import { debug, warn } from '../utils/log.js';
+import { Sendmedia } from '../utils/sendmedia.js';
 
 /**
  * Verifica se o usuário é admin do grupo
@@ -48,7 +49,7 @@ async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
   if (await isGroupAdmin(ctx)) {
     await next();
   } else {
-    await ctx.reply('Apenas administradores do grupo podem usar este comando.');
+    await Sendmedia('Apenas administradores do grupo podem usar este comando.');
   }
 }
 

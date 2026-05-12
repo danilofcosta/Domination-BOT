@@ -28,13 +28,16 @@ export async function favCharacter(ctx: MyContext) {
       favid,
       match: ctx.match,
     });
-    return ctx.reply(ctx.t("error-not-id"));
+    return Sendmedia({ ctx, caption: ctx.t("error-not-id") });
   }
 
   const userid = ctx.from?.id;
   if (!userid) {
     warn(`favCharacter - usuário não identificado`, { ctxFrom: ctx.from });
-    return ctx.reply(ctx.t("error-user-not-found"));
+    return await Sendmedia({
+      ctx,
+      caption: ctx.t("error-user-not-found"),
+    });
   }
   info(`favCharacter - buscando personagem`, { userId: userid, favid });
 
@@ -73,12 +76,13 @@ export async function favCharacter(ctx: MyContext) {
       userId: userid,
       favid,
     });
-    const genero = ctx.session.settings.genero?.toLocaleLowerCase() || 'waifu';
-    return ctx.reply(
-      ctx.t("fav-not-found", {
+    const genero = ctx.session.settings.genero?.toLocaleLowerCase() || "waifu";
+    return await Sendmedia({
+      ctx,
+      caption: ctx.t("fav-not-found", {
         genero,
       }),
-    );
+    });
   }
 
   debug(`favCharacter - personagem encontrado`, {

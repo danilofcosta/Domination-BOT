@@ -12,6 +12,7 @@ import { helpCallback } from "./handlers/callbacks/users_callback/helpCallback.j
 import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/manager_character/add/add_charecter_callback_data.js";
 import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/off/edit_character_callbacks.js";
 import { ClickByDetail_Callback } from "./handlers/callbacks/users_callback/cickCallback.js";
+import { randomCharacterCallback } from "./handlers/callbacks/users_callback/randomCharacterCallback.js";
 import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
 import { SetRarityCallback } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
 import { SetEventCallback } from "./handlers/Comandos/admin_bot/configs/set_event.js";
@@ -38,6 +39,7 @@ callbacks.callbackQuery(/^help_/, helpCallback);
 callbacks.callbackQuery(/^topuser_/, topCallbackQuery);
 callbacks.callbackQuery("stat_refresh", StatRefresh);
 callbacks.callbackQuery(/^click_/, ClickByDetail_Callback);
+callbacks.callbackQuery(/^random-character-/, randomCharacterCallback);
 
 //admin
 callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);

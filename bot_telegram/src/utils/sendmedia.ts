@@ -5,14 +5,19 @@ import fs from "fs";
 
 import { MediaType } from "../../generated/prisma/client.js";
 import { error, debug } from "./log.js";
-
+import type { CharacterWaifu } from "../../generated/prisma/browser.js";
+ 
+interface Media {
+media:string,
+mediaType:MediaType
+}
 interface ParamsSendMedia {
   chat_id?: string | number | undefined;
   message_thread_id?: number | undefined;
   ctx: MyContext | null | undefined;
-  per?: Character | null;
+  per?:Character|Media |null;
   caption?: string;
-  reply_markup?: InlineKeyboard;
+  reply_markup?: InlineKeyboard  | any ;
 }
 
 export async function Sendmedia(params: ParamsSendMedia) {
@@ -30,14 +35,20 @@ export async function Sendmedia(params: ParamsSendMedia) {
   }
 
   const directTopicId = ctx.session.grupo.directMessagesTopicId;
-  const topicId = message_thread_id ?? (directTopicId ?? undefined);
+  const topicId = message_thread_id ?? directTopicId ?? undefined;
+  const messageId = ctx.message?.message_id;
 
   const options = {
     parse_mode: "HTML" as const,
     ...(caption !== undefined && { caption }),
     ...(reply_markup && { reply_markup }),
     ...(topicId && { message_thread_id: topicId }),
+    ...(messageId && {
+      reply_parameters: { message_id: messageId , allow_sending_without_reply: true, },
+    }),
   };
+
+  // ─── helpers de envio com retry ───────────────────────────
 
   const sendWithRetry = async <T>(fn: () => Promise<T>, retries = 3): Promise<T> => {
     let attempt = 0;
@@ -51,55 +62,40 @@ export async function Sendmedia(params: ParamsSendMedia) {
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
     }
-    throw new Error('Unreachable');
+    throw new Error("Unreachable");
   };
 
-  const sendPhoto = async (photo: any) => {
-    return sendWithRetry(() => {
-      if (chat_id) {
-        return api.sendPhoto(targetChatId, photo, options);
-      }
-      return ctx.replyWithPhoto(photo, options);
-    });
-  };
+  const sendPhoto = (photo: any) =>
+    sendWithRetry(() =>
+      chat_id
+        ? api.sendPhoto(targetChatId, photo, options)
+        : ctx.replyWithPhoto(photo, options)
+    );
 
-  const sendVideo = async (video: any) => {
-    return sendWithRetry(() => {
-      if (chat_id) {
-        return api.sendVideo(targetChatId, video, options);
-      }
-      return ctx.replyWithVideo(video, options);
-    });
-  };
+  const sendVideo = (video: any) =>
+    sendWithRetry(() =>
+      chat_id
+        ? api.sendVideo(targetChatId, video, options)
+        : ctx.replyWithVideo(video, options)
+    );
 
-  const sendText = async (text: string) => {
-    return sendWithRetry(() => {
-      if (chat_id) {
-        return api.sendMessage(targetChatId, text, options);
-      }
-      return ctx.reply(text, options);
-    });
-  };
+  const sendText = (text: string) =>
+    sendWithRetry(() =>
+      chat_id
+        ? api.sendMessage(targetChatId, text, options)
+        : ctx.reply(text, options)
+    );
 
-  if (!per) {
-    return sendText(caption ?? "");
-  }
+  if (!per) return sendText(caption ?? "");
 
   const { mediaType: type, media } = per;
 
   try {
-    if (!media) {
-      return sendText(caption ?? "");
-    }
+    if (!media) return sendText(caption ?? "");
 
     debug(`Sendmedia - enviando`, { type, chatId: targetChatId, media });
 
-    let sourceLog = "desconhecido";
-    if (type === MediaType.IMAGE_LOCAL || type === MediaType.VIDEO_LOCAL) sourceLog = "arquivo local";
-    else if (type === MediaType.IMAGE_URL || type === MediaType.VIDEO_URL) sourceLog = "url externa";
-    else sourceLog = "file_id do telegram";
-
-    debug(`Sendmedia - fonte da midia: ${sourceLog}`);
+    // ─── validação de existência ──────────────────────────────
 
     const checkMediaExists = async (): Promise<boolean> => {
       try {
@@ -108,14 +104,13 @@ export async function Sendmedia(params: ParamsSendMedia) {
           const exists = fs.existsSync(path);
           if (!exists) error(`Sendmedia - Arquivo local não encontrado: ${path}`);
           return exists;
-        } else if (type === MediaType.IMAGE_URL || type === MediaType.VIDEO_URL) {
+        }
+        if (type === MediaType.IMAGE_URL || type === MediaType.VIDEO_URL) {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 10000);
           try {
             const res = await fetch(media, { method: "HEAD", signal: controller.signal });
-            if (!res.ok) {
-              throw new Error(`HTTP ${res.status}`);
-            }
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             return true;
           } catch {
             return false;
@@ -123,31 +118,28 @@ export async function Sendmedia(params: ParamsSendMedia) {
             clearTimeout(timeoutId);
           }
         }
-        return true;
+        return true; // file_id — sempre assume que existe
       } catch (e) {
         error(`Sendmedia - Erro ao validar a existência da mídia: ${media}`, e);
-        return false; // Safely fail
+        return false;
       }
     };
 
     const isAvailable = await checkMediaExists();
-    if (!isAvailable) {
-      return sendText(caption ?? "");
-    }
+    if (!isAvailable) return sendText(caption ?? "");
 
-    if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID) {
+
+if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID)
       return await sendPhoto(media);
-    }
-    if (type === MediaType.VIDEO_URL || type === MediaType.VIDEO_FILEID) {
-      return await sendVideo(media);
-    }
 
-    if (type === MediaType.IMAGE_LOCAL) {
+    if (type === MediaType.VIDEO_URL || type === MediaType.VIDEO_FILEID)
+      return await sendVideo(media);
+
+    if (type === MediaType.IMAGE_LOCAL)
       return await sendPhoto(new InputFile(`D/${media}`));
-    }
-    if (type === MediaType.VIDEO_LOCAL) {
+
+    if (type === MediaType.VIDEO_LOCAL)
       return await sendVideo(new InputFile(`D/${media}`));
-    }
 
     return sendText("Tipo de mídia não suportado.");
   } catch (err) {

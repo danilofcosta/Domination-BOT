@@ -8,7 +8,10 @@ import { extractListEmojisCharacter } from "../../../utils/manege_caption/extrac
 import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function HaremHandler(ctx: MyContext) {
-  info(`HaremHandler - carregando harém`, { userId: ctx.from?.id, genero: ctx.session.settings.genero });
+  info(`HaremHandler - carregando harém`, {
+    userId: ctx.from?.id,
+    genero: ctx.session.settings.genero,
+  });
 
   const user = await prisma.user.findUnique({
     where: {
@@ -53,17 +56,26 @@ export async function HaremHandler(ctx: MyContext) {
 
   if (!user) {
     warn(`HaremHandler - usuário não encontrado`, { userId: ctx.from?.id });
-    ctx.reply(ctx.t("harem_no_user"));
+    Sendmedia({
+      ctx,
+      caption: ctx.t("harem_no_user"),
+    });
     return;
   }
 
   const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
-  const config = isHusbando ? (user.husbandoConfig as any) || {} : (user.waifuConfig as any) || {};
-  const mode = config.haremMode || "default";// modo padrão
+  const config = isHusbando
+    ? (user.husbandoConfig as any) || {}
+    : (user.waifuConfig as any) || {};
+  const mode = config.haremMode || "default"; // modo padrão
 
-  const data = isHusbando ? (user as any).CharacterHusbando : (user as any).CharacterWaifu;
-  const colletion = isHusbando ? (user as any).HusbandoCollection : (user as any).WaifuCollection;
-  
+  const data = isHusbando
+    ? (user as any).CharacterHusbando
+    : (user as any).CharacterWaifu;
+  const colletion = isHusbando
+    ? (user as any).HusbandoCollection
+    : (user as any).WaifuCollection;
+
   let pages: string[] = [];
   if (mode === "rarity") {
     pages = Harem_mode_rarity(colletion || [], ctx);
@@ -73,16 +85,27 @@ export async function HaremHandler(ctx: MyContext) {
     pages = Harem_mode_latest(colletion || [], ctx);
   } else {
     // Modo padrão (Anime grouping)
-    const countsData = isHusbando 
-      ? await prisma.characterHusbando.groupBy({ by: ['origem'], _count: { id: true }})
-      : await prisma.characterWaifu.groupBy({ by: ['origem'], _count: { id: true }});
-    
-    const dbAnimeCounts = new Map(countsData.map(c => [c.origem, c._count.id]));
+    const countsData = isHusbando
+      ? await prisma.characterHusbando.groupBy({
+          by: ["origem"],
+          _count: { id: true },
+        })
+      : await prisma.characterWaifu.groupBy({
+          by: ["origem"],
+          _count: { id: true },
+        });
+
+    const dbAnimeCounts = new Map(
+      countsData.map((c) => [c.origem, c._count.id]),
+    );
     pages = Harem_mode_default(colletion || [], ctx, dbAnimeCounts);
   }
 
-  debug(`HaremHandler - páginas geradas`, { userId: ctx.from?.id, pageCount: pages.length });
-// busca no cache 
+  debug(`HaremHandler - páginas geradas`, {
+    userId: ctx.from?.id,
+    pageCount: pages.length,
+  });
+  // busca no cache
   setHarem(Number(ctx.from?.id), pages);
 
   const harem_logo = ctx.t("harem_logo", {
@@ -112,8 +135,14 @@ export async function HaremHandler(ctx: MyContext) {
     .switchInlineCurrent(
       ctx.t("harem_btn_inline_query"),
       `harem_user_${userId}`,
-    ).text(ctx.t("harem_btn_fast_page"), `harem_user_${userId}_jump`)
-    .row().url(ctx.t("harem_btn_web_app"), process.env.WEBAPP||`https://t.me/${ctx.me.username}?startgroup=true`).row()
+    )
+    .text(ctx.t("harem_btn_fast_page"), `harem_user_${userId}_jump`)
+    .row()
+    .url(
+      ctx.t("harem_btn_web_app"),
+      process.env.WEBAPP || `https://t.me/${ctx.me.username}?startgroup=true`,
+    )
+    .row()
     .text(ctx.t("harem_btn_close"), `harem_user_${userId}_close`);
 
   try {
@@ -192,37 +221,38 @@ function Harem_mode_latest(list_character: any[], ctx: MyContext) {
 function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
-      const character = char.Character;
-      const rarities = character?.WaifuRarity ?? character?.HusbandoRarity ?? [];
-      const rarityName = rarities?.[0]?.Rarity?.name ?? "No Rarity";
-      if (!grouped.has(rarityName)) grouped.set(rarityName, []);
-      grouped.get(rarityName)!.push(char);
+    const character = char.Character;
+    const rarities = character?.WaifuRarity ?? character?.HusbandoRarity ?? [];
+    const rarityName = rarities?.[0]?.Rarity?.name ?? "No Rarity";
+    if (!grouped.has(rarityName)) grouped.set(rarityName, []);
+    grouped.get(rarityName)!.push(char);
   }
 
   let pages: string[] = [];
   let perPage: string[] = [];
   let charCountInPage = 0;
-  
-  for (const [rarityName, chars] of Array.from(grouped.entries()).sort()) {
-      perPage.push(`\n🔸 <b>${rarityName}</b>\n`);
-      for (const char of chars) {
-          const character = char.Character;
-          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character, false);
-          
-          let line = ` - ${character.name} <code>${character.id}</code>`;
-          if (eventEmojis.length) line += ` [${eventEmojis.join("")}]`;
-          perPage.push(line + "\n");
-          charCountInPage++;
 
-          if (charCountInPage >= 15) {
-              pages.push(perPage.join(""));
-              perPage = [];
-              charCountInPage = 0;
-              if (chars.indexOf(char) < chars.length - 1) {
-                  perPage.push(`\n🔸 <b>${rarityName} (cont.)</b>\n`);
-              }
-          }
+  for (const [rarityName, chars] of Array.from(grouped.entries()).sort()) {
+    perPage.push(`\n🔸 <b>${rarityName}</b>\n`);
+    for (const char of chars) {
+      const character = char.Character;
+      const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
+        extractListEmojisCharacter(ctx, character, false);
+
+      let line = ` - ${character.name} <code>${character.id}</code>`;
+      if (eventEmojis.length) line += ` [${eventEmojis.join("")}]`;
+      perPage.push(line + "\n");
+      charCountInPage++;
+
+      if (charCountInPage >= 15) {
+        pages.push(perPage.join(""));
+        perPage = [];
+        charCountInPage = 0;
+        if (chars.indexOf(char) < chars.length - 1) {
+          perPage.push(`\n🔸 <b>${rarityName} (cont.)</b>\n`);
+        }
       }
+    }
   }
 
   if (perPage.length > 0) pages.push(perPage.join(""));
@@ -234,37 +264,38 @@ function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
 function Harem_mode_event(list_character: any[], ctx: MyContext) {
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
-      const character = char.Character;
-      const events = character?.WaifuEvent ?? character?.HusbandoEvent ?? [];
-      const eventName = events?.[0]?.Event?.name ?? "Sem Evento";
-      if (!grouped.has(eventName)) grouped.set(eventName, []);
-      grouped.get(eventName)!.push(char);
+    const character = char.Character;
+    const events = character?.WaifuEvent ?? character?.HusbandoEvent ?? [];
+    const eventName = events?.[0]?.Event?.name ?? "Sem Evento";
+    if (!grouped.has(eventName)) grouped.set(eventName, []);
+    grouped.get(eventName)!.push(char);
   }
 
   let pages: string[] = [];
   let perPage: string[] = [];
   let charCountInPage = 0;
-  
-  for (const [eventName, chars] of Array.from(grouped.entries()).sort()) {
-      perPage.push(`\n🔹 <b>${eventName}</b>\n`);
-      for (const char of chars) {
-          const character = char.Character;
-          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character, false);
-          
-          let line = ` - ${character.name} <code>${character.id}</code>`;
-          if (rarityEmojis.length) line += ` [${rarityEmojis.join("")}]`;
-          perPage.push(line + "\n");
-          charCountInPage++;
 
-          if (charCountInPage >= 15) {
-              pages.push(perPage.join(""));
-              perPage = [];
-              charCountInPage = 0;
-              if (chars.indexOf(char) < chars.length - 1) {
-                  perPage.push(`\n🔹 <b>${eventName} (cont.)</b>\n`);
-              }
-          }
+  for (const [eventName, chars] of Array.from(grouped.entries()).sort()) {
+    perPage.push(`\n🔹 <b>${eventName}</b>\n`);
+    for (const char of chars) {
+      const character = char.Character;
+      const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
+        extractListEmojisCharacter(ctx, character, false);
+
+      let line = ` - ${character.name} <code>${character.id}</code>`;
+      if (rarityEmojis.length) line += ` [${rarityEmojis.join("")}]`;
+      perPage.push(line + "\n");
+      charCountInPage++;
+
+      if (charCountInPage >= 15) {
+        pages.push(perPage.join(""));
+        perPage = [];
+        charCountInPage = 0;
+        if (chars.indexOf(char) < chars.length - 1) {
+          perPage.push(`\n🔹 <b>${eventName} (cont.)</b>\n`);
+        }
       }
+    }
   }
 
   if (perPage.length > 0) pages.push(perPage.join(""));
@@ -273,63 +304,71 @@ function Harem_mode_event(list_character: any[], ctx: MyContext) {
   return pages;
 }
 
-
-
-function Harem_mode_default(list_character: any[], ctx: MyContext, dbAnimeCounts: Map<string, number>) {
+function Harem_mode_default(
+  list_character: any[],
+  ctx: MyContext,
+  dbAnimeCounts: Map<string, number>,
+) {
   // Agrupar e garantir chaves limpas
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
-      const character = char.Character;
-      const animeName = character?.origem ?? "Desconhecido";
-      if (!grouped.has(animeName)) grouped.set(animeName, []);
-      grouped.get(animeName)!.push(char);
+    const character = char.Character;
+    const animeName = character?.origem ?? "Desconhecido";
+    if (!grouped.has(animeName)) grouped.set(animeName, []);
+    grouped.get(animeName)!.push(char);
   }
 
   let pages: string[] = [];
   let perPage: string[] = [];
   let charCountInPage = 0;
-  
+
   // Ordenar alfabeticamente os animes
-  const sortedAnimes = Array.from(grouped.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  const sortedAnimes = Array.from(grouped.entries()).sort((a, b) =>
+    a[0].localeCompare(b[0]),
+  );
 
   for (const [animeName, chars] of sortedAnimes) {
-      const userHasCount = chars.length;
-      const dbTotalCount = dbAnimeCounts.get(animeName) || 0;
-      
-      let header = `\n☛ <b>${animeName}</b> (${userHasCount}/${dbTotalCount})\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n`;
-      perPage.push(header);
+    const userHasCount = chars.length;
+    const dbTotalCount = dbAnimeCounts.get(animeName) || 0;
 
-      for (const char of chars) {
-          const character = char.Character;
-          const repete = char.count; // quantidade (ex: 1x, 2x)
-          const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } = extractListEmojisCharacter(ctx, character, false);
-          
-          const rarityIcon = rarityEmojis.length ? rarityEmojis[0] : "❔";
-          const eventBrackets = eventEmojis.length ? ` [${eventEmojis.join("")}]` : "";
+    let header = `\n☛ <b>${animeName}</b> (${userHasCount}/${dbTotalCount})\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n`;
+    perPage.push(header);
 
-          // ➢ ꙳ 845 ꙳ 🥉 ꙳ nico robin [❄️] 1x
-          let line = `➢ ꙳ <code>${character.id}</code> ꙳ ${rarityIcon} ꙳ <b>${character.name}</b>${eventBrackets} ${repete}x\n`;
-          perPage.push(line);
-          charCountInPage++;
+    for (const char of chars) {
+      const character = char.Character;
+      const repete = char.count; // quantidade (ex: 1x, 2x)
+      const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
+        extractListEmojisCharacter(ctx, character, false);
 
-          if (charCountInPage >= 15) {
-              perPage.push("✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n");
-              pages.push(perPage.join(""));
-              perPage = [];
-              charCountInPage = 0;
-              if (chars.indexOf(char) < chars.length - 1) {
-                  perPage.push(`\n☛ <b>${animeName} (cont.)</b>\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n`);
-              }
-          }
-      }
-      if (perPage.length > 0 && charCountInPage > 0) {
+      const rarityIcon = rarityEmojis.length ? rarityEmojis[0] : "❔";
+      const eventBrackets = eventEmojis.length
+        ? ` [${eventEmojis.join("")}]`
+        : "";
+
+      // ➢ ꙳ 845 ꙳ 🥉 ꙳ nico robin [❄️] 1x
+      let line = `➢ ꙳ <code>${character.id}</code> ꙳ ${rarityIcon} ꙳ <b>${character.name}</b>${eventBrackets} ${repete}x\n`;
+      perPage.push(line);
+      charCountInPage++;
+
+      if (charCountInPage >= 15) {
         perPage.push("✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n");
+        pages.push(perPage.join(""));
+        perPage = [];
+        charCountInPage = 0;
+        if (chars.indexOf(char) < chars.length - 1) {
+          perPage.push(`\n☛ <b>${animeName} (cont.)</b>\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n`);
+        }
       }
+    }
+    if (perPage.length > 0 && charCountInPage > 0) {
+      perPage.push("✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n");
+    }
   }
 
-  if (perPage.length > 0 && perPage.join("").trim() !== "") pages.push(perPage.join(""));
+  if (perPage.length > 0 && perPage.join("").trim() !== "")
+    pages.push(perPage.join(""));
   if (pages.length === 0) pages.push("Nenhum personagem.");
 
   // Remove trailing line breaks
-  return pages.map(p => p.replace(/\n\n✧✧✧✧✧/g, "\n✧✧✧✧✧"));
+  return pages.map((p) => p.replace(/\n\n✧✧✧✧✧/g, "\n✧✧✧✧✧"));
 }

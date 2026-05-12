@@ -1,4 +1,5 @@
 import type { MyContext } from "./customTypes";
+import { Sendmedia } from "./sendmedia";
 
 export async function EditOrSendText({
   ctx,
@@ -11,8 +12,9 @@ export async function EditOrSendText({
 }) {
   // If it's a direct command call (not a callback button interaction)
   if (!ctx.callbackQuery) {
-    return ctx.reply(caption, {
-      parse_mode: "HTML",
+    return Sendmedia({
+      ctx,
+      caption,
       reply_markup,
     });
   }
@@ -26,8 +28,9 @@ export async function EditOrSendText({
       })
       .catch((err) => {
         // console.log("error edit message text", err)
-        ctx.reply(caption, {
-          parse_mode: "HTML",
+        Sendmedia({
+          ctx,
+          caption,
           reply_markup,
         });
       });
@@ -41,14 +44,16 @@ export async function EditOrSendText({
       })
       .catch((err) => {
         // console.log("error edit message text", err  )
-        ctx.reply(caption, {
-          parse_mode: "HTML",
+        Sendmedia({
+          ctx,
+          caption,
           reply_markup,
         });
       });
   } else {
-    await ctx.reply(caption, {
-      parse_mode: "HTML",
+    await Sendmedia({
+      ctx,
+      caption,
       reply_markup,
     });
   }

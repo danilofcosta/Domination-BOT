@@ -2,6 +2,8 @@ import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
+import { Sendmedia } from "../../../utils/sendmedia.js";
+import { MediaType } from "../../../../generated/prisma/enums.js";
 
 export async function Myinfos(ctx: MyContext) {
   info(`Myinfos - carregando informações`, { userId: ctx.from?.id });
@@ -31,9 +33,13 @@ export async function Myinfos(ctx: MyContext) {
     try {
       await ctx.api.deleteMessage(loading.chat.id, loading.message_id);
     } catch {
-      error('erro ao apagar mensgem')
+      error("erro ao apagar mensgem");
     }
-    return ctx.reply(ctx.t("error-not-registered"));
+
+    return await Sendmedia({
+      ctx,
+      caption: ctx.t("error-not-registered"),
+    });
   }
 
   const totalDB = isWaifu
@@ -77,36 +83,53 @@ export async function Myinfos(ctx: MyContext) {
   }
 
   try {
-    const photos = await ctx.api.getUserProfilePhotos(ctx.from!.id, { limit: 1 }).catch(() => null);
+    const photos = await ctx.api
+      .getUserProfilePhotos(ctx.from!.id, { limit: 1 })
+      .catch(() => null);
     let msg;
 
-    if (photos && photos.total_count > 0 && photos.photos.length > 0 && photos.photos[0] && photos.photos[0].length > 0) {
+    if (
+      photos &&
+      photos.total_count > 0 &&
+      photos.photos.length > 0 &&
+      photos.photos[0] &&
+      photos.photos[0].length > 0
+    ) {
       // Pega a resolução de melhor qualidade da primeira foto
       const photoArray = photos.photos[0]!;
       const bestPhoto = photoArray[photoArray.length - 1]!.file_id;
-      msg = await ctx.replyWithPhoto(bestPhoto, {
+      msg = await Sendmedia({
+        ctx,
         caption: text,
-        parse_mode: "HTML",
+        per: {
+          media: bestPhoto,
+          mediaType: MediaType.IMAGE_FILEID,
+        },
       });
+
+  
     } else {
-      msg = await ctx.reply(text, {
-        parse_mode: "HTML",
+      msg = await Sendmedia({
+        ctx,
+        caption: text,
       });
     }
+
+    
 
     debug(`Myinfos - informações enviadas`, { userId: ctx.from?.id, percent });
 
-if (percent === "100.00") {
-  try {
-    await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
-      { type: "emoji", emoji: "🎉" },
-    ]);
-  } catch (error: any) {
-    if (!error.description?.includes("message to react not found")) {
-      console.error("Erro inesperado:", error);
+    if (percent === "100.00") {
+      try {
+        await ctx.api.setMessageReaction(msg.chat.id, msg.message_id, [
+          { type: "emoji", emoji: "🎉" },
+        ]);
+      } catch (error: any) {
+        if (!error.description?.includes("message to react not found")) {
+          console.error("Erro inesperado:", error);
+        }
+      }
     }
-  }
-}
     // Excluir a mensagem após 30 segundos
     setTimeout(() => {
       ctx.api.deleteMessage(msg.chat.id, msg.message_id).catch(() => {});

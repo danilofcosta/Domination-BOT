@@ -5,6 +5,10 @@ import {
   Gem,
   ArrowLeft,
   ZapIcon,
+  ExternalLink,
+  Heart,
+  Mic2,
+  ImageIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CharacterMedia } from "@/components/characters/character-media";
@@ -12,20 +16,22 @@ import { Footer } from "@/components/home/footer";
 import { LikeButton } from "./like-button";
 import { ShareButton } from "./share-button";
 import { CharacterSuggestions } from "@/components/characters/character-suggestions";
+import { getOrFetchMalData, type MalCharacterData } from "@/lib/jikan";
+import { MalCacheClient } from "./mal-cache-client";
+
 
 async function getCharacter(slug: string) {
-  // Tentar encontrar o tipo no slug (ex: nome-personagem_waifu)
   const typeHint = slug.includes("waifu") ? "waifu" : "husbando";
-   let mainSlug = slug.replace(
+  let mainSlug = slug.replace(
     new RegExp(`_${typeHint}$`),
     ""
   );
   mainSlug = decodeURIComponent(mainSlug);
-  console.log('Buscando personagem com slug:', mainSlug, 'e tipo hint:', typeHint);
 
-  // Se tiver a dica, buscar na tabela certa
+  let character: any = null;
+
   if (typeHint === "waifu" || typeHint === "husbando") {
-    const character =
+    character =
       typeHint === "waifu"
         ? await prisma.characterWaifu.findUnique({
           where: { slug: mainSlug },
@@ -42,31 +48,40 @@ async function getCharacter(slug: string) {
           },
         })
 
-
-    if (character) return { ...character, type: typeHint };
+    if (character) character = { ...character, type: typeHint };
   }
 
-  // Fallback: Buscar em ambas as tabelas
-  const [waifu, husbando] = await Promise.all([
-    prisma.characterWaifu.findFirst({
-      where: { slug: { equals: slug, mode: "insensitive" } },
-      include: {
-        WaifuEvent: { include: { Event: true } },
-        WaifuRarity: { include: { Rarity: true } },
-      },
-    }),
-    prisma.characterHusbando.findFirst({
-      where: { slug: { equals: slug, mode: "insensitive" } },
-      include: {
-        HusbandoEvent: { include: { Event: true } },
-        HusbandoRarity: { include: { Rarity: true } },
-      },
-    }),
-  ]);
+  if (!character) {
+    const [waifu, husbando] = await Promise.all([
+      prisma.characterWaifu.findFirst({
+        where: { slug: { equals: slug, mode: "insensitive" } },
+        include: {
+          WaifuEvent: { include: { Event: true } },
+          WaifuRarity: { include: { Rarity: true } },
+        },
+      }),
+      prisma.characterHusbando.findFirst({
+        where: { slug: { equals: slug, mode: "insensitive" } },
+        include: {
+          HusbandoEvent: { include: { Event: true } },
+          HusbandoRarity: { include: { Rarity: true } },
+        },
+      }),
+    ]);
 
-  if (waifu) return { ...waifu, type: "waifu" as const };
-  if (husbando) return { ...husbando, type: "husbando" as const };
-  return null;
+    if (waifu) character = { ...waifu, type: "waifu" as const };
+    else if (husbando) character = { ...husbando, type: "husbando" as const };
+  }
+
+  if (!character) return null;
+
+  const { extras, malData } = await getOrFetchMalData(
+    character.extras,
+    character.name,
+    character.origem,
+  );
+
+  return { ...character, extras, malData } as any;
 }
 
 export default async function DetailPage({
@@ -101,12 +116,12 @@ export default async function DetailPage({
 function CharacterDetailView({ character }: { character: any }) {
   const rarities = character.WaifuRarity || character.HusbandoRarity || [];
   const events = character.WaifuEvent || character.HusbandoEvent || [];
+  const malData: MalCharacterData | null = character.malData;
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-all duration-700 selection:bg-primary/30">
       {/* 🔮 HERO SECTION WITH BACKDROP */}
       <div className="relative min-h-[90vh] sm:min-h-[85vh] w-full overflow-hidden flex flex-col group">
-        {/* Dynamic Backdrop */}
         <div className="absolute inset-0 z-0">
           <CharacterMedia
             item={character}
@@ -116,9 +131,7 @@ function CharacterDetailView({ character }: { character: any }) {
           <div className="absolute inset-0 bg-linear-to-b from-transparent via-background/60 to-background" />
         </div>
 
-        {/* Content Container */}
         <div className="relative z-10 max-w-7xl w-full mx-auto flex-1 flex flex-col justify-end pt-24 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8">
-          {/* Back Button */}
           <Link
             href="/"
             className="absolute top-4 sm:top-8 left-4 sm:left-6 lg:left-8 flex items-center gap-2 sm:gap-3 text-muted-foreground hover:text-primary transition-all group/back"
@@ -132,15 +145,13 @@ function CharacterDetailView({ character }: { character: any }) {
           </Link>
 
           <div className="flex flex-col lg:flex-row gap-8 sm:gap-12 lg:gap-20 items-center lg:items-end">
-            {/* 🖼️ MAIN PORTRAIT */}
-            <div className="relative w-64 sm:w-72 md:w-80 lg:w-[380px] shrink-0 aspect-[2/3] rounded-[2rem] sm:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden shadow-[0_0_80px_rgba(var(--primary-rgb),0.2)] border border-primary/10 group/img">
+            <div className="relative w-62 sm:w-72 md:w-80 lg:w-[380px] shrink-0 rounded-[2rem] sm:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden shadow-[0_0_80px_rgba(var(--primary-rgb),0.2)] border border-primary/10 group/img">
               <CharacterMedia
                 item={character}
                 type={character.type}
                 className="w-full h-full object-cover group-hover/img:scale-110 sm:group-hover/img:scale-125 transition-transform duration-1000 ease-out"
               />
 
-              {/* Rarity Flares */}
               <div className="absolute top-3 right-3 sm:top-6 sm:right-6 flex flex-col gap-1 sm:gap-2">
                 {rarities.map((r: any) => (
                   <div
@@ -155,7 +166,6 @@ function CharacterDetailView({ character }: { character: any }) {
                 ))}
               </div>
 
-              {/* ID Tag */}
               <div className="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 px-1.5 sm:px-2 bg-black/20 backdrop-blur-md rounded-full border border-white/10">
                 <span className="text-[8px] sm:text-[10px] font-mono text-white/60">
                   #{character.id}
@@ -163,7 +173,6 @@ function CharacterDetailView({ character }: { character: any }) {
               </div>
             </div>
 
-            {/* 📝 INFO PANEL */}
             <div className="flex-1 space-y-6 sm:space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left w-full">
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-4">
@@ -173,11 +182,36 @@ function CharacterDetailView({ character }: { character: any }) {
                   <span className="text-muted-foreground text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.3em] opacity-60">
                     {character.origem}
                   </span>
+                {/* <p>malData: {JSON.stringify(malData)}</p> */}
+                  
+                  {malData?.favorites != null && (
+                    <Badge variant="secondary" className="gap-1 px-2 py-1 rounded-full text-xs font-bold">
+                      <Heart className="size-3 fill-rose-500 text-rose-500" />
+                      {malData.favorites.toLocaleString()} MAL
+                    </Badge>
+                  )}
+                  
+                  {malData?.url && (
+                    <a
+                      href={malData.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 rounded-full hover:bg-blue-500/20 transition-colors"
+                    >
+                      <ExternalLink className="size-3" />
+                      MAL
+                    </a>
+                  )}
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black italic uppercase tracking-tighter text-foreground leading-[0.95] sm:leading-[0.9] decoration-primary transition-all">
                   {character.name}
                 </h1>
+                {malData?.nameKanji && (
+                  <p className="text-base sm:text-lg text-muted-foreground/40 font-bold tracking-wider">
+                    {malData.nameKanji}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start w-full">
@@ -187,7 +221,6 @@ function CharacterDetailView({ character }: { character: any }) {
                   initialLikes={character.likes || 0}
                   slug={character.slug}
                 />
-
                 <ShareButton
                   name={character.name}
                   slug={character.slug}
@@ -199,9 +232,7 @@ function CharacterDetailView({ character }: { character: any }) {
         </div>
       </div>
 
-      {/* 📊 DETAILS GRID */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16">
-        {/* Left Column: Story/Info */}
         <div className="lg:col-span-2 space-y-20">
           <section className="space-y-6 sm:space-y-8">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -211,22 +242,28 @@ function CharacterDetailView({ character }: { character: any }) {
               </h3>
             </div>
             <p className="text-muted-foreground leading-relaxed text-base sm:text-lg lg:text-xl font-medium max-w-3xl">
-              Em destaque no universo de{" "}
-              <span className="text-foreground underline decoration-primary/30">
-                {character.origem}
-              </span>
-              , o personagem{" "}
-              <span className="text-foreground underline decoration-primary/30">
-                {character.name}
-              </span>{" "}
-              é uma peça fundamental no ecossistema Domination. Sincronizado
-              originalmente em{" "}
-              {new Date(character.createdAt).toLocaleDateString("pt-BR", {
-                month: "long",
-                year: "numeric",
-                day: "numeric",
-              })}
-              .
+              {malData?.about ? (
+                malData.about.replace(/\[Written by MAL Rewrite\]/g, "")
+              ) : (
+                <>
+                  Em destaque no universo de{" "}
+                  <span className="text-foreground underline decoration-primary/30">
+                    {character.origem}
+                  </span>
+                  , o personagem{" "}
+                  <span className="text-foreground underline decoration-primary/30">
+                    {character.name}
+                  </span>{" "}
+                  é uma peça fundamental no ecossistema Domination. Sincronizado
+                  originalmente em{" "}
+                  {new Date(character.createdAt).toLocaleDateString("pt-BR", {
+                    month: "long",
+                    year: "numeric",
+                    day: "numeric",
+                  })}
+                  .
+                </>
+              )}
             </p>
           </section>
 
@@ -260,9 +297,116 @@ function CharacterDetailView({ character }: { character: any }) {
               </div>
             </section>
           )}
+
+          {/* Voice Actors */}
+          {malData?.voices && malData.voices.length > 0 && (
+            <section className="space-y-6 sm:space-y-10">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Mic2 className="size-6 sm:size-8 text-primary" />
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase italic tracking-tighter">
+                  Seiyuu / Voice Actors
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                {malData.voices.map((v, i) => (
+                  <div
+                    key={i}
+                    className="group/va p-3 bg-card/30 backdrop-blur-sm border border-primary/5 rounded-xl sm:rounded-2xl flex flex-col items-center text-center hover:border-primary/20 hover:bg-card/50 transition-all duration-300"
+                  >
+                    <div className="size-16 sm:size-20 rounded-full overflow-hidden mb-2 ring-2 ring-primary/10 group-hover/va:ring-primary/30 transition-all">
+                      <img
+                        src={v.person.images?.jpg?.image_url || ""}
+                        alt={v.person.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <p className="text-xs sm:text-sm font-bold uppercase italic tracking-tight leading-tight">
+                      {v.person.name}
+                    </p>
+                    <p className="text-[8px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 opacity-60">
+                      {v.language}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Anime / Manga appearances */}
+          {(() => {
+            const animeList = malData?.anime ?? [];
+            const mangaList = malData?.manga ?? [];
+            if (animeList.length === 0 && mangaList.length === 0) return null;
+            return (
+            <section className="space-y-6 sm:space-y-10">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <ImageIcon className="size-6 sm:size-8 text-primary" />
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase italic tracking-tighter">
+                  Aparições
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                {animeList.map((entry: any, i: number) => (
+                  <a
+                    key={`anime-${i}`}
+                    href={entry.mal_id ? `https://myanimelist.net/anime/${entry.mal_id}` : "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/media p-2 bg-card/30 backdrop-blur-sm border border-primary/5 rounded-xl sm:rounded-2xl flex flex-col items-center text-center hover:border-primary/20 hover:bg-card/50 transition-all duration-300"
+                  >
+                    <div className="w-full aspect-[3/4] rounded-lg overflow-hidden mb-2 bg-muted">
+                      {entry.imageUrl && (
+                        <img
+                          src={entry.imageUrl}
+                          alt={entry.title}
+                          className="w-full h-full object-cover group-hover/media:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                    <p className="text-[10px] sm:text-xs font-bold uppercase italic tracking-tight leading-tight line-clamp-2">
+                      {entry.title}
+                    </p>
+                    <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest mt-1 opacity-60">
+                      {entry.role}
+                    </p>
+                  </a>
+                ))}
+                {mangaList.map((entry: any, i: number) => (
+                  <a
+                    key={`manga-${i}`}
+                    href={entry.mal_id ? `https://myanimelist.net/manga/${entry.mal_id}` : "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/media p-2 bg-card/30 backdrop-blur-sm border border-primary/5 rounded-xl sm:rounded-2xl flex flex-col items-center text-center hover:border-primary/20 hover:bg-card/50 transition-all duration-300"
+                  >
+                    <div className="w-full aspect-[3/4] rounded-lg overflow-hidden mb-2 bg-muted">
+                      {entry.imageUrl && (
+                        <img
+                          src={entry.imageUrl}
+                          alt={entry.title}
+                          className="w-full h-full object-cover group-hover/media:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      )}
+                    </div>
+                    <p className="text-[10px] sm:text-xs font-bold uppercase italic tracking-tight leading-tight line-clamp-2">
+                      {entry.title}
+                    </p>
+                    <p className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest mt-1 opacity-60">
+                      {entry.role}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            </section>
+            );
+          })()}
+
+
         </div>
 
-        {/* Right Column: Stats sidebar */}
         <aside className="space-y-8">
           <div className="p-6 sm:p-8 lg:p-10 bg-card/20 backdrop-blur-2xl border border-primary/10 rounded-2xl sm:rounded-[2rem] lg:rounded-[3rem] space-y-6 lg:space-y-8 shadow-2xl relative overflow-hidden group/stats">
             <Gem className="absolute -top-10 -right-10 size-32 sm:size-40 lg:size-48 text-primary/5 rotate-12 group-hover/stats:scale-110 group-hover/stats:rotate-0 transition-all duration-700" />
@@ -285,6 +429,23 @@ function CharacterDetailView({ character }: { character: any }) {
                   #{character.popularity || 0}
                 </span>
               </div>
+
+              {malData?.favorites != null && (
+                <div className="flex justify-between items-center bg-background/40 p-4 sm:p-6 rounded-2xl lg:rounded-3xl border border-white/5">
+                  <div className="space-y-1">
+                    <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest block opacity-40">
+                      MAL Favoritos
+                    </span>
+                    <span className="text-base sm:text-lg font-black uppercase italic flex items-center gap-2">
+                      <Heart className="size-4 text-rose-500" />
+                      MyAnimeList
+                    </span>
+                  </div>
+                  <span className="text-2xl sm:text-3xl font-mono font-black text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.3)]">
+                    {malData.favorites.toLocaleString()}
+                  </span>
+                </div>
+              )}
 
               <div className="flex justify-between items-center bg-background/40 p-4 sm:p-6 rounded-2xl lg:rounded-3xl border border-white/5">
                 <div className="space-y-1">
@@ -312,6 +473,12 @@ function CharacterDetailView({ character }: { character: any }) {
           </div>
         </aside>
       </main>
+
+      <MalCacheClient
+        characterId={character.id}
+        type={character.type}
+        extras={character.extras}
+      />
 
       <CharacterSuggestions character={character} type={character.type} />
 

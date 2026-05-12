@@ -3,6 +3,7 @@ import type { MyContext } from "../../../utils/customTypes.js";
 import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { buildKeyboard } from "../../../utils/btns.js";
 import { AddCharacterHandler } from "../admin_bot/manager_character/add/add_charecter.js";
+import { Sendmedia } from "../../../utils/sendmedia.js";
 
 const help_dict = {
   comandos: {
@@ -36,8 +37,9 @@ export async function helpCommand(ctx: MyContext) {
       `https://t.me/${ctx.me.username}?start=help`,
     );
 
-    await ctx.reply(ctx.t("help-group-redirect"), {
-      parse_mode: "HTML",
+    await Sendmedia({
+      ctx,
+      caption: ctx.t("help-group-caption"),
       reply_markup: keyboard,
     });
     return;

@@ -3,6 +3,8 @@ import { ChatType, NODE_ENV, type MyContext } from "../../utils/customTypes.js";
 import { botNewgroupMember } from "./botNewgroupMember.js";
 import { DropCharacter } from "./doprar_per.js";
 import { error, info, log } from "../../utils/log.js";
+import { Sendmedia } from "../../utils/sendmedia.js";
+import { CreateOneBtn } from "../../utils/btns.js";
 
 const DROP = 100;
 const UNDROP = DROP + 40;
@@ -88,19 +90,15 @@ export async function contarMensagens(ctx: MyContext) {
 
     try {
       await ctx.api.deleteMessage(ctx.chat.id, grupo.dropId);
-
-      await ctx.reply(txt, {
-        parse_mode: "HTML",
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "Mais detalhes",
-                callback_data: `click_${character?.id ?? "0"}`,
-              },
-            ],
-          ],
-        },
+      const reply_markup = CreateOneBtn({
+        text: ctx.t("drop_character_secret_btn"),
+        callback: `click_${character?.id ?? "0"}`,
+        style: "primary",
+      });
+      await Sendmedia({
+        ctx,
+        caption: txt,
+        reply_markup: reply_markup,
       });
       log("undrop com sucesso no chat", chatId);
     } catch (err) {
@@ -115,9 +113,8 @@ export async function contarMensagens(ctx: MyContext) {
       dropId: null,
       character: null,
       data: null,
-      title: ctx.chat?.title||ctx.from?.first_name|| "-",
+      title: ctx.chat?.title || ctx.from?.first_name || "-",
       directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
     };
-  
-}
+  }
 }

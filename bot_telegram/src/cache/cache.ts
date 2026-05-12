@@ -85,6 +85,12 @@ export function getCharList(userId: number, genero: string): CharListData | unde
 }
 
 
+// cache para cooldown de like/dislike (10 minutos)
+export const reactionCooldown = new LRUCache<string, boolean>({
+  max: 1000,
+  ttl: 1000 * 60 * 10,
+});
+
 // usado para save para editar persogem
 export function getCharacterEdit(characterId: number): PreCharacter {
   return characterCache.get(`characteredit:${characterId}`);

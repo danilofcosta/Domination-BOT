@@ -3,6 +3,7 @@ import { type MyContext } from "./customTypes.js";
 import { prisma } from "../../lib/prisma.js";
 import { ProfileType } from "../../generated/prisma/client.js";
 import { warn, error, debug, info } from "./log.js";
+import { Sendmedia } from "./sendmedia.js";
 
 /**
  * Weights for the profile types to handle hierarchy.
@@ -125,10 +126,11 @@ export function onlyRoleBotAdmin(requiredRole: ProfileType): MiddlewareFn<MyCont
         ? ctx.t("errors.no_permission")
         : "❌ Você não tem permissão suficiente para usar este comando.";
 
-      return await ctx.reply(message);
+      return await Sendmedia({ctx,caption:message});
     } catch (e) {
       error("[Permissions] Erro no middleware", e);
-      return await ctx.reply("❌ Ocorreu um erro interno ao verificar suas permissões.");
+
+      return await Sendmedia({ctx,caption:"❌ Ocorreu um erro interno ao verificar suas permissões."});
     }
   };
 }

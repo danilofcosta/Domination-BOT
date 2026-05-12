@@ -16,15 +16,17 @@ import type {
   Collection,
 } from "../../utils/customTypes.ts";
 import { warn, error } from "../../utils/log.js";
+import { bts_yes_or_no } from "../../utils/btns.js";
 
 export interface Params {
   ctx: MyContext | any;
   chatType: ChatType;
   character: Character | Collection;
   noformat: boolean | undefined | null;
-  username?: string | undefined| null;
-  user_id?: string | undefined|null;
-  no_format?: boolean ;
+  username?: string | undefined | null;
+  user_id?: string | undefined | null;
+  no_format?: boolean;
+  reply_markup?: any;
 }
 
 export function createResult(params: Params) {
@@ -41,6 +43,11 @@ export function createResult(params: Params) {
 
   switch (character.mediaType) {
     case MediaType.IMAGE_URL:
+      console.log("Creating result for character with mediaType IMAGE_URL:", {
+        id: character.id,
+        name: character.name,
+        media: character.media,
+      });
       return {
         type: "photo",
         id: `${character.id}`,
@@ -48,6 +55,7 @@ export function createResult(params: Params) {
         thumbnail_url: character.media,
         title: character.name,
         caption_entities: [],
+       reply_markup:params.reply_markup,
 
         description: character.origem,
         caption: capiton,
@@ -59,6 +67,7 @@ export function createResult(params: Params) {
         id: "fileid" + `${character.id}`,
         photo_file_id: character.media,
         title: character.name,
+               reply_markup:params.reply_markup,
 
         description: character.origem,
         caption: capiton,
@@ -71,7 +80,7 @@ export function createResult(params: Params) {
         id: "url" + `${character.id}`,
         title: character.name,
         mime_type: "video/mp4",
-
+       reply_markup:params.reply_markup,
         description: character.origem,
         video_url: character.media,
         thumbnail_url: character.media,
@@ -83,6 +92,7 @@ export function createResult(params: Params) {
         type: "video",
         id: "fileid" + `${character.id}`,
         mime_type: "video/mp4",
+               reply_markup:params.reply_markup,
 
         video_file_id: character.media,
         caption: capiton,
@@ -94,16 +104,19 @@ export function createResult(params: Params) {
       } as InlineQueryResultCachedVideo;
 
     default:
-      warn(`createResult - mediaType desconhecido, usando fallback`, { 
-        charId: character.id, 
-        mediaType: character.mediaType 
+      warn(`createResult - mediaType desconhecido, usando fallback`, {
+        charId: character.id,
+        mediaType: character.mediaType,
       });
       const url = process.env.DEFAULT_IMAGE_URL;
-      if (!url) {
-        error(`createResult - DEFAULT_IMAGE_URL não configurada`, { charId: character.id });
+      if (!url || url.trim() === ""|| character.mediaType  === MediaType.IMAGE_LOCAL || character.mediaType  === MediaType.VIDEO_LOCAL) {
+        error(`createResult - DEFAULT_IMAGE_URL não configurada`, {
+          charId: character.id,
+        });
         return {
           type: "text",
           id: "txt" + `${character.id}`,
+
           title: character.name,
           input_message_content: {
             message_text: capiton,
@@ -118,6 +131,7 @@ export function createResult(params: Params) {
         thumbnail_url: url,
         caption: capiton,
         parse_mode: "HTML" as ParseMode,
+        reply_markup: params.reply_markup,
       };
   }
 }
