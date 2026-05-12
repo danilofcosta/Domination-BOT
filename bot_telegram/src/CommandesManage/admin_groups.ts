@@ -49,7 +49,8 @@ async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
   if (await isGroupAdmin(ctx)) {
     await next();
   } else {
-    await Sendmedia('Apenas administradores do grupo podem usar este comando.');
+    await Sendmedia(
+      {ctx,caption:'Apenas administradores do grupo podem usar este comando.'});
   }
 }
 

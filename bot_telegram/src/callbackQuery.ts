@@ -10,7 +10,6 @@ import { StatRefresh } from "./handlers/Comandos/globais/status.js";
 import { helpCommand } from "./handlers/Comandos/globais/help.js";
 import { helpCallback } from "./handlers/callbacks/users_callback/helpCallback.js";
 import { addCharacterCallbackData } from "./handlers/Comandos/admin_bot/manager_character/add/add_charecter_callback_data.js";
-import { editCharacterCallbackData } from "./handlers/Comandos/admin_bot/off/edit_character_callbacks.js";
 import { ClickByDetail_Callback } from "./handlers/callbacks/users_callback/cickCallback.js";
 import { randomCharacterCallback } from "./handlers/callbacks/users_callback/randomCharacterCallback.js";
 import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
@@ -43,7 +42,6 @@ callbacks.callbackQuery(/^random-character-/, randomCharacterCallback);
 
 //admin
 callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);
-callbacks.callbackQuery(/^edit_character_/, editCharacterCallbackData);
 callbacks.callbackQuery(/^addcolletion_/, addcolletionCallback);
 callbacks.callbackQuery(/^setrarity_/, SetRarityCallback);
 callbacks.callbackQuery(/^setevent_/, SetEventCallback);

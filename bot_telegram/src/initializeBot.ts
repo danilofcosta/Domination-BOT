@@ -11,7 +11,7 @@ import {
   ChatType,
   NODE_ENV,
   type MyContext,
-  type SessionData,
+
 } from "./utils/customTypes.js";
 import { listeners } from "./listeners.js";
 import { callbacks } from "./callbackQuery.js";
@@ -23,6 +23,7 @@ import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
 import { customCommands } from "./CommandesManage/custom_commands.js";
 import { error, warn } from "./utils/log.js";
+import type { SessionData } from "./utils/customInteface.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
