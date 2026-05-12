@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { fetchRarities, createRarity, updateRarity } from "@/lib/api"
+import { useState } from "react"
+import { useRarities, useCreateRarity, useUpdateRarity } from "@/hooks"
 import type { Rarity } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,8 +19,9 @@ import { toast } from "sonner"
 import { Pencil, Plus } from "lucide-react"
 
 export default function RaritiesPage() {
-  const [rarities, setRarities] = useState<Rarity[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: rarities, isLoading } = useRarities()
+  const createRarity = useCreateRarity()
+  const updateRarity = useUpdateRarity()
 
   const [editOpen, setEditOpen] = useState(false)
   const [editItem, setEditItem] = useState<Rarity | null>(null)
@@ -29,27 +30,12 @@ export default function RaritiesPage() {
   const [editEmoji, setEditEmoji] = useState("")
   const [editDescription, setEditDescription] = useState("")
   const [editEmojiId, setEditEmojiId] = useState("")
-  const [saving, setSaving] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const [createName, setCreateName] = useState("")
   const [createCode, setCreateCode] = useState("")
   const [createEmoji, setCreateEmoji] = useState("")
   const [createDescription, setCreateDescription] = useState("")
   const [createEmojiId, setCreateEmojiId] = useState("")
-  const [creating, setCreating] = useState(false)
-
-  async function load() {
-    try {
-      const data = await fetchRarities()
-      setRarities(data)
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
 
   function openEdit(r: Rarity) {
     setEditItem(r)
@@ -63,27 +49,16 @@ export default function RaritiesPage() {
 
   async function handleSave() {
     if (!editItem) return
-    setSaving(true)
     try {
-      await updateRarity(editItem.id, {
-        name: editName,
-        code: editCode,
-        emoji: editEmoji,
-        description: editDescription || undefined,
-        emoji_id: editEmojiId || undefined,
+      await updateRarity.mutateAsync({
+        id: editItem.id,
+        data: { name: editName, code: editCode, emoji: editEmoji, description: editDescription || undefined, emoji_id: editEmojiId || undefined },
       })
-      await load()
       setEditOpen(false)
       setEditItem(null)
-      toast("Raridade atualizada", {
-        description: `${editEmoji} ${editName} foi salva com sucesso.`,
-      })
+      toast("Raridade atualizada", { description: `${editEmoji} ${editName} foi salva com sucesso.` })
     } catch (e) {
-      toast("Erro ao salvar", {
-        description: e instanceof Error ? e.message : "Tente novamente.",
-      })
-    } finally {
-      setSaving(false)
+      toast("Erro ao salvar", { description: e instanceof Error ? e.message : "Tente novamente." })
     }
   }
 
@@ -92,16 +67,13 @@ export default function RaritiesPage() {
       <div className="mx-auto w-full 2xl:max-w-[1600px] px-6 py-8 pt-16 lg:pt-8">
         <header className="mb-8">
           <h1 className="font-heading text-3xl font-semibold tracking-tight">Raridades</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Todos os níveis de raridade disponíveis para personagens
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Todos os níveis de raridade disponíveis para personagens</p>
           <Button onClick={() => setCreateOpen(true)} className="mt-4">
-            <Plus className="mr-1 size-4" />
-            Adicionar
+            <Plus className="mr-1 size-4" /> Adicionar
           </Button>
         </header>
 
-        {loading ? (
+        {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton key={i} className="h-28 w-full" />
@@ -109,14 +81,9 @@ export default function RaritiesPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {rarities.map((rarity) => (
+            {(rarities ?? []).map((rarity) => (
               <Card key={rarity.id} className="group relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
-                  onClick={() => openEdit(rarity)}
-                >
+                <Button variant="ghost" size="icon" className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => openEdit(rarity)}>
                   <Pencil className="size-4" />
                 </Button>
                 <CardHeader>
@@ -124,9 +91,7 @@ export default function RaritiesPage() {
                     <span>{rarity.emoji}</span>
                     <span>{rarity.name}</span>
                   </CardTitle>
-                  {rarity.description && (
-                    <CardDescription>{rarity.description}</CardDescription>
-                  )}
+                  {rarity.description && <CardDescription>{rarity.description}</CardDescription>}
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground">
                   Código: <code className="rounded bg-muted px-1 py-0.5">{rarity.code}</code>
@@ -140,9 +105,7 @@ export default function RaritiesPage() {
           <DialogContent className="grid max-h-[85vh] grid-rows-[auto_1fr_auto] p-0 gap-0">
             <DialogHeader className="shrink-0 px-6 pt-6 pb-2 mb-0">
               <DialogTitle>Editar Raridade</DialogTitle>
-              <DialogDescription>
-                Alterar dados de {editItem?.emoji} {editItem?.name}
-              </DialogDescription>
+              <DialogDescription>Alterar dados de {editItem?.emoji} {editItem?.name}</DialogDescription>
             </DialogHeader>
             <div className="overflow-y-auto px-6 pb-4">
               <div className="space-y-4">
@@ -170,8 +133,8 @@ export default function RaritiesPage() {
             </div>
             <DialogFooter className="border-t bg-card px-6 py-4 mt-0">
               <Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button>
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? "Salvando..." : "Salvar"}
+              <Button onClick={handleSave} disabled={updateRarity.isPending}>
+                {updateRarity.isPending ? "Salvando..." : "Salvar"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -209,34 +172,19 @@ export default function RaritiesPage() {
             <DialogFooter className="border-t bg-card px-6 py-4 mt-0">
               <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancelar</Button>
               <Button onClick={async () => {
-                setCreating(true)
                 try {
-                  await createRarity({
-                    name: createName,
-                    code: createCode,
-                    emoji: createEmoji,
-                    description: createDescription || undefined,
-                    emoji_id: createEmojiId || undefined,
+                  await createRarity.mutateAsync({
+                    name: createName, code: createCode, emoji: createEmoji,
+                    description: createDescription || undefined, emoji_id: createEmojiId || undefined,
                   })
-                  await load()
                   setCreateOpen(false)
-                  setCreateName("")
-                  setCreateCode("")
-                  setCreateEmoji("")
-                  setCreateDescription("")
-                  setCreateEmojiId("")
-                  toast("Raridade criada", {
-                    description: `${createEmoji} ${createName} foi adicionada com sucesso.`,
-                  })
+                  setCreateName(""); setCreateCode(""); setCreateEmoji(""); setCreateDescription(""); setCreateEmojiId("")
+                  toast("Raridade criada", { description: `${createEmoji} ${createName} foi adicionada com sucesso.` })
                 } catch (e) {
-                  toast("Erro ao criar", {
-                    description: e instanceof Error ? e.message : "Tente novamente.",
-                  })
-                } finally {
-                  setCreating(false)
+                  toast("Erro ao criar", { description: e instanceof Error ? e.message : "Tente novamente." })
                 }
-              }} disabled={creating}>
-                {creating ? "Criando..." : "Criar"}
+              }} disabled={createRarity.isPending}>
+                {createRarity.isPending ? "Criando..." : "Criar"}
               </Button>
             </DialogFooter>
           </DialogContent>

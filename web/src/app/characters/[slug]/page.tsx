@@ -16,9 +16,12 @@ import { CharacterSuggestions } from "@/components/character/character-suggestio
 async function getCharacter(slug: string) {
   // Tentar encontrar o tipo no slug (ex: nome-personagem_waifu)
   const typeHint = slug.includes("waifu") ? "waifu" : "husbando";
-  let mainSlug = slug.replace(`_${typeHint}`, "");
+   let mainSlug = slug.replace(
+    new RegExp(`_${typeHint}$`),
+    ""
+  );
   mainSlug = decodeURIComponent(mainSlug);
-  console.log(mainSlug);
+  console.log('Buscando personagem com slug:', mainSlug, 'e tipo hint:', typeHint);
 
   // Se tiver a dica, buscar na tabela certa
   if (typeHint === "waifu" || typeHint === "husbando") {

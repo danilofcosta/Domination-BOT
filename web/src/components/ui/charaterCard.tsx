@@ -16,7 +16,7 @@ export function CharacterCard({ item, type }: CharacterCardProps) {
       href={`/characters/${encodeURIComponent(item.slug)}_${type}`}
       className="block break-inside-avoid rounded-xl sm:rounded-2xl overflow-hidden group relative isolate bg-card shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 mb-2 sm:mb-3"
     >
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative  overflow-hidden">
         <CharacterMedia item={item} type={type} />
 
         {/* Overlay */}

@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { fetchAllCharacters, fetchRarities, fetchEvents, createCharacter, updateCharacter } from "@/lib/api"
+import { useState, useMemo } from "react"
+import { useAllCharacters, useRarities, useEvents, useCreateCharacter, useUpdateCharacter } from "@/hooks"
 import type { Character, Rarity, Event } from "@/lib/types"
 import { SourceType, MediaType } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,18 +19,18 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
-import { Search, Pencil, Sparkles, Calendar, Image, Video, FileQuestion, Plus } from "lucide-react"
+import { Search, Pencil, Sparkles, Calendar, FileQuestion, Plus } from "lucide-react"
 
 export default function CharactersPage() {
-  const [waifus, setWaifus] = useState<Character[]>([])
-  const [husbandos, setHusbandos] = useState<Character[]>([])
-  const [loading, setLoading] = useState(true)
+  const chars = useAllCharacters()
+  const rarities = useRarities()
+  const events = useEvents()
+  const createChar = useCreateCharacter()
+  const updateChar = useUpdateCharacter()
+
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<"all" | "waifu" | "husbando">("all")
 
-  const [rarityList, setRarityList] = useState<Rarity[]>([])
-  const [eventList, setEventList] = useState<Event[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [editChar, setEditChar] = useState<Character | null>(null)
   const [editNome, setEditNome] = useState("")
@@ -40,7 +40,6 @@ export default function CharactersPage() {
   const [editEventIds, setEditEventIds] = useState<number[]>([])
   const [editMedia, setEditMedia] = useState("")
   const [editMediaType, setEditMediaType] = useState<string>("IMAGE_URL")
-  const [saving, setSaving] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
   const [createType, setCreateType] = useState<"waifu" | "husbando">("waifu")
   const [createNome, setCreateNome] = useState("")
@@ -50,28 +49,8 @@ export default function CharactersPage() {
   const [createMediaType, setCreateMediaType] = useState<string>("IMAGE_URL")
   const [createRarityIds, setCreateRarityIds] = useState<number[]>([])
   const [createEventIds, setCreateEventIds] = useState<number[]>([])
-  const [creating, setCreating] = useState(false)
 
-  async function load() {
-    try {
-      setError(null)
-      const [chars, rarities, events] = await Promise.all([
-        fetchAllCharacters(),
-        fetchRarities(),
-        fetchEvents(),
-      ])
-      setWaifus(chars.waifus)
-      setHusbandos(chars.husbandos)
-      setRarityList(rarities)
-      setEventList(events)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Erro ao carregar personagens")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { load() }, [])
+  const loading = chars.isLoading
 
   function openEdit(c: Character) {
     setEditChar(c)
@@ -87,18 +66,20 @@ export default function CharactersPage() {
 
   async function handleSave() {
     if (!editChar) return
-    setSaving(true)
     try {
-      await updateCharacter(editChar.id, editChar.type, {
-        nome: editNome,
-        origem: editOrigem,
-        sourceType: editSourceType,
-        media: editMedia || undefined,
-        mediaType: editMediaType,
-        rarities: editRarityIds.map(String),
-        events: editEventIds.map(String),
+      await updateChar.mutateAsync({
+        id: editChar.id,
+        type: editChar.type,
+        data: {
+          nome: editNome,
+          origem: editOrigem,
+          sourceType: editSourceType,
+          media: editMedia || undefined,
+          mediaType: editMediaType,
+          rarities: editRarityIds.map(String),
+          events: editEventIds.map(String),
+        },
       })
-      await load()
       setEditOpen(false)
       setEditChar(null)
       toast("Personagem atualizado", {
@@ -108,8 +89,6 @@ export default function CharactersPage() {
       toast("Erro ao salvar", {
         description: e instanceof Error ? e.message : "Tente novamente.",
       })
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -145,13 +124,23 @@ export default function CharactersPage() {
     return <FileQuestion className="size-5 text-muted-foreground" />
   }
 
-  const all = [...waifus.map((c) => ({ ...c, type: "waifu" as const })), ...husbandos.map((c) => ({ ...c, type: "husbando" as const }))]
+  const data = chars.data
+  const all = useMemo(() => {
+    if (!data) return []
+    return [
+      ...data.waifus.map((c) => ({ ...c, type: "waifu" as const })),
+      ...data.husbandos.map((c) => ({ ...c, type: "husbando" as const })),
+    ]
+  }, [data])
 
   const filtered = all.filter((c) => {
     if (filter !== "all" && c.type !== filter) return false
     if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
+
+  const rarityList = rarities.data ?? []
+  const eventList = events.data ?? []
 
   return (
     <div className="bg-background">
@@ -197,10 +186,10 @@ export default function CharactersPage() {
               <Skeleton key={i} className="h-10 w-full" />
             ))}
           </div>
-        ) : error ? (
+        ) : chars.error ? (
           <Card>
             <CardContent className="py-8 text-center text-sm text-muted-foreground">
-              {error}
+              {(chars.error as Error).message}
             </CardContent>
           </Card>
         ) : filtered.length === 0 ? (
@@ -302,11 +291,7 @@ export default function CharactersPage() {
                 {(editMedia || editChar?.media) && (
                   <div className="flex justify-center rounded-lg border bg-muted/30 p-2">
                     {editMediaType === "IMAGE_URL" || editMediaType === "IMAGE_LOCAL" ? (
-                      <img
-                        src={editMedia || editChar?.media}
-                        alt={editNome}
-                        className="max-h-48 rounded object-contain"
-                      />
+                      <img src={editMedia || editChar?.media} alt={editNome} className="max-h-48 rounded object-contain" />
                     ) : editMediaType === "VIDEO_URL" || editMediaType === "VIDEO_LOCAL" ? (
                       <video src={editMedia || editChar?.media} controls className="max-h-48 rounded" />
                     ) : (
@@ -317,20 +302,12 @@ export default function CharactersPage() {
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium">URL da Mídia</label>
-                  <Input
-                    value={editMedia}
-                    onChange={(e) => setEditMedia(e.target.value)}
-                    placeholder="URL ou file ID da imagem/vídeo"
-                  />
+                  <Input value={editMedia} onChange={(e) => setEditMedia(e.target.value)} placeholder="URL ou file ID da imagem/vídeo" />
                 </div>
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium">Tipo de Mídia</label>
-                  <select
-                    value={editMediaType}
-                    onChange={(e) => setEditMediaType(e.target.value)}
-                    className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs"
-                  >
+                  <select value={editMediaType} onChange={(e) => setEditMediaType(e.target.value)} className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs">
                     {Object.values(MediaType).map((mt) => (
                       <option key={mt} value={mt}>{mt}</option>
                     ))}
@@ -347,11 +324,7 @@ export default function CharactersPage() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium">Tipo de Fonte</label>
-                  <select
-                    value={editSourceType}
-                    onChange={(e) => setEditSourceType(e.target.value)}
-                    className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs"
-                  >
+                  <select value={editSourceType} onChange={(e) => setEditSourceType(e.target.value)} className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs">
                     {Object.values(SourceType).map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
@@ -364,22 +337,8 @@ export default function CharactersPage() {
                     {rarityList.map((r) => {
                       const checked = editRarityIds.includes(r.id)
                       return (
-                        <label
-                          key={r.id}
-                          className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() =>
-                              setEditRarityIds(
-                                checked
-                                  ? editRarityIds.filter((id) => id !== r.id)
-                                  : [...editRarityIds, r.id],
-                              )
-                            }
-                            className="size-4 accent-primary"
-                          />
+                        <label key={r.id} className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5">
+                          <input type="checkbox" checked={checked} onChange={() => setEditRarityIds(checked ? editRarityIds.filter((id) => id !== r.id) : [...editRarityIds, r.id])} className="size-4 accent-primary" />
                           <span>{r.emoji}</span>
                           <span>{r.name}</span>
                         </label>
@@ -394,22 +353,8 @@ export default function CharactersPage() {
                     {eventList.map((e) => {
                       const checked = editEventIds.includes(e.id)
                       return (
-                        <label
-                          key={e.id}
-                          className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() =>
-                              setEditEventIds(
-                                checked
-                                  ? editEventIds.filter((id) => id !== e.id)
-                                  : [...editEventIds, e.id],
-                              )
-                            }
-                            className="size-4 accent-primary"
-                          />
+                        <label key={e.id} className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5">
+                          <input type="checkbox" checked={checked} onChange={() => setEditEventIds(checked ? editEventIds.filter((id) => id !== e.id) : [...editEventIds, e.id])} className="size-4 accent-primary" />
                           <span>{e.emoji}</span>
                           <span>{e.name}</span>
                         </label>
@@ -420,11 +365,9 @@ export default function CharactersPage() {
               </div>
             </div>
             <DialogFooter className="border-t bg-card px-6 py-4 mt-0">
-              <Button variant="outline" onClick={() => setEditOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleSave} disabled={saving}>
-                {saving ? "Salvando..." : "Salvar"}
+              <Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button>
+              <Button onClick={handleSave} disabled={updateChar.isPending}>
+                {updateChar.isPending ? "Salvando..." : "Salvar"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -441,12 +384,7 @@ export default function CharactersPage() {
                   <label className="text-sm font-medium">Tipo</label>
                   <div className="flex gap-2">
                     {(["waifu", "husbando"] as const).map((t) => (
-                      <Button
-                        key={t}
-                        variant={createType === t ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCreateType(t)}
-                      >
+                      <Button key={t} variant={createType === t ? "default" : "outline"} size="sm" onClick={() => setCreateType(t)}>
                         {t === "waifu" ? "Waifu" : "Husbando"}
                       </Button>
                     ))}
@@ -460,11 +398,7 @@ export default function CharactersPage() {
 
                 <div className="space-y-1">
                   <label className="text-sm font-medium">Tipo de Mídia</label>
-                  <select
-                    value={createMediaType}
-                    onChange={(e) => setCreateMediaType(e.target.value)}
-                    className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs"
-                  >
+                  <select value={createMediaType} onChange={(e) => setCreateMediaType(e.target.value)} className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs">
                     {Object.values(MediaType).map((mt) => (
                       <option key={mt} value={mt}>{mt}</option>
                     ))}
@@ -481,11 +415,7 @@ export default function CharactersPage() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium">Tipo de Fonte</label>
-                  <select
-                    value={createSourceType}
-                    onChange={(e) => setCreateSourceType(e.target.value)}
-                    className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs"
-                  >
+                  <select value={createSourceType} onChange={(e) => setCreateSourceType(e.target.value)} className="flex h-8 w-full rounded-lg border border-input bg-background px-3 py-1 text-sm shadow-xs">
                     {Object.values(SourceType).map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
@@ -498,22 +428,8 @@ export default function CharactersPage() {
                     {rarityList.map((r) => {
                       const checked = createRarityIds.includes(r.id)
                       return (
-                        <label
-                          key={r.id}
-                          className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() =>
-                              setCreateRarityIds(
-                                checked
-                                  ? createRarityIds.filter((id) => id !== r.id)
-                                  : [...createRarityIds, r.id],
-                              )
-                            }
-                            className="size-4 accent-primary"
-                          />
+                        <label key={r.id} className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5">
+                          <input type="checkbox" checked={checked} onChange={() => setCreateRarityIds(checked ? createRarityIds.filter((id) => id !== r.id) : [...createRarityIds, r.id])} className="size-4 accent-primary" />
                           <span>{r.emoji}</span>
                           <span>{r.name}</span>
                         </label>
@@ -528,22 +444,8 @@ export default function CharactersPage() {
                     {eventList.map((e) => {
                       const checked = createEventIds.includes(e.id)
                       return (
-                        <label
-                          key={e.id}
-                          className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() =>
-                              setCreateEventIds(
-                                checked
-                                  ? createEventIds.filter((id) => id !== e.id)
-                                  : [...createEventIds, e.id],
-                              )
-                            }
-                            className="size-4 accent-primary"
-                          />
+                        <label key={e.id} className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm has-checked:border-primary has-checked:bg-primary/5">
+                          <input type="checkbox" checked={checked} onChange={() => setCreateEventIds(checked ? createEventIds.filter((id) => id !== e.id) : [...createEventIds, e.id])} className="size-4 accent-primary" />
                           <span>{e.emoji}</span>
                           <span>{e.name}</span>
                         </label>
@@ -556,38 +458,21 @@ export default function CharactersPage() {
             <DialogFooter className="border-t bg-card px-6 py-4 mt-0">
               <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancelar</Button>
               <Button onClick={async () => {
-                setCreating(true)
                 try {
-                  await createCharacter({
-                    type: createType,
-                    nome: createNome,
-                    origem: createOrigem,
-                    sourceType: createSourceType,
-                    media: createMedia,
-                    mediaType: createMediaType,
-                    rarities: createRarityIds.map(String),
-                    events: createEventIds.map(String),
+                  await createChar.mutateAsync({
+                    type: createType, nome: createNome, origem: createOrigem,
+                    sourceType: createSourceType, media: createMedia, mediaType: createMediaType,
+                    rarities: createRarityIds.map(String), events: createEventIds.map(String),
                   })
-                  await load()
                   setCreateOpen(false)
-                  setCreateNome("")
-                  setCreateOrigem("")
-                  setCreateMedia("")
-                  setCreateMediaType("IMAGE_URL")
-                  setCreateRarityIds([])
-                  setCreateEventIds([])
-                  toast("Personagem criado", {
-                    description: `${createNome} foi adicionado com sucesso.`,
-                  })
+                  setCreateNome(""); setCreateOrigem(""); setCreateMedia("")
+                  setCreateMediaType("IMAGE_URL"); setCreateRarityIds([]); setCreateEventIds([])
+                  toast("Personagem criado", { description: `${createNome} foi adicionado com sucesso.` })
                 } catch (e) {
-                  toast("Erro ao criar", {
-                    description: e instanceof Error ? e.message : "Tente novamente.",
-                  })
-                } finally {
-                  setCreating(false)
+                  toast("Erro ao criar", { description: e instanceof Error ? e.message : "Tente novamente." })
                 }
-              }} disabled={creating}>
-                {creating ? "Criando..." : "Criar"}
+              }} disabled={createChar.isPending}>
+                {createChar.isPending ? "Criando..." : "Criar"}
               </Button>
             </DialogFooter>
           </DialogContent>

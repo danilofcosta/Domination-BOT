@@ -1,24 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { fetchAllCharacters, fetchRarities, fetchEvents, fetchUsers, fetchCollections } from "@/lib/api"
+import { useAllCharacters, useRarities, useEvents, useUsers, useCollections } from "@/hooks"
 import type { Character, Rarity, Event } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-
-interface DashboardData {
-  waifus: Character[]
-  husbandos: Character[]
-  totalWaifus: number
-  totalHusbandos: number
-  rarities: Rarity[]
-  events: Event[]
-  totalUsers: number
-  totalCollections: number
-}
 
 const sourceTypeColors: Record<string, string> = {
   ANIME: "var(--color-chart-1)",
@@ -91,29 +79,14 @@ function processRecentData(waifus: Character[], husbandos: Character[]) {
 }
 
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const chars = useAllCharacters()
+  const rarities = useRarities()
+  const events = useEvents()
+  const users = useUsers(1, 1)
+  const collections = useCollections(1, 1)
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const [chars, rarities, events, usersRes, collectionsRes] = await Promise.all([
-          fetchAllCharacters(),
-          fetchRarities(),
-          fetchEvents(),
-          fetchUsers(1, 1),
-          fetchCollections(1, 1)
-        ])
-        setData({ ...chars, rarities, events, totalUsers: usersRes.total, totalCollections: collectionsRes.total })
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Falha ao carregar dados")
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
+  const loading = chars.isLoading || rarities.isLoading || events.isLoading || users.isLoading || collections.isLoading
+  const error = chars.error || rarities.error || events.error || users.error || collections.error
 
   if (error) {
     return (
@@ -127,16 +100,17 @@ export default function DashboardPage() {
               Não foi possível conectar à API em{" "}
               <code className="rounded bg-muted px-1 py-0.5">{process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"}</code>
             </p>
-            <p className="mt-2 text-sm text-destructive">{error}</p>
+            <p className="mt-2 text-sm text-destructive">{(error as Error).message}</p>
           </CardContent>
         </Card>
       </div>
     )
   }
 
+  const data = chars.data
   const sourceData = data ? processSourceData(data.waifus, data.husbandos) : []
   const allChars = data ? [...data.waifus, ...data.husbandos] : []
-  const rarityData = data ? processRarityData(allChars, data.rarities) : []
+  const rarityData = data ? processRarityData(allChars, rarities.data ?? []) : []
   const popularityData = data ? processPopularityData(data.waifus, data.husbandos) : []
   const recentData = data ? processRecentData(data.waifus, data.husbandos) : []
 
@@ -153,10 +127,10 @@ export default function DashboardPage() {
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {statCard("Total Waifus", data?.totalWaifus ?? 0, loading)}
           {statCard("Total Husbandos", data?.totalHusbandos ?? 0, loading)}
-          {statCard("Raridades", data?.rarities.length ?? 0, loading)}
-          {statCard("Eventos", data?.events.length ?? 0, loading)}
-          {statCard("Coleções", data?.totalCollections ?? 0, loading)}
-          {statCard("Usuários", data?.totalUsers ?? 0, loading)}
+          {statCard("Raridades", rarities.data?.length ?? 0, loading)}
+          {statCard("Eventos", events.data?.length ?? 0, loading)}
+          {statCard("Coleções", collections.data?.total ?? 0, loading)}
+          {statCard("Usuários", users.data?.total ?? 0, loading)}
         </div>
 
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
@@ -174,14 +148,7 @@ export default function DashboardPage() {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                       <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" />
                       <YAxis tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" allowDecimals={false} />
-                      <Tooltip
-                        contentStyle={{
-                          background: "var(--card)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "var(--radius)",
-                          fontSize: 12,
-                        }}
-                      />
+                      <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", fontSize: 12 }} />
                       <Bar dataKey="value" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -204,14 +171,7 @@ export default function DashboardPage() {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                       <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" />
                       <YAxis tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" allowDecimals={false} />
-                      <Tooltip
-                        contentStyle={{
-                          background: "var(--card)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "var(--radius)",
-                          fontSize: 12,
-                        }}
-                      />
+                      <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", fontSize: 12 }} />
                       <Bar dataKey="value" radius={[4, 4, 0, 0]} fill="var(--color-chart-2)" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -236,14 +196,7 @@ export default function DashboardPage() {
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
                       <XAxis type="number" tick={{ fontSize: 12 }} stroke="var(--muted-foreground)" allowDecimals={false} />
                       <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" width={120} />
-                      <Tooltip
-                        contentStyle={{
-                          background: "var(--card)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "var(--radius)",
-                          fontSize: 12,
-                        }}
-                      />
+                      <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", fontSize: 12 }} />
                       <Bar dataKey="popularity" radius={[0, 4, 4, 0]} fill="var(--color-chart-3)" />
                     </BarChart>
                   </ResponsiveContainer>

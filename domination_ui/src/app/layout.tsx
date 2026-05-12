@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 
 import { SidebarProvider } from "@/components/sidebar-provider";
 import { LayoutContent } from "@/components/layout-content";
+import { QueryProvider } from "@/components/query-provider";
 
 export default function RootLayout({
   children,
@@ -25,12 +26,14 @@ export default function RootLayout({
   return (
     <html lang="pt" className={cn("h-full", nunitoSans.variable, manropeHeading.variable)}>
       <body className="min-h-full font-sans antialiased">
-        <SidebarProvider>
-          <Sidebar />
-          <LayoutContent>
-            {children}
-          </LayoutContent>
-        </SidebarProvider>
+        <QueryProvider>
+          <SidebarProvider>
+            <Sidebar />
+            <LayoutContent>
+              {children}
+            </LayoutContent>
+          </SidebarProvider>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
