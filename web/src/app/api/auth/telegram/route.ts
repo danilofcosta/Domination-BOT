@@ -12,6 +12,10 @@ import {
   getClientIp,
   recordFailedAttempt,
 } from "@/lib/auth/rate-limit";
+import {
+  computeCurrentFingerprint,
+  computeStoredFingerprint,
+} from "@/lib/auth/risk-score";
 
 export async function POST(req: Request) {
   try {
@@ -60,11 +64,15 @@ export async function POST(req: Request) {
     }
 
     // 4. Criar JWT session token
+    const fp = computeStoredFingerprint(computeCurrentFingerprint(req));
+
     const token = await createSessionToken({
       telegramId: user.telegramId.toString(),
       profileType: user.profileType,
       firstName: body.first_name,
       photoUrl: body.photo_url,
+      ipPrefix: fp.ipPrefix,
+      uaHash: fp.uaHash,
     });
 
     // 5. Setar cookie httpOnly

@@ -88,7 +88,7 @@ export function RarityManagement({ currentUser }: RarityManagementProps) {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir esta raridade? Isso afetará personagens vinculados.")) return
-    const res = await deleteRarity(id, currentUser?.profileType)
+    const res = await deleteRarity(id)
     if (res.success) {
       toast.success("Raridade excluída!")
       fetchData()

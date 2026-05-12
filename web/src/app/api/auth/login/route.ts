@@ -11,6 +11,10 @@ import {
   getClientIp,
   recordFailedAttempt,
 } from "@/lib/auth/rate-limit";
+import {
+  computeCurrentFingerprint,
+  computeStoredFingerprint,
+} from "@/lib/auth/risk-score";
 
 export async function POST(req: Request) {
   try {
@@ -65,12 +69,16 @@ export async function POST(req: Request) {
       );
     }
 
+    const fp = computeStoredFingerprint(computeCurrentFingerprint(req));
+
     const token = await createSessionToken({
       telegramId: user.telegramId.toString(),
       profileType: user.profileType,
       firstName: user.telegramData
         ? (user.telegramData as any).first_name || "Admin"
         : "Admin",
+      ipPrefix: fp.ipPrefix,
+      uaHash: fp.uaHash,
     });
 
     const cookieStore = await cookies();

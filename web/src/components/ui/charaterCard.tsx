@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link";
 import { Character } from "@/lib/types";
-import { CharacterMedia } from "@/components/character/character-media";
+import { CharacterMedia } from "@/components/characters/character-media";
 
 type CharacterCardProps = {
   item: Character;

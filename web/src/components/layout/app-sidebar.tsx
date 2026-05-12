@@ -3,8 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { NavUser } from "@/components/nav-user";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { NavUser } from "@/components/layout/nav-user";
+import { ThemeToggle } from "@/components/auth/theme-toggle";
 import {
   Sidebar,
   SidebarContent,

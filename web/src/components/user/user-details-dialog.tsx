@@ -11,7 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Character, User } from "@/lib/types";
-import { CharacterMedia } from "../character/character-media";
+import { CharacterMedia } from "../characters/character-media";
 import { Badge } from "@/components/ui/badge";
 import {
   deleteUser,
@@ -121,8 +121,6 @@ export function UserDetailsDialog({
     setIsDeleting(true);
     const result = await deleteUser(
       String(user.telegramId),
-      currentUser?.profileType,
-      user.profileType,
     );
 
     if (!result.success) {
@@ -142,7 +140,6 @@ export function UserDetailsDialog({
     const result = await updateUserProfileType(
       BigInt(user.telegramId),
       newType,
-      currentUser?.profileType,
     );
     setTypeUpdating(null);
 
@@ -181,7 +178,6 @@ export function UserDetailsDialog({
       user.telegramId,
       amount,
       operation,
-      currentUser?.profileType,
     );
     setAdjustingCoins(false);
 
@@ -223,7 +219,6 @@ export function UserDetailsDialog({
       characterId,
       type,
       reduceBy,
-      currentUser?.profileType,
     );
     setReducingId(null);
 
@@ -268,7 +263,6 @@ export function UserDetailsDialog({
       user.telegramId,
       characterId,
       type,
-      currentUser?.profileType,
     ).then((result) => {
       setSettingFavorite(false);
       if (result.success) {
@@ -296,7 +290,6 @@ export function UserDetailsDialog({
     const result = await removeUserFavorite(
       user.telegramId,
       type,
-      currentUser?.profileType,
     );
     setSettingFavorite(false);
 
@@ -602,48 +595,50 @@ export function UserDetailsDialog({
                       <p className="text-xs font-medium truncate">
                         {item.Character.name}
                       </p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs bg-pink-500/20 px-1.5 py-0.5 rounded">
+                      <div className="grid grid-cols-1 gap-1 mt-1">
+                        <span className="text-xs bg-pink-500/20 px-1.5 py-0.5 rounded justify-self-start">
                           x{item.count}
                         </span>
-                        <div className="flex gap-1">
-                          {canAdjustCoins && item.count > 0 && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 px-1"
-                              onClick={() =>
-                                handleReduceDuplicate(
-                                  item.characterId,
-                                  "waifu",
-                                  1,
-                                  item.Character.name,
-                                )
-                              }
-                              disabled={reducingId === item.characterId}
-                            >
-                              <MinusIcon className="h-3 w-3" />
-                            </Button>
-                          )}
-                          {canAdjustCoins && !isFav && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 px-1 text-green-500"
-                              onClick={() =>
-                                handleSetFavorite(
-                                  "waifu",
-                                  item.characterId,
-                                  item.Character.name,
-                                )
-                              }
-                              disabled={settingFavorite}
-                              title="Definir como favorito"
-                            >
-                              <HeartIcon className="h-3 w-3" />
-                            </Button>
-                          )}
-                        </div>
+                        {canAdjustCoins && (
+                          <div className="flex gap-1 justify-self-end">
+                            {item.count > 0 && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 px-1"
+                                onClick={() =>
+                                  handleReduceDuplicate(
+                                    item.characterId,
+                                    "waifu",
+                                    1,
+                                    item.Character.name,
+                                  )
+                                }
+                                disabled={reducingId === item.characterId}
+                              >
+                                <MinusIcon className="h-3 w-3" />
+                              </Button>
+                            )}
+                            {!isFav && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 px-1 text-green-500"
+                                onClick={() =>
+                                  handleSetFavorite(
+                                    "waifu",
+                                    item.characterId,
+                                    item.Character.name,
+                                  )
+                                }
+                                disabled={settingFavorite}
+                                title="Definir como favorito"
+                              >
+                                <HeartIcon className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -685,48 +680,50 @@ export function UserDetailsDialog({
                       <p className="text-xs font-medium truncate">
                         {item.Character.name}
                       </p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs bg-blue-500/20 px-1.5 py-0.5 rounded">
+                      <div className="grid grid-cols-1 gap-1 mt-1">
+                        <span className="text-xs bg-blue-500/20 px-1.5 py-0.5 rounded justify-self-start">
                           x{item.count}
                         </span>
-                        <div className="flex gap-1">
-                          {canAdjustCoins && item.count > 0 && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 px-1"
-                              onClick={() =>
-                                handleReduceDuplicate(
-                                  item.characterId,
-                                  "husbando",
-                                  1,
-                                  item.Character.name,
-                                )
-                              }
-                              disabled={reducingId === item.characterId}
-                            >
-                              <MinusIcon className="h-3 w-3" />
-                            </Button>
-                          )}
-                          {canAdjustCoins && !isFav && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 px-1 text-green-500"
-                              onClick={() =>
-                                handleSetFavorite(
-                                  "husbando",
-                                  item.characterId,
-                                  item.Character.name,
-                                )
-                              }
-                              disabled={settingFavorite}
-                              title="Definir como favorito"
-                            >
-                              <HeartIcon className="h-3 w-3" />
-                            </Button>
-                          )}
-                        </div>
+                        {canAdjustCoins && (
+                          <div className="flex gap-1 justify-self-end">
+                            {item.count > 0 && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 px-1"
+                                onClick={() =>
+                                  handleReduceDuplicate(
+                                    item.characterId,
+                                    "husbando",
+                                    1,
+                                    item.Character.name,
+                                  )
+                                }
+                                disabled={reducingId === item.characterId}
+                              >
+                                <MinusIcon className="h-3 w-3" />
+                              </Button>
+                            )}
+                            {!isFav && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 px-1 text-green-500"
+                                onClick={() =>
+                                  handleSetFavorite(
+                                    "husbando",
+                                    item.characterId,
+                                    item.Character.name,
+                                  )
+                                }
+                                disabled={settingFavorite}
+                                title="Definir como favorito"
+                              >
+                                <HeartIcon className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );

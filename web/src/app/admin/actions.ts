@@ -16,11 +16,13 @@ import {
 import { createCaption } from "@/lib/telegram/create_caption";
 import { DELETE_ROLES } from "@/lib/auth/constants";
 
-function canDelete(currentUserProfileType?: ProfileType): boolean {
-  if (!currentUserProfileType) return false;
-  return (DELETE_ROLES as readonly ProfileType[]).includes(currentUserProfileType);
+async function canDelete(): Promise<boolean> {
+  const session = await getSession();
+  if (!session) return false;
+  return (DELETE_ROLES as readonly ProfileType[]).includes(session.profileType);
 }
 import { getSession } from "@/lib/auth/auth";
+import { validateUpload, generateSafeFilename, MAX_UPLOAD_SIZE } from "@/lib/uploads/upload-validation";
 
 import { LRUCache } from "lru-cache";
 
@@ -290,20 +292,10 @@ export async function getUsers() {
   }
 }
 
-export async function deleteUser(
-  telegramId: string,
-  currentUserProfileType?: ProfileType,
-  targetUserProfileType?: ProfileType,
-) {
-  if (currentUserProfileType !== ProfileType.SUPREME) {
+export async function deleteUser(telegramId: string) {
+  const session = await getSession();
+  if (!session || session.profileType !== ProfileType.SUPREME) {
     return { success: false, error: "Apenas o SUPREME pode excluir usuários" };
-  }
-
-  if (targetUserProfileType === ProfileType.SUPREME) {
-    return {
-      success: false,
-      error: "Não é possível excluir um usuário com perfil SUPREME",
-    };
   }
 
   try {
@@ -320,9 +312,9 @@ export async function deleteUser(
 export async function updateUserProfileType(
   telegramId: bigint,
   newProfileType: ProfileType,
-  currentUserProfileType?: ProfileType,
 ) {
-  if (currentUserProfileType !== ProfileType.SUPREME) {
+  const session = await getSession();
+  if (!session || session.profileType !== ProfileType.SUPREME) {
     return {
       success: false,
       error: "Apenas o SUPREME pode alterar perfis de usuários",
@@ -392,8 +384,8 @@ export async function createEvent(formData: FormData) {
   }
 }
 
-export async function deleteEvent(id: number, currentUserProfileType?: ProfileType) {
-  if (!canDelete(currentUserProfileType)) {
+export async function deleteEvent(id: number) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir eventos",
@@ -463,11 +455,8 @@ export async function createRarity(formData: FormData) {
   }
 }
 
-export async function deleteRarity(
-  id: number,
-  currentUserProfileType?: ProfileType,
-) {
-  if (!canDelete(currentUserProfileType)) {
+export async function deleteRarity(id: number) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir raridades",
@@ -510,10 +499,15 @@ async function handleFileUpload(file: File) {
   if (!file || file.size === 0 || !file.name || file.name === "undefined")
     return null;
 
+  const validation = await validateUpload(file);
+  if (!validation.valid) {
+    console.warn("[Upload] Arquivo rejeitado:", validation.error, "- Nome:", file.name, "- Tamanho:", file.size);
+    return null;
+  }
+
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const safeName = (file.name || "upload").replace(/[^a-zA-Z0-9._-]/g, "_");
-    const filename = `${Date.now()}-${safeName}`;
+    const filename = generateSafeFilename(file.name);
     const uploadDir = path.join(process.cwd(), "public", "uploads");
 
     await fs.mkdir(uploadDir, { recursive: true }).catch(() => {});
@@ -822,9 +816,8 @@ export async function updateCharacter(
 export async function deleteCharacter(
   id: number,
   type: "waifu" | "husbando",
-  currentUserProfileType?: ProfileType,
 ) {
-  if (!canDelete(currentUserProfileType)) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem excluir personagens",
@@ -860,9 +853,8 @@ export async function bulkUpdateCharacters(
   type: "waifu" | "husbando",
   eventIds?: number[],
   rarityIds?: number[],
-  currentUserProfileType?: ProfileType,
 ) {
-  if (!canDelete(currentUserProfileType)) {
+  if (!(await canDelete())) {
     return { success: false, error: "Sem permissão" };
   }
 
@@ -1109,11 +1101,8 @@ export async function updateTelegramGroup(id: number, formData: FormData) {
   }
 }
 
-export async function deleteTelegramGroup(
-  id: number,
-  currentUserProfileType?: ProfileType,
-) {
-  if (!canDelete(currentUserProfileType)) {
+export async function deleteTelegramGroup(id: number) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error:
@@ -1134,9 +1123,8 @@ export async function adjustUserCoins(
   telegramId: string,
   amount: number,
   operation: "add" | "subtract" | "set",
-  currentUserProfileType?: ProfileType,
 ) {
-  if (!canDelete(currentUserProfileType)) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem ajustar moedas",
@@ -1182,9 +1170,8 @@ export async function reduceDuplicateCharacter(
   characterId: number,
   type: "waifu" | "husbando",
   reduceBy: number,
-  currentUserProfileType?: ProfileType,
 ) {
-  if (!canDelete(currentUserProfileType)) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem reduzir repetições",
@@ -1273,9 +1260,8 @@ export async function setUserFavorite(
   telegramId: string,
   characterId: number,
   type: "waifu" | "husbando",
-  currentUserProfileType?: ProfileType,
 ) {
-  if (!canDelete(currentUserProfileType)) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem alterar favoritos",
@@ -1306,9 +1292,8 @@ export async function setUserFavorite(
 export async function removeUserFavorite(
   telegramId: string,
   type: "waifu" | "husbando",
-  currentUserProfileType?: ProfileType,
 ) {
-  if (!canDelete(currentUserProfileType)) {
+  if (!(await canDelete())) {
     return {
       success: false,
       error: "Apenas ADMIN, SUPER_ADMIN ou SUPREME podem remover favoritos",

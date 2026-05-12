@@ -41,6 +41,8 @@ export interface SessionPayload {
   profileType: ProfileType;
   firstName: string;
   photoUrl?: string;
+  ipPrefix?: string;
+  uaHash?: string;
 }
 
 /**
@@ -121,6 +123,8 @@ export async function verifySessionToken(
       profileType: payload.profileType as ProfileType,
       firstName: payload.firstName as string,
       photoUrl: payload.photoUrl as string | undefined,
+      ipPrefix: payload.ipPrefix as string | undefined,
+      uaHash: payload.uaHash as string | undefined,
     };
   } catch {
     return null;

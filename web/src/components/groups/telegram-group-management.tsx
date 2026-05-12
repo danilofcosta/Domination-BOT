@@ -85,7 +85,7 @@ export function TelegramGroupManagement({ currentUser }: TelegramGroupManagement
 
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir este grupo?")) return
-    const res = await deleteTelegramGroup(id, currentUser?.profileType)
+    const res = await deleteTelegramGroup(id)
     if (res.success) {
       toast.success("Grupo excluído!")
       fetchData()

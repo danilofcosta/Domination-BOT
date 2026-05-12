@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { CharacterMedia } from "@/components/character/character-media";
+import { CharacterMedia } from "@/components/characters/character-media";
 import { Badge } from "@/components/ui/badge";
 import { SparklesIcon, ShuffleIcon } from "lucide-react";
 

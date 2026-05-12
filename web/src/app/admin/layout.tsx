@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { MenuFloating } from "@/components/home/MenuFloating";
 import { getSession } from "@/lib/auth/auth";

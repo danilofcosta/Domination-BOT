@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
+    "file-type": "^22.0.1",
     "grammy": "^1.42.0",
     "jose": "^6.2.2",
     "lru-cache": "^11.2.7",

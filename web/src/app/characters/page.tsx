@@ -2,7 +2,7 @@
 
 import { Footer } from "@/components/home/footer";
 import { MenuFloating } from "@/components/home/MenuFloating";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/auth/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CharacterCard } from "@/components/ui/charaterCard";

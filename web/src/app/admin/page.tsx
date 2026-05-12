@@ -1,16 +1,16 @@
-import { DashboardStats } from "@/components/dashboard-stats";
+import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { getDashboardData } from "./actions";
-import { SiteHeader } from "@/components/site-header";
-import { ProfileDistribution } from "@/components/profile-distribution";
-import { DashboardExtras } from "@/components/dashboard-extras";
-import { RarityManagement } from "@/components/rarity-management";
-import { EventManagement } from "@/components/event-management";
-import { CharacterManagementTable } from "@/components/character/character-management-table";
-import { TelegramGroupManagement } from "@/components/telegram-group-management";
+import { SiteHeader } from "@/components/layout/site-header";
+import { ProfileDistribution } from "@/components/dashboard/profile-distribution";
+import { DashboardExtras } from "@/components/dashboard/dashboard-extras";
+import { RarityManagement } from "@/components/rarities/rarity-management";
+import { EventManagement } from "@/components/events/event-management";
+import { CharacterManagementTable } from "@/components/characters/character-management-table";
+import { TelegramGroupManagement } from "@/components/groups/telegram-group-management";
 import { UserManagementTable_page } from "@/components/user/user-management-table-page";
-import { SessionLogsBots } from "@/components/session-logs-bots";
-import { CollectionStats } from "@/components/collection-stats";
+import { SessionLogsBots } from "@/components/sessions/session-logs-bots";
+import { CollectionStats } from "@/components/collections/collection-stats";
 import { getSession } from "@/lib/auth/auth";
 
 export default async function Page({

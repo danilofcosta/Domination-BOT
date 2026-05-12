@@ -99,7 +99,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir?")) return
     setIsDeleting(id)
-    const res = await deleteCharacter(id, type, currentUser?.profileType)
+    const res = await deleteCharacter(id, type)
     if (res.success) {
       toast.success("Excluído com sucesso")
       fetchData()
@@ -129,7 +129,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
     const eventIds = bulkEvent === "remove" ? [] : (bulkEvent !== "none" ? [parseInt(bulkEvent)] : undefined)
     const rarityIds = bulkRarity === "remove" ? [] : (bulkRarity !== "none" ? [parseInt(bulkRarity)] : undefined)
 
-    const res = await bulkUpdateCharacters(selectedIds, type, eventIds, rarityIds, currentUser?.profileType)
+    const res = await bulkUpdateCharacters(selectedIds, type, eventIds, rarityIds)
     
     if (res.success) {
       toast.success(`${res.updated} personagem(s) atualizado(s)`)
@@ -145,29 +145,37 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
 
   return (
     <div className="space-y-4 px-4 lg:px-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex bg-muted/50 p-1 rounded-xl border border-primary/10 shadow-inner">
-          <Button
-            variant={type === "waifu" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setType("waifu")}
-            className={`rounded-lg transition-all ${type === "waifu" ? "bg-pink-600 hover:bg-pink-700 shadow-md" : ""}`}
-          >
-            Waifus
-          </Button>
-          <Button
-            variant={type === "husbando" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setType("husbando")}
-            className={`rounded-lg transition-all ${type === "husbando" ? "bg-indigo-600 hover:bg-indigo-700 shadow-md" : ""}`}
-          >
-            Husbandos
-          </Button>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex bg-muted/50 p-1 rounded-xl border border-primary/10 shadow-inner">
+            <Button
+              variant={type === "waifu" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setType("waifu")}
+              className={`rounded-lg transition-all ${type === "waifu" ? "bg-pink-600 hover:bg-pink-700 shadow-md" : ""}`}
+            >
+              Waifus
+            </Button>
+            <Button
+              variant={type === "husbando" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setType("husbando")}
+              className={`rounded-lg transition-all ${type === "husbando" ? "bg-indigo-600 hover:bg-indigo-700 shadow-md" : ""}`}
+            >
+              Husbandos
+            </Button>
+          </div>
+
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
+              <XIcon className="w-4 h-4 mr-1" /> Limpar
+            </Button>
+          )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-            <SelectTrigger className="w-[160px] bg-card/50 border-primary/10 rounded-xl">
+            <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
               <SelectValue placeholder="Evento" />
             </SelectTrigger>
             <SelectContent>
@@ -181,7 +189,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
           </Select>
 
           <Select value={selectedRarity} onValueChange={setSelectedRarity}>
-            <SelectTrigger className="w-[160px] bg-card/50 border-primary/10 rounded-xl">
+            <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
               <SelectValue placeholder="Raridade" />
             </SelectTrigger>
             <SelectContent>
@@ -195,7 +203,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
           </Select>
 
           <Select value={selectedMediaType} onValueChange={setSelectedMediaType}>
-            <SelectTrigger className="w-[160px] bg-card/50 border-primary/10 rounded-xl">
+            <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
               <SelectValue placeholder="Mídia" />
             </SelectTrigger>
             <SelectContent>
@@ -209,13 +217,7 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
             </SelectContent>
           </Select>
 
-          {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
-              <XIcon className="w-4 h-4 mr-1" /> Limpar
-            </Button>
-          )}
-
-          <div className="relative w-full md:w-80 ml-auto">
+          <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"

@@ -88,7 +88,7 @@ export function EventManagement({ currentUser }: EventManagementProps) {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir este evento? Isso pode afetar personagens vinculados.")) return
-    const res = await deleteEvent(id, currentUser?.profileType)
+    const res = await deleteEvent(id)
     if (res.success) {
       toast.success("Evento excluído!")
       fetchData()
