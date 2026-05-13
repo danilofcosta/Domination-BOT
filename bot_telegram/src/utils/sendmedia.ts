@@ -141,7 +141,7 @@ if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID)
     if (type === MediaType.VIDEO_LOCAL)
       return await sendVideo(new InputFile(`D/${media}`));
 
-    return sendText("Tipo de mídia não suportado.");
+    return sendText(ctx?.t("error-sendmedia-unsupported") ?? "Tipo de mídia não suportado.");
   } catch (err) {
     error("Sendmedia - erro ao enviar mídia após tentativas válidas", err);
     return sendText(caption ?? "");

@@ -21,7 +21,7 @@ export function create_caption({
   noformat,
 }: Params) {
   // console.log(character);
-  const genero = chatType === ChatType.WAIFU ? "essa waifu" : "esse husbando";
+  const genero = ctx.t(chatType === ChatType.WAIFU ? "create-caption-gender-waifu" : "create-caption-gender-husbando");
 
   let repetition = 0;
   let character_let;

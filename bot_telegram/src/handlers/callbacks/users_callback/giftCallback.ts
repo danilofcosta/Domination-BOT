@@ -120,7 +120,7 @@ export async function giftConfirmHandler(ctx: MyContext) {
     const telegramData = receiverUser?.telegramData as {
       first_name?: string;
     } | null;
-    const receiverUsername = telegramData?.first_name || "Usuário";
+    const receiverUsername = telegramData?.first_name || ctx.t("gift-default-username");
     const mention = mentionUser(receiverUsername, receiverId);
 
     await ctx

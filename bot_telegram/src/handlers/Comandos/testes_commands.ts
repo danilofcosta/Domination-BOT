@@ -124,7 +124,7 @@ export async function createSecureServer(ctx: MyContext) {
 
   // Validação básica
   if (!userId) {
-    await ctx.reply("Erro: usuário não identificado.");
+    await ctx.reply(ctx.t("error-test-user-not-id"));
     return;
   }
 
@@ -147,7 +147,7 @@ export async function createSecureServer(ctx: MyContext) {
     });
 
     if (user) {
-      await ctx.reply("Usuário criado com sucesso ✅");
+      await ctx.reply(ctx.t("test-create-user-success"));
     }
   } catch (error) {
     console.error("Erro ao criar usuário:", error);

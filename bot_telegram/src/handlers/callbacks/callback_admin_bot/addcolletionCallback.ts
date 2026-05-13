@@ -31,7 +31,7 @@ export async function addcolletionCallback(ctx: MyContext) {
 
     if (userWeight < roleWeights[ProfileType.ADMIN]) {
       await ctx.deleteMessage().catch(() => {});
-      await ctx.answerCallbackQuery("❌ Apenas admins podem confirmar.");
+      await ctx.answerCallbackQuery(ctx.t("error-callback-admin-only"));
       return;
     }
 
@@ -42,7 +42,7 @@ export async function addcolletionCallback(ctx: MyContext) {
         const cachedData = getAddToCollectionMulti(userId);
         if (!cachedData) {
           warn(`addcolletionCallback - dados multi não encontrados no cache`, { userId });
-          await ctx.answerCallbackQuery("❌Dados expirados. Execute o comando novamente.");
+          await ctx.answerCallbackQuery(ctx.t("error-callback-expired"));
           return;
         }
         characterIds = cachedData.characterIds;
@@ -77,13 +77,13 @@ export async function addcolletionCallback(ctx: MyContext) {
     }
 
     const keyboard = new InlineKeyboard().switchInlineCurrent(
-      "Ver coleção",
+      ctx.t("addcolletion-btn-view-collection"),
       `harem_user_${userId}`,
     );
 
     const msgText = action === "s"
-      ? `✅ ${isMulti ? "Personagens" : "Personagem"} adicionado(s) à coleção!\n\nPor: ${mentionUser(ctx.from?.first_name || "admin", ctx.from?.id || 0)}`
-      : "❌ Ação cancelada.";
+      ? ctx.t(isMulti ? "addcolletion-success-multi" : "addcolletion-success-single", { user: mentionUser(ctx.from?.first_name || "admin", ctx.from?.id || 0) })
+      : ctx.t("addcolletion-cancel");
 
     try {
       await ctx.editMessageText(msgText, {
@@ -110,16 +110,16 @@ export async function addcolletionCallback(ctx: MyContext) {
     const harem = await getHarem(userId);
     if (!harem) {
       warn(`addcolletionCallback - harém não encontrado no cache`, { userId });
-      await ctx.answerCallbackQuery("Coleção não encontrada no cache.");
+      await ctx.answerCallbackQuery(ctx.t("addcolletion-cache-not-found"));
       return;
     }
 
     const keyboard = new InlineKeyboard()
-      .text("✅ Sim", `addcolletion_${userId}_s_multi_${charIdsStr}`)
-      .text("❌ Não", `addcolletion_${userId}_n_multi`)
+      .text(ctx.t("addcolletion-btn-yes"), `addcolletion_${userId}_s_multi_${charIdsStr}`)
+      .text(ctx.t("addcolletion-btn-no"), `addcolletion_${userId}_n_multi`)
       .row()
       .switchInlineCurrent(
-        "Ver harém",
+        ctx.t("addcolletion-btn-view-harem"),
         `harem_user_${userId}`,
       );
 

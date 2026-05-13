@@ -15,6 +15,7 @@ import { randomCharacterCallback } from "./handlers/callbacks/users_callback/ran
 import { addcolletionCallback } from "./handlers/callbacks/callback_admin_bot/addcolletionCallback.js";
 import { SetRarityCallback } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
 import { SetEventCallback } from "./handlers/Comandos/admin_bot/configs/set_event.js";
+import { setlangCallback } from "./handlers/callbacks/callback_admin_bot/setlangCallback.js";
 import { error } from "./utils/log.js";
 
 const callbacks = new Composer<MyContext>();
@@ -45,5 +46,6 @@ callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);
 callbacks.callbackQuery(/^addcolletion_/, addcolletionCallback);
 callbacks.callbackQuery(/^setrarity_/, SetRarityCallback);
 callbacks.callbackQuery(/^setevent_/, SetEventCallback);
+callbacks.callbackQuery(/^setlang_/, setlangCallback);
 
 export { callbacks };

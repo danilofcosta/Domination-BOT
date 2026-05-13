@@ -29,12 +29,12 @@ const start = async () => {
   }
 
   const bot = await initializeBot(process.env.TYPE_BOT as ChatType, BOT_TOKEN);
-
+ return  await RunPolling(bot, true);
   info("Bot instanciado com sucesso");
 
-  if (process.env.VERCEL === "true" || process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
+  if (process.env.VERCEL === "true" || process.env.NODE_ENV === NODE_ENV.PRODUCTION ) {
     app = await RunWebHook(bot);
-  } else if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
+  } else if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT || process.env.BOT_TOKEN_TESTE) {
     await RunPolling(bot, true);
   } else {
     info("NODE_ENV não definido, usando polling");

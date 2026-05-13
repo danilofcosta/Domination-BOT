@@ -133,7 +133,7 @@ export async function addCharacterCallbackData(ctx: MyContext) {
       return;
     } catch (error) {
       console.error(error);
-      await ctx.answerCallbackQuery("Erro ao salvar personagem.");
+      await ctx.answerCallbackQuery(ctx.t("add-char-save-error"));
     }
 
     return;

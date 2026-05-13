@@ -50,7 +50,7 @@ async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
     await next();
   } else {
     await Sendmedia(
-      {ctx,caption:'Apenas administradores do grupo podem usar este comando.'});
+      {ctx,caption: ctx.t("error-admin-group-only")});
   }
 }
 

@@ -58,13 +58,13 @@ function successDominarMessage(
   character: Character,
   collection: Collection,
 ) {
-  if (!collection || !character) return "vc tem um personagem novo!";
+  if (!collection || !character) return ctx.t("success-dominar-fallback");
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
     genero:
-      ctx.session.settings.genero === ChatType.WAIFU
-        ? "uma waifu"
-        : "um husbando",
+      ctx.t(ctx.session.settings.genero === ChatType.WAIFU
+        ? "success-dominar-genero-waifu"
+        : "success-dominar-genero-husbando"),
   });
 
   const success_dominar_name = ctx.t("success_dominar_name", {
@@ -196,7 +196,7 @@ export async function CapturarCharacter(ctx: MyContext) {
           caption: ctx.t("drop_character_attempt_incorrect"),
           reply_markup: CreateOneBtn({
             text: ctx.t("drop_character_attempt_incorrect_btn"),
-            callback: "drop_" + ctx.session.grupo.dropId,
+            callback: url,
             typeBtn: BTN_TYPE.url,
           }),
         });

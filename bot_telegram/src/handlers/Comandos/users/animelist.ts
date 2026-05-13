@@ -85,7 +85,7 @@ async function getAnimeList(
  * @param cacheKey - Chave do cache
  */
 async function showLetterKeyboard(ctx: MyContext, cacheKey: string) {
-  const text = "Selecione uma letra do alfabeto:\n\n";
+  const text = ctx.t("animelist-select-letter");
   const keyboard = buildLetterKeyboard(cacheKey);
   try {
     await ctx.editMessageText(text, {
@@ -119,7 +119,7 @@ async function showAnimeList(
 
   if (animes.length === 0) {
     await ctx.answerCallbackQuery(
-      "Nenhum anime encontrado com a letra " + letter,
+      ctx.t("animelist-no-anime", { letter }),
     );
     await showLetterKeyboard(ctx, cacheKey);
     return;
@@ -133,9 +133,9 @@ async function showAnimeList(
   const start = (clampedPage - 1) * pageSize;
   const pageAnimes = animes.slice(start, start + pageSize);
 
-  let text = "Anime com " + letter + " (" + animes.length + ")\n\n";
-  text += "Pagina " + clampedPage + "/" + totalPages + "\n\n";
-  text += "Clique em um anime para ver seus personagens";
+  let text = ctx.t("animelist-header", { letter, total: animes.length }) + "\n\n";
+  text += ctx.t("animelist-page", { page: clampedPage, totalPages }) + "\n\n";
+  text += ctx.t("animelist-instruction");
 
   const keyboard: any[] = [];
   let row: any[] = [];
@@ -156,18 +156,18 @@ async function showAnimeList(
   const navRow: any[] = [];
   if (clampedPage > 1)
     navRow.push({
-      text: "◀️",
+      text: ctx.t("animelist-btn-prev"),
       callback_data: "alp_" + (clampedPage - 1) + "_" + cacheKey,
     });
   navRow.push({ text: letter, callback_data: "al_letter_" + cacheKey });
   if (clampedPage < totalPages)
     navRow.push({
-      text: "▶️",
+      text: ctx.t("animelist-btn-next"),
       callback_data: "alp_" + (clampedPage + 1) + "_" + cacheKey,
     });
   keyboard.push([...navRow]);
 
-  keyboard.push([{ text: "🔙 Menu", callback_data: "al_back_" + cacheKey }]);
+  keyboard.push([{ text: ctx.t("animelist-btn-back"), callback_data: "al_back_" + cacheKey }]);
 
   await ctx.answerCallbackQuery();
   try {
@@ -193,7 +193,7 @@ export async function animelistCommand(ctx: MyContext) {
 
   setCache(cacheKey, { letter: "", animes: [], genero, userId });
 
-  const text = "Selecione uma letra do alfabeto:\n\n";
+  const text = ctx.t("animelist-select-letter");
   const keyboard = buildLetterKeyboard(cacheKey);
 
   return await Sendmedia({

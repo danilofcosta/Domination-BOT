@@ -21,13 +21,13 @@ export async function add_in_colletion(ctx: MyContext) {
 
   if (!userId) {
     warn(`add_in_colletion - userId não fornecido`, { userId: ctx.from?.id });
-    await ctx.reply("❌ Responda a uma mensagem do usuário para adicionar à coleção.");
+    await ctx.reply(ctx.t("addcolletion-error-reply"));
     return;
   }
 
   if (!ctx.match) {
     warn(`add_in_colletion - id do personagem não fornecido`, { userId: ctx.from?.id });
-    await ctx.reply("❌ Forneça o ID do personagem.");
+    await ctx.reply(ctx.t("addcolletion-error-need-id"));
     return;
   }
 
@@ -36,7 +36,7 @@ export async function add_in_colletion(ctx: MyContext) {
 
   if (ids.length === 0) {
     warn(`add_in_colletion - ids inválidos`, { userId: ctx.from?.id });
-    await ctx.reply("❌ IDs de personagem inválidos.");
+    await ctx.reply(ctx.t("addcolletion-error-invalid-ids"));
     return;
   }
 
@@ -58,7 +58,7 @@ export async function add_in_colletion(ctx: MyContext) {
 
   if (validCharacters.length === 0) {
     warn(`add_in_colletion - nenhum personagem encontrado`, { ids, userId });
-    await ctx.reply("❌ Nenhum personagem encontrado no banco de dados.");
+    await ctx.reply(ctx.t("addcolletion-error-no-char"));
     return;
   }
 
@@ -83,16 +83,21 @@ export async function add_in_colletion(ctx: MyContext) {
   const invalidText = invalidIds.length > 0 ? `\n❌ Não encontrados: ${invalidIds.join(", ")}` : "";
 
   const keyboard = new InlineKeyboard()
-    .text("✅ Sim", `addcolletion_${userId}_s_multi_${ids.join(",")}`)
-    .text("❌ Não", `addcolletion_${userId}_n_multi`)
+    .text(ctx.t("addcolletion-btn-yes"), `addcolletion_${userId}_s_multi_${ids.join(",")}`)
+    .text(ctx.t("addcolletion-btn-no"), `addcolletion_${userId}_n_multi`)
     .row()
     .switchInlineCurrent(
-      "Ver coleção",
+      ctx.t("addcolletion-btn-view-collection"),
       `list_char_user_${userId}_${genero}`,
     );
 
   await ctx.reply(
-    `Personagens (${addedCount}):\n${charsList}\n\n${invalidText}\n\nAdicionar à coleção do ${mentionUser(from?.first_name || "user", from?.id || 0)}?`,
+    ctx.t("addcolletion-confirm", {
+      count: addedCount,
+      list: charsList,
+      invalid: invalidText,
+      user: mentionUser(from?.first_name || ctx.t("addcolletion-default-user"), from?.id || 0),
+    }),
     {
       parse_mode: "HTML",
       reply_markup: keyboard,

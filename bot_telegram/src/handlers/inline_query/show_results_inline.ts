@@ -12,18 +12,20 @@ export async function showResults({
   ctx,
   results,
   next_offset,
-  text = "𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾",
+  text,
 }: showResultsparams) {
   debug(`showResults - respondendo inline query`, { userId: ctx.from?.id, resultCount: results.length });
 
+  const btnText = text || ctx.t("inline-default-btn");
+
   try {
     await ctx.answerInlineQuery(results, {
-   
+    
       is_personal: true,
       cache_time: 0,
       ...(next_offset !== undefined && { next_offset }),
       button: {
-        text: text,
+        text: btnText,
         start_parameter: `harem_user_${ctx.from?.id}`,
       },
     });

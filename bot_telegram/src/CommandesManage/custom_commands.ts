@@ -7,12 +7,14 @@ import { typeBot } from "./botConfigCommands.js";
 
 const customCommands = new CommandGroup<MyContext>();
 
-customCommands.command(
-  typeBot === 'waifu' ? 'harem' : 'haremh',
-  "Comando harem",
-  (ctx) => HaremHandler(ctx),{
-  }
-);
+// Alias do comando harem (só aparece no privado)
+customCommands
+  .command(
+    typeBot === 'waifu' ? 'harem' : 'haremh',
+    "Mostra o seu Harem (atalho)",
+  )
+  .addToScope({ type: "all_private_chats" }, async (ctx: MyContext) => {
+    await HaremHandler(ctx);
+  });
 
-//nao funciona essa bagaça
 export { customCommands };

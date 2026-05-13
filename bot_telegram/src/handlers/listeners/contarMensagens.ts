@@ -79,8 +79,8 @@ export async function contarMensagens(ctx: MyContext) {
   if (grupo.cont >= UNDROP && grupo.dropId != null) {
     const character = grupo.character;
 
-    const character_genero =
-      process.env.TYPE_BOT === ChatType.HUSBANDO ? "o husbando" : "a waifu";
+    const character_genero = ctx.t(
+      process.env.TYPE_BOT === ChatType.HUSBANDO ? "drop-gender-husbando" : "drop-gender-waifu");
 
     const txt = ctx.t("drop_character_secret_caption", {
       charater_nome: character?.name ?? "??",

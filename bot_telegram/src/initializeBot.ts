@@ -34,6 +34,7 @@ const fallbackSession = new Map<string, SessionData>();
 function getInitialSession(chatTypeBot: string): SessionData {
   return {
     settings: { genero: chatTypeBot as any },
+    locale: "pt",
     grupo: {
       title: null,
       directMessagesTopicId: null,
@@ -86,26 +87,38 @@ export default async function initializeBot(
     await next();
   });
 
-  bot.use(privateCommands);
-  bot.use(UserCommands);
-  bot.use(adminCommands_bot);
-  bot.use(adminGroupsCommands);
-  bot.use(devCommands);
-  bot.use(customCommands);
 
-  bot.use(listeners);
-  bot.use(callbacks);
 
 if (process.env.NODE_ENV === "production") {
   try {
     console.log("Configurando comandos do bot...");
+    console.log('deletando commandos antigos')
+    await bot.api.deleteMyCommands()
+    console.log("set comandos do bot...");
+    
 
     await privateCommands.setCommands(bot);//comandos privado
     await UserCommands.setCommands(bot); // comandos publicos
-    await adminGroupsCommands.setCommands(bot);// comandos para adms do grupos
-   // await devCommands.setCommands(bot);// comandos dev
-   // await adminCommands_bot.setCommands(bot); // comando para adms do bot
-    await customCommands.setCommands(bot);
+  //  await adminGroupsCommands.setCommands(bot);// comandos para adms do grupos
+ //   await devCommands.setCommands(bot);// comandos dev
+//    await adminCommands_bot.setCommands(bot); // comando para adms do bot
+    // customCommands é APENAS alias, não registra no menu pra não poluir
+    // await customCommands.setCommands(bot);
+
+    // DEBUG: ver o que foi registrado
+    const groupCmds = await bot.api.getMyCommands({ scope: { type: "all_group_chats" } });
+    const admCmds = await bot.api.getMyCommands({ scope: { type: "all_chat_administrators" } });
+    const privateCmds = await bot.api.getMyCommands({ scope: { type: "all_private_chats" } });
+    console.log('**************************************')
+
+    console.log("📋 GRUPO:", JSON.stringify(groupCmds));
+    console.log('**************************************')
+
+    console.log("📋 PRIVADO:", JSON.stringify(privateCmds));
+    console.log('**************************************')
+    console.log("📋 adm:", JSON.stringify(admCmds))
+    console.log('**************************************')
+
 
   } catch (e: any) {
     if (e.error_code === 429) {
@@ -122,13 +135,24 @@ if (process.env.NODE_ENV === "production") {
       await adminGroupsCommands.setCommands(bot);
       await devCommands.setCommands(bot);
       await adminCommands_bot.setCommands(bot);
-      await customCommands.setCommands(bot);
+      // await customCommands.setCommands(bot);
 
     } else {
       console.error("Erro ao configurar comandos:", e);
     }
   }
 }
+
+  bot.use(privateCommands);
+  bot.use(UserCommands);
+  bot.use(adminCommands_bot);
+  bot.use(adminGroupsCommands);
+  bot.use(devCommands);
+  bot.use(customCommands);
+
+  bot.use(listeners);
+  bot.use(callbacks);
+  
   bot.catch((err: any) => {
     const ctx = err.ctx;
     const msg = err.error?.message || "";

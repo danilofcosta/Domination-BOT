@@ -39,7 +39,7 @@ export async function giftHandler(ctx: MyContext) {
 
     await Sendmedia({
       ctx,
-      caption: "Usuário inválido.",
+      caption: ctx.t("error-gift-invalid-user"),
     });
     return;
   }
@@ -49,7 +49,7 @@ export async function giftHandler(ctx: MyContext) {
 
     await Sendmedia({
       ctx,
-      caption: "Você não pode enviar presente para si mesmo.",
+      caption: ctx.t("error-gift-self"),
     });
     return;
   }
@@ -60,7 +60,7 @@ export async function giftHandler(ctx: MyContext) {
 
     await Sendmedia({
       ctx,
-      caption: "agradeço, Mais não posso receber presentes ",
+      caption: ctx.t("error-gift-bot"),
     });
     return;
   }

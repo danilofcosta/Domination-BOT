@@ -6,12 +6,12 @@ export async function setChatTopicHandler(ctx: MyContext) {
   const userId = ctx.from?.id;
 
   if (!chat || !("id" in chat)) {
-    await ctx.reply("❌ Este comando deve ser usado em um grupo.");
+    await ctx.reply(ctx.t("error-topic-group-only"));
     return;
   }
 
   if (!ctx.message?.reply_to_message) {
-    await ctx.reply("❌ Responda a uma mensagem do grupo para definir o topic.\n\nUse: /setchattopic replying a uma mensagem");
+    await ctx.reply(ctx.t("error-topic-reply-msg"));
     return;
   }
 
@@ -22,7 +22,7 @@ export async function setChatTopicHandler(ctx: MyContext) {
 
   if (!isAdmin) {
     warn(`setChatTopicHandler - usuário não é admin do grupo`, { userId, chatId: chat.id });
-    await ctx.reply("❌ Apenas administradores do grupo podem usar este comando.");
+    await ctx.reply(ctx.t("error-topic-not-admin"));
     return;
   }
 
@@ -30,7 +30,7 @@ export async function setChatTopicHandler(ctx: MyContext) {
   const topicId = replyMsg.message_thread_id;
 
   if (!topicId) {
-    await ctx.reply("❌ A mensagem respondida não é de uma topic.\n\nUse este comando respondendo a uma mensagem de uma topic do fórum.");
+    await ctx.reply(ctx.t("error-topic-not-topic"));
     return;
   }
 
@@ -39,6 +39,6 @@ export async function setChatTopicHandler(ctx: MyContext) {
   info(`setChatTopicHandler - topic configurado`, { userId, chatId: chat.id, topicId });
 
   await ctx.reply(
-    `✅ Topic configurado!\n\n📝 Topic ID: ${topicId}\n\nAgora todas as mensagens de drop serão enviadas nesta topic.`
+    ctx.t("topic-config-success", { topicId })
   );
 }

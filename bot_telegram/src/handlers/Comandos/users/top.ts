@@ -40,7 +40,7 @@ export async function topHandler(ctx: MyContext) {
 
   if (!ranking.length) {
     warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
-    return Sendmedia({ ctx, caption: "Nenhum usuário no ranking ainda." });
+    return Sendmedia({ ctx, caption: ctx.t("top-empty") });
   }
 
   debug(`topHandler - usuários no ranking`, { count: ranking.length });
@@ -87,7 +87,7 @@ export async function topHandler(ctx: MyContext) {
       error(`topHandler - erro ao enviar mídia`, e);
       return Sendmedia({
         ctx,
-        caption: "Nenhum usuário no ranking ainda.",
+        caption: ctx.t("top-empty"),
       });
     }
   }

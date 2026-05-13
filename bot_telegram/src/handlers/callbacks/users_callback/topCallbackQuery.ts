@@ -11,7 +11,7 @@ export async function topCallbackQuery(ctx: MyContext) {
 
     if (!userId) {
       return ctx.answerCallbackQuery({
-        text: "Não foi possível identificar você.",
+        text: ctx.t("topcb-not-identified"),
         show_alert: true,
       });
     }
@@ -39,7 +39,7 @@ export async function topCallbackQuery(ctx: MyContext) {
 
     if (position === -1) {
       return ctx.answerCallbackQuery({
-        text: "Você ainda não está no ranking.",
+        text: ctx.t("topcb-not-ranked"),
         show_alert: true,
       });
     }
@@ -47,7 +47,7 @@ export async function topCallbackQuery(ctx: MyContext) {
     const userData = ranking[position]!;
 
     return ctx.answerCallbackQuery({
-      text: `🏆 Sua posição: ${position + 1}\n📊 Total: ${ranking.length}`,
+      text: ctx.t("topcb-position", { position: position + 1, total: ranking.length }),
       show_alert: true,
     });
   }

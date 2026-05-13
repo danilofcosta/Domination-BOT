@@ -9,11 +9,10 @@ export async function createSecretCaption(
 
   const { emoji_event, emoji_raridade } = extractListEmojisCharacter(ctx, character, false);
 
-  // ✅ operador ternário no lugar do "if ... else"
-  const generoTexto =
+  const generoTexto = ctx.t(
     ctx.session.settings.genero === ChatType.HUSBANDO
-      ? "Um husbando"
-      : "Uma waifu";
+      ? "form-caption-gender-husbando"
+      : "form-caption-gender-waifu");
 
   // Criar a legenda usando i18n
   const txr = ctx.t("new_character_secret_caption", {

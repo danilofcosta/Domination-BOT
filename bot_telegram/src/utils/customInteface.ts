@@ -4,6 +4,7 @@ export interface SessionData {
   settings: {
     genero: ChatType;
   };
+  locale: string;
   grupo: {
     cont: number;
     dropId: number | null;

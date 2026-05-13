@@ -39,15 +39,15 @@ async function formatEditMessage(
     description?: string | null;
   },
   cache: EventEditCache,
-  ctx?: MyContext,
+  ctx: MyContext,
 ): Promise<string> {
   const novoName = cache.name !== undefined ? cache.name : "-";
   const novoEmoji = cache.emoji !== undefined ? cache.emoji : "-";
-  const novoEmojiId = cache.emoji_id !== undefined ? (cache.emoji_id === "__NULL__" ? "null (apagar)" : cache.emoji_id) : "-";
+  const novoEmojiId = cache.emoji_id !== undefined ? (cache.emoji_id === "__NULL__" ? ctx.t("setevent-value-null") : cache.emoji_id) : "-";
   const novoDesc = cache.description !== undefined ? cache.description : "-";
 
   const atualEmojiId = event.emoji_id || null;
-  let atualEmojiIdDisplay = "Não definido";
+  let atualEmojiIdDisplay = ctx.t("setevent-value-not-defined");
 
   if (atualEmojiId && ctx) {
     const emoji = await getCustomEmojiFromId(ctx, atualEmojiId);
@@ -58,26 +58,26 @@ async function formatEditMessage(
   }
 
   let novoEmojiIdDisplay = novoEmojiId;
-  if (novoEmojiId !== "-" && novoEmojiId !== "null (apagar)" && ctx) {
+  if (novoEmojiId !== "-" && novoEmojiId !== ctx.t("setevent-value-null") && ctx) {
     const emoji = await getCustomEmojiFromId(ctx, novoEmojiId);
     novoEmojiIdDisplay =
       emoji === novoEmojiId ? novoEmojiId : `${emoji} (${novoEmojiId})`;
   }
 
-  return `✏️ Editar Evento: <b>${event.name}</b> (${event.code})
+  return `${ctx.t("setevent-edit-title")} <b>${event.name}</b> (${event.code})
 
-<b>Atual:</b>
-• Nome: ${event.name}
-• Emoji: ${event.emoji}
-• Emoji ID: ${atualEmojiIdDisplay}
-•show emojid :${event.emoji_id ? Id_to_enomji(event.emoji_id, event.emoji) : "n definido"}
+${ctx.t("setevent-label-current")}
+${ctx.t("setevent-label-name")} ${event.name}
+${ctx.t("setevent-label-emoji")} ${event.emoji}
+${ctx.t("setevent-label-emoji-id")} ${atualEmojiIdDisplay}
+•show emojid :${event.emoji_id ? Id_to_enomji(event.emoji_id, event.emoji) : ctx.t("setevent-value-not-set")}
 
-<b>Novo:</b>
-• Nome: ${novoName}
-• Emoji: ${novoEmoji}
-• Emoji ID: ${novoEmojiIdDisplay}
-${novoDesc !== "-" ? `• Descrição: ${novoDesc}` : ""}
-${novoEmojiId !== "-" && novoEmojiId !== "null (apagar)" ? `•show emojid : ${Id_to_enomji(novoEmojiId, event.emoji)}` : ""}
+${ctx.t("setevent-label-new")}
+${ctx.t("setevent-label-name")} ${novoName}
+${ctx.t("setevent-label-emoji")} ${novoEmoji}
+${ctx.t("setevent-label-emoji-id")} ${novoEmojiIdDisplay}
+${novoDesc !== "-" ? `${ctx.t("setevent-label-description")} ${novoDesc}` : ""}
+${novoEmojiId !== "-" && novoEmojiId !== ctx.t("setevent-value-null") ? `•show emojid : ${Id_to_enomji(novoEmojiId, event.emoji)}` : ""}
 
 
 `;
@@ -86,6 +86,7 @@ ${novoEmojiId !== "-" && novoEmojiId !== "null (apagar)" ? `•show emojid : ${I
 const ITEMS_PER_PAGE = 10;
 
 function getEditKeyboard(
+  ctx: MyContext,
   eventCode: string,
   hasChanges: boolean,
   currentPage: number = 1,
@@ -95,18 +96,18 @@ function getEditKeyboard(
   ? InstanceType<any>
   : any {
   const keyboard = new InlineKeyboard()
-    .text("✏️ Nome", `setevent_edit_name_${eventCode}`)
-    .text("😀 Emoji", `setevent_edit_emoji_${eventCode}`)
+    .text(ctx.t("setevent-btn-name"), `setevent_edit_name_${eventCode}`)
+    .text(ctx.t("setevent-btn-emoji"), `setevent_edit_emoji_${eventCode}`)
     .row()
-    .text("🆔 Emoji ID", `setevent_edit_emojiId_${eventCode}`)
-    .text("📝 Descrição", `setevent_edit_description_${eventCode}`)
+    .text(ctx.t("setevent-btn-emoji-id"), `setevent_edit_emojiId_${eventCode}`)
+    .text(ctx.t("setevent-btn-description"), `setevent_edit_description_${eventCode}`)
     .row();
 
   if (hasChanges) {
-    keyboard.text("💾 Salvar", `setevent_save_${eventCode}`);
+    keyboard.text(ctx.t("setevent-btn-save"), `setevent_save_${eventCode}`);
   }
 
-  keyboard.text("⬅️ Voltar à lista", `setevent_list_${currentPage}`);
+  keyboard.text(ctx.t("setevent-btn-back-list"), `setevent_list_${currentPage}`);
 
   return keyboard;
 }
@@ -160,7 +161,7 @@ export async function SetEventHandler(ctx: MyContext) {
     ]);
 
     if (allEvents.length === 0) {
-      return ctx.reply("❌ Nenhum evento encontrado.");
+      return ctx.reply(ctx.t("setevent-empty"));
     }
 
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
@@ -178,13 +179,13 @@ export async function SetEventHandler(ctx: MyContext) {
     const navRow: { text: string; callback_data: string }[] = [];
     if (page > 1) {
       navRow.push({
-        text: "⬅️",
+        text: ctx.t("setevent-btn-prev"),
         callback_data: `setevent_list_${page - 1}`,
       });
     }
     if (page < totalPages) {
       navRow.push({
-        text: "➡️",
+        text: ctx.t("setevent-btn-next"),
         callback_data: `setevent_list_${page + 1}`,
       });
     }
@@ -193,7 +194,7 @@ export async function SetEventHandler(ctx: MyContext) {
     }
 
     return ctx.reply(
-      `Selecione o evento para ser editado (Página ${page}/${totalPages}):`,
+      ctx.t("setevent-select-page", { page, totalPages }),
       {
         reply_markup: keyboard,
       },
@@ -237,12 +238,12 @@ export async function SetEventHandler(ctx: MyContext) {
   }
 
   if (!event) {
-    return ctx.reply(`❌ Evento não encontrado: "${input}"`);
+    return ctx.reply(ctx.t("setevent-not-found-id", { input }));
   }
 
   const cache = getEventEditCache(ctx, event.code);
   const currentPage = ctx.session.eventListPage || 1;
-  const keyboard = getEditKeyboard(event.code, hasChanges(cache), currentPage);
+  const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), currentPage);
   const message = await formatEditMessage(event, cache, ctx);
 
   await ctx.reply(message, {
@@ -263,10 +264,10 @@ export async function SetEventCallback(ctx: MyContext) {
     if (eventCode) {
       clearEventEditCache(ctx, eventCode);
     }
-    await ctx.editMessageText("❌ Edição cancelada.");
+    await ctx.editMessageText(ctx.t("setevent-cancel"));
     await ctx.answerCallbackQuery();
     const keyboard = new InlineKeyboard().text(
-      "⬅️ Voltar à lista",
+      ctx.t("setevent-btn-back-list"),
       `setevent_list_${ctx.session.eventListPage || 1}`,
     );
     await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
@@ -288,7 +289,7 @@ export async function SetEventCallback(ctx: MyContext) {
     ]);
 
     if (allEvents.length === 0) {
-      await ctx.answerCallbackQuery("Nenhum evento encontrado.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-empty"));
       return;
     }
 
@@ -307,13 +308,13 @@ export async function SetEventCallback(ctx: MyContext) {
     const navRow: { text: string; callback_data: string }[] = [];
     if (page > 1) {
       navRow.push({
-        text: "⬅️",
+        text: ctx.t("setevent-btn-prev"),
         callback_data: `setevent_list_${page - 1}`,
       });
     }
     if (page < totalPages) {
       navRow.push({
-        text: "➡️",
+        text: ctx.t("setevent-btn-next"),
         callback_data: `setevent_list_${page + 1}`,
       });
     }
@@ -322,7 +323,7 @@ export async function SetEventCallback(ctx: MyContext) {
     }
 
     await ctx.editMessageText(
-      `Selecione o evento para ser editado (Página ${page}/${totalPages}):`,
+      ctx.t("setevent-select-page", { page, totalPages }),
       {
         reply_markup: keyboard,
       },
@@ -334,7 +335,7 @@ export async function SetEventCallback(ctx: MyContext) {
   if (action === "select") {
     const eventCode = parts[2];
     if (!eventCode) {
-      await ctx.answerCallbackQuery("Dados inválidos.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-invalid-data"));
       return;
     }
 
@@ -343,14 +344,14 @@ export async function SetEventCallback(ctx: MyContext) {
     });
 
     if (!event) {
-      await ctx.answerCallbackQuery("Evento não encontrado.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-not-found"));
       return;
     }
 
     clearEventEditCache(ctx, eventCode);
     const cache = getEventEditCache(ctx, eventCode);
     const currentPage = ctx.session.eventListPage || 1;
-    const keyboard = getEditKeyboard(event.code, hasChanges(cache), currentPage);
+    const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), currentPage);
     const message = await formatEditMessage(event, cache, ctx);
 
     await ctx.editMessageText(message, {
@@ -364,7 +365,7 @@ export async function SetEventCallback(ctx: MyContext) {
   if (action === "save") {
     const eventCode = parts[2];
     if (!eventCode) {
-      await ctx.answerCallbackQuery("Dados inválidos.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-invalid-data"));
       return;
     }
 
@@ -373,7 +374,7 @@ export async function SetEventCallback(ctx: MyContext) {
     });
 
     if (!event) {
-      await ctx.answerCallbackQuery("Evento não encontrado.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-not-found"));
       return;
     }
 
@@ -381,9 +382,9 @@ export async function SetEventCallback(ctx: MyContext) {
 
     if (!hasChanges(cache)) {
       const keyboard = new InlineKeyboard();
-      keyboard.text("⬅️ Voltar à lista", `setevent_list_${ctx.session.eventListPage || 1}`);
+      keyboard.text(ctx.t("setevent-btn-back-list"), `setevent_list_${ctx.session.eventListPage || 1}`);
       await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
-      await ctx.answerCallbackQuery("Nenhuma alteração para salvar.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-no-changes"));
       return;
     }
 
@@ -404,16 +405,17 @@ export async function SetEventCallback(ctx: MyContext) {
 
       clearEventEditCache(ctx, eventCode);
 
-      const message = `✅ Evento <b>${updated.name}</b> salvo com sucesso!
+      const savedFields = [
+        cache.name !== undefined ? `${ctx.t("setevent-label-name")} ${cache.name}` : "",
+        cache.emoji !== undefined ? `${ctx.t("setevent-label-emoji")} ${cache.emoji}` : "",
+        cache.emoji_id !== undefined ? `${ctx.t("setevent-label-emoji-id")} ${cache.emoji_id}` : "",
+        cache.description !== undefined ? `${ctx.t("setevent-label-description")} ${cache.description}` : "",
+      ].filter(Boolean).join("\n");
 
-<b>Valores salvos:</b>
-${cache.name !== undefined ? `• Nome: ${cache.name}` : ""}
-${cache.emoji !== undefined ? `• Emoji: ${cache.emoji}` : ""}
-${cache.emoji_id !== undefined ? `• Emoji ID: ${cache.emoji_id}` : ""}
-${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""}`;
+      const message = `${ctx.t("setevent-success", { name: updated.name })}\n\n${ctx.t("setevent-success-values")}\n${savedFields}`;
 
       const keyboard = new InlineKeyboard().text(
-        "⬅️ Voltar à lista",
+        ctx.t("setevent-btn-back-list"),
         `setevent_list_${ctx.session.eventListPage || 1}`,
       );
 
@@ -424,7 +426,7 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
       await ctx.answerCallbackQuery();
     } catch (err) {
       error("[SetEvent] Erro ao salvar evento", err);
-      await ctx.answerCallbackQuery("Erro ao salvar.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-error-save"));
     }
     return;
   }
@@ -434,7 +436,7 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
     const eventCode = parts[3];
 
     if (!field || !eventCode) {
-      await ctx.answerCallbackQuery("Dados inválidos.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-invalid-data"));
       return;
     }
 
@@ -443,7 +445,7 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
     });
 
     if (!event) {
-      await ctx.answerCallbackQuery("Evento não encontrado.");
+      await ctx.answerCallbackQuery(ctx.t("setevent-not-found"));
       return;
     }
 
@@ -461,20 +463,19 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
       description: event.description || "",
     };
 
-    const fieldLabels: Record<string, string> = {
-      name: "nome",
-      emoji: "emoji",
-      emoji_id: "emoji ID",
-      emojiid: "emoji ID",
-      description: "descrição",
+    const fieldLabelsKeys: Record<string, string> = {
+      name: "setevent-field-name",
+      emoji: "setevent-field-emoji",
+      emoji_id: "setevent-field-emoji-id",
+      emojiid: "setevent-field-emoji-id",
+      description: "setevent-field-description",
     };
 
-    const label = fieldLabels[normalizedField || field] || field;
+    const labelKey = fieldLabelsKeys[normalizedField || field];
+    const label = labelKey ? ctx.t(labelKey) : field;
 
     await ctx.reply(
-      `✏️ Envie o novo ${label} para o evento ${event.name} (${event.code}):
-
-<b>Valor atual:</b> ${currentValues[normalizedField || field] || "Não definido"}`,
+      ctx.t("setevent-prompt-field", { label, name: event.name, code: event.code, current: currentValues[normalizedField || field] || ctx.t("setevent-value-not-defined") }),
       { parse_mode: "HTML", reply_markup: { force_reply: true } },
     );
     await ctx.answerCallbackQuery();
@@ -561,11 +562,11 @@ export async function SetEventReplyHandler(ctx: MyContext) {
   });
 
   if (!event) {
-    await ctx.reply("❌ Evento não encontrado.");
+    await ctx.reply(ctx.t("setevent-not-found"));
     return;
   }
 
-  const keyboard = getEditKeyboard(event.code, hasChanges(cache), ctx.session.eventListPage || 1);
+  const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), ctx.session.eventListPage || 1);
   const message = await formatEditMessage(event, cache, ctx);
 
   await ctx.reply(message, {

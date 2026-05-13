@@ -15,7 +15,7 @@ export async function haremmodeCallback(ctx: MyContext) {
     where: { telegramId: BigInt(userId) },
   });
   if (!user) {
-    await ctx.answerCallbackQuery("Usuário não encontrado.");
+    await ctx.answerCallbackQuery(ctx.t("haremmodecb-user-not-found"));
     return;
   }
 
@@ -29,7 +29,7 @@ export async function haremmodeCallback(ctx: MyContext) {
   const currentMode = config.haremMode || "latest";
   if (currentMode === modeMatch) {
     await ctx.answerCallbackQuery({
-      text: "Não atualizou, talvez seu harém esteja vazio ou você escolheu o mesmo modo novamente.",
+      text: ctx.t("haremmodecb-no-update"),
       show_alert: true,
     });
     return;
@@ -44,20 +44,20 @@ export async function haremmodeCallback(ctx: MyContext) {
 
   const modeText =
     modeMatch === "latest"
-      ? "Recentes"
+      ? ctx.t("haremmode-recent")
       : modeMatch === "rarity"
-        ? "Por Raridade"
-        : "Por Evento";
+        ? ctx.t("haremmode-rarity")
+        : ctx.t("haremmode-event");
 
   await ctx
     .editMessageCaption({
-      caption: `Modo selecionado: <b>${modeMatch}</b>`,
+      caption: ctx.t("haremmodecb-selected", { mode: modeText }),
       parse_mode: "HTML",
-      reply_markup: new InlineKeyboard(), // Isso remove os botões
+      reply_markup: new InlineKeyboard(),
     })
     .catch(() => {});
 
   await ctx.answerCallbackQuery(
-    `Modo atualizado com sucesso para: ${modeText}`,
+    ctx.t("haremmodecb-updated", { mode: modeText }),
   );
 }

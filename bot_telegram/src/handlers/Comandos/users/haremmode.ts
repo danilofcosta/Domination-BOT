@@ -21,20 +21,20 @@ export async function HaremmodeHandler(ctx: MyContext) {
    }
 
   const keyboard = new InlineKeyboard()
-    .text(`${currentMode === "default" || !currentMode ? "✅ " : ""}Padrão`, "haremmode_default")
+    .text(`${currentMode === "default" || !currentMode ? "✅ " : ""}${ctx.t("haremmode-default")}`, "haremmode_default")
     
-    .text(`${currentMode === "latest" || !currentMode ? "✅ " : ""}Recentes`, "haremmode_latest")
+    .text(`${currentMode === "latest" || !currentMode ? "✅ " : ""}${ctx.t("haremmode-recent")}`, "haremmode_latest")
     .row()
-    .text(`${currentMode === "rarity" ? "✅ " : ""}Por Raridade`, "haremmode_rarity")
+    .text(`${currentMode === "rarity" ? "✅ " : ""}${ctx.t("haremmode-rarity")}`, "haremmode_rarity")
     
-    .text(`${currentMode === "event" ? "✅ " : ""}Por Evento`, "haremmode_event")
+    .text(`${currentMode === "event" ? "✅ " : ""}${ctx.t("haremmode-event")}`, "haremmode_event")
     .row()
     .text(await ctx.t("close"), "close");
 
 await Sendmedia({
   ctx: ctx,
   per: character,
-  caption: "Escolha como você deseja ver seu harém",
+  caption: ctx.t("haremmode-caption"),
   reply_markup: keyboard,
 
 

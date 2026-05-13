@@ -37,7 +37,7 @@ export async function favConfirmHandler(ctx: MyContext) {
   if (!character) {
     warn(`favConfirmHandler - personagem inválido`, { favId });
     return ctx.answerCallbackQuery({
-      text: "Personagem inválido.",
+      text: ctx.t("error-fav-invalid-char"),
       show_alert: true,
     });
   }
@@ -66,7 +66,7 @@ export async function favConfirmHandler(ctx: MyContext) {
       favId,
     });
     return ctx.answerCallbackQuery({
-      text: "usuário não possui personagem",
+      text: ctx.t("error-fav-not-owned"),
       show_alert: true,
     });
   }
@@ -94,7 +94,7 @@ export async function favConfirmHandler(ctx: MyContext) {
 
   try {
     await ctx.editMessageCaption({
-      caption: `${capiton}\n\n${ctx.t("fav-character-success")} \n\n confira seu Harem /my${isWaifu ? "waifu" : "husbando"}s`,
+      caption: `${capiton}\n\n${ctx.t("fav-character-success")} ${ctx.t("fav-check-harem", { cmd: "my", genero: isWaifu ? "waifu" : "husbando" })}`,
       parse_mode: "HTML",
     });
   } catch (e) {

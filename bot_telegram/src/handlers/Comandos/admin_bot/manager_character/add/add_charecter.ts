@@ -48,7 +48,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
 
   const media = getMedia(reply);
   if (!media) {
-    ctx.reply('Only photo or video is supported.');
+    ctx.reply(ctx.t('add-char-only-photo-video'));
     return;
   }
 
@@ -63,7 +63,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
   const cleanCommand = (text_command || '').replace(/noconf|noautor/gi, '').trim();
 
   if (!cleanCommand.includes(',')) {
-    ctx.reply('Use: nome, anime, extras');
+    ctx.reply(ctx.t('add-char-usage'));
     return;
   }
 
@@ -92,7 +92,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
 
   if (isNoconf) {
     const queuePosition = processingQueue.length;
-    await ctx.reply(`📦 Personagem adicionado à fila (posição ${queuePosition + 1}). Processando em breve...`);
+    await ctx.reply(ctx.t("add-char-queue", { pos: queuePosition + 1 }));
 
     processingQueue.push(async () => {
       await addCharacterDirect(ctx, charData, isNoautor);
@@ -252,7 +252,7 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor:
     }
   } catch (e: any) {
     console.error('addCharacterDirect error:', e);
-    await ctx.reply('Erro ao adicionar personagem: ' + (e?.message || 'erro desconhecido'));
+    await ctx.reply(ctx.t("add-char-error", { error: e?.message || 'erro desconhecido' }));
   }
 }
 
@@ -266,7 +266,7 @@ async function sendAddedNotification(
 
   if (!chatId) {
     console.log('sendAddedNotification - DATABASE_TELEGRAM_ID nao configurado, pulando envio');
-    await ctx.reply('Personagem adicionado com sucesso!');
+    await ctx.reply(ctx.t('add-char-success'));
     return;
   }
 
@@ -310,7 +310,9 @@ function generateSlug(nome: string, anime: string): string {
 async function confirmCharacter(ctx: MyContext, data: PreCharacter) {
   const { idchat, nome, anime, rarities, events, genero, mediatype, media } = data;
 
-  const text = 'Nome: ' + nome + '\nAnime: ' + anime + '\nGenero: ' + genero + '\nMediatype: ' + mediatype + '\nData: ' + media + '\nLink: ' + LinkMsg(Number(ctx.chat?.id), Number(idchat)) + '\nRarities: ' + (rarities ?? 'valor padrao') + '\nEvents: ' + (events ?? 'sem evento');
+  const textoRarities = rarities ? rarities.toString() : ctx.t("add-char-default-value");
+  const textoEvents = events ? events.toString() : ctx.t("add-char-default-event");
+  const text = ctx.t("add-char-preview", { nome: nome, anime: anime, genero: genero, mediatype: mediatype, media: media, link: LinkMsg(Number(ctx.chat?.id), Number(idchat)), rarities: textoRarities, events: textoEvents });
 
   const id = Date.now();
 

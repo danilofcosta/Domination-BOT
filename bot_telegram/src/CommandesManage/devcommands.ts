@@ -8,7 +8,7 @@ const devCommands = new CommandGroup<MyContext>();
 
 const guardDevOnly = async (ctx: MyContext): Promise<boolean> => {
   if (String(ctx.message?.from.id) !== process.env.CHAT_ID_DEV) {
-    await ctx.reply("Comando apenas para desenvolvedor.");
+    await ctx.reply(ctx.t("dev-cmd-only"));
     return false;
   }
   return true;
@@ -19,7 +19,7 @@ async function ForceDrop(ctx: MyContext) {
   if (!allowed) return;
   const result = await DropCharacter(ctx);
   if (!result) {
-    await ctx.reply("Falha ao dropar character");
+    await ctx.reply(ctx.t("dev-fail-drop"));
   }
 }
 

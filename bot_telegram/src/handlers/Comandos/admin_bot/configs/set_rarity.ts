@@ -39,15 +39,15 @@ async function formatEditMessage(
     description?: string | null;
   },
   cache: RarityEditCache,
-  ctx?: MyContext,
+  ctx: MyContext,
 ): Promise<string> {
   const novoName = cache.name !== undefined ? cache.name : "-";
   const novoEmoji = cache.emoji !== undefined ? cache.emoji : "-";
-  const novoEmojiId = cache.emoji_id !== undefined ? (cache.emoji_id === "__NULL__" ? "null (apagar)" : cache.emoji_id) : "-";
+  const novoEmojiId = cache.emoji_id !== undefined ? (cache.emoji_id === "__NULL__" ? ctx.t("setrarity-value-null") : cache.emoji_id) : "-";
   const novoDesc = cache.description !== undefined ? cache.description : "-";
 
   const atualEmojiId = rarity.emoji_id || null;
-  let atualEmojiIdDisplay = "Não definido";
+  let atualEmojiIdDisplay = ctx.t("setrarity-value-not-defined");
 
   if (atualEmojiId && ctx) {
     const emoji = await getCustomEmojiFromId(ctx, atualEmojiId);
@@ -58,26 +58,26 @@ async function formatEditMessage(
   }
 
   let novoEmojiIdDisplay = novoEmojiId;
-  if (novoEmojiId !== "-" && novoEmojiId !== "null (apagar)" && ctx) {
+  if (novoEmojiId !== "-" && novoEmojiId !== ctx.t("setrarity-value-null") && ctx) {
     const emoji = await getCustomEmojiFromId(ctx, novoEmojiId);
     novoEmojiIdDisplay =
       emoji === novoEmojiId ? novoEmojiId : `${emoji} (${novoEmojiId})`;
   }
 
-  return `✏️ Editar Raridade: <b>${rarity.name}</b> (${rarity.code})
+  return `${ctx.t("setrarity-edit-title")} <b>${rarity.name}</b> (${rarity.code})
 
-<b>Atual:</b>
-• Nome: ${rarity.name}
-• Emoji: ${rarity.emoji}
-• Emoji ID: ${atualEmojiIdDisplay}
-•schow •show emojid :${rarity.emoji_id ? Id_to_enomji(rarity.emoji_id, rarity.emoji) : "n definido"}
+${ctx.t("setrarity-label-current")}
+${ctx.t("setrarity-label-name")} ${rarity.name}
+${ctx.t("setrarity-label-emoji")} ${rarity.emoji}
+${ctx.t("setrarity-label-emoji-id")} ${atualEmojiIdDisplay}
+•show emojid :${rarity.emoji_id ? Id_to_enomji(rarity.emoji_id, rarity.emoji) : ctx.t("setrarity-value-not-set")}
 
-<b>Novo:</b>
-• Nome: ${novoName}
-• Emoji: ${novoEmoji}
-• Emoji ID: ${novoEmojiIdDisplay}
-${novoDesc !== "-" ? `• Descrição: ${novoDesc}` : ""}
-${novoEmojiId !== "-" && novoEmojiId !== "null (apagar)" ? `•show emojid : ${Id_to_enomji(novoEmojiId, rarity.emoji)}` : ""}
+${ctx.t("setrarity-label-new")}
+${ctx.t("setrarity-label-name")} ${novoName}
+${ctx.t("setrarity-label-emoji")} ${novoEmoji}
+${ctx.t("setrarity-label-emoji-id")} ${novoEmojiIdDisplay}
+${novoDesc !== "-" ? `${ctx.t("setrarity-label-description")} ${novoDesc}` : ""}
+${novoEmojiId !== "-" && novoEmojiId !== ctx.t("setrarity-value-null") ? `•show emojid : ${Id_to_enomji(novoEmojiId, rarity.emoji)}` : ""}
 
 
 `;
@@ -86,6 +86,7 @@ ${novoEmojiId !== "-" && novoEmojiId !== "null (apagar)" ? `•show emojid : ${I
 const ITEMS_PER_PAGE = 10;
 
 function getEditKeyboard(
+  ctx: MyContext,
   rarityCode: string,
   hasChanges: boolean,
   currentPage: number = 1,
@@ -95,18 +96,18 @@ function getEditKeyboard(
   ? InstanceType<any>
   : any {
   const keyboard = new InlineKeyboard()
-    .text("✏️ Nome", `setrarity_edit_name_${rarityCode}`)
-    .text("😀 Emoji", `setrarity_edit_emoji_${rarityCode}`)
+    .text(ctx.t("setrarity-btn-name"), `setrarity_edit_name_${rarityCode}`)
+    .text(ctx.t("setrarity-btn-emoji"), `setrarity_edit_emoji_${rarityCode}`)
     .row()
-    .text("🆔 Emoji ID", `setrarity_edit_emojiId_${rarityCode}`)
-    .text("📝 Descrição", `setrarity_edit_description_${rarityCode}`)
+    .text(ctx.t("setrarity-btn-emoji-id"), `setrarity_edit_emojiId_${rarityCode}`)
+    .text(ctx.t("setrarity-btn-description"), `setrarity_edit_description_${rarityCode}`)
     .row();
 
   if (hasChanges) {
-    keyboard.text("💾 Salvar", `setrarity_save_${rarityCode}`);
+    keyboard.text(ctx.t("setrarity-btn-save"), `setrarity_save_${rarityCode}`);
   }
 
-  keyboard.text("⬅️ Voltar à lista", `setrarity_list_${currentPage}`);
+  keyboard.text(ctx.t("setrarity-btn-back-list"), `setrarity_list_${currentPage}`);
 
   return keyboard;
 }
@@ -160,7 +161,7 @@ export async function SetRarityHandler(ctx: MyContext) {
     ]);
 
     if (allRarities.length === 0) {
-      return ctx.reply("❌ Nenhuma raridade encontrada.");
+      return ctx.reply(ctx.t("setrarity-empty"));
     }
 
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
@@ -178,13 +179,13 @@ export async function SetRarityHandler(ctx: MyContext) {
     const navRow: { text: string; callback_data: string }[] = [];
     if (page > 1) {
       navRow.push({
-        text: "⬅️",
+        text: ctx.t("setrarity-btn-prev"),
         callback_data: `setrarity_list_${page - 1}`,
       });
     }
     if (page < totalPages) {
       navRow.push({
-        text: "➡️",
+        text: ctx.t("setrarity-btn-next"),
         callback_data: `setrarity_list_${page + 1}`,
       });
     }
@@ -193,7 +194,7 @@ export async function SetRarityHandler(ctx: MyContext) {
     }
 
     return ctx.reply(
-      `Selecione a raridade para ser editada (Página ${page}/${totalPages}):`,
+      ctx.t("setrarity-select-page", { page, totalPages }),
       {
         reply_markup: keyboard,
       },
@@ -237,12 +238,12 @@ export async function SetRarityHandler(ctx: MyContext) {
   }
 
   if (!rarity) {
-    return ctx.reply(`❌ Raridade não encontrada: "${input}"`);
+    return ctx.reply(ctx.t("setrarity-not-found-id", { input }));
   }
 
   const cache = getRarityEditCache(ctx, rarity.code);
   const currentPage = ctx.session.rarityListPage || 1;
-  const keyboard = getEditKeyboard(rarity.code, hasChanges(cache), currentPage);
+  const keyboard = getEditKeyboard(ctx, rarity.code, hasChanges(cache), currentPage);
   const message = await formatEditMessage(rarity, cache, ctx);
 
   await ctx.reply(message, {
@@ -263,10 +264,10 @@ export async function SetRarityCallback(ctx: MyContext) {
     if (rarityCode) {
       clearRarityEditCache(ctx, rarityCode);
     }
-    await ctx.editMessageText("❌ Edição cancelada.");
+    await ctx.editMessageText(ctx.t("setrarity-cancel"));
     await ctx.answerCallbackQuery();
     const keyboard = new InlineKeyboard().text(
-      "⬅️ Voltar à lista",
+      ctx.t("setrarity-btn-back-list"),
       `setrarity_list_${ctx.session.rarityListPage || 1}`,
     );
     await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
@@ -288,7 +289,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     ]);
 
     if (allRarities.length === 0) {
-      await ctx.answerCallbackQuery("Nenhuma raridade encontrada.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-empty"));
       return;
     }
 
@@ -307,13 +308,13 @@ export async function SetRarityCallback(ctx: MyContext) {
     const navRow: { text: string; callback_data: string }[] = [];
     if (page > 1) {
       navRow.push({
-        text: "⬅️",
+        text: ctx.t("setrarity-btn-prev"),
         callback_data: `setrarity_list_${page - 1}`,
       });
     }
     if (page < totalPages) {
       navRow.push({
-        text: "➡️",
+        text: ctx.t("setrarity-btn-next"),
         callback_data: `setrarity_list_${page + 1}`,
       });
     }
@@ -322,7 +323,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     }
 
     await ctx.editMessageText(
-      `Selecione a raridade para ser editada (Página ${page}/${totalPages}):`,
+      ctx.t("setrarity-select-page", { page, totalPages }),
       {
         reply_markup: keyboard,
       },
@@ -334,7 +335,7 @@ export async function SetRarityCallback(ctx: MyContext) {
   if (action === "select") {
     const rarityCode = parts[2];
     if (!rarityCode) {
-      await ctx.answerCallbackQuery("Dados inválidos.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-invalid-data"));
       return;
     }
 
@@ -343,7 +344,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     });
 
     if (!rarity) {
-      await ctx.answerCallbackQuery("Raridade não encontrada.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-not-found"));
       return;
     }
 
@@ -351,6 +352,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     const cache = getRarityEditCache(ctx, rarityCode);
     const currentPage = ctx.session.rarityListPage || 1;
     const keyboard = getEditKeyboard(
+      ctx,
       rarity.code,
       hasChanges(cache),
       currentPage,
@@ -368,7 +370,7 @@ export async function SetRarityCallback(ctx: MyContext) {
   if (action === "save") {
     const rarityCode = parts[2];
     if (!rarityCode) {
-      await ctx.answerCallbackQuery("Dados inválidos.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-invalid-data"));
       return;
     }
 
@@ -377,7 +379,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     });
 
     if (!rarity) {
-      await ctx.answerCallbackQuery("Raridade não encontrada.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-not-found"));
       return;
     }
 
@@ -386,11 +388,11 @@ export async function SetRarityCallback(ctx: MyContext) {
     if (!hasChanges(cache)) {
       const keyboard = new InlineKeyboard();
       keyboard.text(
-        "⬅️ Voltar à lista",
+        ctx.t("setrarity-btn-back-list"),
         `setrarity_list_${ctx.session.rarityListPage || 1}`,
       );
       await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
-      await ctx.answerCallbackQuery("Nenhuma alteração para salvar.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-no-changes"));
       return;
     }
 
@@ -411,16 +413,17 @@ export async function SetRarityCallback(ctx: MyContext) {
 
       clearRarityEditCache(ctx, rarityCode);
 
-      const message = `✅ Raridade <b>${updated.name}</b> salva com sucesso!
+      const savedFields = [
+        cache.name !== undefined ? `${ctx.t("setrarity-label-name")} ${cache.name}` : "",
+        cache.emoji !== undefined ? `${ctx.t("setrarity-label-emoji")} ${cache.emoji}` : "",
+        cache.emoji_id !== undefined ? `${ctx.t("setrarity-label-emoji-id")} ${cache.emoji_id}` : "",
+        cache.description !== undefined ? `${ctx.t("setrarity-label-description")} ${cache.description}` : "",
+      ].filter(Boolean).join("\n");
 
-<b>Valores salvos:</b>
-${cache.name !== undefined ? `• Nome: ${cache.name}` : ""}
-${cache.emoji !== undefined ? `• Emoji: ${cache.emoji}` : ""}
-${cache.emoji_id !== undefined ? `• Emoji ID: ${cache.emoji_id}` : ""}
-${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""}`;
+      const message = `${ctx.t("setrarity-success", { name: updated.name })}\n\n${ctx.t("setrarity-success-values")}\n${savedFields}`;
 
       const keyboard = new InlineKeyboard().text(
-        "⬅️ Voltar à lista",
+        ctx.t("setrarity-btn-back-list"),
         `setrarity_list_${ctx.session.rarityListPage || 1}`,
       );
 
@@ -431,7 +434,7 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
       await ctx.answerCallbackQuery();
     } catch (err) {
       error("[SetRarity] Erro ao salvar raridade", err);
-      await ctx.answerCallbackQuery("Erro ao salvar.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-error-save"));
     }
     return;
   }
@@ -441,7 +444,7 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
     const rarityCode = parts[3];
 
     if (!field || !rarityCode) {
-      await ctx.answerCallbackQuery("Dados inválidos.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-invalid-data"));
       return;
     }
 
@@ -450,7 +453,7 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
     });
 
     if (!rarity) {
-      await ctx.answerCallbackQuery("Raridade não encontrada.");
+      await ctx.answerCallbackQuery(ctx.t("setrarity-not-found"));
       return;
     }
 
@@ -468,20 +471,19 @@ ${cache.description !== undefined ? `• Descrição: ${cache.description}` : ""
       description: rarity.description || "",
     };
 
-    const fieldLabels: Record<string, string> = {
-      name: "nome",
-      emoji: "emoji",
-      emoji_id: "emoji ID",
-      emojiid: "emoji ID",
-      description: "descrição",
+    const fieldLabelsKeys: Record<string, string> = {
+      name: "setrarity-field-name",
+      emoji: "setrarity-field-emoji",
+      emoji_id: "setrarity-field-emoji-id",
+      emojiid: "setrarity-field-emoji-id",
+      description: "setrarity-field-description",
     };
 
-    const label = fieldLabels[normalizedField || field] || field;
+    const labelKey = fieldLabelsKeys[normalizedField || field];
+    const label = labelKey ? ctx.t(labelKey) : field;
 
     await ctx.reply(
-      `✏️ Envie o novo ${label} para a raridade ${rarity.name} (${rarity.code}):
-
-<b>Valor atual:</b> ${currentValues[normalizedField || field] || "Não definido"}`,
+      ctx.t("setrarity-prompt-field", { label, name: rarity.name, code: rarity.code, current: currentValues[normalizedField || field] || ctx.t("setrarity-value-not-defined") }),
       { parse_mode: "HTML", reply_markup: { force_reply: true } },
     );
     await ctx.answerCallbackQuery();
@@ -568,11 +570,12 @@ export async function SetRarityReplyHandler(ctx: MyContext) {
   });
 
   if (!rarity) {
-    await ctx.reply("❌ Raridade não encontrada.");
+    await ctx.reply(ctx.t("setrarity-not-found"));
     return;
   }
 
   const keyboard = getEditKeyboard(
+    ctx,
     rarity.code,
     hasChanges(cache),
     ctx.session.rarityListPage || 1,

@@ -76,8 +76,7 @@ export async function banHandler(ctx: MyContext) {
   const result = await extractUserId(ctx);
 
   if (!result.userId) {
-    const usage = 'Use: /banuser' + botPrefix + ' <opcao>\n\nOpcoes:\n- ID numerico (ex: /banuser 123456789)\n- @username (ex: /banuser @usuario)\n- Responder a mensagem do usuario';
-    await ctx.reply(usage);
+    await ctx.reply(ctx.t("banuser-usage-ban", { prefix: botPrefix }));
     return;
   }
 
@@ -88,7 +87,7 @@ export async function banHandler(ctx: MyContext) {
       targetId: result.userId,
       targetRole
     });
-    await ctx.reply('Nao e possivel banir um administrador do bot.');
+    await ctx.reply(ctx.t("banuser-cannot-ban-admin"));
     return;
   }
 
@@ -109,15 +108,14 @@ export async function banHandler(ctx: MyContext) {
   });
 
   const targetName = result.userData?.first_name || result.userData?.username || result.userId.toString();
-  await ctx.reply('Usuario ' + targetName + ' (' + result.userId + ') banido com sucesso!');
+  await ctx.reply(ctx.t("banuser-success-ban", { name: targetName, id: result.userId }));
 }
 
 export async function unbanHandler(ctx: MyContext) {
   const result = await extractUserId(ctx);
 
   if (!result.userId) {
-    const usage = 'Use: /unbanuser' + botPrefix + ' <opcao>\n\nOpcoes:\n- ID numerico (ex: /unbanuser 123456789)\n- @username (ex: /unbanuser @usuario)\n- Responder a mensagem do usuario';
-    await ctx.reply(usage);
+    await ctx.reply(ctx.t("banuser-usage-unban", { prefix: botPrefix }));
     return;
   }
 
@@ -128,7 +126,7 @@ export async function unbanHandler(ctx: MyContext) {
       targetId: result.userId,
       targetRole
     });
-    await ctx.reply('Nao e possivel desbanir um administrador do bot.');
+    await ctx.reply(ctx.t("banuser-cannot-unban-admin"));
     return;
   }
 
@@ -140,7 +138,7 @@ export async function unbanHandler(ctx: MyContext) {
   });
 
   if (!user) {
-    await ctx.reply('Usuario nao encontrado no banco de dados.');
+    await ctx.reply(ctx.t("banuser-not-found"));
     return;
   }
 
@@ -151,7 +149,7 @@ export async function unbanHandler(ctx: MyContext) {
 
   const targetData = user?.telegramData as Record<string, any> | null;
   const targetName = targetData?.first_name || targetData?.username || result.userId.toString();
-  await ctx.reply('Usuario ' + targetName + ' (' + result.userId + ') desbanido com sucesso!');
+  await ctx.reply(ctx.t("banuser-success-unban", { name: targetName, id: result.userId }));
 }
 
 export async function listBannedHandler(ctx: MyContext) {
@@ -164,19 +162,20 @@ export async function listBannedHandler(ctx: MyContext) {
     });
 
     if (banned.length === 0) {
-      await ctx.reply('Nenhum usuario banido.');
+      await ctx.reply(ctx.t("banuser-list-empty"));
       return;
     }
 
+    const unknownLabel = ctx.t("banuser-unknown");
     const lines = banned.map((user) => {
       const data = user.telegramData as any;
-      const name = data?.first_name || data?.username || 'Desconhecido';
+      const name = data?.first_name || data?.username || unknownLabel;
       return user.telegramId + ' - ' + name;
     });
 
-    await ctx.reply('Usuarios banidos:\n' + lines.join('\n'));
+    await ctx.reply(ctx.t("banuser-list-title", { list: lines.join('\n') }));
   } catch (err) {
     error('listBannedHandler - erro ao listar', err);
-    await ctx.reply('Erro ao listar');
+    await ctx.reply(ctx.t("banuser-list-error"));
   }
 }

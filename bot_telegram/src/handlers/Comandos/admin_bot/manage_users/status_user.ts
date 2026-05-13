@@ -58,7 +58,7 @@ interface UserStatusResult {
   WaifuCollection: { id: number }[];
 }
 
-async function getUserStatus(userId: number, userData?: TelegramUserData) {
+async function getUserStatus(ctx: MyContext, userId: number, userData?: TelegramUserData) {
   const user = await prisma.user.findUnique({
     where: { telegramId: BigInt(userId) },
   }) as UserStatusResult | null;
@@ -75,16 +75,16 @@ async function getUserStatus(userId: number, userData?: TelegramUserData) {
   }[user.profileType] || '👤';
 
   const statusText = {
-    [ProfileType.SUPREME]: 'Supremo',
-    [ProfileType.SUPER_ADMIN]: 'Super Admin',
-    [ProfileType.ADMIN]: 'Administrador',
-    [ProfileType.MODERATOR]: 'Moderador',
-    [ProfileType.USER]: 'Membro',
-    [ProfileType.BANNED]: 'Banido',
-  }[user.profileType] || 'Desconhecido';
+    [ProfileType.SUPREME]: 'statususer-profile-supremo',
+    [ProfileType.SUPER_ADMIN]: 'statususer-profile-super-admin',
+    [ProfileType.ADMIN]: 'statususer-profile-admin',
+    [ProfileType.MODERATOR]: 'statususer-profile-moderator',
+    [ProfileType.USER]: 'statususer-profile-user',
+    [ProfileType.BANNED]: 'statususer-profile-banned',
+  }[user.profileType] || 'statususer-profile-unknown';
 
   const telegramData = user.telegramData as TelegramUserData | null;
-  const name = userData?.first_name || telegramData?.first_name || 'Desconhecido';
+  const name = userData?.first_name || telegramData?.first_name || ctx.t("statususer-profile-unknown");
   const username = userData?.username || telegramData?.username || null;
   const createdAt = user.createdAt;
   const memberCount = (user.HusbandoCollection?.length || 0) + (user.WaifuCollection?.length || 0);
@@ -115,39 +115,39 @@ export async function statusUserHandler(ctx: MyContext) {
   const targetId = await extractUserId(ctx);
 
   if (!targetId) {
-    await ctx.reply('Use: /statususer <opcao>\n\nOpcoes:\n- ID numerico\n- @username\n- Responder mensagem do usuario');
+    await ctx.reply(ctx.t("statususer-usage"));
     return;
   }
 
   try {
     debug('statusUserHandler - buscando info do usuario', targetId);
 
-    const status = await getUserStatus(targetId);
+    const status = await getUserStatus(ctx, targetId);
 
     if (!status) {
-      await ctx.reply('Usuario #' + targetId + ' nao encontrado no sistema.\n\nEste usuario nunca interagiu com o bot.');
+      await ctx.reply(ctx.t("statususer-not-found", { id: targetId }));
       return;
     }
 
     let message = '#id' + targetId + '\n\n';
-    message += '🆔 ID: ' + targetId + ' #' + targetId + '\n';
-    message += '👱 Nome: ' + status.name + '\n';
+    message += ctx.t("statususer-label-id") + ' ' + targetId + ' #' + targetId + '\n';
+    message += ctx.t("statususer-label-name") + ' ' + status.name + '\n';
 
     if (status.username) {
-      message += '🌐 Nome de usuario: @' + status.username + '\n';
+      message += ctx.t("statususer-label-username") + ' @' + status.username + '\n';
     }
 
-    message += '👀 Situacao: ' + status.statusEmoji + ' ' + status.statusText + '\n';
-    message += '💰 Moedas: ' + status.coins + '\n';
-    message += '📦 Colecao: ' + status.memberCount + ' personagens\n';
+    message += ctx.t("statususer-label-status") + ' ' + status.statusEmoji + ' ' + ctx.t(status.statusText) + '\n';
+    message += ctx.t("statususer-label-coins") + ' ' + status.coins + '\n';
+    message += ctx.t("statususer-label-collection", { count: status.memberCount }) + '\n';
 
     if (status.entryDate) {
-      message += '⤵️ Entrada: ' + status.entryDate + '\n';
+      message += ctx.t("statususer-label-entry") + ' ' + status.entryDate + '\n';
     }
 
     await ctx.reply(message);
   } catch (err) {
     error('statusUserHandler - erro', err);
-    await ctx.reply('Erro ao buscar informacoes do usuario.');
+    await ctx.reply(ctx.t("statususer-error"));
   }
 }
