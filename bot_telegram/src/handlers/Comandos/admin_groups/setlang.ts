@@ -1,7 +1,8 @@
 import { InlineKeyboard } from "grammy";
 import { i18n } from "../../../initializeBot.js";
 import { prisma } from "../../../../lib/prisma.js";
-import { Language, ProfileType, type MyContext } from "../../../utils/customTypes.js";
+import { ProfileType, type MyContext } from "../../../utils/customTypes.js";
+import { Language } from "../../../../generated/prisma/enums.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { info, warn } from "../../../utils/log.js";
 

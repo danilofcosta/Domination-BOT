@@ -11,7 +11,9 @@
 
 export const Language = {
   PT: 'PT',
-  EN: 'EN'
+  EN: 'EN',
+  ES: 'ES',
+  JA: 'JA'
 } as const
 
 export type Language = (typeof Language)[keyof typeof Language]

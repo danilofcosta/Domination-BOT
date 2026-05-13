@@ -132,13 +132,6 @@ export interface PreCharacter {
   | Awaited<ReturnType<typeof prisma.husbandoCollection.findMany>>[number];
 
 
-export enum Language {
-  PT = "PT",
-  EN = "EN",
-  ES = "ES",
-  JA = "JA"
-}
-
 export enum MediaType {
   IMAGE_URL = "IMAGE_URL",
   IMAGE_FILEID = "IMAGE_FILEID",
