@@ -1,4 +1,4 @@
-import { prisma } from "../../../../../lib/prisma.js";
+import { prisma } from "../../../../lib/prisma.js";
 import type { MyContext } from "../../../../utils/customTypes.js";
 import { InlineKeyboard } from "grammy";
 import { error } from "../../../../utils/log.js";

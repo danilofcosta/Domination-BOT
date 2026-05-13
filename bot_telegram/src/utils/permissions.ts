@@ -1,6 +1,6 @@
 import { type MiddlewareFn } from "grammy";
 import { ProfileType, type MyContext } from "./customTypes.js";
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../lib/prisma.js";
 import { warn, error, debug, info } from "./log.js";
 import { Sendmedia } from "./sendmedia.js";
 

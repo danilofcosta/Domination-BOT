@@ -2,7 +2,7 @@ import { Bot, session } from "grammy";
 import { I18n } from "@grammyjs/i18n";
 import { limit } from "@grammyjs/ratelimiter";
 import { PrismaAdapter } from "@grammyjs/storage-prisma";
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "./lib/prisma.js";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 

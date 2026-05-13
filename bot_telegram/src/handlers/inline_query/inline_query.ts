@@ -2,7 +2,7 @@ import { ChatType, type MyContext } from "../../utils/customTypes.js";
 
 import { showResults } from "./show_results_inline.js";
 import { createResult } from "./create_inline_result.js";
-import { prisma } from "../../../lib/prisma.js";
+import { prisma } from "../../lib/prisma.js";
 import { log } from "../../utils/log.js";
 const LIMIT = 25;
 

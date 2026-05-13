@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma.js";
+import { prisma } from "../../lib/prisma.js";
 import type { ChatType } from "../customTypes.js";
 import { info, error, debug } from "../log.js";
 

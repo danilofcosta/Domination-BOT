@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "tsx dist/src/index.js",
-    "build": "tsc && cpx \"src/locales/**/*\" dist/src/locales",
-    "test": "tsc && cpx \"src/locales/**/*\" dist/src/locales && tsx dist/src/index.js ",
+    "start": "node dist/index.js",
+    "build": "prisma generate && tsc && cpx \"src/locales/**/*\" dist/locales",
+    "postinstall": "prisma generate",
+    "test": "tsc && cpx \"src/locales/**/*\" dist/locales && node dist/index.js ",
     "dev": "tsx watch src/index.ts",
     "webhook": "tsx scripts/set_web_hook.ts",
     "up": "tsx scripts/up.ts"
@@ -20,7 +21,7 @@
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
     "cpx": "^1.5.0",
-    "prisma": "^7.8.0",
+    "dotenv": "^17.4.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
@@ -33,16 +34,14 @@
     "@grammyjs/runner": "^1.0.4",
     "@grammyjs/storage-prisma": "^2.5.1",
     "@prisma/adapter-pg": "^7.6.0",
-    "@prisma/client": "^7.8.0",
+    "@prisma/client": "^7.7.0",
+    "prisma": "^7.7.0",
     "dayjs": "^1.11.9",
-    "dotenv": "^17.4.0",
     "express": "^5.2.1",
     "grammy": "^1.41.0",
     "kysely": "^0.28.8",
     "lru-cache": "^11.2.6",
     "pg": "^8.20.0",
-    "pg-dump-restore": "^1.0.15",
-    "reflect-metadata": "^0.1.13",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   }

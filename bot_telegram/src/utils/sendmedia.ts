@@ -3,7 +3,7 @@ import type { Character, MyContext } from "./customTypes.js";
 import { InputFile, InlineKeyboard } from "grammy";
 import fs from "fs";
 
-import { MediaType } from "../../generated/prisma/client.js";
+import { MediaType } from "@prisma/client";
 import { error, debug } from "./log.js";
 
  

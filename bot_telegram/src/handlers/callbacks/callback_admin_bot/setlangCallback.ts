@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { Language, ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { warn } from "../../../utils/log.js";

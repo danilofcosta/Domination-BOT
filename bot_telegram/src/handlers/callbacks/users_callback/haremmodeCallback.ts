@@ -1,5 +1,5 @@
 import type { MyContext } from "../../../utils/customTypes.js";
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { ChatType } from "../../../utils/customTypes.js";
 import { InlineKeyboard } from "grammy";
 

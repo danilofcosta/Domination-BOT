@@ -1,13 +1,13 @@
-import { bts_yes_or_no } from "../../utils/btns";
+import { bts_yes_or_no } from "../../utils/btns.js";
 import type {
   ChatType,
   CollectionItem,
   MyContext,
-} from "../../utils/customTypes";
-import { error, warn } from "../../utils/log";
-import { createResult } from "./create_inline_result";
-import { getHaremCollection, LIMIT } from "./harem_inline_query";
-import { showResults } from "./show_results_inline";
+} from "../../utils/customTypes.js";
+import { error, warn } from "../../utils/log.js";
+import { createResult } from "./create_inline_result.js";
+import { getHaremCollection, LIMIT } from "./harem_inline_query.js";
+import { showResults } from "./show_results_inline.js";
 
 export async function Gift_Inline_query(ctx: MyContext) {
   if (!ctx.inlineQuery) return;

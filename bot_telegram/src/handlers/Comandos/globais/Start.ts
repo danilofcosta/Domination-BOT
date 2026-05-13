@@ -3,7 +3,7 @@ import { LastRandomCharacter } from "../../../utils/chareter/randomCharacter.js"
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
 import { helpCommand } from "./help.js";
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { formatUptime } from "./status.js";
 
 let lastRefreshTime = Date.now();

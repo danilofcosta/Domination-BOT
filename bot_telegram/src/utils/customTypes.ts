@@ -6,9 +6,9 @@ import type { SessionFlavor } from "grammy";
 
 import type { User } from "grammy/types";
 import type { SessionData } from "./customInteface.js";
-import type { WaifuCollection } from "../../generated/prisma/client.js";
-import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "../../generated/prisma/client.js";
-import type { prisma } from "../../lib/prisma.js";
+import type { WaifuCollection } from "@prisma/client";
+import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "@prisma/client";
+import type { prisma } from "../lib/prisma.js";
  // db types
 
 

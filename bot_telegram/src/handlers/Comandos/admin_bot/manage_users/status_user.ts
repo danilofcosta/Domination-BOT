@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../lib/prisma.js';
+import { prisma } from '../../../../lib/prisma.js';
 import { ProfileType, type MyContext } from '../../../../utils/customTypes.js';
 import { debug, error } from '../../../../utils/log.js';
 

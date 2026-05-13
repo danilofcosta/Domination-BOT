@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { create_caption } from "../../../utils/manege_caption/create_caption.js";
 import { info, warn, error, debug } from "../../../utils/log.js";

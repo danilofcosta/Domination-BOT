@@ -1,6 +1,6 @@
 import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../utils/customTypes.js";
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 
 export async function StatRefresh(ctx: MyContext) {
   const startTime = Date.now();

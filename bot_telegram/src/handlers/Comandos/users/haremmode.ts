@@ -1,6 +1,6 @@
 import { InlineKeyboard } from "grammy";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { LastRandomCharacter } from "../../../utils/chareter/randomCharacter.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 

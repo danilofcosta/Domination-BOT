@@ -1,4 +1,4 @@
-import { prisma } from "../../../lib/prisma.js";
+import { prisma } from "../../lib/prisma.js";
 import { ChatType, MediaType, type CollectionItem, type MyContext } from "../../utils/customTypes.js";
 import { createResult } from "./create_inline_result.js";
 import { showResults } from "./show_results_inline.js";

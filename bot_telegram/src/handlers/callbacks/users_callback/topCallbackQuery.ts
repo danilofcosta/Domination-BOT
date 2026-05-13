@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 //topuser_ ation
 export async function topCallbackQuery(ctx: MyContext) {

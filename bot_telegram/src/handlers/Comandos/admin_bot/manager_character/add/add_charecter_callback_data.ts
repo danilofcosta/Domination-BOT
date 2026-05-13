@@ -1,5 +1,5 @@
-import { prisma } from "../../../../../../lib/prisma.js";
-import { Prisma } from "../../../../../../generated/prisma/client.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import { Prisma } from "@prisma/client";
 import { getCharacter } from "../../../../../cache/cache.js";
 import type { MyContext } from "../../../../../utils/customTypes.js";
 import { mentionUser } from "../../../../../utils/metion_user.js";

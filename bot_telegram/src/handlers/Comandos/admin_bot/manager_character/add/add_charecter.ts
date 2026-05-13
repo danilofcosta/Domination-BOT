@@ -1,4 +1,4 @@
-import { prisma } from "../../../../../../lib/prisma.js";
+import { prisma } from "../../../../../lib/prisma.js";
 import { setCharacter } from "../../../../../cache/cache.js";
 import { LinkMsg } from "../../../../../utils/link_msg.js";
 import { mentionUser } from "../../../../../utils/metion_user.js";

@@ -1,4 +1,4 @@
-import { prisma } from '../../../../../lib/prisma.js';
+import { prisma } from '../../../../lib/prisma.js';
 import { botPrefix } from '../../../../CommandesManage/botConfigCommands.js';
 import { ProfileType, type MyContext } from '../../../../utils/customTypes.js';
 import { info, error, debug, warn } from '../../../../utils/log.js';

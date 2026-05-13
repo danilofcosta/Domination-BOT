@@ -17,7 +17,7 @@
  *   - Dados: letter, animes, genero, userId
  */
 
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { buildLetterKeyboard } from "../../../utils/btns.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";

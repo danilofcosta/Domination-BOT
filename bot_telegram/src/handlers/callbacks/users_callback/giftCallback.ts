@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/prisma.js";
+import { prisma } from "../../../lib/prisma.js";
 import { getGiftUser } from "../../../cache/cache.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";

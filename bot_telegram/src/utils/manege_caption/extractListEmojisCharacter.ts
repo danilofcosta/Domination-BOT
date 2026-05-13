@@ -1,5 +1,5 @@
 
-import type { Rarity } from "../../../generated/prisma/client.js";
+import type { Rarity } from "@prisma/client";
 import { ChatType, type Character, type EventType, type MyContext, type RarityType } from "../customTypes.js";
 
 

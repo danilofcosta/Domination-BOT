@@ -6,7 +6,7 @@ import {
 import type { MyContext } from "../../../../utils/customTypes.js";
 import { ChatType } from "../../../../utils/customTypes.js";
 import { info, warn, debug } from "../../../../utils/log.js";
-import { prisma } from "../../../../../lib/prisma.js";
+import { prisma } from "../../../../lib/prisma.js";
 import { mentionUser } from "../../../../utils/metion_user.js";
 
 export async function add_in_colletion(ctx: MyContext) {
