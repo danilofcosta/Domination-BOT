@@ -13,10 +13,6 @@ import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
 import { animelistCommand } from "../handlers/Comandos/users/animelist.js";
 import { setlangHandler } from "../handlers/Comandos/admin_groups/setlang.js";
 import { debug } from "../utils/log.js";
-import type {
-  BotCommandScope,
-  BotCommandScopeAllGroupChats,
-} from "grammy/types";
 
 const UserCommands = new CommandGroup<MyContext>();
 

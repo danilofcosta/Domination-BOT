@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Character } from "@/lib/types";
-import { MediaType } from "../../../generated/prisma/enums";
 import { resolveTelegramMedia } from "@/app/admin/actions";
 import { cn } from "@/lib/telegram/create_slug";
 

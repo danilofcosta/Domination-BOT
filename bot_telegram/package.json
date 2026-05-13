@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "node dist/src/index.js",
+    "start": "tsx dist/src/index.js",
     "build": "tsc && cpx \"src/locales/**/*\" dist/src/locales",
-    "test": "tsx src/index.ts",
+    "test": "tsc && cpx \"src/locales/**/*\" dist/src/locales && tsx dist/src/index.js ",
     "dev": "tsx watch src/index.ts",
     "webhook": "tsx scripts/set_web_hook.ts",
     "up": "tsx scripts/up.ts"

@@ -1,10 +1,8 @@
 import { InlineKeyboard } from "grammy";
 import { i18n } from "../../../initializeBot.js";
-import { prisma } from "../../../../lib/prisma.js";
 import { ProfileType, type MyContext } from "../../../utils/customTypes.js";
-import { Language } from "../../../../generated/prisma/enums.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
-import { info, warn } from "../../../utils/log.js";
+import { warn } from "../../../utils/log.js";
 
 async function canChangeLanguage(ctx: MyContext): Promise<boolean> {
   const userId = ctx.from?.id;
@@ -30,33 +28,6 @@ async function canChangeLanguage(ctx: MyContext): Promise<boolean> {
 async function setLanguage(ctx: MyContext, lang: string) {
   ctx.session.locale = lang;
   ctx.i18n.useLocale(lang);
-
-  if (ctx.from?.id) {
-    try {
-      const langMap: Record<string, Language> = {
-        pt: Language.PT,
-        en: Language.EN,
-        es: Language.ES,
-        ja: Language.JA,
-      };
-      const dbLang = langMap[lang] ?? Language.PT;
-      await prisma.user.upsert({
-        where: { telegramId: BigInt(ctx.from.id) },
-        update: { language: dbLang },
-        create: {
-          telegramId: BigInt(ctx.from.id),
-          language: dbLang,
-          telegramData: {},
-          favoriteWaifuId: null,
-          favoriteHusbandoId: null,
-          waifuConfig: {},
-          husbandoConfig: {},
-        },
-      });
-    } catch (e) {
-      warn("setlang - erro ao salvar no db", e);
-    }
-  }
 }
 
 export async function setlangHandler(ctx: MyContext) {

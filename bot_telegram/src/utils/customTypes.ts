@@ -156,3 +156,9 @@ export enum SourceType {
   MANGA = "MANGA",
   MOVIE = "MOVIE"
 }
+export enum Language {
+  PT = 'PT',
+  EN ='En',
+  ES='ES',
+  JA ='Ja'
+}

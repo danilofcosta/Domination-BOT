@@ -1,6 +1,5 @@
 import { prisma } from "../../../../lib/prisma.js";
-import { ProfileType, type MyContext } from "../../../utils/customTypes.js";
-import { Language } from "../../../../generated/prisma/enums.js";
+import { Language, ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { warn } from "../../../utils/log.js";
 
@@ -46,30 +45,30 @@ export async function setlangCallback(ctx: MyContext) {
   ctx.session.locale = lang;
   ctx.i18n.useLocale(lang);
 
-  try {
-    const langMap: Record<string, Language> = {
-      pt: Language.PT,
-      en: Language.EN,
-      es: Language.ES,
-      ja: Language.JA,
-    };
-    const dbLang = langMap[lang] ?? Language.PT;
-    await prisma.user.upsert({
-      where: { telegramId: BigInt(ctx.from.id) },
-      update: { language: dbLang },
-      create: {
-        telegramId: BigInt(ctx.from.id),
-        language: dbLang,
-        telegramData: {},
-        favoriteWaifuId: null,
-        favoriteHusbandoId: null,
-        waifuConfig: {},
-        husbandoConfig: {},
-      },
-    });
-  } catch (e) {
-    warn("setlangCallback - erro ao salvar no db", e);
-  }
+  // try {
+  //   const langMap: Record<string, Language> = {
+  //     pt: Language.PT,
+  //     en: Language.EN,
+  //     es: Language.ES,
+  //     ja: Language.JA,
+  //   };
+  //   const dbLang = langMap[lang] ?? Language.PT;
+  //   await prisma.user.upsert({
+  //     where: { telegramId: BigInt(ctx.from.id) },
+  //     update: { language: dbLang },
+  //     create: {
+  //       telegramId: BigInt(ctx.from.id),
+  //       language: dbLang,
+  //       telegramData: {},
+  //       favoriteWaifuId: null,
+  //       favoriteHusbandoId: null,
+  //       waifuConfig: {},
+  //       husbandoConfig: {},
+  //     },
+  //   });
+  // } catch (e) {
+  //   warn("setlangCallback - erro ao salvar no db", e);
+ // }
 
   const label = ctx.t(`setlang-name-${lang}`);
 

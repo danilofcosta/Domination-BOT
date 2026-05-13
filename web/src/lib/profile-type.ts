@@ -1,4 +1,3 @@
-import { ProfileType } from "../../generated/prisma/enums";
 
 export const ADMIN_ROLES: readonly ProfileType[] = [
   ProfileType.ADMIN,
