@@ -3,6 +3,7 @@ import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { create_caption } from "../../../utils/manege_caption/create_caption.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 import { EditOrSendText } from "../../../utils/EditOrSendText.js";
+import { findCollectionWithIncludes } from "../../../utils/collectionUtils.js";
 
 export async function favConfirmHandler(ctx: MyContext) {
   const [_, action, favid, userid] = ctx.match
@@ -15,51 +16,40 @@ export async function favConfirmHandler(ctx: MyContext) {
       actual: ctx.from?.id,
     });
     await ctx.answerCallbackQuery(
-      ctx.t("error-action-not-autoauthorized-by-id"),
+      ctx.t("error-action-not-authorized-by-id"),
     );
     return;
   }
 
-  if (action === "no") {
-    await ctx.deleteMessage().catch(() => {});
+if (action === "no") {
+    const cq = ctx.callbackQuery;
+
+    if (cq?.message) {
+      await ctx.deleteMessage().catch(() => {});
+      return;
+    }
+
+    if (cq?.inline_message_id) {
+      await ctx.editMessageReplyMarkup({
+        reply_markup: { inline_keyboard: [] },
+      }).catch(() => {});
+      return;
+    }
+
     return;
   }
 
-  const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
+  const isWaifu =process.env.TYPE_BOT ===ChatType.WAIFU
   const favId = Number(favid);
-  const userId = BigInt(userid);
+  const userId = Number(userid);
 
   info(`favConfirmHandler - confirmando favorito`, { userId, favId, isWaifu });
 
-  const character = isWaifu
-    ? await prisma.characterWaifu.findUnique({ where: { id: favId } })
-    : await prisma.characterHusbando.findUnique({ where: { id: favId } });
-
-  if (!character) {
-    warn(`favConfirmHandler - personagem inválido`, { favId });
-    return ctx.answerCallbackQuery({
-      text: ctx.t("error-fav-invalid-char"),
-      show_alert: true,
-    });
-  }
-
-  const collection = isWaifu
-    ? await prisma.waifuCollection.findUnique({
-        where: {
-          userId_characterId: {
-            userId,
-            characterId: favId,
-          },
-        },
-      })
-    : await prisma.husbandoCollection.findUnique({
-        where: {
-          userId_characterId: {
-            userId,
-            characterId: favId,
-          },
-        },
-      });
+  const collection = await findCollectionWithIncludes({
+    isWaifu,
+    userId,
+    characterId: favId,
+  });
 
   if (!collection) {
     warn(`favConfirmHandler - usuário não possui personagem`, {
@@ -68,6 +58,14 @@ export async function favConfirmHandler(ctx: MyContext) {
     });
     return ctx.answerCallbackQuery({
       text: ctx.t("error-fav-not-owned"),
+      show_alert: true,
+    });
+  }
+
+  if (!collection.Character) {
+    warn(`favConfirmHandler - personagem inválido`, { favId });
+    return ctx.answerCallbackQuery({
+      text: ctx.t("error-fav-invalid-char"),
       show_alert: true,
     });
   }
@@ -88,7 +86,7 @@ export async function favConfirmHandler(ctx: MyContext) {
 
   const capiton = create_caption({
     ctx: ctx,
-    character: character,
+    character: collection.Character,
     chatType: ctx.session.settings.genero,
     noformat: false,
   });

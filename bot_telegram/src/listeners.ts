@@ -17,6 +17,7 @@ import { SetRarityReplyHandler } from './handlers/Comandos/admin_bot/configs/set
 import { SetEventReplyHandler } from './handlers/Comandos/admin_bot/configs/set_event.js';
 import { animelistCallback } from './handlers/Comandos/users/animelist.js';
 import { Gift_Inline_query } from './handlers/inline_query/gift_iniline_query.js';
+import { Fav_Inline_query } from './handlers/inline_query/fav_iniline_query.js';
 
 const listeners = new Composer<MyContext>();
 
@@ -112,6 +113,9 @@ listeners.on('inline_query', async (ctx) => {
 
    if (query.startsWith('select_gift_to_')) {
       return await Gift_Inline_query(ctx);
+    }
+   if (query.startsWith('select_my_fav')) {
+      return await Fav_Inline_query(ctx);
     }
 
     if (firstPart === 'harem' && queryParts[1] === 'user') {

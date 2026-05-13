@@ -28,6 +28,8 @@ export async function favCharacter(ctx: MyContext) {
       favid,
       match: ctx.match,
     });
+
+    
     return Sendmedia({ ctx, caption: ctx.t("error-not-id") });
   }
 

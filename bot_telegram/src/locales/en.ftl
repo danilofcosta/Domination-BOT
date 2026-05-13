@@ -12,7 +12,7 @@ Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
 error-not-registered = You are not registered in the system yet.
 error-not-id = Send the ID too
 error-not-found-collection = ID { $id } is not in your collection
-error-action-not-autoauthorized-by-id = Not authorized
+error-action-not-authorized-by-id = Not authorized
 error-group-only = This command must be used in a group.
 error-forum-only = This command can only be used in topic chats.
 error-admin-group-only = Only group administrators can use this command.
@@ -23,8 +23,12 @@ error-need-id = Provide the character ID.
 error-gift-invalid-user = Invalid user.
 error-gift-self = You cannot send a gift to yourself.
 error-gift-bot = Thanks, but I cannot receive gifts.
+error-gift-not-id = Send the ID too, or choose using the button below to gift
+select-inline-gift = choose the gift
 
 # fav
+fav-btn-select = select your favorite
+error-fav-not-id = Send the ID too or select below
 error-fav-invalid-char = Invalid character.
 error-fav-not-owned = User does not own the character.
 
@@ -234,6 +238,7 @@ drop_character_secret_caption = { $charater_genero } has fled!
     The name is <code>{ $charater_nome } - { $charater_anime }</code>
 
 drop_character_attempt_empty = Ok, but what is the name of the { $genero }?
+drop_character_secret_btn = More details
 
 # gender inline strings
 drop-gender-husbando = the husbando
@@ -627,9 +632,13 @@ setlang-title = 🌐 Select language:
 setlang-current = Current language: { $lang }
 setlang-btn-pt = 🇧🇷 Português
 setlang-btn-en = 🇺🇸 English
+setlang-btn-es = 🇪🇸 Español
+setlang-btn-ja = 🇯🇵 日本語
 setlang-success = ✅ Language changed to { $lang }
-setlang-usage = Use: /setlang <pt|en> or /setlang to see options
-setlang-invalid = ❌ Invalid language. Available languages: pt, en
+setlang-usage = Use: /setlang <pt|en|es|ja> or /setlang to see options
+setlang-invalid = ❌ Invalid language. Available languages: pt, en, es, ja
 setlang-name-pt = Português
 setlang-name-en = English
+setlang-name-es = Español
+setlang-name-ja = 日本語
 cmd-desc-setlang = Change the bot language

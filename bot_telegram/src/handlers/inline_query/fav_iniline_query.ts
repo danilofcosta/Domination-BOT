@@ -4,21 +4,18 @@ import type {
   CollectionItem,
   MyContext,
 } from "../../utils/customTypes";
-import { error, warn } from "../../utils/log";
 import { createResult } from "./create_inline_result";
 import { getHaremCollection, LIMIT } from "./harem_inline_query";
 import { showResults } from "./show_results_inline";
 
-export async function Gift_Inline_query(ctx: MyContext) {
+export async function Fav_Inline_query(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
 
   const genero = process.env.TYPE_BOT as ChatType;
 
   const query = ctx.inlineQuery.query;
 
-  const telegramId_recipient = Number(
-    query.replace("select_gift_to_", "").trim(),
-  );
+
   const telegramId = ctx.from?.id;
   if (!telegramId) return;
 
@@ -36,27 +33,19 @@ export async function Gift_Inline_query(ctx: MyContext) {
       character: item,
       chatType: genero,
       noformat: true,
-      reply_markup: bts_yes_or_no(
-        ctx,
-        `gift_yes_${item.id}_${telegramId_recipient}_${ctx.from?.id}`,
-        `gift_no_${item.id}_${telegramId_recipient}_${ctx.from?.id}`,
-      ),
+      reply_markup:  bts_yes_or_no(
+    ctx,
+    `fav_yes_${item.id}_${telegramId}`,
+    `fav_no_${item.id}_${telegramId}`,
+  )
+
     }),
   );
-  try {
-    setTimeout(() => {
-      ctx.api.deleteMessage(ctx.chat!.id, ctx.msg?.message_id!).catch((e) => {
-        error("sucess ao enviar mensagem de nome incorreto", e);
-      });
-    }, 20000);
-  } catch (e) {
-    error("Erro ao enviar mensagem de nome incorreto", e);
-  }
 
   await showResults({
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-    text: ctx.t("select-inline-gift"),
+    text: ctx.t("fav-btn-select"),
   });
 }

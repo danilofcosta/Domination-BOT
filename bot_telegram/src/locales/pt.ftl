@@ -12,7 +12,7 @@ Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
 error-not-registered = Voce ainda nao esta registrado no sistema.
 error-not-id=Manda o ID Também
 error-not-found-collection= ID { $id } Não esta presente na sua Coleçaõa
-error-action-not-autoauthorized-by-id = Não autorizado
+error-action-not-authorized-by-id = Não autorizado
 error-group-only = Este comando deve ser usado em um grupo.
 error-forum-only = Este comando só pode ser usado em chats de tópicos.
 error-admin-group-only = Apenas administradores do grupo podem usar este comando.
@@ -27,7 +27,12 @@ error-gift-bot = agradeço, Mais não posso receber presentes
 error-gift-not-id = Manda o id tambem , ou escolha usado o batão abaixo para presentiar 
 select-inline-gift= escolha o presente
 
+###############
 # fav
+###############
+
+fav-btn-select = seleciona seu favorito
+error-fav-not-id = Manda o Id Também ou selecione abaixo
 error-fav-invalid-char = Personagem inválido.
 error-fav-not-owned = usuário não possui personagem
 
@@ -633,9 +638,13 @@ setlang-title = 🌐 Selecione o idioma:
 setlang-current = Idioma atual: { $lang }
 setlang-btn-pt = 🇧🇷 Português
 setlang-btn-en = 🇺🇸 English
+setlang-btn-es = 🇪🇸 Español
+setlang-btn-ja = 🇯🇵 日本語
 setlang-success = ✅ Idioma alterado para { $lang }
-setlang-usage = Use: /setlang <pt|en> ou /setlang para ver as opções
-setlang-invalid = ❌ Idioma inválido. Idiomas disponíveis: pt, en
+setlang-usage = Use: /setlang <pt|en|es|ja> ou /setlang para ver as opções
+setlang-invalid = ❌ Idioma inválido. Idiomas disponíveis: pt, en, es, ja
 setlang-name-pt = Português
 setlang-name-en = English
+setlang-name-es = Español
+setlang-name-ja = 日本語
 cmd-desc-setlang = Altera o idioma do bot

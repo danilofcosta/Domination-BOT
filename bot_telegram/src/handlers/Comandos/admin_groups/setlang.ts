@@ -32,12 +32,19 @@ async function setLanguage(ctx: MyContext, lang: string) {
 
   if (ctx.from?.id) {
     try {
+      const langMap: Record<string, Language> = {
+        pt: Language.PT,
+        en: Language.EN,
+        es: Language.ES,
+        ja: Language.JA,
+      };
+      const dbLang = langMap[lang] ?? Language.PT;
       await prisma.user.upsert({
         where: { telegramId: BigInt(ctx.from.id) },
-        update: { language: lang === "en" ? Language.EN : Language.PT },
+        update: { language: dbLang },
         create: {
           telegramId: BigInt(ctx.from.id),
-          language: lang === "en" ? Language.EN : Language.PT,
+          language: dbLang,
           telegramData: {},
           favoriteWaifuId: null,
           favoriteHusbandoId: null,

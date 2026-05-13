@@ -134,7 +134,9 @@ export interface PreCharacter {
 
 export enum Language {
   PT = "PT",
-  EN = "EN"
+  EN = "EN",
+  ES = "ES",
+  JA = "JA"
 }
 
 export enum MediaType {

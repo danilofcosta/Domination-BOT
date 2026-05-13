@@ -17,7 +17,7 @@ export async function haremCallback(ctx: MyContext) {
       actual: ctx.from?.id,
     });
     await ctx.answerCallbackQuery(
-      ctx.t("error-action-not-autoauthorized-by-id"),
+      ctx.t("error-action-not-authorized-by-id"),
     );
     return;
   }

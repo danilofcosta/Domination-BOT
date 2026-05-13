@@ -184,6 +184,8 @@ model TelegramGroup {
 enum Language {
   PT
   EN
+  ES
+  JA
 }
 
 enum MediaType {

@@ -5,8 +5,10 @@ import { info, warn, error, debug } from "../../../utils/log.js";
 import { mentionUser } from "../../../utils/metion_user.js";
 
 export async function giftConfirmHandler(ctx: MyContext) {
-  const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
+  const data = ctx.callbackQuery?.data;
+  if (!data) return;
 
+  const parts = data.split("_");
   const [type, action, giftidRaw, receiverIdRaw, senderIdRaw] = parts;
 
   const giftid = Number(giftidRaw);
@@ -19,30 +21,28 @@ export async function giftConfirmHandler(ctx: MyContext) {
       actual: ctx.from?.id,
     });
     await ctx.answerCallbackQuery(
-      ctx.t("error-action-not-autoauthorized-by-id"),
+      ctx.t("error-action-not-authorized-by-id"),
     );
     return;
   }
 
 if (action === "no") {
-  const cq = ctx.callbackQuery;
+    const cq = ctx.callbackQuery;
 
-  // caso mensagem normal (grupo/chat)
-  if (cq?.message) {
-    await ctx.deleteMessage().catch(() => {});
-    return;
-  }
-
-  // caso inline message
-  if (cq?.inline_message_id) {
-   await ctx.editMessageReplyMarkup({
-   reply_markup: { inline_keyboard: [] },
+    if (cq?.message) {
+      await ctx.deleteMessage().catch(() => {});
+      return;
     }
 
-  ).catch(() => {});
+    if (cq?.inline_message_id) {
+      await ctx.editMessageReplyMarkup({
+        reply_markup: { inline_keyboard: [] },
+      }).catch(() => {});
+      return;
+    }
+
     return;
   }
-}
   const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
   info(`giftConfirmHandler - processando presente`, {
     senderId,

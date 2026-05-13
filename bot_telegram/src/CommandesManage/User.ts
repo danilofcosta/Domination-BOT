@@ -1,4 +1,4 @@
-import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
+ import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { CapturarCharacter } from "../handlers/Comandos/users/dominar.js";
 import { botPrefix, options, typeBot } from "./botConfigCommands.js";
@@ -95,7 +95,7 @@ export const ComandosUser = {
     scope: "all_group_chats",
   },
   animelist: {
-    command: "animelist",
+    command: "animelist" + botPrefix,
     description: {
       pt: "Lista de animes por letra",
       en: "List animes by letter",
@@ -125,6 +125,9 @@ for (const [key, value] of Object.entries(ComandosUser)) {
     value.description.pt,
     handlerWrapper,
     options,
-  )  .addToScope({ type: "all_private_chats" }, (ctx) => handlerWrapper(ctx))}
+  )  .addToScope({ type: "all_group_chats" }, (ctx) => handlerWrapper(ctx))
+    .addToScope({ type: "all_private_chats" }, (ctx) => handlerWrapper(ctx))
+
+}
 
 export { UserCommands };

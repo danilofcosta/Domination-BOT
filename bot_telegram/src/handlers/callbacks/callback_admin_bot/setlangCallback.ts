@@ -36,7 +36,8 @@ export async function setlangCallback(ctx: MyContext) {
 
   const lang = ctx.callbackQuery.data.replace("setlang_", "");
 
-  if (lang !== "pt" && lang !== "en") {
+  const validLocales = ["pt", "en", "es", "ja"];
+  if (!validLocales.includes(lang)) {
     await ctx.answerCallbackQuery(ctx.t("setlang-invalid"));
     return;
   }
@@ -45,12 +46,19 @@ export async function setlangCallback(ctx: MyContext) {
   ctx.i18n.useLocale(lang);
 
   try {
+    const langMap: Record<string, Language> = {
+      pt: Language.PT,
+      en: Language.EN,
+      es: Language.ES,
+      ja: Language.JA,
+    };
+    const dbLang = langMap[lang] ?? Language.PT;
     await prisma.user.upsert({
       where: { telegramId: BigInt(ctx.from.id) },
-      update: { language: lang === "en" ? Language.EN : Language.PT },
+      update: { language: dbLang },
       create: {
         telegramId: BigInt(ctx.from.id),
-        language: lang === "en" ? Language.EN : Language.PT,
+        language: dbLang,
         telegramData: {},
         favoriteWaifuId: null,
         favoriteHusbandoId: null,
@@ -62,7 +70,7 @@ export async function setlangCallback(ctx: MyContext) {
     warn("setlangCallback - erro ao salvar no db", e);
   }
 
-  const label = lang === "pt" ? ctx.t("setlang-name-pt") : ctx.t("setlang-name-en");
+  const label = ctx.t(`setlang-name-${lang}`);
 
   await ctx.editMessageText(ctx.t("setlang-success", { lang: label }));
   await ctx.answerCallbackQuery();

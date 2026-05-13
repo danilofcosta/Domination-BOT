@@ -1,8 +1,11 @@
-import { prisma } from "../../../../lib/prisma.js";
 import { SetGiftUser } from "../../../cache/cache.js";
 import { bts_yes_or_no, CreateOneBtn } from "../../../utils/btns.js";
-import { BTN_TYPE, ChatType, type MyContext } from "../../../utils/customTypes.js";
-
+import {
+  BTN_TYPE,
+  ChatType,
+  type MyContext,
+} from "../../../utils/customTypes.js";
+import { findCollectionWithIncludes } from "../../../utils/collectionUtils.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 import { ComandosUser } from "../../../CommandesManage/User.js";
@@ -19,37 +22,6 @@ export async function giftHandler(ctx: MyContext) {
     return;
   }
   const mentionedUser = ctx.message.reply_to_message.from;
-
-
-
-  
-  const giftid = Number(ctx.match);
-  if (!giftid || isNaN(giftid)) {
-    warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, giftid });
-
-
-    const btn = CreateOneBtn(
-      {
-        text:`${mentionedUser?.first_name} -- >`,
-        icon:'5359664288241829619',callback:`select_gift_to_${mentionedUser?.id}`
-        ,typeBtn:BTN_TYPE.switch_inline_query_current_chat
-      }
-    )
-
-    await Sendmedia({
-      ctx,
-      caption: ctx.t("error-gift-not-id"),
-      reply_markup:btn
-    });
-
-
-
-
-
-    return;
-  }
-
-
 
   if (!mentionedUser?.id) {
     warn(`giftHandler - usuário inválido`, { userId: ctx.from?.id });
@@ -82,6 +54,26 @@ export async function giftHandler(ctx: MyContext) {
     return;
   }
 
+  const giftid = Number(ctx.match);
+  if (!giftid || isNaN(giftid)) {
+    warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, giftid });
+
+    const btn = CreateOneBtn({
+      text: `${mentionedUser?.first_name} -- >`,
+      icon: "5359664288241829619",
+      callback: `select_gift_to_${mentionedUser?.id}`,
+      typeBtn: BTN_TYPE.switch_inline_query_current_chat,
+    });
+
+    await Sendmedia({
+      ctx,
+      caption: ctx.t("error-gift-not-id"),
+      reply_markup: btn,
+    });
+
+    return;
+  }
+
   const mention = mentionUser(mentionedUser.first_name, mentionedUser.id);
   info(`giftHandler - enviando presente`, {
     senderId: ctx.from?.id,
@@ -89,36 +81,11 @@ export async function giftHandler(ctx: MyContext) {
     giftid,
   });
 
-  const GiftCharacter =
-    ctx.session.settings.genero === ChatType.WAIFU
-      ? await prisma.waifuCollection.findFirst({
-          where: {
-            characterId: giftid,
-            userId: ctx.from!.id,
-          },
-          include: {
-            Character: {
-              include: {
-                WaifuEvent: { include: { Event: true } },
-                WaifuRarity: { include: { Rarity: true } },
-              },
-            },
-          },
-        })
-      : await prisma.husbandoCollection.findFirst({
-          where: {
-            characterId: giftid,
-            userId: ctx.from!.id,
-          },
-          include: {
-            Character: {
-              include: {
-                HusbandoEvent: { include: { Event: true } },
-                HusbandoRarity: { include: { Rarity: true } },
-              },
-            },
-          },
-        });
+  const GiftCharacter = await findCollectionWithIncludes({
+    isWaifu: ctx.session.settings.genero === ChatType.WAIFU,
+    userId: ctx.from!.id,
+    characterId: giftid,
+  });
 
   if (!GiftCharacter) {
     warn(`giftHandler - personagem não encontrado na coleção`, {
