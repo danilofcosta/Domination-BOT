@@ -8,6 +8,7 @@ import type { User } from "grammy/types";
 import type { SessionData } from "./customInteface.js";
 import type { WaifuCollection } from "../../generated/prisma/client.js";
 import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "../../generated/prisma/client.js";
+import type { prisma } from "../../lib/prisma.js";
  // db types
 
 
@@ -126,6 +127,10 @@ export interface PreCharacter {
   user_id: number;
   extras?: Record<string, any>;
 }
+ export type CollectionItem =
+  | Awaited<ReturnType<typeof prisma.waifuCollection.findMany>>[number]
+  | Awaited<ReturnType<typeof prisma.husbandoCollection.findMany>>[number];
+
 
 export enum Language {
   PT = "PT",

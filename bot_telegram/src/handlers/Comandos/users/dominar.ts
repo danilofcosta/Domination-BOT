@@ -6,8 +6,8 @@
   type MyContext,
   type RarityType,
 } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
-import { LinkMsg } from "../../../utils/manege_caption/link_msg.js";
+import { mentionUser } from "../../../utils/metion_user.js";
+import { LinkMsg } from "../../../utils/link_msg.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
 import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
 import { info, error, debug, warn } from "../../../utils/log.js";
@@ -29,9 +29,7 @@ function verificarNome(personagem: string, tentativa: string) {
 
   return tentativaParts.every((p) => nomeParts.includes(p));
 }
-function calcularTempo(
-  { inicio, fim }: { inicio: number; fim: number }
-) {
+function calcularTempo({ inicio, fim }: { inicio: number; fim: number }) {
   let diff = Math.abs(fim - inicio);
 
   const unidades = [
@@ -63,10 +61,11 @@ function successDominarMessage(
   if (!collection || !character) return ctx.t("success-dominar-fallback");
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
-    genero:
-      ctx.t(ctx.session.settings.genero === ChatType.WAIFU
+    genero: ctx.t(
+      ctx.session.settings.genero === ChatType.WAIFU
         ? "success-dominar-genero-waifu"
-        : "success-dominar-genero-husbando"),
+        : "success-dominar-genero-husbando",
+    ),
   });
 
   const success_dominar_name = ctx.t("success_dominar_name", {
@@ -107,9 +106,13 @@ function successDominarMessage(
           ? emoji_event.join(", ")
           : "",
   });
-const time:string = calcularTempo({ inicio: ctx.message?.date || 0, fim: ctx.session.grupo.data || 0 }) || '0'
+  const time: string =
+    calcularTempo({
+      inicio: ctx.message?.date || 0,
+      fim: ctx.session.grupo.data || 0,
+    }) || "0";
   const success_dominar_time = ctx.t("success_dominar_time", {
-    time:time
+    time: time,
   });
 
   const success_dominar = `${success_dominar_title}\n\n${success_dominar_name}\n${success_dominar_anime}\n${success_dominar_rarity}\n\n${success_dominar_time}`;
@@ -258,7 +261,6 @@ export async function CapturarCharacter(ctx: MyContext) {
       count: character_collection.count,
     });
 
-
     info(`Dominando - enviando mensagem de sucesso`, {
       userId,
       characterId: character.id,
@@ -276,7 +278,7 @@ export async function CapturarCharacter(ctx: MyContext) {
         reply_markup: CreateOneBtn({
           text: ctx.t("success_dominar_btn"),
           callback: "harem_user_" + ctx.from?.id,
-          style:"success",
+          style: "success",
           typeBtn: BTN_TYPE.switch_inline_query_current_chat,
         }),
       });

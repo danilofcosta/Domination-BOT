@@ -1,60 +1,80 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../utils/customTypes.js";
+import { ChatType, MediaType, type CollectionItem, type MyContext } from "../../utils/customTypes.js";
 import { createResult } from "./create_inline_result.js";
 import { showResults } from "./show_results_inline.js";
 
-const LIMIT = 10;
+export const LIMIT = 25;
 
-type CollectionItem =
-  | Awaited<ReturnType<typeof prisma.waifuCollection.findMany>>[number]
-  | Awaited<ReturnType<typeof prisma.husbandoCollection.findMany>>[number];
-
-async function getHaremCollection(
+export async function getHaremCollection(
   telegramId: number,
   offset: number,
   genero: ChatType,
 ) {
-  const where = { userId: telegramId };
   const isHusbando = genero === ChatType.HUSBANDO;
 
-  const model: any = isHusbando
-    ? prisma.husbandoCollection
-    : prisma.waifuCollection;
+  if (isHusbando) {
+    const where = { userId: telegramId };
 
-  const include = isHusbando
-    ? {
-        User: true,
-        Character: {
-          include: {
-            HusbandoEvent: { include: { Event: true } },
-            HusbandoRarity: { include: { Rarity: true } },
+    const [collection, total] = await Promise.all([
+      prisma.husbandoCollection.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: LIMIT,
+        skip: offset,
+        include: {
+          User: true,
+          Character: {
+            include: {
+              HusbandoEvent: {
+                include: { Event: true },
+              },
+              HusbandoRarity: {
+                include: { Rarity: true },
+              },
+            },
           },
         },
-      }
-    : {
-        User: true,
-        Character: {
-          include: {
-            WaifuEvent: { include: { Event: true } },
-            WaifuRarity: { include: { Rarity: true } },
-          },
-        },
-      };
+      }),
+
+      prisma.husbandoCollection.count({ where }),
+    ]);
+
+    return { collection, total };
+  }
+
+  const where = {
+    userId: telegramId,
+    Character: {
+      mediaType: MediaType.IMAGE_URL,
+    },
+  };
 
   const [collection, total] = await Promise.all([
-    model.findMany({
+    prisma.waifuCollection.findMany({
       where,
       orderBy: { createdAt: "desc" },
       take: LIMIT,
       skip: offset,
-      include,
+      include: {
+        User: true,
+        Character: {
+          include: {
+            WaifuEvent: {
+              include: { Event: true },
+            },
+            WaifuRarity: {
+              include: { Rarity: true },
+            },
+          },
+        },
+      },
     }),
-    model.count({ where }),
+
+    prisma.waifuCollection.count({ where }),
   ]);
 
   return { collection, total };
 }
-
 export async function haremInlineQuery(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
 

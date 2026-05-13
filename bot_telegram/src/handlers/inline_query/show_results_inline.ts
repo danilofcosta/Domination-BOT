@@ -25,7 +25,7 @@ export async function showResults({
       cache_time: 0,
       ...(next_offset !== undefined && { next_offset }),
       button: {
-        text: btnText,
+        text: btnText.slice(0, 64),
         start_parameter: `harem_user_${ctx.from?.id}`,
       },
     });

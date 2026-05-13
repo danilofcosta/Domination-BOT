@@ -2,7 +2,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import { getGiftUser } from "../../../cache/cache.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 
 export async function giftConfirmHandler(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
@@ -24,11 +24,25 @@ export async function giftConfirmHandler(ctx: MyContext) {
     return;
   }
 
-  if (action === "no") {
+if (action === "no") {
+  const cq = ctx.callbackQuery;
+
+  // caso mensagem normal (grupo/chat)
+  if (cq?.message) {
     await ctx.deleteMessage().catch(() => {});
     return;
   }
 
+  // caso inline message
+  if (cq?.inline_message_id) {
+   await ctx.editMessageReplyMarkup({
+   reply_markup: { inline_keyboard: [] },
+    }
+
+  ).catch(() => {});
+    return;
+  }
+}
   const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
   info(`giftConfirmHandler - processando presente`, {
     senderId,
@@ -120,7 +134,8 @@ export async function giftConfirmHandler(ctx: MyContext) {
     const telegramData = receiverUser?.telegramData as {
       first_name?: string;
     } | null;
-    const receiverUsername = telegramData?.first_name || ctx.t("gift-default-username");
+    const receiverUsername =
+      telegramData?.first_name || ctx.t("gift-default-username");
     const mention = mentionUser(receiverUsername, receiverId);
 
     await ctx

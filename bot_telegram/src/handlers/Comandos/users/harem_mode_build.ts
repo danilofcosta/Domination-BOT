@@ -1,7 +1,7 @@
 import type { MyContext } from "../../../utils/customTypes.js";
 import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
 
-function Harem_mode_latest(list_character: any[], ctx: MyContext) {
+export function Harem_mode_latest(list_character: any[], ctx: MyContext) {
   let pages: string[] = [];
   let perPage: string[] = [];
   let cont = 0;
@@ -62,7 +62,7 @@ function Harem_mode_latest(list_character: any[], ctx: MyContext) {
   return pages;
 }
 
-function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
+export function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
     const character = char.Character;
@@ -105,7 +105,7 @@ function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
   return pages;
 }
 
-function Harem_mode_event(list_character: any[], ctx: MyContext) {
+export function Harem_mode_event(list_character: any[], ctx: MyContext) {
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
     const character = char.Character;
@@ -148,7 +148,7 @@ function Harem_mode_event(list_character: any[], ctx: MyContext) {
   return pages;
 }
 
-function Harem_mode_default(
+export function Harem_mode_default(
   list_character: any[],
   ctx: MyContext,
   dbAnimeCounts: Map<string, number>,

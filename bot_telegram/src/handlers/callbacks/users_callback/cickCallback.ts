@@ -2,7 +2,7 @@ import { GetCharacterById } from "../../../utils/chareter/getbyid.js";
 import type { Character, MyContext } from "../../../utils/customTypes.js";
 import { debug } from "../../../utils/log.js";
 import { create_caption } from "../../../utils/manege_caption/create_caption.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 //click_id
 export async function ClickByDetail_Callback(ctx: MyContext) {

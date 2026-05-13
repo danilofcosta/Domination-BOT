@@ -1,9 +1,12 @@
 import { prisma } from "../../../../lib/prisma.js";
-import { ChatType, MediaType, type MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import {
+  ChatType,
+  MediaType,
+  type MyContext,
+} from "../../../utils/customTypes.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
-
 
 export async function Myinfos(ctx: MyContext) {
   info(`Myinfos - carregando informações`, { userId: ctx.from?.id });
@@ -106,16 +109,12 @@ export async function Myinfos(ctx: MyContext) {
           mediaType: MediaType.IMAGE_FILEID,
         },
       });
-
-  
     } else {
       msg = await Sendmedia({
         ctx,
         caption: text,
       });
     }
-
-    
 
     debug(`Myinfos - informações enviadas`, { userId: ctx.from?.id, percent });
 

@@ -7,7 +7,7 @@
   Rarity,
 } from "../../../generated/prisma/client.js";
 
-import { mentionUser } from "./metion_user.js";
+import { mentionUser } from "../metion_user.js";
 import type { Params } from "../../handlers/inline_query/create_inline_result.js";
 import { extractListEmojisCharacter } from "./extractListEmojisCharacter.js";
 import { ChatType } from "../customTypes.js";
@@ -21,7 +21,11 @@ export function create_caption({
   noformat,
 }: Params) {
   // console.log(character);
-  const genero = ctx.t(chatType === ChatType.WAIFU ? "create-caption-gender-waifu" : "create-caption-gender-husbando");
+  const genero = ctx.t(
+    chatType === ChatType.WAIFU
+      ? "create-caption-gender-waifu"
+      : "create-caption-gender-husbando",
+  );
 
   let repetition = 0;
   let character_let;

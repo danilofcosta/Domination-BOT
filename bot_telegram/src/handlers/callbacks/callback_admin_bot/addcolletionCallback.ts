@@ -1,12 +1,14 @@
-
 import { InlineKeyboard } from "grammy";
 import { getAddToCollectionMulti, getHarem } from "../../../cache/cache.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
-import { type MyContext, ChatType, ProfileType } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import {
+  type MyContext,
+  ChatType,
+  ProfileType,
+} from "../../../utils/customTypes.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { debug, error, info, warn } from "../../../utils/log.js";
-
 
 export async function addcolletionCallback(ctx: MyContext) {
   if (!ctx.callbackQuery?.data) return;
@@ -23,7 +25,12 @@ export async function addcolletionCallback(ctx: MyContext) {
   const isMulti = mode === "multi";
 
   if (action === "s" || action === "n") {
-    debug(`addcolletionCallback - ação recebida`, { userId, action, isMulti, adminId });
+    debug(`addcolletionCallback - ação recebida`, {
+      userId,
+      action,
+      isMulti,
+      adminId,
+    });
 
     const userRole = await getUserRole(adminId || 0);
     const userWeight = roleWeights[userRole] ?? 0;
@@ -40,7 +47,9 @@ export async function addcolletionCallback(ctx: MyContext) {
       if (isMulti) {
         const cachedData = getAddToCollectionMulti(userId);
         if (!cachedData) {
-          warn(`addcolletionCallback - dados multi não encontrados no cache`, { userId });
+          warn(`addcolletionCallback - dados multi não encontrados no cache`, {
+            userId,
+          });
           await ctx.answerCallbackQuery(ctx.t("error-callback-expired"));
           return;
         }
@@ -54,7 +63,10 @@ export async function addcolletionCallback(ctx: MyContext) {
 
       for (const charId of characterIds) {
         const result = await AddCharacterCollection({
-          type: (isMulti ? getAddToCollectionMulti(userId)?.genero : ctx.session.settings.genero) as ChatType || ChatType.WAIFU,
+          type:
+            ((isMulti
+              ? getAddToCollectionMulti(userId)?.genero
+              : ctx.session.settings.genero) as ChatType) || ChatType.WAIFU,
           userId,
           from: isMulti ? getAddToCollectionMulti(userId)?.from : ctx.from,
           characterId: charId,
@@ -80,9 +92,20 @@ export async function addcolletionCallback(ctx: MyContext) {
       `harem_user_${userId}`,
     );
 
-    const msgText = action === "s"
-      ? ctx.t(isMulti ? "addcolletion-success-multi" : "addcolletion-success-single", { user: mentionUser(ctx.from?.first_name || "admin", ctx.from?.id || 0) })
-      : ctx.t("addcolletion-cancel");
+    const msgText =
+      action === "s"
+        ? ctx.t(
+            isMulti
+              ? "addcolletion-success-multi"
+              : "addcolletion-success-single",
+            {
+              user: mentionUser(
+                ctx.from?.first_name || "admin",
+                ctx.from?.id || 0,
+              ),
+            },
+          )
+        : ctx.t("addcolletion-cancel");
 
     try {
       await ctx.editMessageText(msgText, {
@@ -97,7 +120,7 @@ export async function addcolletionCallback(ctx: MyContext) {
       try {
         await ctx.deleteMessage();
       } catch {
-        error('errro ao apagar mensagem ')
+        error("errro ao apagar mensagem ");
       }
     }
 
@@ -114,7 +137,10 @@ export async function addcolletionCallback(ctx: MyContext) {
     }
 
     const keyboard = new InlineKeyboard()
-      .text(ctx.t("addcolletion-btn-yes"), `addcolletion_${userId}_s_multi_${charIdsStr}`)
+      .text(
+        ctx.t("addcolletion-btn-yes"),
+        `addcolletion_${userId}_s_multi_${charIdsStr}`,
+      )
       .text(ctx.t("addcolletion-btn-no"), `addcolletion_${userId}_n_multi`)
       .row()
       .switchInlineCurrent(

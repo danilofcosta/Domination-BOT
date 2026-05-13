@@ -3,8 +3,14 @@ import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { setHarem } from "../../../cache/cache.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
+import {
+  Harem_mode_rarity,
+  Harem_mode_event,
+  Harem_mode_latest,
+  Harem_mode_default,
+} from "./harem_mode_build.js";
 
 export async function HaremHandler(ctx: MyContext) {
   info(`HaremHandler - carregando harém`, {
@@ -155,19 +161,3 @@ export async function HaremHandler(ctx: MyContext) {
     error(`HaremHandler - erro ao enviar mídia`, e);
   }
 }
-function Harem_mode_rarity(arg0: any, ctx: MyContext): string[] {
-  throw new Error("Function not implemented.");
-}
-
-function Harem_mode_event(arg0: any, ctx: MyContext): string[] {
-  throw new Error("Function not implemented.");
-}
-
-function Harem_mode_latest(arg0: any, ctx: MyContext): string[] {
-  throw new Error("Function not implemented.");
-}
-
-function Harem_mode_default(arg0: any, ctx: MyContext, dbAnimeCounts: Map<string, number>): string[] {
-  throw new Error("Function not implemented.");
-}
-

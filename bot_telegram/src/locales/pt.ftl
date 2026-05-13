@@ -18,11 +18,14 @@ error-forum-only = Este comando só pode ser usado em chats de tópicos.
 error-admin-group-only = Apenas administradores do grupo podem usar este comando.
 error-admin-bot-only = Apenas administradores do bot podem usar este comando.
 error-need-id = Forneça o ID do personagem.
-
+###############
 # gift
+###############
 error-gift-invalid-user = Usuário inválido.
 error-gift-self = Você não pode enviar presente para si mesmo.
 error-gift-bot = agradeço, Mais não posso receber presentes
+error-gift-not-id = Manda o id tambem , ou escolha usado o batão abaixo para presentiar 
+select-inline-gift= escolha o presente
 
 # fav
 error-fav-invalid-char = Personagem inválido.

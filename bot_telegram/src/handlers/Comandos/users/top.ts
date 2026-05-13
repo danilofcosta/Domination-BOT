@@ -1,6 +1,6 @@
 import { prisma } from "../../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
-import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
 import { info, warn, error, debug } from "../../../utils/log.js";

@@ -1,0 +1,52 @@
+import { bts_yes_or_no } from "../../utils/btns";
+import type {
+  ChatType,
+  CollectionItem,
+  MyContext,
+} from "../../utils/customTypes";
+import { createResult } from "./create_inline_result";
+import { getHaremCollection, LIMIT } from "./harem_inline_query";
+import { showResults } from "./show_results_inline";
+
+export async function Gift_Inline_query(ctx: MyContext) {
+  if (!ctx.inlineQuery) return;
+
+  const genero = process.env.TYPE_BOT as ChatType;
+
+  const query = ctx.inlineQuery.query;
+
+  const telegramId_recipient = Number(
+    query.replace("select_gift_to_", "").trim(),
+  );
+  const telegramId = ctx.from?.id;
+  if (!telegramId) return;
+
+  const offset = Number(ctx.inlineQuery.offset || "0");
+
+  const { collection, total } = await getHaremCollection(
+    telegramId,
+    offset,
+    genero,
+  );
+
+  const results = collection.map((item: CollectionItem) =>
+    createResult({
+      ctx,
+      character: item,
+      chatType: genero,
+      noformat: true,
+      reply_markup: bts_yes_or_no(
+        ctx,
+        `gift_yes_${item.id}_${telegramId_recipient}_${ctx.from?.id}`,
+        `gift_no_${item.id}_${telegramId_recipient}_${ctx.from?.id}`,
+      ),
+    }),
+  );
+
+  await showResults({
+    ctx,
+    results,
+    next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
+    text: ctx.t("select-inline-gift"),
+  });
+}

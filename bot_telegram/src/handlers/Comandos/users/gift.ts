@@ -1,14 +1,12 @@
 import { prisma } from "../../../../lib/prisma.js";
 import { SetGiftUser } from "../../../cache/cache.js";
-import { bts_yes_or_no } from "../../../utils/btns.js";
-import { ChatType, type MyContext } from "../../../utils/customTypes.js";
-import {
-  get_id_mention_User,
-  mentionUser,
-} from "../../../utils/manege_caption/metion_user.js";
+import { bts_yes_or_no, CreateOneBtn } from "../../../utils/btns.js";
+import { BTN_TYPE, ChatType, type MyContext } from "../../../utils/customTypes.js";
+
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 import { ComandosUser } from "../../../CommandesManage/User.js";
+import { mentionUser } from "../../../utils/metion_user.js";
 
 export async function giftHandler(ctx: MyContext) {
   if (!ctx.message?.reply_to_message) {
@@ -20,19 +18,38 @@ export async function giftHandler(ctx: MyContext) {
     });
     return;
   }
+  const mentionedUser = ctx.message.reply_to_message.from;
 
+
+
+  
   const giftid = Number(ctx.match);
   if (!giftid || isNaN(giftid)) {
     warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, giftid });
 
+
+    const btn = CreateOneBtn(
+      {
+        text:`${mentionedUser?.first_name} -- >`,
+        icon:'5359664288241829619',callback:`select_gift_to_${mentionedUser?.id}`
+        ,typeBtn:BTN_TYPE.switch_inline_query_current_chat
+      }
+    )
+
     await Sendmedia({
       ctx,
-      caption: ctx.t("error-not-id"),
+      caption: ctx.t("error-gift-not-id"),
+      reply_markup:btn
     });
+
+
+
+
+
     return;
   }
 
-  const mentionedUser = ctx.message.reply_to_message.from;
+
 
   if (!mentionedUser?.id) {
     warn(`giftHandler - usuário inválido`, { userId: ctx.from?.id });

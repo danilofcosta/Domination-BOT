@@ -28,6 +28,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 export const localesDir = path.join(__dirname, "locales");
 
+export const i18n = new I18n<MyContext>({
+  defaultLocale: "pt",
+  directory: localesDir,
+  fluentBundleOptions: { useIsolating: false },
+  localeNegotiator,
+});
+
 const fallbackSession = new Map<string, SessionData>();
 
 function getInitialSession(chatTypeBot: string): SessionData {
@@ -59,13 +66,6 @@ export default async function initializeBot(
     }),
   );
 
-  const i18n = new I18n<MyContext>({
-    defaultLocale: "pt",
-    directory: localesDir,
-    fluentBundleOptions: { useIsolating: false },
-    localeNegotiator,
-  });
-
   bot.use(i18n.middleware());
 
 //  bot.use(
@@ -88,7 +88,7 @@ export default async function initializeBot(
 
 
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production_not") {
   try {
     console.log("Configurando comandos do bot...");
     console.log('deletando commandos antigos')

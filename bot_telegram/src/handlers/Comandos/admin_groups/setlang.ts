@@ -1,4 +1,5 @@
 import { InlineKeyboard } from "grammy";
+import { i18n } from "../../../initializeBot.js";
 import { prisma } from "../../../../lib/prisma.js";
 import { Language, ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
@@ -60,17 +61,14 @@ export async function setlangHandler(ctx: MyContext) {
 
   if (!input) {
     const currentLang = ctx.session.locale || "pt";
-    const currentLabel = currentLang === "pt" ? ctx.t("setlang-name-pt") : ctx.t("setlang-name-en");
+    const currentLabel = ctx.t(`setlang-name-${currentLang}`);
 
-    const keyboard = new InlineKeyboard()
-      .text(
-        `${currentLang === "pt" ? "✅ " : ""}${ctx.t("setlang-btn-pt")}`,
-        "setlang_pt",
-      )
-      .text(
-        `${currentLang === "en" ? "✅ " : ""}${ctx.t("setlang-btn-en")}`,
-        "setlang_en",
-      );
+    const keyboard =InlineKeyboard.from(
+  i18n.locales.map((locale: string) => [{
+    text: `${currentLang === locale ? "✅ " : ""}${ctx.t(`setlang-btn-${locale}`)}`,
+    callback_data: `setlang_${locale}`,
+  }]),
+);
 
     await ctx.reply(
       `${ctx.t("setlang-title")}\n${ctx.t("setlang-current", { lang: currentLabel })}`,
@@ -79,9 +77,9 @@ export async function setlangHandler(ctx: MyContext) {
     return;
   }
 
-  if (input === "pt" || input === "en") {
+  if (i18n.locales.includes(input)) {
     await setLanguage(ctx, input);
-    const label = input === "pt" ? ctx.t("setlang-name-pt") : ctx.t("setlang-name-en");
+    const label = ctx.t(`setlang-name-${input}`);
     await ctx.reply(ctx.t("setlang-success", { lang: label }));
     return;
   }

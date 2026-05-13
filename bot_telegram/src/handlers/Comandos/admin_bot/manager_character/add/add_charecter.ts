@@ -1,10 +1,15 @@
-import { prisma } from '../../../../../../lib/prisma.js';
-import { setCharacter } from '../../../../../cache/cache.js';
-import { LinkMsg } from '../../../../../utils/manege_caption/link_msg.js';
-import { mentionUser } from '../../../../../utils/manege_caption/metion_user.js';
-import { create_caption } from '../../../../../utils/manege_caption/create_caption.js';
-import { Sendmedia } from '../../../../../utils/sendmedia.js';
-import { ChatType, MediaType, type MyContext, type PreCharacter } from '../../../../../utils/customTypes.js';
+import { prisma } from "../../../../../../lib/prisma.js";
+import { setCharacter } from "../../../../../cache/cache.js";
+import { LinkMsg } from "../../../../../utils/link_msg.js";
+import { mentionUser } from "../../../../../utils/metion_user.js";
+import { create_caption } from "../../../../../utils/manege_caption/create_caption.js";
+import { Sendmedia } from "../../../../../utils/sendmedia.js";
+import {
+  ChatType,
+  MediaType,
+  type MyContext,
+  type PreCharacter,
+} from "../../../../../utils/customTypes.js";
 
 const processingQueue: (() => Promise<void>)[] = [];
 let isProcessing = false;
@@ -19,57 +24,60 @@ async function processQueue() {
     try {
       await task();
     } catch (err) {
-      console.error('[AddCharacterQueue] Error processing task:', err);
+      console.error("[AddCharacterQueue] Error processing task:", err);
     }
     if (processingQueue.length > 0) {
-      await new Promise((resolve) => setTimeout(resolve, TELEGRAM_API_DELAY_MS));
+      await new Promise((resolve) =>
+        setTimeout(resolve, TELEGRAM_API_DELAY_MS),
+      );
     }
   }
 
   isProcessing = false;
 }
 
-
-
 export async function AddCharacterHandler(ctx: MyContext) {
-  console.log('add per');
+  console.log("add per");
   let text_command: string | undefined;
   let reply = ctx.message?.reply_to_message;
 
   if (ctx.message?.caption && (ctx.message?.photo || ctx.message?.video)) {
-    reply = ctx?.message as any ?? undefined;
+    reply = (ctx?.message as any) ?? undefined;
   }
 
   if (!reply) {
-    ctx.reply(ctx.t('add_character_not_reply'));
+    ctx.reply(ctx.t("add_character_not_reply"));
     return;
   }
 
   const media = getMedia(reply);
   if (!media) {
-    ctx.reply(ctx.t('add-char-only-photo-video'));
+    ctx.reply(ctx.t("add-char-only-photo-video"));
     return;
   }
 
-  text_command = ctx.match?.length === 0 ? reply.caption : (ctx.match as string);
+  text_command =
+    ctx.match?.length === 0 ? reply.caption : (ctx.match as string);
 
   if (!text_command) {
-    text_command = '';
+    text_command = "";
   }
 
-  const isNoconf = (text_command || '').toLowerCase().includes('noconf');
-  const isNoautor = (text_command || '').toLowerCase().includes('noautor');
-  const cleanCommand = (text_command || '').replace(/noconf|noautor/gi, '').trim();
+  const isNoconf = (text_command || "").toLowerCase().includes("noconf");
+  const isNoautor = (text_command || "").toLowerCase().includes("noautor");
+  const cleanCommand = (text_command || "")
+    .replace(/noconf|noautor/gi, "")
+    .trim();
 
-  if (!cleanCommand.includes(',')) {
-    ctx.reply(ctx.t('add-char-usage'));
+  if (!cleanCommand.includes(",")) {
+    ctx.reply(ctx.t("add-char-usage"));
     return;
   }
 
-  const [nome, anime, ...rest] = cleanCommand.split(',');
+  const [nome, anime, ...rest] = cleanCommand.split(",");
 
   if (!nome || !anime) {
-    ctx.reply(ctx.t('add_character_not_info'));
+    ctx.reply(ctx.t("add_character_not_info"));
     return;
   }
 
@@ -84,7 +92,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
     genero: ctx.session.settings.genero,
     mediatype: media.type,
     media: media.file_id,
-    username: ctx.from?.first_name || '',
+    username: ctx.from?.first_name || "",
     user_id: ctx.from?.id || 0,
     extras: ctx.from as Record<string, any>,
   };
@@ -104,7 +112,9 @@ export async function AddCharacterHandler(ctx: MyContext) {
   await confirmCharacter(ctx, charData);
 }
 
-export  function getMedia(reply: any): { file_id: string; type: MediaType } | undefined {
+export function getMedia(
+  reply: any,
+): { file_id: string; type: MediaType } | undefined {
   if (reply.photo?.length) {
     return {
       file_id: reply.photo.at(-1).file_id,
@@ -123,7 +133,7 @@ export  function getMedia(reply: any): { file_id: string; type: MediaType } | un
 }
 
 function parseTokens(rest: string[]) {
-  const tokens = rest.join(' ').toLowerCase().split(/\s+/);
+  const tokens = rest.join(" ").toLowerCase().split(/\s+/);
 
   const rarities: number[] = [];
   const events: number[] = [];
@@ -131,12 +141,12 @@ function parseTokens(rest: string[]) {
   for (const token of tokens) {
     if (!token) continue;
 
-    if (token.startsWith('r')) {
+    if (token.startsWith("r")) {
       const id = parseInt(token.slice(1), 10);
       if (!isNaN(id)) rarities.push(id);
     }
 
-    if (token.startsWith('e')) {
+    if (token.startsWith("e")) {
       const id = parseInt(token.slice(1), 10);
       if (!isNaN(id)) events.push(id);
     }
@@ -149,9 +159,10 @@ function parseTokens(rest: string[]) {
 }
 
 async function getRandomRarity(genero: ChatType): Promise<number | undefined> {
-  const rarities = genero === 'husbando'
-    ? await prisma.husbandoRarity.findMany({ select: { rarityId: true } })
-    : await prisma.waifuRarity.findMany({ select: { rarityId: true } });
+  const rarities =
+    genero === "husbando"
+      ? await prisma.husbandoRarity.findMany({ select: { rarityId: true } })
+      : await prisma.waifuRarity.findMany({ select: { rarityId: true } });
 
   if (rarities.length === 0) return undefined;
 
@@ -159,14 +170,18 @@ async function getRandomRarity(genero: ChatType): Promise<number | undefined> {
   return rarities[randomIndex]?.rarityId;
 }
 
-async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor: boolean) {
+async function addCharacterDirect(
+  ctx: MyContext,
+  data: PreCharacter,
+  isNoautor: boolean,
+) {
   let rarities = data.rarities;
 
   if (!rarities || rarities.length === 0) {
     const randomRarity = await getRandomRarity(data.genero);
     if (randomRarity) {
       rarities = [randomRarity];
-      console.log('addCharacterDirect - raridade aleatoria:', randomRarity);
+      console.log("addCharacterDirect - raridade aleatoria:", randomRarity);
     }
   }
 
@@ -174,7 +189,7 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor:
   const extras = data.extras as any;
 
   try {
-    if (data.genero === 'husbando') {
+    if (data.genero === "husbando") {
       const char = await prisma.$transaction(async (tx) => {
         const created = await tx.characterHusbando.create({
           data: {
@@ -189,13 +204,19 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor:
 
         if (rarities && rarities.length > 0) {
           await tx.husbandoRarity.createMany({
-            data: rarities.map((rarityId) => ({ characterId: created.id, rarityId })),
+            data: rarities.map((rarityId) => ({
+              characterId: created.id,
+              rarityId,
+            })),
           });
         }
 
         if (data.events && data.events.length > 0) {
           await tx.husbandoEvent.createMany({
-            data: data.events.map((eventId) => ({ characterId: created.id, eventId })),
+            data: data.events.map((eventId) => ({
+              characterId: created.id,
+              eventId,
+            })),
           });
         }
 
@@ -226,13 +247,19 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor:
 
         if (rarities && rarities.length > 0) {
           await tx.waifuRarity.createMany({
-            data: rarities.map((rarityId) => ({ characterId: created.id, rarityId })),
+            data: rarities.map((rarityId) => ({
+              characterId: created.id,
+              rarityId,
+            })),
           });
         }
 
         if (data.events && data.events.length > 0) {
           await tx.waifuEvent.createMany({
-            data: data.events.map((eventId) => ({ characterId: created.id, eventId })),
+            data: data.events.map((eventId) => ({
+              characterId: created.id,
+              eventId,
+            })),
           });
         }
 
@@ -250,8 +277,10 @@ async function addCharacterDirect(ctx: MyContext, data: PreCharacter, isNoautor:
       await sendAddedNotification(ctx, character_db, data, isNoautor);
     }
   } catch (e: any) {
-    console.error('addCharacterDirect error:', e);
-    await ctx.reply(ctx.t("add-char-error", { error: e?.message || 'erro desconhecido' }));
+    console.error("addCharacterDirect error:", e);
+    await ctx.reply(
+      ctx.t("add-char-error", { error: e?.message || "erro desconhecido" }),
+    );
   }
 }
 
@@ -264,12 +293,14 @@ async function sendAddedNotification(
   const chatId = process.env.DATABASE_TELEGRAM_ID;
 
   if (!chatId) {
-    console.log('sendAddedNotification - DATABASE_TELEGRAM_ID nao configurado, pulando envio');
-    await ctx.reply(ctx.t('add-char-success'));
+    console.log(
+      "sendAddedNotification - DATABASE_TELEGRAM_ID nao configurado, pulando envio",
+    );
+    await ctx.reply(ctx.t("add-char-success"));
     return;
   }
 
-  const usermention = mentionUser(data.username || 'user', data.user_id);
+  const usermention = mentionUser(data.username || "user", data.user_id);
 
   const caption = create_caption({
     ctx,
@@ -282,7 +313,9 @@ async function sendAddedNotification(
 
   const fullCaption = isNoautor
     ? caption
-    : caption + '\n\n' + ctx.t('add_character_confirm', {
+    : caption +
+      "\n\n" +
+      ctx.t("add_character_confirm", {
         usermention,
       });
 
@@ -298,41 +331,55 @@ let slugCounter = 0;
 
 function generateSlug(nome: string, anime: string): string {
   slugCounter++;
-  const base = (nome + '-' + anime)
+  const base = (nome + "-" + anime)
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-  return base + '-' + Date.now() + '-' + slugCounter;
+    .replace(/[^a-z0-9]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return base + "-" + Date.now() + "-" + slugCounter;
 }
 
 async function confirmCharacter(ctx: MyContext, data: PreCharacter) {
-  const { idchat, nome, anime, rarities, events, genero, mediatype, media } = data;
+  const { idchat, nome, anime, rarities, events, genero, mediatype, media } =
+    data;
 
-  const textoRarities = rarities ? rarities.toString() : ctx.t("add-char-default-value");
-  const textoEvents = events ? events.toString() : ctx.t("add-char-default-event");
-  const text = ctx.t("add-char-preview", { nome: nome, anime: anime, genero: genero, mediatype: mediatype, media: media, link: LinkMsg(Number(ctx.chat?.id), Number(idchat)), rarities: textoRarities, events: textoEvents });
+  const textoRarities = rarities
+    ? rarities.toString()
+    : ctx.t("add-char-default-value");
+  const textoEvents = events
+    ? events.toString()
+    : ctx.t("add-char-default-event");
+  const text = ctx.t("add-char-preview", {
+    nome: nome,
+    anime: anime,
+    genero: genero,
+    mediatype: mediatype,
+    media: media,
+    link: LinkMsg(Number(ctx.chat?.id), Number(idchat)),
+    rarities: textoRarities,
+    events: textoEvents,
+  });
 
   const id = Date.now();
 
   setCharacter(id, data);
 
   await ctx.reply(text, {
-    parse_mode: 'HTML',
+    parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
         [
           {
-            text: ctx.t('add_character_btn_confirm'),
-            callback_data: 'addcharacter_confirm_' + id,
+            text: ctx.t("add_character_btn_confirm"),
+            callback_data: "addcharacter_confirm_" + id,
           },
           {
-            text: ctx.t('add_character_btn_cancel'),
-            callback_data: 'addcharacter_cancel_' + id,
+            text: ctx.t("add_character_btn_cancel"),
+            callback_data: "addcharacter_cancel_" + id,
           },
           {
-            text: ctx.t('add_character_btn_edit'),
-            callback_data: 'addcharacter_edit_' + id,
+            text: ctx.t("add_character_btn_edit"),
+            callback_data: "addcharacter_edit_" + id,
           },
         ],
       ],
