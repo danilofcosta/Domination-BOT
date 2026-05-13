@@ -18,9 +18,8 @@
  */
 
 import { CommandGroup, LanguageCodes } from '@grammyjs/commands';
-import type { MyContext } from '../utils/customTypes.js';
+import { ProfileType, type MyContext } from '../utils/customTypes.js';
 import { botPrefix, options } from './botConfigCommands.js';
-import { ProfileType } from '../../generated/prisma/client.js';
 import { onlyRoleBotAdmin } from '../utils/permissions.js';
 import { AddCharacterHandler } from '../handlers/Comandos/admin_bot/manager_character/add/add_charecter.js';
 import { debug, warn } from '../utils/log.js';

@@ -1,5 +1,5 @@
 import { LRUCache } from "lru-cache";
-import type { PreCharacter } from "../utils/customTypes";
+import type { PreCharacter } from "../utils/customTypes.js";
 
 export const haremCache = new LRUCache<string, any>({
   max: 1000,

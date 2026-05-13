@@ -1,6 +1,5 @@
-import { ProfileType } from "../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
-import type { MyContext } from "../../utils/customTypes.js";
+import { ProfileType, type MyContext } from "../../utils/customTypes.js";
 import fs from "node:fs";
 import path from "node:path";
 import { InputFile } from "grammy";

@@ -7,16 +7,15 @@ import type {
   InlineQueryResultCachedVideo,
 } from "grammy/types";
 
-import type { MyContext } from "../../utils/customTypes.js";
+import { MediaType, type MyContext } from "../../utils/customTypes.js";
 import { create_caption } from "../../utils/manege_caption/create_caption.js";
-import { MediaType } from "../../../generated/prisma/client.js";
 import type {
   Character,
   ChatType,
   Collection,
-} from "../../utils/customTypes.ts";
+} from "../../utils/customTypes.js";
 import { warn, error } from "../../utils/log.js";
-import { bts_yes_or_no } from "../../utils/btns.js";
+
 
 export interface Params {
   ctx: MyContext | any;

@@ -5,7 +5,7 @@ import fs from "fs";
 
 import { MediaType } from "../../generated/prisma/client.js";
 import { error, debug } from "./log.js";
-import type { CharacterWaifu } from "../../generated/prisma/browser.js";
+
  
 interface Media {
 media:string,

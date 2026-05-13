@@ -1,5 +1,5 @@
-import type { MyContext } from "../../../utils/customTypes";
-import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { extractListEmojisCharacter } from "../../../utils/manege_caption/extractListEmojisCharacter.js";
 
 function Harem_mode_latest(list_character: any[], ctx: MyContext) {
   let pages: string[] = [];

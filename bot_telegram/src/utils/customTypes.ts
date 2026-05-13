@@ -3,21 +3,15 @@ import type { Context } from "grammy";
 import type { I18nFlavor } from "@grammyjs/i18n";
 import type { SessionFlavor } from "grammy";
 
-import type {
-  CharacterWaifu,
-  CharacterHusbando,
-  WaifuCollection,
-  HusbandoCollection,
-  MediaType,
-  HusbandoEvent,
-  WaifuEvent,
-  HusbandoRarity,
-  WaifuRarity,
-} from "../../generated/prisma/client.js";
+
 import type { User } from "grammy/types";
 import type { SessionData } from "./customInteface.js";
+import type { WaifuCollection } from "../../generated/prisma/client.js";
+import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "../../generated/prisma/client.js";
  // db types
-export type TypeMidia = MediaType;
+
+
+
 export type Character = CharacterWaifu | CharacterHusbando;
 
 export type Collection = WaifuCollection | HusbandoCollection;
@@ -131,4 +125,34 @@ export interface PreCharacter {
   username: string;
   user_id: number;
   extras?: Record<string, any>;
+}
+
+export enum Language {
+  PT = "PT",
+  EN = "EN"
+}
+
+export enum MediaType {
+  IMAGE_URL = "IMAGE_URL",
+  IMAGE_FILEID = "IMAGE_FILEID",
+  VIDEO_URL = "VIDEO_URL",
+  VIDEO_FILEID = "VIDEO_FILEID",
+  VIDEO_LOCAL = "VIDEO_LOCAL",
+  IMAGE_LOCAL = "IMAGE_LOCAL"
+}
+
+export enum ProfileType {
+  SUPREME = "SUPREME",
+  SUPER_ADMIN = "SUPER_ADMIN",
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+  USER = "USER",
+  BANNED = "BANNED"
+}
+
+export enum SourceType {
+  ANIME = "ANIME",
+  GAME = "GAME",
+  MANGA = "MANGA",
+  MOVIE = "MOVIE"
 }

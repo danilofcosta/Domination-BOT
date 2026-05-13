@@ -1,5 +1,5 @@
-import type { MyContext } from "./customTypes";
-import { Sendmedia } from "./sendmedia";
+import type { MyContext } from "./customTypes.js";
+import { Sendmedia } from "./sendmedia.js";
 
 export async function EditOrSendText({
   ctx,

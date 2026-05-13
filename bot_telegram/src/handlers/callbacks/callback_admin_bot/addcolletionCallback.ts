@@ -1,9 +1,8 @@
 
 import { InlineKeyboard } from "grammy";
-import { ProfileType } from "../../../../generated/prisma/enums.js";
 import { getAddToCollectionMulti, getHarem } from "../../../cache/cache.js";
 import { AddCharacterCollection } from "../../../utils/chareter/add_character_colletion.js";
-import { type MyContext, ChatType } from "../../../utils/customTypes.js";
+import { type MyContext, ChatType, ProfileType } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/manege_caption/metion_user.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { debug, error, info, warn } from "../../../utils/log.js";

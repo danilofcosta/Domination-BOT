@@ -1,6 +1,5 @@
-import { ProfileType } from '../../../../../generated/prisma/client.js';
 import { prisma } from '../../../../../lib/prisma.js';
-import type { MyContext } from '../../../../utils/customTypes.js';
+import { ProfileType, type MyContext } from '../../../../utils/customTypes.js';
 import { debug, error } from '../../../../utils/log.js';
 
 async function extractUserId(ctx: MyContext): Promise<number | null> {

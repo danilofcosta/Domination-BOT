@@ -29,7 +29,9 @@ function verificarNome(personagem: string, tentativa: string) {
 
   return tentativaParts.every((p) => nomeParts.includes(p));
 }
-function calcularTempo({ inicio, fim }) {
+function calcularTempo(
+  { inicio, fim }: { inicio: number; fim: number }
+) {
   let diff = Math.abs(fim - inicio);
 
   const unidades = [

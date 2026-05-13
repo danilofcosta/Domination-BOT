@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node dist/src/index.js",
     "build": "tsc && cpx \"src/locales/**/*\" dist/src/locales",
+    "teste": "tsc && cpx \"src/locales/**/*\" dist/src/locales && node dist/src/index.js ",
     "dev": "tsx watch src/index.ts",
     "webhook": "tsx scripts/set_web_hook.ts",
     "up": "tsx scripts/up.ts"

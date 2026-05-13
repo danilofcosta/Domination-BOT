@@ -1,4 +1,4 @@
-import type { BTN_STYLE, BTN_TYPE, Character, ChatType } from "./customTypes";
+import type { Character, ChatType } from "./customTypes.js";
 
 export interface SessionData {
   settings: {

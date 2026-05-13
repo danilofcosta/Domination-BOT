@@ -1,7 +1,6 @@
 import { type MiddlewareFn } from "grammy";
-import { type MyContext } from "./customTypes.js";
+import { ProfileType, type MyContext } from "./customTypes.js";
 import { prisma } from "../../lib/prisma.js";
-import { ProfileType } from "../../generated/prisma/client.js";
 import { warn, error, debug, info } from "./log.js";
 import { Sendmedia } from "./sendmedia.js";
 
@@ -81,7 +80,7 @@ export async function getUserRole(userId: number): Promise<ProfileType> {
       select: { profileType: true },
     });
 
-    return user?.profileType || ProfileType.USER;
+    return (user?.profileType as ProfileType) || ProfileType.USER;
   } catch (e) {
     error(`[Permissions] Erro ao buscar role para usuário ${userId}`, e);
     return ProfileType.USER;

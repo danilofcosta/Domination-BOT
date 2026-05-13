@@ -129,10 +129,10 @@ model User {
   telegramId         BigInt               @unique
   webLogin           String?              @unique
   webPassword        String?
-  husbandoLikes      Int[]
-  husbandoDislikes   Int[]
-  waifuLikes         Int[]
-  waifuDislikes      Int[]
+  husbandoLikes      Int[]                @default([])
+  waifuLikes         Int[]                @default([])
+  waifuDislikes      Int[]                @default([])
+  husbandoDislikes   Int[]                @default([])
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])

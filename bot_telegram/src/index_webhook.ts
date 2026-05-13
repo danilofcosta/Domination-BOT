@@ -3,7 +3,9 @@ import { webhookCallback } from "grammy";
 
 //let init = false;
 
-export async function RunWebHook(bot) {
+export async function RunWebHook(
+  { bot }: { bot: any }
+) {
   console.log("RODANDO BOT Webhook");
 
   const app = express();
@@ -23,7 +25,7 @@ export async function RunWebHook(bot) {
 
   // if (process.env.CHAT_ID_DEV && !init) {
   //   await bot.api.sendMessage(
-  //     process.env.CHAT_ID_DEV,
+  //     process.env.CHAT_ID_DEV,cls
   //     `Bot Iniciado ${process.env.TYPE_BOT}\nModo : ${process.env.NODE_ENV}`
   //   );
   //   init = true;

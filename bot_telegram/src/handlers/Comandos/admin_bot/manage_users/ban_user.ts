@@ -1,7 +1,6 @@
-import { ProfileType } from '../../../../../generated/prisma/client.js';
 import { prisma } from '../../../../../lib/prisma.js';
 import { botPrefix } from '../../../../CommandesManage/botConfigCommands.js';
-import type { MyContext } from '../../../../utils/customTypes.js';
+import { ProfileType, type MyContext } from '../../../../utils/customTypes.js';
 import { info, error, debug, warn } from '../../../../utils/log.js';
 import { getUserRole, roleWeights } from '../../../../utils/permissions.js';
 

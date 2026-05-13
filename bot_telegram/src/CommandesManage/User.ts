@@ -22,18 +22,17 @@ const UserCommands = new CommandGroup<MyContext>();
 
 export const ComandosUser = {
   dominar: {
-  
     command: "dominar",
     description: {
       pt: "Domina um personagem",
       en: "Dominate a character",
     },
     handler: CapturarCharacter,
-    scope: { type: "all_group_chats" } ,
+    scope: { type: "all_group_chats" },
   },
   harem: {
     command: "my" + typeBot + "s",
-    private:'harem',
+    private: "harem",
     description: {
       pt: "Mostra o seu Harem",
       en: "Show your Harem",
@@ -105,7 +104,7 @@ export const ComandosUser = {
     scope: "all_group_chats",
   },
   setlang: {
-    command: "setlang" +  botPrefix,
+    command: "setlang" + botPrefix,
     description: {
       pt: "Altera o idioma do bot",
       en: "Change the bot language",
@@ -121,9 +120,11 @@ for (const [key, value] of Object.entries(ComandosUser)) {
     await value.handler(ctx);
   };
 
-  UserCommands.command(value.command, value.description.pt )
-   .addToScope({ type: "all_group_chats" }, handlerWrapper)
-   .addToScope({ type: "all_chat_administrators" }, handlerWrapper);
-}
+  UserCommands.command(
+    value.command,
+    value.description.pt,
+    handlerWrapper,
+    options,
+  )  .addToScope({ type: "all_private_chats" }, (ctx) => handlerWrapper(ctx))}
 
 export { UserCommands };

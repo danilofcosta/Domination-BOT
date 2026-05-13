@@ -18,9 +18,14 @@ const start = async () => {
       ? process.env.BOT_TOKEN_WAIFU
       : process.env.BOT_TOKEN_HUSBANDO;
 
-  if(process.env.BOT_TOKEN_TESTE){
-  BOT_TOKEN =process.env.BOT_TOKEN_TESTE
-
+  if (process.env.BOT_TOKEN_TESTE) {
+    console.log("bot teste");
+    BOT_TOKEN = process.env.BOT_TOKEN_TESTE;
+    const bot = await initializeBot(
+      process.env.TYPE_BOT as ChatType,
+      BOT_TOKEN,
+    );
+    return await RunPolling(bot, true);
   }
 
   if (!BOT_TOKEN) {
@@ -32,9 +37,12 @@ const start = async () => {
 
   info("Bot instanciado com sucesso");
 
-  if (process.env.VERCEL === "true" || process.env.NODE_ENV === NODE_ENV.PRODUCTION ) {
-    app = await RunWebHook(bot);
-  } else if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT ) {
+  if (
+    process.env.VERCEL === "true" ||
+    process.env.NODE_ENV === NODE_ENV.PRODUCTION
+  ) {
+    app = await RunWebHook({bot});
+  } else if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
     await RunPolling(bot, true);
   } else {
     info("NODE_ENV não definido, usando polling");

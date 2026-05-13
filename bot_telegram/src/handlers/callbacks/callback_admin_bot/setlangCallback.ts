@@ -1,8 +1,6 @@
-import { Language } from "../../../../generated/prisma/client.js";
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../utils/customTypes.js";
+import { Language, ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
-import { ProfileType } from "../../../../generated/prisma/client.js";
 import { warn } from "../../../utils/log.js";
 
 async function canChangeLanguage(ctx: MyContext): Promise<boolean> {
