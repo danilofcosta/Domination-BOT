@@ -276,6 +276,7 @@ export async function CapturarCharacter(ctx: MyContext) {
         reply_markup: CreateOneBtn({
           text: ctx.t("success_dominar_btn"),
           callback: "harem_user_" + ctx.from?.id,
+          style:"success",
           typeBtn: BTN_TYPE.switch_inline_query_current_chat,
         }),
       });

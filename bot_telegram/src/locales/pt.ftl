@@ -234,6 +234,8 @@ drop_character_secret_caption =  {$charater_genero}  ja fugiu !
     O nome é <code> {$charater_nome} - {$charater_anime} </code>
 
 drop_character_attempt_empty = Ok mais qual nome do {$genero} ?
+drop_character_secret_btn = Mais detalhes
+
 
 # gender inline strings
 drop-gender-husbando = o husbando
