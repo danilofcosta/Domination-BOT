@@ -18,8 +18,6 @@ domination_server/bot_telegram\a
 bot_telegram\D
 bot_telegram/generated/prisma/waifus.json
 domination_server/
-web/
-domination_ui/
 bot_telegram/scripts/a/erro.json
 bot_telegram/scripts/a/waifus.json
 bot_telegram/scripts/t.ts
