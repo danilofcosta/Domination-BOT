@@ -13,15 +13,7 @@ import {
 import { Character, User } from "@/lib/types";
 import { CharacterMedia } from "../characters/character-media";
 import { Badge } from "@/components/ui/badge";
-import {
-  deleteUser,
-  updateUserProfileType,
-  adjustUserCoins,
-  reduceDuplicateCharacter,
-  getUserCollectionDetails,
-  setUserFavorite,
-  removeUserFavorite,
-} from "@/app/admin/actions";
+import { ProfileType } from "@/lib/profile-type";
 import {
   Trash2Icon,
   ShieldX,
@@ -35,7 +27,7 @@ import {
   HeartIcon,
   XIcon,
 } from "lucide-react";
-import { SessionPayload } from "@/lib/auth/auth";
+import type { SessionPayload } from "@/lib/auth/auth";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -46,7 +38,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-import { ProfileType } from "@/lib/profile-type";
+async function apiCall(action: string, payload: Record<string, unknown>) {
+  const res = await fetch("/api/admin/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, ...payload }),
+  });
+  return res.json();
+}
 
 export interface UserDetailsDialogProps {
   user: User & {
@@ -102,7 +101,7 @@ export function UserDetailsDialog({
   React.useEffect(() => {
     if (isOpen && user.telegramId) {
       setLoadingCollection(true);
-      getUserCollectionDetails(user.telegramId).then((data) => {
+      apiCall("getCollectionDetails", { telegramId: user.telegramId }).then((data: any) => {
         setCollectionDetails(data);
         setLoadingCollection(false);
       });
@@ -119,9 +118,7 @@ export function UserDetailsDialog({
 
     setDeleteError("");
     setIsDeleting(true);
-    const result = await deleteUser(
-      String(user.telegramId),
-    );
+    const result = await apiCall("deleteUser", { telegramId: String(user.telegramId) });
 
     if (!result.success) {
       setDeleteError(result.error || "Erro ao excluir usuário");
@@ -137,10 +134,7 @@ export function UserDetailsDialog({
 
   const handleUpdateType = async (newType: ProfileType) => {
     setTypeUpdating(newType);
-    const result = await updateUserProfileType(
-      BigInt(user.telegramId),
-      newType,
-    );
+    const result = await apiCall("updateUserProfileType", { telegramId: user.telegramId, newProfileType: newType });
     setTypeUpdating(null);
 
     if (result.success) {
@@ -174,11 +168,7 @@ export function UserDetailsDialog({
       return;
 
     setAdjustingCoins(true);
-    const result = await adjustUserCoins(
-      user.telegramId,
-      amount,
-      operation,
-    );
+    const result = await apiCall("adjustCoins", { telegramId: user.telegramId, amount, operation });
     setAdjustingCoins(false);
 
     if (result.success) {
@@ -214,12 +204,7 @@ export function UserDetailsDialog({
       return;
 
     setReducingId(characterId);
-    const result = await reduceDuplicateCharacter(
-      user.telegramId,
-      characterId,
-      type,
-      reduceBy,
-    );
+    const result = await apiCall("reduceDuplicate", { telegramId: user.telegramId, characterId, type, reduceBy });
     setReducingId(null);
 
     if (result.success) {
@@ -259,11 +244,7 @@ export function UserDetailsDialog({
     )
       return;
     setSettingFavorite(true);
-    setUserFavorite(
-      user.telegramId,
-      characterId,
-      type,
-    ).then((result) => {
+    apiCall("setFavorite", { telegramId: user.telegramId, characterId, type }).then((result: any) => {
       setSettingFavorite(false);
       if (result.success) {
         toast.success("Favorito atualizado", {
@@ -287,10 +268,7 @@ export function UserDetailsDialog({
       return;
 
     setSettingFavorite(true);
-    const result = await removeUserFavorite(
-      user.telegramId,
-      type,
-    );
+    const result = await apiCall("removeFavorite", { telegramId: user.telegramId, type });
     setSettingFavorite(false);
 
     if (result.success) {
@@ -370,7 +348,7 @@ export function UserDetailsDialog({
                         const isCurrent = user.profileType === type;
                         return (
                           <DropdownMenuItem
-                            key={type}
+                            key={type as string}
                             onClick={() => handleUpdateType(type)}
                             disabled={isLoading || isCurrent}
                             className="flex items-center justify-between cursor-pointer"
@@ -380,7 +358,7 @@ export function UserDetailsDialog({
                                 isCurrent ? "text-muted-foreground" : ""
                               }
                             >
-                              {type}
+                              {type as string}
                             </span>
                             {isLoading ? (
                               <Loader2 className="h-4 w-4 animate-spin" />

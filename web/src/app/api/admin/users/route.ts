@@ -1,117 +1,69 @@
-import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import {
+  deleteUser,
+  updateUserProfileType,
+  adjustUserCoins,
+  reduceDuplicateCharacter,
+  getUserCollectionDetails,
+  setUserFavorite,
+  removeUserFavorite,
+} from "@/app/admin/actions";
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const userIdStr = url.searchParams.get("id");
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const { action } = body;
 
   try {
-    if (userIdStr) {
-      const userId = parseInt(userIdStr);
-      
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        include: {
-          WaifuCollection: {
-            include: { Character: true },
-            orderBy: { count: "desc" },
-          },
-          HusbandoCollection: {
-            include: { Character: true },
-            orderBy: { count: "desc" },
-          },
-          CharacterWaifu: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              origem: true,
-              media: true,
-              mediaType: true,
-            },
-          },
-          CharacterHusbando: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              origem: true,
-              media: true,
-              mediaType: true,
-            },
-          },
-        },
-      });
-
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
+    switch (action) {
+      case "getCollectionDetails": {
+        const data = await getUserCollectionDetails(body.telegramId);
+        return NextResponse.json(data);
       }
-
-      const waifuCount = user.WaifuCollection.reduce((acc, w) => acc + w.count, 0);
-      const husbandoCount = user.HusbandoCollection.reduce((acc, h) => acc + h.count, 0);
-
-      return NextResponse.json({
-        id: user.id,
-        telegramId: user.telegramId.toString(),
-        profileType: user.profileType,
-        language: user.language,
-        coins: user.coins,
-        telegramData: user.telegramData,
-        waifuCount,
-        husbandoCount,
-        favoriteWaifu: user.CharacterWaifu,
-        favoriteHusbando: user.CharacterHusbando,
-        waifus: user.WaifuCollection.map((w) => ({
-          id: w.characterId,
-          name: w.Character.name,
-          slug: w.Character.slug,
-          origem: w.Character.origem,
-          media: w.Character.media,
-          mediaType: w.Character.mediaType,
-          count: w.count,
-        })),
-        husbandos: user.HusbandoCollection.map((h) => ({
-          id: h.characterId,
-          name: h.Character.name,
-          slug: h.Character.slug,
-          origem: h.Character.origem,
-          media: h.Character.media,
-          mediaType: h.Character.mediaType,
-          count: h.count,
-        })),
-      });
+      case "deleteUser": {
+        const result = await deleteUser(body.telegramId);
+        return NextResponse.json(result);
+      }
+      case "updateUserProfileType": {
+        const result = await updateUserProfileType(
+          BigInt(body.telegramId),
+          body.newProfileType,
+        );
+        return NextResponse.json(result);
+      }
+      case "adjustCoins": {
+        const result = await adjustUserCoins(
+          body.telegramId,
+          body.amount,
+          body.operation,
+        );
+        return NextResponse.json(result);
+      }
+      case "reduceDuplicate": {
+        const result = await reduceDuplicateCharacter(
+          body.telegramId,
+          body.characterId,
+          body.type,
+          body.reduceBy,
+        );
+        return NextResponse.json(result);
+      }
+      case "setFavorite": {
+        const result = await setUserFavorite(
+          body.telegramId,
+          body.characterId,
+          body.type,
+        );
+        return NextResponse.json(result);
+      }
+      case "removeFavorite": {
+        const result = await removeUserFavorite(body.telegramId, body.type);
+        return NextResponse.json(result);
+      }
+      default:
+        return NextResponse.json({ error: "Unknown action" }, { status: 400 });
     }
-
-    const users = await prisma.user.findMany({
-      orderBy: { id: "desc" },
-      include: {
-        _count: {
-          select: {
-            WaifuCollection: true,
-            HusbandoCollection: true,
-          }
-        },
-        CharacterWaifu: {
-          include: {
-            WaifuEvent: { include: { Event: true } },
-            WaifuRarity: { include: { Rarity: true } },
-          },
-        },
-        CharacterHusbando: {
-          include: {
-            HusbandoEvent: { include: { Event: true } },
-            HusbandoRarity: { include: { Rarity: true } },
-          },
-        },
-      },
-    });
-    
-    return NextResponse.json(users.map(u => ({
-      ...u,
-      telegramId: u.telegramId.toString(),
-    })));
   } catch (error) {
-    console.error("Erro ao buscar usuários:", error);
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+    console.error("API error:", error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

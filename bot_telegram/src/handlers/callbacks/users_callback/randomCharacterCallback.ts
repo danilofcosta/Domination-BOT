@@ -92,7 +92,8 @@ export async function randomCharacterCallback(ctx: MyContext) {
       `random-character-no-${charId}-${userId}`,
       updatedChar.likes.toString(),
       updatedChar.dislikes.toString(),
-      
+         "5289772607556568230",
+      "5318868949402667784",
     );
 
     await ctx.editMessageReplyMarkup({ reply_markup }).catch(() => {});

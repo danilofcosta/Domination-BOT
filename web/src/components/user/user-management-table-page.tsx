@@ -4,7 +4,7 @@ import * as React from "react";
 import { SearchIcon, Loader2Icon, UserIcon } from "lucide-react";
 
 import { UserDetailsDialog } from "./user-details-dialog";
-import { SessionPayload } from "@/lib/auth/auth";
+import type { SessionPayload } from "@/lib/auth/auth";
 import { ProfileType } from "@/lib/profile-type";
 
 async function getUsersFromServer() {

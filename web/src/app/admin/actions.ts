@@ -1,5 +1,7 @@
 "use server";
 
+import "server-only";
+
 import { prisma } from "@/lib/prisma";
 import { SourceType, ProfileType } from "../../../generated/prisma/client";
 import { slugify } from "@/lib/telegram/create_slug";

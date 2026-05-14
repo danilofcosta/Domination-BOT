@@ -1,5 +1,5 @@
-import { SourceType, MediaType, ProfileType, Language, WaifuCollection, WaifuEvent, WaifuRarity, HusbandoEvent, HusbandoRarity, HusbandoCollection } from "../../generated/prisma/client"
-import { CharacterHusbando, CharacterWaifu } from "../../generated/prisma/client";
+import { SourceType, MediaType, ProfileType, Language, WaifuCollection, WaifuEvent, WaifuRarity, HusbandoEvent, HusbandoRarity, HusbandoCollection } from "../../generated/prisma/browser"
+import { CharacterHusbando, CharacterWaifu } from "../../generated/prisma/browser";
 export interface ApiCharacter {
   id: number;
   name: string;
