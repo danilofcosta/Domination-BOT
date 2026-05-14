@@ -22,7 +22,7 @@ export async function showResults({
     await ctx.answerInlineQuery(results, {
     
       is_personal: true,
-      cache_time: 0,
+      cache_time: 300,
       ...(next_offset !== undefined && { next_offset }),
       button: {
         text: btnText.slice(0, 64),
