@@ -15,13 +15,11 @@ export async function favConfirmHandler(ctx: MyContext) {
       expected: userid,
       actual: ctx.from?.id,
     });
-    await ctx.answerCallbackQuery(
-      ctx.t("error-action-not-authorized-by-id"),
-    );
+    await ctx.answerCallbackQuery(ctx.t("error-action-not-authorized-by-id"));
     return;
   }
 
-if (action === "no") {
+  if (action === "no") {
     const cq = ctx.callbackQuery;
 
     if (cq?.message) {
@@ -30,16 +28,18 @@ if (action === "no") {
     }
 
     if (cq?.inline_message_id) {
-      await ctx.editMessageReplyMarkup({
-        reply_markup: { inline_keyboard: [] },
-      }).catch(() => {});
+      await ctx
+        .editMessageReplyMarkup({
+          reply_markup: { inline_keyboard: [] },
+        })
+        .catch(() => {});
       return;
     }
 
     return;
   }
 
-  const isWaifu =process.env.TYPE_BOT ===ChatType.WAIFU
+  const isWaifu = process.env.TYPE_BOT === ChatType.WAIFU;
   const favId = Number(favid);
   const userId = Number(userid);
 

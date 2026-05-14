@@ -2,7 +2,7 @@ import { InlineKeyboard } from "grammy";
 import { BTN_TYPE, type MyContext } from "./customTypes.js";
 import type { BTN_STYLE, CreateOneBtnOptions } from "./customTypes.js";
 
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 export function buildLetterKeyboard(cacheKey: string) {
   const keyboard = new InlineKeyboard();
 
@@ -20,7 +20,6 @@ export function buildLetterKeyboard(cacheKey: string) {
 
   return keyboard;
 }
-
 
 export function buildKeyboard(
   ctx: MyContext,
@@ -48,22 +47,28 @@ export function bts_yes_or_no(
   no: string,
   text_yes?: string,
   text_no?: string,
+  icon_no?: string,
+  icon_yes?: string,
 ): InlineKeyboard {
-  return new InlineKeyboard()
+  const btn = new InlineKeyboard();
 
-    .text(text_no || ctx.t("btn-no"), no)
-    .style("danger")
-    .icon("5465225015190367274")
-    .text(text_yes || ctx.t("btn-yes"), yes)
-    .style("success")
-    .icon("5465465194056525619");
+  // no
+  btn.text(text_no || ctx.t("btn-no"), no).style("danger");
+  if (icon_no) {
+    btn.icon(icon_no);
+  }
+
+  // yes
+
+  btn.text(text_yes || ctx.t("btn-yes"), yes).style("success");
+  if (icon_yes) {
+    btn.icon(icon_yes);
+  }
+
+  return btn;
 }
 
-
-
-export function CreateOneBtn(
-  options: CreateOneBtnOptions,
-): InlineKeyboard {
+export function CreateOneBtn(options: CreateOneBtnOptions): InlineKeyboard {
   const { typeBtn, text, callback, icon, style } = options;
   const btn = new InlineKeyboard();
 

@@ -42,12 +42,12 @@ export function createResult(params: Params) {
 
   switch (character.mediaType) {
     case MediaType.IMAGE_URL:
-      console.log("Creating result for character with mediaType IMAGE_URL:", {
-        id: character.id,
-        name: character.name,
-        media: character.media,
-      });
-      return {
+    //   console.log("Creating result for character with mediaType IMAGE_URL:", {
+    //     id: character.id,
+    //     name: character.name,
+    //     media: character.media,
+    //   });
+        return {
         type: "photo",
         id: `${character.id}`,
         photo_url: character.media,

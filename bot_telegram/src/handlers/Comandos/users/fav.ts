@@ -1,6 +1,10 @@
 import { prisma } from "../../../lib/prisma.js";
-import { bts_yes_or_no } from "../../../utils/btns.js";
-import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { bts_yes_or_no, CreateOneBtn } from "../../../utils/btns.js";
+import {
+  BTN_TYPE,
+  ChatType,
+  type MyContext,
+} from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 
@@ -23,14 +27,18 @@ export async function favCharacter(ctx: MyContext) {
   }
 
   if (!favid || isNaN(favid)) {
-    warn(`favCharacter - ID inválido`, {
-      userId: ctx.from?.id,
-      favid,
-      match: ctx.match,
-    });
+    warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, favid });
 
-    
-    return Sendmedia({ ctx, caption: ctx.t("error-not-id") });
+    return Sendmedia({
+      ctx,
+      caption: ctx.t("error-fav-not-id"),
+      reply_markup: CreateOneBtn({
+        text: ctx.t("fav-btn-select"),
+        style: "success",
+        callback: `select_my_fav`,
+        typeBtn: BTN_TYPE.switch_inline_query_current_chat,
+      }),
+    });
   }
 
   const userid = ctx.from?.id;

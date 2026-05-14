@@ -30,9 +30,9 @@ select-inline-gift= escolha o presente
 ###############
 # fav
 ###############
+error-fav-not-id = Manda o Id Também ou selecione abaixo
 
 fav-btn-select = seleciona seu favorito
-error-fav-not-id = Manda o Id Também ou selecione abaixo
 error-fav-invalid-char = Personagem inválido.
 error-fav-not-owned = usuário não possui personagem
 

@@ -41,12 +41,12 @@ export async function getHaremCollection(
 
     return { collection, total };
   }
-
+////
   const where = {
     userId: telegramId,
-    Character: {
-      mediaType: MediaType.IMAGE_URL,
-    },
+    // Character: {
+    //   mediaType: MediaType.IMAGE_URL,
+    // },
   };
 
   const [collection, total] = await Promise.all([
