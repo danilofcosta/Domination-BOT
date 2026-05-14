@@ -12,16 +12,16 @@ export async function randomCharacterCallback(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("-") : [];
   const action = parts[2];
   const charId = Number(parts[3]);
-  const userId = Number(parts[4]);
+  const userId = Number(ctx.from?.id);
 
   if (!action || !charId || !userId) {
     warn(`randomCharacterCallback - dados inválidos`, { parts });
     return;
   }
 
-  const cooldownKey = `reaction:${userId}:${charId}`;
+  const cooldownKey = `reaction:${userId}:${charId}:${charId}`;
   if (reactionCooldown.has(cooldownKey)) {
-    await ctx.answerCallbackQuery();
+    await ctx.answerCallbackQuery( );
     return;
   }
 
@@ -92,6 +92,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
       `random-character-no-${charId}-${userId}`,
       updatedChar.likes.toString(),
       updatedChar.dislikes.toString(),
+      
     );
 
     await ctx.editMessageReplyMarkup({ reply_markup }).catch(() => {});

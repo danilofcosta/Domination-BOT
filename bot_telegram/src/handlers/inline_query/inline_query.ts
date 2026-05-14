@@ -4,6 +4,7 @@ import { showResults } from "./show_results_inline.js";
 import { createResult } from "./create_inline_result.js";
 import { prisma } from "../../lib/prisma.js";
 import { log } from "../../utils/log.js";
+import { bts_yes_or_no } from "../../utils/btns.js";
 const LIMIT = 25;
 
 declare global {
@@ -80,7 +81,17 @@ export async function QueryCharacet(ctx: MyContext) {
   ]);
 
   const results = characters.map((char) =>
-    createResult({ character: char, ctx, noformat: true, chatType })
+      
+    createResult({ character: char, ctx, noformat: true, chatType  ,reply_markup:    bts_yes_or_no(
+      ctx,
+      `random-character-yes-${char.id}-${3}`,
+      `random-character-no-${char.id}-${2}`,
+      char.likes.toString(),
+      char.dislikes.toString(),
+      "5289772607556568230",
+      "5318868949402667784",
+    )
+})
   );
 
   await showResults({
@@ -90,6 +101,9 @@ export async function QueryCharacet(ctx: MyContext) {
     text: results.length === 0
       ? ctx.t('query_not_fould')
       : `${ctx.t('Logo_bt')} : ${total}`,
+
+    
+      
   });
 }
 
