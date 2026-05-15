@@ -83,7 +83,7 @@ export async function giftHandler(ctx: MyContext) {
 
   const GiftCharacter = await findCollectionWithIncludes({
     isWaifu: ctx.session.settings.genero === ChatType.WAIFU,
-    userId: ctx.from!.id,
+    telegramId: ctx.from!.id,
     characterId: giftid,
   });
 
