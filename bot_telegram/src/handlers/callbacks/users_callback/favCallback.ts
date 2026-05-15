@@ -46,8 +46,8 @@ export async function favConfirmHandler(ctx: MyContext) {
   info(`favConfirmHandler - confirmando favorito`, { userId, favId, isWaifu });
 
   const collection = await findCollectionWithIncludes({
-    isWaifu,
-    userId,
+    isWaifu: isWaifu,
+   telegramId: userId,
     characterId: favId,
   });
 
