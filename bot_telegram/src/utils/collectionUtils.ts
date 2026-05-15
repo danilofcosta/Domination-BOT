@@ -2,14 +2,17 @@ import { prisma } from "../lib/prisma.js";
 
 export async function findCollectionWithIncludes(params: {
   isWaifu: boolean;
-  userId: number ;
+  telegramId: number;
   characterId: number;
 }) {
-  const { isWaifu, userId, characterId } = params;
-
+  const { isWaifu, telegramId, characterId } = params;
+  const where = {
+    userId: telegramId,
+    characterId: characterId,
+  };
   if (isWaifu) {
     return prisma.waifuCollection.findFirst({
-      where: { userId, characterId },
+      where,
       include: {
         Character: {
           include: {
@@ -22,7 +25,7 @@ export async function findCollectionWithIncludes(params: {
   }
 
   return prisma.husbandoCollection.findFirst({
-    where: { userId, characterId },
+    where,
     include: {
       Character: {
         include: {

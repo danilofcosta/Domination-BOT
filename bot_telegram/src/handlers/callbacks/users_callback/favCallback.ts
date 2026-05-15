@@ -69,14 +69,23 @@ export async function favConfirmHandler(ctx: MyContext) {
       show_alert: true,
     });
   }
-
-  await prisma.user.update({
-    where: { telegramId: userId },
-    data: {
-      favoriteWaifuId: isWaifu ? favId : null,
-      favoriteHusbandoId: !isWaifu ? favId : null,
-    },
-  });
+// se waifu atualiza waifu caso n husbando
+  if (isWaifu) {
+    await prisma.user.update({
+      where: { telegramId: userId },
+      data: {
+        favoriteWaifuId: favId,
+      },
+    });
+  }
+  if (!isWaifu) {
+    await prisma.user.update({
+      where: { telegramId: userId },
+      data: {
+        favoriteHusbandoId: favId,
+      },
+    });
+  }
 
   debug(`favConfirmHandler - favorito atualizado no banco`, { userId, favId });
 
