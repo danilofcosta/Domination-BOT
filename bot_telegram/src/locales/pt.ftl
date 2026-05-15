@@ -3,9 +3,12 @@
 ###############
 loading = carregando
 Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
-
-
-
+bot-on-check= Eu estou online !
+  nome:{nomegroup}
+  istopic:{$istopic}
+  
+  
+  
 ###############
 ### ERROR ###
 ###############

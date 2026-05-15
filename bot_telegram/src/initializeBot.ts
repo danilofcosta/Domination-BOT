@@ -47,7 +47,7 @@ function getInitialSession(chatTypeBot: string): SessionData {
       cont: 0,
       dropId: null,
       data: null,
-      character: null,
+      character: null
     },
   };
 }
@@ -81,6 +81,7 @@ export default async function initializeBot(
     if (!ctx.from) return;
     const banned = await isUserBanned(ctx.from.id);
     if (banned) {
+      console.log('Usuario banido')
       return;
     }
     await next();

@@ -9,7 +9,26 @@ import { formatUptime } from "./status.js";
 let lastRefreshTime = Date.now();
 
 export async function StartGreetings(ctx: MyContext) {
+  if (ctx.chat?.type !== "private") {
+    try {
+      await ctx.react("❤");
+    } catch (error: any) {
+      if (!error.description?.includes("message to react not found")) {
+        console.error("Erro ao reagir com ⚡:", error);
+      }
+    }
+
+    await Sendmedia({
+      ctx,
+      caption: ctx.t("bot-on-check", {
+        nomegroup: `${ctx.chat?.first_name} ${ctx.chat?.last_name}`,
+        istopic: ctx.chat?.is_forum ? "true" : "false",
+      }),
+    });
+  }
+
   const startTime = Date.now();
+
   if (ctx.match === "help") {
     helpCommand(ctx);
     return;
