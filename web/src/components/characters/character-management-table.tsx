@@ -144,9 +144,9 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
   }
 
   return (
-    <div className="space-y-4 px-4 lg:px-6">
+    <div className="space-y-4 px-0 sm:px-4 lg:px-6">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-2 sm:px-0">
           <div className="flex bg-muted/50 p-1 rounded-xl border border-primary/10 shadow-inner">
             <Button
               variant={type === "waifu" ? "default" : "ghost"}
@@ -173,51 +173,57 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          <Select value={selectedEvent} onValueChange={setSelectedEvent}>
-            <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
-              <SelectValue placeholder="Evento" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos Eventos</SelectItem>
-              {events.map((e) => (
-                <SelectItem key={e.id} value={e.id.toString()}>
-                  {e.emoji} {e.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3 px-2 sm:px-0">
+          <div className="col-span-1">
+            <Select value={selectedEvent} onValueChange={setSelectedEvent}>
+              <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
+                <SelectValue placeholder="Evento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos Eventos</SelectItem>
+                {events.map((e) => (
+                  <SelectItem key={e.id} value={e.id.toString()}>
+                    {e.emoji} {e.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={selectedRarity} onValueChange={setSelectedRarity}>
-            <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
-              <SelectValue placeholder="Raridade" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas Raridades</SelectItem>
-              {rarities.map((r) => (
-                <SelectItem key={r.id} value={r.id.toString()}>
-                  {r.emoji} {r.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="col-span-1">
+            <Select value={selectedRarity} onValueChange={setSelectedRarity}>
+              <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
+                <SelectValue placeholder="Raridade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas Raridades</SelectItem>
+                {rarities.map((r) => (
+                  <SelectItem key={r.id} value={r.id.toString()}>
+                    {r.emoji} {r.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Select value={selectedMediaType} onValueChange={setSelectedMediaType}>
-            <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
-              <SelectValue placeholder="Mídia" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas Mídias</SelectItem>
-              <SelectItem value="IMAGE_URL">🖼️ URL Imagem</SelectItem>
-              <SelectItem value="VIDEO_URL">🎥 URL Vídeo</SelectItem>
-              <SelectItem value="IMAGE_FILEID">🆔 ID Imagem</SelectItem>
-              <SelectItem value="VIDEO_FILEID">🆔 ID Vídeo</SelectItem>
-              <SelectItem value="IMAGE_LOCAL">📁 Local Imagem</SelectItem>
-              <SelectItem value="VIDEO_LOCAL">📁 Local Vídeo</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="col-span-2 sm:col-span-1">
+            <Select value={selectedMediaType} onValueChange={setSelectedMediaType}>
+              <SelectTrigger className="w-full bg-card/50 border-primary/10 rounded-xl">
+                <SelectValue placeholder="Mídia" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas Mídias</SelectItem>
+                <SelectItem value="IMAGE_URL">🖼️ URL Imagem</SelectItem>
+                <SelectItem value="VIDEO_URL">🎥 URL Vídeo</SelectItem>
+                <SelectItem value="IMAGE_FILEID">🆔 ID Imagem</SelectItem>
+                <SelectItem value="VIDEO_FILEID">🆔 ID Vídeo</SelectItem>
+                <SelectItem value="IMAGE_LOCAL">📁 Local Imagem</SelectItem>
+                <SelectItem value="VIDEO_LOCAL">📁 Local Vídeo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <div className="relative">
+          <div className="relative col-span-2 sm:col-span-1">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
@@ -228,7 +234,9 @@ export function CharacterManagementTable({ initialType = "waifu", currentUser }:
             />
           </div>
 
-          <AddCharacterModal onComplete={() => fetchData()} currentType={type} />
+          <div className="col-span-2 sm:col-span-1">
+            <AddCharacterModal onComplete={() => fetchData()} currentType={type} />
+          </div>
         </div>
       </div>
 

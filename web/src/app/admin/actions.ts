@@ -509,7 +509,7 @@ async function handleFileUpload(file: File) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const filename = generateSafeFilename(file.name);
+    const filename = generateSafeFilename(file.name, file.type);
     const uploadDir = path.join(process.cwd(), "public", "uploads");
 
     await fs.mkdir(uploadDir, { recursive: true }).catch(() => {});
@@ -549,7 +549,7 @@ export async function createCharacter(formData: FormData) {
       (formData.get("rarityIds") as string) || "[]",
     ) as number[];
 
-    let finalMedia = mediaUrlInput;
+    let finalMedia = mediaUrlInput || "";
     let finalMediaType:
       | "IMAGE_URL"
       | "VIDEO_URL"
@@ -563,13 +563,22 @@ export async function createCharacter(formData: FormData) {
     if (file && file.size > 0) {
       const uploadedPath = await handleFileUpload(file);
       if (uploadedPath) {
+        finalMedia = uploadedPath;
         localFilePath = uploadedPath;
         isVideo = file.type.includes("video");
         finalMediaType = isVideo ? "VIDEO_LOCAL" : "IMAGE_LOCAL";
       }
     } else if (mediaUrlInput) {
+      finalMedia = mediaUrlInput;
       isVideo = mediaUrlInput.match(/\.(mp4|webm|mov|avi|mkv)$/i) !== null;
       finalMediaType = isVideo ? "VIDEO_URL" : "IMAGE_URL";
+    }
+
+    if (!finalMedia) {
+      return {
+        success: false,
+        error: "Por favor, envie um arquivo de mídia ou insira uma URL válida.",
+      };
     }
 
     const slug = slugify(
@@ -720,6 +729,7 @@ export async function updateCharacter(
   if (file && file.size > 0) {
     const uploadedPath = await handleFileUpload(file);
     if (uploadedPath) {
+      finalMedia = uploadedPath;
       localFilePath = uploadedPath;
       isVideo =
         file.type.includes("video") ||

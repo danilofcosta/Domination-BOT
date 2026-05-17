@@ -1,53 +1,51 @@
-// import { GetCharacterById } from "../../../../../utils/chareter/getbyid";
-// import type { Character, MyContext, PreCharacter } from "../../../../../utils/customTypes";
-// import { warn } from "../../../../../utils/log";
+import { prisma } from "../../../../../lib/prisma.js";
+import type { MyContext } from "../../../../../utils/customTypes.js";
+import { ChatType } from "../../../../../utils/customTypes.js";
 
-// export async function editCharHandler(ctx: MyContext) {
-//     //busca por id
-//     let charid: number | undefined;
-//      if (ctx.match) {
-//     charid = Number(ctx.match);
-//   }
-//   if (!charid && ctx.message?.reply_to_message) {
-//     const reply = ctx.message.reply_to_message;
+export async function editCharHandler(ctx: MyContext) {
+  let charid: number | undefined;
 
-//     const text = reply.text || reply.caption || "";
+  if (ctx.match) {
+    charid = Number(ctx.match);
+  }
 
-//     const match = text.match(/\d+/); // pega primeiro número
+  if (!charid && ctx.message?.reply_to_message) {
+    const reply = ctx.message.reply_to_message;
+    const text = reply.text || reply.caption || "";
+    const match = text.match(/\d+/);
+    if (match) {
+      charid = Number(match[0]);
+    }
+  }
 
-//     if (match) {
-//       charid = Number(match[0]);
-//     }
-//   }
-//     if (!charid || isNaN(charid)) {
-//       warn(`favCharacter - ID inválido`, {
-//         userId: ctx.from?.id,
-//         charid,
-//         match: ctx.match,
-//       });
-//       return ctx.reply(ctx.t("error-not-id"));
-//     }
+  if (!charid || isNaN(charid)) {
+    return ctx.reply(ctx.t("error-not-id"));
+  }
 
-// const char :Character = GetCharacterById(
-//     ctx.session.settings.genero || process.env.TYPE_BOT,charid
-// )
+  const genero = ctx.session.settings.genero || ChatType.WAIFU;
+  const isWaifu = genero === ChatType.WAIFU;
 
-// const charData: PreCharacter = {
-//     idchat: ctx.message!.message_id,
-//     nome: nome.trim(),
-//     anime: anime.trim(),
-//     rarities,
-//     events,
-//     genero: ctx.session.settings.genero,
-//     mediatype: media.type,
-//     media: media.file_id,
-//     username: ctx.from?.first_name || '',
-//     user_id: ctx.from?.id || 0,
-//     extras: ctx.from as Record<string, any>,
-//   };
+  const character = isWaifu
+    ? await prisma.characterWaifu.findUnique({
+        where: { id: charid },
+        include: {
+          WaifuRarity: { include: { Rarity: true } },
+          WaifuEvent: { include: { Event: true } },
+        },
+      })
+    : await prisma.characterHusbando.findUnique({
+        where: { id: charid },
+        include: {
+          HusbandoRarity: { include: { Rarity: true } },
+          HusbandoEvent: { include: { Event: true } },
+        },
+      });
 
+  if (!character) {
+    return ctx.reply(ctx.t("error-character-not-found"));
+  }
 
-
-
-//   await ctx.reply("Comando /editchar em desenvolvimento.");
-// }
+  await ctx.reply(ctx.t("edit-char-info", { id: character.id, name: character.name, origem: character.origem }), {
+    parse_mode: "HTML",
+  });
+}

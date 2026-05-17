@@ -10,7 +10,6 @@ import {
   type MyContext,
   type PreCharacter,
 } from "../../../../../utils/customTypes.js";
-
 const processingQueue: (() => Promise<void>)[] = [];
 let isProcessing = false;
 const TELEGRAM_API_DELAY_MS = 3000;
@@ -40,42 +39,45 @@ export async function AddCharacterHandler(ctx: MyContext) {
   console.log("add per");
   let text_command: string | undefined;
   let reply = ctx.message?.reply_to_message;
-
+  //vericar se e uma midia 
   if (ctx.message?.caption && (ctx.message?.photo || ctx.message?.video)) {
     reply = (ctx?.message as any) ?? undefined;
   }
-
+// comando não associado a uma midia 
   if (!reply) {
     ctx.reply(ctx.t("add_character_not_reply"));
     return;
   }
-
+  // extrai o file id da mensagem
   const media = getMedia(reply);
+
+
+
   if (!media) {
     ctx.reply(ctx.t("add-char-only-photo-video"));
     return;
   }
 
-  text_command =
-    ctx.match?.length === 0 ? reply.caption : (ctx.match as string);
+
+  //tratando o texto do comando
+  text_command =  ctx.match?.length === 0 ? reply.caption : (ctx.match as string);
 
   if (!text_command) {
     text_command = "";
   }
-
   const isNoconf = (text_command || "").toLowerCase().includes("noconf");
   const isNoautor = (text_command || "").toLowerCase().includes("noautor");
   const cleanCommand = (text_command || "")
     .replace(/noconf|noautor/gi, "")
     .trim();
-
+// caso nem um texto for achado
   if (!cleanCommand.includes(",")) {
     ctx.reply(ctx.t("add-char-usage"));
     return;
   }
 
   const [nome, anime, ...rest] = cleanCommand.split(",");
-
+  //anime e nome sao requeridos caso nãp seja passado 
   if (!nome || !anime) {
     ctx.reply(ctx.t("add_character_not_info"));
     return;
@@ -97,6 +99,8 @@ export async function AddCharacterHandler(ctx: MyContext) {
     extras: ctx.from as Record<string, any>,
   };
 
+  /// caso pametro noconf for passado na mensagem , n confimar dados
+  /// caso isNoautor for passado nao infirmar o autor (dados de quem add o character )
   if (isNoconf) {
     const queuePosition = processingQueue.length;
     await ctx.reply(ctx.t("add-char-queue", { pos: queuePosition + 1 }));
@@ -112,25 +116,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
   await confirmCharacter(ctx, charData);
 }
 
-export function getMedia(
-  reply: any,
-): { file_id: string; type: MediaType } | undefined {
-  if (reply.photo?.length) {
-    return {
-      file_id: reply.photo.at(-1).file_id,
-      type: MediaType.IMAGE_FILEID,
-    };
-  }
 
-  if (reply.video) {
-    return {
-      file_id: reply.video.file_id,
-      type: MediaType.VIDEO_FILEID,
-    };
-  }
-
-  return undefined;
-}
 
 function parseTokens(rest: string[]) {
   const tokens = rest.join(" ").toLowerCase().split(/\s+/);

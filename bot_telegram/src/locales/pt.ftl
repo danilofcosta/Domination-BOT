@@ -412,8 +412,13 @@ add_character_edit_btn_nome=Nome
 add_character_edit_btn_anime = Anime
 add_character_edit_btn_events=eventos
 add_character_edit_btn_rarities=reridades
-add_character_edit_btn_confirm=salvarades
 add_character_edit_btn_confirm=salvar
+
+edit_character_prompt_nome = ✏️ Envie o novo nome:\n\n<b>Atual:</b> { $current }
+edit_character_prompt_anime = ✏️ Envie o novo anime:\n\n<b>Atual:</b> { $current }
+edit_character_prompt_events = ✏️ Envie os IDs dos eventos separados por vírgula:\n\n<b>Atual:</b> { $current }
+edit_character_prompt_rarities = ✏️ Envie os IDs das raridades separados por vírgula:\n\n<b>Atual:</b> { $current }
+edit-char-info = 🆔 ID: { $id }\n📛 Nome: { $name }\n📺 Anime: { $origem }
 
 query_not_fould = Nenhum resultado encontrado
 

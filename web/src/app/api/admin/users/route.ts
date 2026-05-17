@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import {
+  getUsers,
   deleteUser,
   updateUserProfileType,
   adjustUserCoins,
@@ -64,6 +65,16 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("API error:", error);
+    return NextResponse.json({ error: String(error) }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const users = await getUsers();
+    return NextResponse.json(users);
+  } catch (error) {
+    console.error("GET API error:", error);
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

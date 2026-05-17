@@ -45,17 +45,47 @@ export function createCaption(
   const eventName = ev?.name || "";
   const eventLine = eventName
     ? `${emojiEvent} ${capitalize(eventName)} ${emojiEvent}`
-    : "";
+    : null;
 
   const addedBy = usermention ? `⚕ ᴀᴅᴅᴇᴅ ʙʏ: ${usermention}` : "";
 
-  return `<b>${title}
+  //   return `<b>${title}
 
-${name}
-${info}
-${rarity}
+  // ${name}
+  // ${info}
+  // ${rarity}
 
-${eventLine}
+  // ${eventLine}
 
-${addedBy}</b>`.trim();
+  // ${addedBy}</b>`.trim();
+
+
+  let res = `<b>${title.trim()}
+
+${name.trim()}
+${info.trim()}
+${rarity.trim()}
+`.trim();
+
+  if (eventLine !== null) {
+    res += `\n\n${eventLine}`;
+  }
+
+  if (addedBy) {
+    res += `\n${addedBy}`;
+  }
+
+
+
+
+  return res.trim();
+
+
+
+
+
+
+
+
+
 }

@@ -17,6 +17,8 @@ export interface SessionData {
     action:
       | "edit_nome"
       | "edit_anime"
+      | "edit_events"
+      | "edit_rarities"
       | `setrarity_${string}`
       | `setevent_${string}`
       | null;

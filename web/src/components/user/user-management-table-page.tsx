@@ -97,7 +97,7 @@ export function UserManagementTable_page({
   };
 
   return (
-    <div className="space-y-4 px-4 lg:px-6">
+    <div className="space-y-4 px-0 sm:px-4 lg:px-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="relative w-full sm:w-64 md:w-80">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -173,15 +173,28 @@ export function UserManagementTable_page({
                     </TableCell>
 
                     <TableCell className="font-bold">
-                      <div className="flex flex-col">
-                        <span className="text-sm">
-                          {user.telegramData?.first_name || "Desconhecido"}
-                        </span>
-                        {user.telegramData?.username && (
-                          <span className="text-xs text-muted-foreground">
-                            @{user.telegramData.username}
+                      <div className="flex flex-col gap-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm">
+                            {user.telegramData?.first_name || "Desconhecido"}
                           </span>
-                        )}
+                          <span className="sm:hidden">
+                            <Badge
+                              variant={getProfileBadgeVariant(user.profileType)}
+                              className="font-extrabold uppercase scale-90 px-1 py-0 text-[9px]"
+                            >
+                              {user.profileType}
+                            </Badge>
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-normal text-muted-foreground">
+                          {user.telegramData?.username && (
+                            <span>@{user.telegramData.username}</span>
+                          )}
+                          <span className="md:hidden font-bold text-yellow-500 text-[11px] flex items-center gap-0.5">
+                            💰 {user.coins.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     </TableCell>
 

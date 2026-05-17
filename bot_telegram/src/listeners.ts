@@ -46,6 +46,18 @@ listeners.on('message:text', async (ctx, next) => {
       character.nome = text;
     } else if (action === 'edit_anime') {
       character.anime = text;
+    } else if (action === 'edit_events') {
+      if (text.toLowerCase() === 'null' || text === '') {
+        character.events = undefined;
+      } else {
+        character.events = text.split(',').map(t => parseInt(t.trim(), 10)).filter(n => !isNaN(n));
+      }
+    } else if (action === 'edit_rarities') {
+      if (text.toLowerCase() === 'null' || text === '') {
+        character.rarities = undefined;
+      } else {
+        character.rarities = text.split(',').map(t => parseInt(t.trim(), 10)).filter(n => !isNaN(n));
+      }
     }
 
     setCharacter(numTargetId, character);

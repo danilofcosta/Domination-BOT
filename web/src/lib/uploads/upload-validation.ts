@@ -29,6 +29,17 @@ export interface ValidationResult {
   detectedMime?: string;
 }
 
+const MIME_TO_EXTENSION: Record<string, string> = {
+  "image/jpeg": "jpeg",
+  "image/jpg": "jpeg",
+  "image/png": "png",
+  "image/gif": "gif",
+  "image/webp": "webp",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+};
+
 function getExtension(filename: string): string | null {
   const ext = filename.split(".").pop()?.toLowerCase();
   return ext || null;
@@ -48,7 +59,12 @@ export async function validateUpload(
     };
   }
 
-  const ext = getExtension(file.name);
+  let ext = getExtension(file.name);
+  if (!ext || ext === "blob" || ext === "bin") {
+    const declaredMime = file.type.toLowerCase();
+    ext = MIME_TO_EXTENSION[declaredMime] || ext;
+  }
+
   if (!ext || !ALLOWED_EXTENSIONS.has(ext)) {
     return {
       valid: false,
@@ -81,8 +97,13 @@ export async function validateUpload(
   return { valid: true, detectedMime: type.mime };
 }
 
-export function generateSafeFilename(originalName: string): string {
-  const ext = originalName.split(".").pop()?.toLowerCase() || "bin";
+export function generateSafeFilename(originalName: string, mimeType?: string): string {
+  let ext = originalName.split(".").pop()?.toLowerCase() || "bin";
+  if (originalName === "blob" || ext === "blob" || ext === "bin") {
+    if (mimeType) {
+      ext = MIME_TO_EXTENSION[mimeType.toLowerCase()] || ext;
+    }
+  }
   const uuid = crypto.randomUUID();
   return `${uuid}.${ext}`;
 }

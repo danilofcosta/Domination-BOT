@@ -98,8 +98,14 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-primary/5 hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
+                  const columnId = header.column.id
+                  const responsiveClass = 
+                    columnId === "id" ? "hidden sm:table-cell" :
+                    columnId === "categories" ? "hidden md:table-cell" :
+                    columnId === "addby" ? "hidden lg:table-cell" : ""
+
                   return (
-                    <TableHead key={header.id} className="py-4">
+                    <TableHead key={header.id} className={`py-4 ${responsiveClass}`}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -120,11 +126,19 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                   className="group border-primary/5 hover:bg-primary/3"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const columnId = cell.column.id
+                    const responsiveClass = 
+                      columnId === "id" ? "hidden sm:table-cell" :
+                      columnId === "categories" ? "hidden md:table-cell" :
+                      columnId === "addby" ? "hidden lg:table-cell" : ""
+
+                    return (
+                      <TableCell key={cell.id} className={responsiveClass}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (
