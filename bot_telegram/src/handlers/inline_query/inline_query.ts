@@ -139,6 +139,7 @@ export async function getCharactersall(ctx: MyContext) {
         ? { HusbandoEvent: { include: { Event: true } }, HusbandoRarity: { include: { Rarity: true } } }
         : { WaifuEvent: { include: { Event: true } }, WaifuRarity: { include: { Rarity: true } } },
       take: LIMIT,
+      //asc ,desc
       orderBy: { id: "desc" },
       skip: offset,
     })

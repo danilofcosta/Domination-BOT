@@ -21,8 +21,8 @@ export async function showResults({
   try {
     await ctx.answerInlineQuery(results, {
     
-      is_personal: true,
-      cache_time: 300,
+      is_personal: false,
+      cache_time: 3600,
       ...(next_offset !== undefined && { next_offset }),
       button: {
         text: btnText.slice(0, 64),

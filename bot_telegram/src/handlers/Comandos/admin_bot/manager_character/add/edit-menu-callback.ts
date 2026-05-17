@@ -1,7 +1,57 @@
-import { getCharacter } from "../../../../../cache/cache.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import { getCharacter, setCharacter, characterCache } from "../../../../../cache/cache.js";
+import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../../../utils/customTypes.js";
 import { addCharacter_edit_CallbackData } from "./add_character_edit.js";
 import { confirmCharacterAdd } from "./add_charecter_callback_data.js";
+
+const ITEMS_PER_PAGE = 10;
+
+type CachedEvent = { id: number; name: string; emoji: string };
+type CachedRarity = { id: number; name: string; emoji: string };
+
+function getCachedEventsAll(): CachedEvent[] | undefined {
+  return characterCache.get("edit_menu_events_all");
+}
+
+function setCachedEventsAll(data: CachedEvent[]) {
+  characterCache.set("edit_menu_events_all", data);
+}
+
+function getCachedRaritiesAll(): CachedRarity[] | undefined {
+  return characterCache.get("edit_menu_rarities_all");
+}
+
+function setCachedRaritiesAll(data: CachedRarity[]) {
+  characterCache.set("edit_menu_rarities_all", data);
+}
+
+async function getEventsAll(): Promise<CachedEvent[]> {
+  const cached = getCachedEventsAll();
+  if (cached) return cached;
+  const events = await prisma.event.findMany({
+    select: { id: true, name: true, emoji: true },
+    orderBy: { id: "asc" },
+  });
+  setCachedEventsAll(events);
+  return events;
+}
+
+async function getRaritiesAll(): Promise<CachedRarity[]> {
+  const cached = getCachedRaritiesAll();
+  if (cached) return cached;
+  const rarities = await prisma.rarity.findMany({
+    select: { id: true, name: true, emoji: true },
+    orderBy: { id: "asc" },
+  });
+  setCachedRaritiesAll(rarities);
+  return rarities;
+}
+
+function paginate<T>(items: T[], page: number): T[] {
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  return items.slice(start, start + ITEMS_PER_PAGE);
+}
 
 export async function handleEditMenuCallback(ctx: MyContext) {
   if (!ctx.callbackQuery?.data) return;
@@ -45,16 +95,13 @@ export async function handleEditMenuCallback(ctx: MyContext) {
   const matchEvents = data.match(/^edit_character_edit_events_(\d+)_(\d+)$/);
   if (matchEvents) {
     const id = matchEvents[1];
+    const page = parseInt(matchEvents[2], 10) || 1;
     const character = getCharacter(Number(id));
     if (!character) {
       await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
       return;
     }
-    ctx.session.adminSetup = { action: "edit_events", targetId: id };
-    await ctx.reply(ctx.t("edit_character_prompt_events", { current: character.events?.join(", ") || ctx.t("add-char-default-event") }), {
-      parse_mode: "HTML",
-      reply_markup: { force_reply: true },
-    });
+    await showEventSelection(ctx, id, page);
     await ctx.answerCallbackQuery();
     return;
   }
@@ -62,17 +109,71 @@ export async function handleEditMenuCallback(ctx: MyContext) {
   const matchRarities = data.match(/^edit_character_edit_rarities_(\d+)_(\d+)$/);
   if (matchRarities) {
     const id = matchRarities[1];
+    const page = parseInt(matchRarities[2], 10) || 1;
     const character = getCharacter(Number(id));
     if (!character) {
       await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
       return;
     }
-    ctx.session.adminSetup = { action: "edit_rarities", targetId: id };
-    await ctx.reply(ctx.t("edit_character_prompt_rarities", { current: character.rarities?.join(", ") || ctx.t("add-char-default-value") }), {
-      parse_mode: "HTML",
-      reply_markup: { force_reply: true },
-    });
+    await showRaritySelection(ctx, id, page);
     await ctx.answerCallbackQuery();
+    return;
+  }
+
+  const matchToggleEvent = data.match(/^edit_character_toggle_event_(\d+)_(\d+)$/);
+  if (matchToggleEvent) {
+    const id = matchToggleEvent[1];
+    const eventId = parseInt(matchToggleEvent[2], 10);
+    const character = getCharacter(Number(id));
+    if (!character) {
+      await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
+      return;
+    }
+    if (!character.events) character.events = [];
+    const idx = character.events.indexOf(eventId);
+    if (idx >= 0) {
+      character.events.splice(idx, 1);
+      if (character.events.length === 0) character.events = undefined;
+    } else {
+      character.events.push(eventId);
+    }
+    setCharacter(Number(id), character);
+    const allEvents = await getEventsAll();
+    const page = guessPage(allEvents, eventId);
+    await showEventSelection(ctx, id, page);
+    await ctx.answerCallbackQuery();
+    return;
+  }
+
+  const matchToggleRarity = data.match(/^edit_character_toggle_rarity_(\d+)_(\d+)$/);
+  if (matchToggleRarity) {
+    const id = matchToggleRarity[1];
+    const rarityId = parseInt(matchToggleRarity[2], 10);
+    const character = getCharacter(Number(id));
+    if (!character) {
+      await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
+      return;
+    }
+    if (!character.rarities) character.rarities = [];
+    const idx = character.rarities.indexOf(rarityId);
+    if (idx >= 0) {
+      character.rarities.splice(idx, 1);
+      if (character.rarities.length === 0) character.rarities = undefined;
+    } else {
+      character.rarities.push(rarityId);
+    }
+    setCharacter(Number(id), character);
+    const allRarities = await getRaritiesAll();
+    const page = guessPage(allRarities, rarityId);
+    await showRaritySelection(ctx, id, page);
+    await ctx.answerCallbackQuery();
+    return;
+  }
+
+  const matchDone = data.match(/^edit_character_done_(\d+)$/);
+  if (matchDone) {
+    const id = matchDone[1];
+    await addCharacter_edit_CallbackData(ctx, id);
     return;
   }
 
@@ -82,4 +183,92 @@ export async function handleEditMenuCallback(ctx: MyContext) {
     await confirmCharacterAdd(ctx, Number(id));
     return;
   }
+}
+
+async function showEventSelection(ctx: MyContext, id: string, page: number) {
+  const character = getCharacter(Number(id));
+  if (!character) return;
+
+  const selectedIds: number[] = character.events || [];
+  const allEvents = await getEventsAll();
+  const totalPages = Math.ceil(allEvents.length / ITEMS_PER_PAGE) || 1;
+  const pageEvents = paginate(allEvents, page);
+
+  let text = "🎯 <b>Selecionar Eventos</b>\n";
+  if (selectedIds.length > 0) {
+    const selectedNames = allEvents.filter((e) => selectedIds.includes(e.id));
+    text += `✅ <b>Selecionados:</b> ${selectedNames.map((e) => `${e.emoji} ${e.name}`).join(", ") || "—"}\n\n`;
+  } else {
+    text += "ℹ️ Nenhum evento selecionado\n\n";
+  }
+  text += `<i>Página ${page}/${totalPages}</i>`;
+
+  const keyboard = new InlineKeyboard();
+  for (const event of pageEvents) {
+    const checked = selectedIds.includes(event.id) ? "✅ " : "";
+    keyboard.text(`${checked}${event.emoji} ${event.name}`, `edit_character_toggle_event_${id}_${event.id}`).row();
+  }
+
+  const navRow: { text: string; callback_data: string }[] = [];
+  if (page > 1) {
+    navRow.push({ text: "⬅️", callback_data: `edit_character_edit_events_${id}_${page - 1}` });
+  }
+  if (page < totalPages) {
+    navRow.push({ text: "➡️", callback_data: `edit_character_edit_events_${id}_${page + 1}` });
+  }
+  if (navRow.length > 0) keyboard.row(...navRow);
+  keyboard.row({ text: "Concluído", callback_data: `edit_character_done_${id}` });
+
+  if (ctx.callbackQuery?.message) {
+    await ctx.editMessageText(text, { parse_mode: "HTML", reply_markup: keyboard }).catch(() => {});
+  } else {
+    await ctx.reply(text, { parse_mode: "HTML", reply_markup: keyboard });
+  }
+}
+
+async function showRaritySelection(ctx: MyContext, id: string, page: number) {
+  const character = getCharacter(Number(id));
+  if (!character) return;
+
+  const selectedIds: number[] = character.rarities || [];
+  const allRarities = await getRaritiesAll();
+  const totalPages = Math.ceil(allRarities.length / ITEMS_PER_PAGE) || 1;
+  const pageRarities = paginate(allRarities, page);
+
+  let text = "🎯 <b>Selecionar Raridades</b>\n";
+  if (selectedIds.length > 0) {
+    const selectedNames = allRarities.filter((r) => selectedIds.includes(r.id));
+    text += `✅ <b>Selecionados:</b> ${selectedNames.map((r) => `${r.emoji} ${r.name}`).join(", ") || "—"}\n\n`;
+  } else {
+    text += "ℹ️ Nenhuma raridade selecionada\n\n";
+  }
+  text += `<i>Página ${page}/${totalPages}</i>`;
+
+  const keyboard = new InlineKeyboard();
+  for (const rarity of pageRarities) {
+    const checked = selectedIds.includes(rarity.id) ? "✅ " : "";
+    keyboard.text(`${checked}${rarity.emoji} ${rarity.name}`, `edit_character_toggle_rarity_${id}_${rarity.id}`).row();
+  }
+
+  const navRow: { text: string; callback_data: string }[] = [];
+  if (page > 1) {
+    navRow.push({ text: "⬅️", callback_data: `edit_character_edit_rarities_${id}_${page - 1}` });
+  }
+  if (page < totalPages) {
+    navRow.push({ text: "➡️", callback_data: `edit_character_edit_rarities_${id}_${page + 1}` });
+  }
+  if (navRow.length > 0) keyboard.row(...navRow);
+  keyboard.row({ text: "Concluído", callback_data: `edit_character_done_${id}` });
+
+  if (ctx.callbackQuery?.message) {
+    await ctx.editMessageText(text, { parse_mode: "HTML", reply_markup: keyboard }).catch(() => {});
+  } else {
+    await ctx.reply(text, { parse_mode: "HTML", reply_markup: keyboard });
+  }
+}
+
+function guessPage<T extends { id: number }>(items: T[], itemId: number): number {
+  const idx = items.findIndex((i) => i.id === itemId);
+  if (idx === -1) return 1;
+  return Math.floor(idx / ITEMS_PER_PAGE) + 1;
 }

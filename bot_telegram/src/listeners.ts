@@ -80,7 +80,7 @@ listeners.on('callback_query:data', async (ctx, next) => {
   return next();
 });
 
-listeners.chatType(['group', 'supergroup']).on('message', contarMensagens);
+// listeners.chatType(['group', 'supergroup']).on('message', contarMensagens);
 
 const userLatestQuery = new Map<number, string>();
 

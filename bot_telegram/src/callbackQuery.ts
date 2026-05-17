@@ -44,7 +44,7 @@ callbacks.callbackQuery(/^random-character-/, randomCharacterCallback);
 
 //admin
 callbacks.callbackQuery(/^addcharacter_/, addCharacterCallbackData);
-callbacks.callbackQuery(/^edit_character_edit_/, handleEditMenuCallback);
+callbacks.callbackQuery(/^edit_character_/, handleEditMenuCallback);
 callbacks.callbackQuery(/^addcolletion_/, addcolletionCallback);
 callbacks.callbackQuery(/^setrarity_/, SetRarityCallback);
 callbacks.callbackQuery(/^setevent_/, SetEventCallback);

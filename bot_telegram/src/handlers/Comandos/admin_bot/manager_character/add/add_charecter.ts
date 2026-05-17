@@ -116,7 +116,25 @@ export async function AddCharacterHandler(ctx: MyContext) {
   await confirmCharacter(ctx, charData);
 }
 
+function getMedia(
+  reply: any,
+): { file_id: string; type: MediaType } | undefined {
+  if (reply.photo?.length) {
+    return {
+      file_id: reply.photo.at(-1).file_id,
+      type: MediaType.IMAGE_FILEID,
+    };
+  }
 
+  if (reply.video) {
+    return {
+      file_id: reply.video.file_id,
+      type: MediaType.VIDEO_FILEID,
+    };
+  }
+
+  return undefined;
+}
 
 function parseTokens(rest: string[]) {
   const tokens = rest.join(" ").toLowerCase().split(/\s+/);

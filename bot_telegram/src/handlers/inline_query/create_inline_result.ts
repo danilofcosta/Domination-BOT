@@ -112,6 +112,21 @@ export function createResult(params: Params) {
         error(`createResult - DEFAULT_IMAGE_URL não configurada`, {
           charId: character.id,
         });
+
+        // params.ctx.api.sendMessage(
+        //   process.env.CHAT_ID_DEV as string,
+        //   `
+        //   createResult - DEFAULT_IMAGE_URL não configurada
+          
+        //   ${character.id}
+        //   ${character.mediaType}
+        //   `,
+        // );
+
+
+
+        
+
         return {
           type: "text",
           id: "txt" + `${character.id}`,
