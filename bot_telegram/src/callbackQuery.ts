@@ -2,7 +2,7 @@ import { Composer } from "grammy";
 import type { MyContext } from "./utils/customTypes.js";
 import { favConfirmHandler } from "./handlers/callbacks/users_callback/favCallback.js";
 import { giftConfirmHandler } from "./handlers/callbacks/users_callback/giftCallback.js";
-import { haremCallback } from "./handlers/callbacks/users_callback/haremCallback.js";
+import { haremCallback } from "./handlers/callbacks/users_callback/harem_Callback.js";
 import { haremmodeCallback } from "./handlers/callbacks/users_callback/haremmodeCallback.js";
 
 import { topCallbackQuery } from "./handlers/callbacks/users_callback/topCallbackQuery.js";
@@ -24,7 +24,7 @@ callbacks.callbackQuery("close", async (ctx) => {
   try {
     await ctx.deleteMessage();
   } catch {
-    error('erro ao deletar mensagem')
+    error("erro ao deletar mensagem");
   }
   await ctx.answerCallbackQuery();
 });

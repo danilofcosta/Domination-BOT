@@ -1,7 +1,14 @@
-import { InlineKeyboard } from "grammy";
+import { InlineKeyboard, Keyboard } from "grammy";
 import { getHarem } from "../../../cache/cache.js";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
+import {  Harem_setup_dict } from "./harem_setup/build.js";
+import { Build_btn_harem, Build_btn_Keyboard } from "../../../utils/btns.js";
+// recebe s chamadas do bts do harem via callback
+//   camada experada : prefixo ,prefixo2 , id do user , ação , extras 
+// harem_user_000000_close
+// harem_user_000000_pagenext_2
+
 
 export async function haremCallback(ctx: MyContext) {
   const match = ctx.match as any;
@@ -10,24 +17,39 @@ export async function haremCallback(ctx: MyContext) {
   const [tag, userTag, userid, action, pageRaw, jumpRaw] = parts;
 
   const userId = Number(userid);
-
+// autentição dono do hare
   if (ctx.from?.id !== userId) {
     warn(`haremCallback - usuário não autorizado`, {
       expected: userId,
       actual: ctx.from?.id,
     });
-    await ctx.answerCallbackQuery(
-      ctx.t("error-action-not-authorized-by-id"),
-    );
+    await ctx.answerCallbackQuery(ctx.t("error-action-not-authorized-by-id"));
     return;
   }
 
+
+// tenta deleta a mensagem
   if (action === "close") {
     await ctx.deleteMessage().catch(() => {});
     return;
   }
 
+
+  if (action === "opensetup") {
+    // abre os btns no lugar fo teclado do user 
+    
+    const keyboard = Build_btn_Keyboard(
+      Harem_setup_dict.main
+    );
+
+    return await ctx.reply("Escolha uma opção:", {
+      reply_markup: keyboard,
+    });
+  }
+  
+  // busca paginas salva em cache
   const harem = await getHarem(userId);
+  
   if (!harem) {
     warn(`haremCallback - harém não encontrado no cache`, { userId });
     return;
@@ -44,39 +66,21 @@ export async function haremCallback(ctx: MyContext) {
   if (action === "prev") page--;
   if (action === "next") page++;
   if (action === "jump") page += jump;
-
   if (action === "page") page = 0;
 
-  if (page < 0 || page >= total) {
-    debug(`haremCallback - página fora do limite`, { page, total });
-    return;
-  }
+  if (page < 0) page = 0;
+  if (page >= total) page = total - 1;
 
   const nextJump = jump * 2;
 
   debug(`haremCallback - navegando harém`, { userId, page, action });
-
-  const keyboard = new InlineKeyboard()
-    .text(ctx.t("harem_btn_prev_page"), `harem_user_${userId}_prev_${page}`)
-    .text(
-      ctx.t("harem_btn_current_page", {
-        currentpage: page + 1,
-        totalpages: total,
-      }),
-      `harem_user_${userId}_page`,
-    )
-    .text(ctx.t("harem_btn_next_page"), `harem_user_${userId}_next_${page}`)
-    .row()
-    .switchInlineCurrent(
-      ctx.t("harem_btn_inline_query"),
-      `harem_user_${userId}`,
-    )
-    .text(
-      ctx.t("harem_btn_fast_page") + ` x${jump}`,
-      `harem_user_${userId}_jump_${page}_${nextJump}`,
-    )
-    .row()
-    .text(ctx.t("harem_btn_close"), `harem_user_${userId}_close`);
+  const keyboard = Build_btn_harem({
+    ctx: ctx,
+    current_page: page,
+    total_page: total,
+    userId: userId,
+    nextJump: nextJump,
+  });
 
   try {
     await ctx.editMessageCaption({
@@ -85,8 +89,9 @@ export async function haremCallback(ctx: MyContext) {
       parse_mode: "HTML",
     });
   } catch (e) {
-    error(`haremCallback - erro ao editar caption`, e);
+      error(`haremCallback - erro ao editar caption`, e);
   }
 
   await ctx.answerCallbackQuery();
 }
+

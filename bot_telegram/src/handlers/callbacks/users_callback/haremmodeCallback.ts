@@ -53,7 +53,7 @@ export async function haremmodeCallback(ctx: MyContext) {
     .editMessageCaption({
       caption: ctx.t("haremmodecb-selected", { mode: modeText }),
       parse_mode: "HTML",
-      reply_markup: new InlineKeyboard(),
+      reply_markup: undefined,
     })
     .catch(() => {});
 

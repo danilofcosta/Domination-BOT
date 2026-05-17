@@ -11,6 +11,7 @@ import {
   Harem_mode_latest,
   Harem_mode_default,
 } from "./harem_mode_build.js";
+import { Build_btn_harem } from "../../../utils/btns.js";
 
 export async function HaremHandler(ctx: MyContext) {
   info(`HaremHandler - carregando harém`, {
@@ -121,34 +122,13 @@ export async function HaremHandler(ctx: MyContext) {
       ) || "User",
   });
 
-  const userId = ctx.from?.id;
-
-  const reply_markup = new InlineKeyboard()
-    .text(ctx.t("harem_btn_prev_page"), `harem_user_${userId}_prev`)
-    .text(
-      ctx.t("harem_btn_current_page", {
-        currentpage: 1,
-        totalpages: pages.length || 1,
-      }),
-      `harem_user_${userId}_page`,
-    )
-    .text(
-      ctx.t("harem_btn_next_page"),
-      `harem_user_${userId}_next_${pages.length > 1 ? 1 : 0}`,
-    )
-    .row()
-    .switchInlineCurrent(
-      ctx.t("harem_btn_inline_query"),
-      `harem_user_${userId}`,
-    )
-    .text(ctx.t("harem_btn_fast_page"), `harem_user_${userId}_jump`)
-    .row()
-    .url(
-      ctx.t("harem_btn_web_app"),
-      process.env.WEBAPP || `https://t.me/${ctx.me.username}?startgroup=true`,
-    )
-    .row()
-    .text(ctx.t("harem_btn_close"), `harem_user_${userId}_close`);
+  const userId = Number(ctx.from?.id);
+  const reply_markup = Build_btn_harem({
+    ctx: ctx,
+    current_page: 0,
+    total_page: pages.length,
+    userId: userId,
+  });
 
   try {
     await Sendmedia({

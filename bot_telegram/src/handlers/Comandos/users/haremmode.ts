@@ -4,19 +4,21 @@ import { prisma } from "../../../lib/prisma.js";
 import { LastRandomCharacter } from "../../../utils/chareter/randomCharacter.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 
+
+
 export async function HaremmodeHandler(ctx: MyContext) {
    const character = await LastRandomCharacter(
      ctx
      .session.settings.genero || process.env.TYPE_BOT,
    );
  
-   let currentMode = "latest";
+   let currentMode = "default";
    if (ctx.from?.id) {
        const user = await prisma.user.findUnique({ where: { telegramId: BigInt(ctx.from.id) } });
        if (user) {
            const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
            const config = isHusbando ? (user.husbandoConfig as any) || {} : (user.waifuConfig as any) || {};
-           currentMode = config.haremMode || "latest";
+           currentMode = config.haremMode || "default";
        }
    }
 

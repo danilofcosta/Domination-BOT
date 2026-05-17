@@ -1,5 +1,10 @@
 import { prisma } from "../../lib/prisma.js";
-import { ChatType, MediaType, type CollectionItem, type MyContext } from "../../utils/customTypes.js";
+import {
+  ChatType,
+  MediaType,
+  type CollectionItem,
+  type MyContext,
+} from "../../utils/customTypes.js";
 import { createResult } from "./create_inline_result.js";
 import { showResults } from "./show_results_inline.js";
 
@@ -41,12 +46,12 @@ export async function getHaremCollection(
 
     return { collection, total };
   }
-////
+  ////
   const where = {
     userId: telegramId,
-    // Character: {
-    //   mediaType: MediaType.IMAGE_URL,
-    // },
+    Character: {
+      mediaType: MediaType.IMAGE_URL,
+    },
   };
 
   const [collection, total] = await Promise.all([
