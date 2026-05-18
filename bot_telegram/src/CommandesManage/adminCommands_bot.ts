@@ -17,6 +17,8 @@ import { enviarLogs } from '../handlers/Comandos/testes_commands.js';
 
 import {
   banHandler,
+  listBannedHandler,
+  unbanHandler,
   // unbanHandler,
   // listBannedHandler,
 } from '../handlers/Comandos/admin_bot/manage_users/ban_user_handler.js';
@@ -106,25 +108,25 @@ export const adminCommands_bot_dict = {
     handler: banHandler,
   },
 
-  // unbanuser: {
-  //   minPermission: ProfileType.ADMIN,
-  //   command: 'unbanuser' + botPrefix,
-  //   description: {
-  //     en: 'Unban a user from the bot',
-  //     pt: 'Desbanir um usuario do bot',
-  //   },
-  //   handler: unbanHandler,
-  // },
+  unbanuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'unbanuser' + botPrefix,
+    description: {
+      en: 'Unban a user from the bot',
+      pt: 'Desbanir um usuario do bot',
+    },
+    handler: unbanHandler,
+  },
 
-  // listbanned: {
-  //   minPermission: ProfileType.ADMIN,
-  //   command: 'listeban' + botPrefix,
-  //   description: {
-  //     en: 'List all banned users',
-  //     pt: 'Listar todos os usuarios banidos',
-  //   },
-  //   handler: listBannedHandler,
-  // },
+  listbanned: {
+    minPermission: ProfileType.ADMIN,
+    command: 'listeban' + botPrefix,
+    description: {
+      en: 'List all banned users',
+      pt: 'Listar todos os usuarios banidos',
+    },
+    handler: listBannedHandler,
+  },
 
   statususer: {
     minPermission: ProfileType.ADMIN,

@@ -68,8 +68,10 @@ export async function banHandler(ctx: MyContext) {
     const result = await Extract_id_user(ctx);
 
     if (!result?.id) {
-      await ctx.reply(ctx.t("banuser-usage-unban", { prefix: botPrefix }));
-      return;
+    
+      return  Sendmedia({
+        ctx,caption:ctx.t("banuser-usage-unban", { prefix: botPrefix })
+      });
     }
 
     const targetRole = await getUserRole(result.id);
@@ -79,8 +81,10 @@ export async function banHandler(ctx: MyContext) {
         targetId: result.id,
         targetRole
       });
-      await ctx.reply(ctx.t("banuser-cannot-unban-admin"));
-      return;
+      
+        return  Sendmedia({
+        ctx,caption:ctx.t("banuser-cannot-unban-admin")
+      });
     }
 
     info('unbanHandler - desbanindo usuario', { adminId: ctx.from?.id, targetId: result.id });
@@ -91,8 +95,10 @@ export async function banHandler(ctx: MyContext) {
     });
 
     if (!user) {
-      await ctx.reply(ctx.t("banuser-not-found"));
-      return;
+        return  Sendmedia({
+        ctx,caption:ctx.t("banuser-not-found")
+      });
+
     }
 
     await prisma.user.update({

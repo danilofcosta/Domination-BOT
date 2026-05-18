@@ -23,6 +23,15 @@ export async function Extract_id_user(ctx: MyContext): Promise<TelegramUserData 
         return entity.user as TelegramUserData;
       }
 
+      case "phone_number": {
+        const phoneText = ctx.message.text
+          ?.slice(entity.offset, entity.offset + entity.length);
+        if (!phoneText) return null;
+        const id = Number(phoneText.replace(/\D/g, ""));
+        if (!id) return null;
+        return { id, first_name: phoneText };
+      }
+
       case "mention": {
         const username = ctx.message.text
           ?.slice(entity.offset, entity.offset + entity.length)

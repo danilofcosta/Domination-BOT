@@ -526,14 +526,14 @@ maneger-user-ban-btn= Banir
 ############
 # BAN USER #
 ############
-banuser-usage-ban = Use: /banuser{ $prefix } <opcao>
+banuser-usage-ban = Use: /banuser{ $prefix } &lt;opcao&gt;
     Opcoes:
     - ID numerico
     - @username
     - Responder mensagem do usuario
 banuser-try-ban-bot = Que maldade tentando me banir :()
 
-banuser-usage-unban = Use: /unbanuser{ $prefix } <opcao>
+banuser-usage-unban = Use: /unbanuser{ $prefix } &lt;opcao&gt;
     Opcoes:
     - ID numerico
     - @username
