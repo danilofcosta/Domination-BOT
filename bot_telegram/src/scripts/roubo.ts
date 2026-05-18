@@ -1,17 +1,19 @@
 import { prisma } from "../lib/prisma.js"
 
-const userId = BigInt(6034249744)
+const userId = BigInt(0)
 
 async function main() {  const waifus = await prisma.characterWaifu.findMany({
     select: {
       id: true,
     },
+    take:122
   })
 
   const husbandos = await prisma.characterHusbando.findMany({
     select: {
       id: true,
     },
+     take:72
   })
 
   // MONTA DADOS WAIFU
