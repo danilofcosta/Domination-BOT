@@ -49,9 +49,9 @@ export async function getHaremCollection(
   ////
   const where = {
     userId: telegramId,
-    Character: {
-      mediaType: MediaType.IMAGE_URL,
-    },
+    // Character: {
+    //   mediaType: MediaType.IMAGE_URL,
+    // },
   };
 
   const [collection, total] = await Promise.all([
