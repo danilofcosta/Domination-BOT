@@ -13,15 +13,16 @@ import {
 } from "./harem_mode_build.js";
 import { Build_btn_harem } from "../../../utils/btns.js";
 
-export async function HaremHandler(ctx: MyContext) {
+export async function HaremHandler(ctx: MyContext, userId?: number) {
   info(`HaremHandler - carregando harém`, {
     userId: ctx.from?.id,
     genero: ctx.session.settings.genero,
   });
+  const telegramId = userId ? userId : Number(ctx.from?.id);
 
   const user = await prisma.user.findUnique({
     where: {
-      telegramId: Number(ctx.from?.id),
+      telegramId: telegramId,
     },
     include: {
       CharacterWaifu: {
@@ -122,12 +123,11 @@ export async function HaremHandler(ctx: MyContext) {
       ) || "User",
   });
 
-  const userId = Number(ctx.from?.id);
   const reply_markup = Build_btn_harem({
     ctx: ctx,
     current_page: 0,
     total_page: pages.length,
-    userId: userId,
+    userId: telegramId,
   });
 
   try {

@@ -26,6 +26,7 @@ import {
 import { statusUserHandler } from '../handlers/Comandos/admin_bot/manage_users/status_user.js';
 
 import { debug } from '../utils/log.js';
+import { OpenHaremUser } from '../handlers/Comandos/admin_bot/manage_users/open_harem.js';
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -137,6 +138,16 @@ export const adminCommands_bot_dict = {
     },
     handler: statusUserHandler,
   },
+  openharemuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'openharem' + botPrefix,
+    description: {
+      en: '-',
+      pt: 'abrir Harem do user ',
+    },
+    handler: OpenHaremUser,
+  },
+  
 } as const satisfies Record<string, AdminCommand>;
 
 const adminCommands_bot = new CommandGroup<MyContext>();

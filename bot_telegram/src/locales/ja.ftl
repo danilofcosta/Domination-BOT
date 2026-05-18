@@ -3,7 +3,9 @@
 ###############
 loading = 読み込み中
 Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
-
+bot-on-check = オンラインです！
+  name:{$nomegroup}
+  istopic:{$istopic}
 
 
 ###############
@@ -227,6 +229,8 @@ add_bot_new_group = ✅ 新しいグループに追加されました！
     🆔 グループID：{ $id }
     👤 追加者：{ $user }
 
+thank-you-add-group = グループ<b>{ $groupName }</b>に追加してくれてありがとう！これからも貢献してください :D 40コインを獲得しました！
+
 
 ###############
 # DROP CHARACTER #
@@ -310,6 +314,7 @@ harem_inline_caption_rarity = レアリティ：{ $rarity_name } { $rarity_emoji
 harem_inline_caption_event = { $emoji_event } { $event_name } { $emoji_event }
 harem_logo = { $usermention } ๛ハーレム ツ
 
+harem-open-id-not-found = ユーザーが見つからないか存在しません（@... を使用しても、最近変更された可能性があるため正しく機能しない場合があります）
 harem_btn_inline_query = 🌐
 harem_btn_prev_page = ⬅️
 harem_btn_current_page = [{ $currentpage }/{ $totalpages }]
@@ -405,6 +410,18 @@ add_character_edit_btn_events = イベント
 add_character_edit_btn_rarities = レアリティ
 add_character_edit_btn_confirm = 保存
 
+edit_character_prompt_nome = ✏️ 新しい名前を送信してください：
+    <b>現在：</b>{ $current }
+edit_character_prompt_anime = ✏️ 新しいアニメを送信してください：
+    <b>現在：</b>{ $current }
+edit_character_prompt_events = ✏️ イベントIDをカンマ区切りで送信してください：
+    <b>現在：</b>{ $current }
+edit_character_prompt_rarities = ✏️ レアリティIDをカンマ区切りで送信してください：
+    <b>現在：</b>{ $current }
+edit-char-info = 🆔 ID：{ $id }
+📛 名前：{ $name }
+📺 アニメ：{ $origem }
+
 query_not_fould = 結果が見つかりませんでした
 
 ############
@@ -458,6 +475,12 @@ addcolletion-error-invalid-ids = ❌ 無効なキャラクターIDです。
 addcolletion-error-no-char = ❌ データベースにキャラクターが見つかりません。
 addcolletion-cache-not-found = キャッシュにコレクションが見つかりません。
 addcolletion-default-user = ユーザー
+
+############
+# MANEGER USER #
+############
+maneger-user-unban-btn = BAN解除
+maneger-user-ban-btn = BAN
 
 ############
 # BAN USER #

@@ -90,6 +90,30 @@ async function botNewgroupMember(ctx: any) {
       botIsAdmin,
     });
 
+    try {
+      await ctx.api.sendMessage(
+        addedBy.id,
+        ctx.t("thank-you-add-group", { groupName: chat.title || "grupo" }),
+        { parse_mode: "HTML" }
+      );
+
+      await prisma.user.upsert({
+        where: { telegramId: BigInt(addedBy.id) },
+        update: { coins: { increment: 40 } },
+        create: {
+          telegramId: BigInt(addedBy.id),
+          telegramData: addedBy,
+          waifuConfig: {},
+          husbandoConfig: {},
+          coins: 40,
+        },
+      });
+
+      info(`botNewgroupMember - bônus de 40 coins para ${addedBy.id}`);
+    } catch (e) {
+      warn(`botNewgroupMember - falha ao dar bônus para ${addedBy.id}`, e);
+    }
+
     const log = ctx.t(`add_bot_new_group`, {
       name: chat.title || `Grupo sem nome`,
       id: chat.id,

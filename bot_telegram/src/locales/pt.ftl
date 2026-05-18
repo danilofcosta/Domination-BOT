@@ -234,6 +234,8 @@ add_bot_new_group =✅ Fui adicionado a um novo grupo!
     🆔 ID do grupo: { $id }
     👤 Adicionado por: { $user }
 
+thank-you-add-group = Obrigado por me adicionar ao grupo <b>{ $groupName }</b>! Continue contribuindo :D Você ganhou 40 coins!
+
 
 ###############
 # DOPRAR PERSONAGWM#
@@ -323,6 +325,7 @@ harem_inline_caption_rarity = Raridade:  { $rarity_name } { $rarity_emoji }
 harem_inline_caption_event = {$emoji_event}  { $event_name } {$emoji_event}
 harem_logo={$usermention}  ๛Harem ツ
 
+harem-open-id-not-found=user não encontrado ou nao existente (O Uso de  @.... pode n funciar bem pois a pessoa pode te mudado recentemente)
 harem_btn_inline_query=🌐
 harem_btn_prev_page=⬅️
 harem_btn_current_page=[{$currentpage}/{$totalpages}]

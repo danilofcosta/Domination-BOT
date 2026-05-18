@@ -3,7 +3,9 @@
 ###############
 loading = cargando
 Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
-
+bot-on-check = ¡Estoy en línea !
+  name:{$nomegroup}
+  istopic:{$istopic}
 
 
 ###############
@@ -227,6 +229,8 @@ add_bot_new_group = ✅ ¡Fui agregado a un nuevo grupo!
     🆔 ID del grupo: { $id }
     👤 Agregado por: { $user }
 
+thank-you-add-group = ¡Gracias por agregarme al grupo <b>{ $groupName }</b>! Sigue contribuyendo :D ¡Ganaste 40 coins!
+
 
 ###############
 # DROP CHARACTER #
@@ -310,6 +314,7 @@ harem_inline_caption_rarity = Rareza: { $rarity_name } { $rarity_emoji }
 harem_inline_caption_event = { $emoji_event } { $event_name } { $emoji_event }
 harem_logo = { $usermention } ๛Harén ツ
 
+harem-open-id-not-found = usuario no encontrado o no existente (El uso de @... puede no funcionar bien porque el usuario puede haberlo cambiado recientemente)
 harem_btn_inline_query = 🌐
 harem_btn_prev_page = ⬅️
 harem_btn_current_page = [{ $currentpage }/{ $totalpages }]
@@ -405,6 +410,18 @@ add_character_edit_btn_events = eventos
 add_character_edit_btn_rarities = rarezas
 add_character_edit_btn_confirm = guardar
 
+edit_character_prompt_nome = ✏️ Envía el nuevo nombre:
+    <b>Actual:</b> { $current }
+edit_character_prompt_anime = ✏️ Envía el nuevo anime:
+    <b>Actual:</b> { $current }
+edit_character_prompt_events = ✏️ Envía los IDs de eventos separados por comas:
+    <b>Actual:</b> { $current }
+edit_character_prompt_rarities = ✏️ Envía los IDs de rarezas separados por comas:
+    <b>Actual:</b> { $current }
+edit-char-info = 🆔 ID: { $id }
+📛 Nombre: { $name }
+📺 Anime: { $origem }
+
 query_not_fould = No se encontraron resultados
 
 ############
@@ -458,6 +475,12 @@ addcolletion-error-invalid-ids = ❌ IDs de personaje inválidos.
 addcolletion-error-no-char = ❌ No se encontraron personajes en la base de datos.
 addcolletion-cache-not-found = Colección no encontrada en caché.
 addcolletion-default-user = usuario
+
+############
+# MANEGER USER #
+############
+maneger-user-unban-btn = Desbanear
+maneger-user-ban-btn = Banear
 
 ############
 # BAN USER #

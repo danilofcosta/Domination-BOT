@@ -3,7 +3,9 @@
 ###############
 loading = loading
 Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
-
+bot-on-check = I am online !
+  name:{$nomegroup}
+  istopic:{$istopic}
 
 
 ###############
@@ -227,6 +229,8 @@ add_bot_new_group = ✅ I was added to a new group!
     🆔 Group ID: { $id }
     👤 Added by: { $user }
 
+thank-you-add-group = Thank you for adding me to the group <b>{ $groupName }</b>! Keep contributing :D You earned 40 coins!
+
 
 ###############
 # DROP CHARACTER #
@@ -310,6 +314,7 @@ harem_inline_caption_rarity = Rarity: { $rarity_name } { $rarity_emoji }
 harem_inline_caption_event = { $emoji_event } { $event_name } { $emoji_event }
 harem_logo = { $usermention } ๛Harem ツ
 
+harem-open-id-not-found = user not found or does not exist (Using @... may not work well because the user may have changed it recently)
 harem_btn_inline_query = 🌐
 harem_btn_prev_page = ⬅️
 harem_btn_current_page = [{ $currentpage }/{ $totalpages }]
@@ -406,6 +411,18 @@ add_character_edit_btn_events = events
 add_character_edit_btn_rarities = rarities
 add_character_edit_btn_confirm = save
 
+edit_character_prompt_nome = ✏️ Send the new name:
+    <b>Current:</b> { $current }
+edit_character_prompt_anime = ✏️ Send the new anime:
+    <b>Current:</b> { $current }
+edit_character_prompt_events = ✏️ Send the event IDs separated by commas:
+    <b>Current:</b> { $current }
+edit_character_prompt_rarities = ✏️ Send the rarity IDs separated by commas:
+    <b>Current:</b> { $current }
+edit-char-info = 🆔 ID: { $id }
+📛 Name: { $name }
+📺 Anime: { $origem }
+
 query_not_fould = No results found
 
 ############
@@ -459,6 +476,12 @@ addcolletion-error-invalid-ids = ❌ Invalid character IDs.
 addcolletion-error-no-char = ❌ No characters found in the database.
 addcolletion-cache-not-found = Collection not found in cache.
 addcolletion-default-user = user
+
+############
+# MANEGER USER #
+############
+maneger-user-unban-btn = Unban
+maneger-user-ban-btn = Ban
 
 ############
 # BAN USER #
