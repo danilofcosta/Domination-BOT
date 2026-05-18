@@ -1,3 +1,4 @@
+import type { InlineKeyboardMarkup } from "grammy/types";
 import type { MyContext } from "./customTypes.js";
 import { Sendmedia } from "./sendmedia.js";
 
@@ -7,9 +8,13 @@ export async function EditOrSendText({
   caption,
 }: {
   ctx: MyContext;
-  reply_markup?: any;
-  caption: string;
+  reply_markup?: InlineKeyboardMarkup | undefined;
+  caption?: string;
 }) {
+  if (!caption) {
+    return await ctx.editMessageReplyMarkup({ reply_markup: reply_markup });
+  }
+
   // If it's a direct command call (not a callback button interaction)
   if (!ctx.callbackQuery) {
     return Sendmedia({
@@ -36,6 +41,9 @@ export async function EditOrSendText({
       });
     await ctx.answerCallbackQuery();
   } else if (ctx.msg) {
+    if (!caption) {
+      return console.log("legenda vazia");
+    }
     // console.log("error edit message text", ctx.msg.caption)
     await ctx
       .editMessageText(caption, {

@@ -1,4 +1,4 @@
- import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
+import { CommandGroup, LanguageCodes } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { CapturarCharacter } from "../handlers/Comandos/users/dominar.js";
 import { botPrefix, options, typeBot } from "./botConfigCommands.js";
@@ -7,12 +7,12 @@ import { favCharacter } from "../handlers/Comandos/users/fav.js";
 import { Myinfos } from "../handlers/Comandos/users/myinfos.js";
 import { giftHandler } from "../handlers/Comandos/users/gift.js";
 import { HaremmodeHandler } from "../handlers/Comandos/users/haremmode.js";
-import { Ramdon_Character_Handler } from "../handlers/Comandos/globais/random_character.js";
 import { topHandler } from "../handlers/Comandos/users/top.js";
 import { StartGreetings } from "../handlers/Comandos/globais/Start.js";
 import { animelistCommand } from "../handlers/Comandos/users/animelist.js";
 import { setlangHandler } from "../handlers/Comandos/admin_groups/setlang.js";
 import { debug } from "../utils/log.js";
+import { Ramdon_Character_Handler } from "../handlers/Comandos/globais/random_character.js";
 
 const UserCommands = new CommandGroup<MyContext>();
 
@@ -46,7 +46,7 @@ export const ComandosUser = {
     scope: "all_group_chats",
   },
   gift: {
-    command: botPrefix + "gift",
+    command: "gift" + botPrefix,
     description: {
       pt: "Presenteia um personagem para outro usuario",
       en: "Gift a character to another user",
@@ -73,7 +73,7 @@ export const ComandosUser = {
     scope: "all_group_chats",
   },
   top: {
-    command: botPrefix + "top",
+    command: "top" + botPrefix,
     description: {
       pt: "Mostra o top de jogadores",
       en: "Show the top players",
@@ -82,7 +82,7 @@ export const ComandosUser = {
     scope: "all_group_chats",
   },
   haremmode: {
-    command: botPrefix + "haremmode",
+    command: "haremmode" + botPrefix,
     description: {
       pt: "Altera o modo de visualizacao do seu Harem",
       en: "Change the display mode of your Harem",
@@ -99,15 +99,7 @@ export const ComandosUser = {
     handler: animelistCommand,
     scope: "all_group_chats",
   },
-  setlang: {
-    command: "setlang" + botPrefix,
-    description: {
-      pt: "Altera o idioma do bot",
-      en: "Change the bot language",
-    },
-    handler: setlangHandler,
-    scope: "all_group_chats",
-  },
+
 } as const;
 
 for (const [key, value] of Object.entries(ComandosUser)) {
@@ -121,9 +113,9 @@ for (const [key, value] of Object.entries(ComandosUser)) {
     value.description.pt,
     handlerWrapper,
     options,
-  )  .addToScope({ type: "all_group_chats" }, (ctx) => handlerWrapper(ctx))
-    .addToScope({ type: "all_private_chats" }, (ctx) => handlerWrapper(ctx))
-
+  )
+    .addToScope({ type: "all_group_chats" }, (ctx) => handlerWrapper(ctx))
+    .addToScope({ type: "all_private_chats" }, (ctx) => handlerWrapper(ctx));
 }
 
 export { UserCommands };

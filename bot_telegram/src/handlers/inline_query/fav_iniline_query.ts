@@ -15,7 +15,6 @@ export async function Fav_Inline_query(ctx: MyContext) {
 
   const query = ctx.inlineQuery.query;
 
-
   const telegramId = ctx.from?.id;
   if (!telegramId) return;
 
@@ -33,12 +32,11 @@ export async function Fav_Inline_query(ctx: MyContext) {
       character: item,
       chatType: genero,
       noformat: true,
-      reply_markup:  bts_yes_or_no(
-    ctx,
-    `fav_yes_${item.id}_${telegramId}`,
-    `fav_no_${item.id}_${telegramId}`,
-  )
-
+      reply_markup: bts_yes_or_no(
+        ctx,
+        `fav_yes_${item.id}_${telegramId}`,
+        `fav_no_${item.id}_${telegramId}`,
+      ),
     }),
   );
 
@@ -47,5 +45,6 @@ export async function Fav_Inline_query(ctx: MyContext) {
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
     text: ctx.t("fav-btn-select"),
+    isharem:true
   });
 }

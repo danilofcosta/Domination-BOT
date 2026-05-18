@@ -4,7 +4,8 @@ import { create_caption } from "../../../utils/manege_caption/create_caption.js"
 import { info, warn, error, debug } from "../../../utils/log.js";
 import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { findCollectionWithIncludes } from "../../../utils/collectionUtils.js";
-
+// comando , action , id , id user
+// fav_yes_200_00000000000
 export async function favConfirmHandler(ctx: MyContext) {
   const [_, action, favid, userid] = ctx.match
     ? (ctx.match as any).input.split("_")
@@ -45,31 +46,31 @@ export async function favConfirmHandler(ctx: MyContext) {
 
   info(`favConfirmHandler - confirmando favorito`, { userId, favId, isWaifu });
 
-  const collection = await findCollectionWithIncludes({
-    isWaifu: isWaifu,
-   telegramId: userId,
-    characterId: favId,
-  });
+  // const collection = await findCollectionWithIncludes({
+  //   isWaifu: isWaifu,
+  //   telegramId: userId,
+  //   characterId: favId,
+  // });
 
-  if (!collection) {
-    warn(`favConfirmHandler - usuário não possui personagem`, {
-      userId,
-      favId,
-    });
-    return ctx.answerCallbackQuery({
-      text: ctx.t("error-fav-not-owned"),
-      show_alert: true,
-    });
-  }
+  // if (!collection) {
+  //   warn(`favConfirmHandler - usuário não possui personagem`, {
+  //     userId,
+  //     favId,
+  //   });
+  //   return ctx.answerCallbackQuery({
+  //     text: ctx.t("error-fav-not-owned"),
+  //     show_alert: true,
+  //   });
+  // }
 
-  if (!collection.Character) {
-    warn(`favConfirmHandler - personagem inválido`, { favId });
-    return ctx.answerCallbackQuery({
-      text: ctx.t("error-fav-invalid-char"),
-      show_alert: true,
-    });
-  }
-// se waifu atualiza waifu caso n husbando
+  // if (!collection.Character) {
+  //   warn(`favConfirmHandler - personagem inválido`, { favId });
+  //   return ctx.answerCallbackQuery({
+  //     text: ctx.t("error-fav-invalid-char"),
+  //     show_alert: true,
+  //   });
+  // }
+  // se waifu atualiza waifu caso n husbando
   if (isWaifu) {
     await prisma.user.update({
       where: { telegramId: userId },
@@ -93,18 +94,17 @@ export async function favConfirmHandler(ctx: MyContext) {
     text: ctx.t("fav-character-success"),
   });
 
-  const capiton = create_caption({
-    ctx: ctx,
-    character: collection.Character,
-    chatType: ctx.session.settings.genero,
-    noformat: false,
-  });
+  // const capiton = create_caption({
+  //   ctx: ctx,
+  //   character: collection.Character,
+  //   chatType: ctx.session.settings.genero,
+  //   noformat: false,
+  // });
 
   try {
     await EditOrSendText({
       ctx: ctx,
-      caption: `${capiton}\n\n${ctx.t("fav-character-success")} ${ctx.t("fav-check-harem", { cmd: "my", genero: isWaifu ? "waifu" : "husbando" })}`,
-      reply_markup: null,
+      //   caption: `${capiton}\n\n${ctx.t("fav-character-success")} ${ctx.t("fav-check-harem", { cmd: "my", genero: isWaifu ? "waifu" : "husbando" })}`,
     });
   } catch (e) {
     error(`favConfirmHandler - erro ao editar caption`, e);

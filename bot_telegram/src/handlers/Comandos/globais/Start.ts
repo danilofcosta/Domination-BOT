@@ -17,11 +17,11 @@ export async function StartGreetings(ctx: MyContext) {
         console.error("Erro ao reagir com ⚡:", error);
       }
     }
-
-    await Sendmedia({
+    if (!ctx.message) return;
+    return await Sendmedia({
       ctx,
       caption: ctx.t("bot-on-check", {
-        nomegroup: `${ctx.chat?.first_name} ${ctx.chat?.last_name}`,
+        nomegroup: `${ctx.message.chat.title}`,
         istopic: ctx.chat?.is_forum ? "true" : "false",
       }),
     });

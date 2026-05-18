@@ -105,6 +105,7 @@ export async function favCharacter(ctx: MyContext) {
     id_personagem: favid || "",
     character_name: FavCharacter.Character.name || "",
     character_anime: FavCharacter.Character.origem || "",
+    gender: ctx.session.settings.genero || process.env.TYPE_BOT,
   });
 
   const reply_markup = bts_yes_or_no(

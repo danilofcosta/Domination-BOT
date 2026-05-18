@@ -4,7 +4,7 @@
 loading = carregando
 Logo_bt = 𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝕾
 bot-on-check= Eu estou online !
-  nome:{nomegroup}
+  nome:{$nomegroup}
   istopic:{$istopic}
   
   
@@ -83,7 +83,7 @@ setactiontopic-success = Tópico de ação predefinido configurado!
 ###############
 btn-yes=✅ Sim
 btn-no=❌ Não
-btn-close=🗑 Fechar
+btn-close=🗑
 
 
 
@@ -259,13 +259,18 @@ create-caption-gender-husbando = esse husbando
 ###############
 # fav character#
 ###############
-
-fav-character=Deseja tornar este personagem seu favorito?
-    <code> {$id_personagem}  {$character_name} - {$character_anime} </code>
+fav-character =
+    Deseja tornar este personagem seu {$gender ->
+        [husbando] favorito
+       *[waifu] favorita
+    }?
     
-fav-character-success=favorito atualizado
+    <code>{$id_personagem} {$character_name} - {$character_anime}</code>
+    
+fav-character-success= {$gender} foi definifo com success 
 fav-not-found= Você não possui essa {$genero} no seu Harem 
-fav-check-harem = \n\n confira seu Harem /{ $cmd }{ $genero }s
+fav-check-harem = 
+     confira seu Harem /{ $cmd }{ $genero }s
 
 
 ###############
@@ -329,13 +334,28 @@ harem_no_user = vc nao tem um harem
 harem-empty = Nenhum personagem.
 harem-no-event = Sem Evento
 harem-unknown-anime = Desconhecido
-harem-rarity-header = \n🔸 <b>{ $name }</b>\n
-harem-rarity-header-cont = \n🔸 <b>{ $name } (cont.)</b>\n
-harem-event-header = \n🔹 <b>{ $name }</b>\n
-harem-event-header-cont = \n🔹 <b>{ $name } (cont.)</b>\n
-harem-anime-header = \n☛ <b>{ $name }</b> ({ $userCount }/{ $dbTotal })\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n
-harem-anime-header-cont = \n☛ <b>{ $name } (cont.)</b>\n✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\n
-harem-line-format = ➢ ꙳ <code>{ $id }</code> ꙳ { $rarity } ꙳ <b>{ $name }</b>{ $events } { $count }x\n
+harem-rarity-header = 
+🔸 <b>{ $name }</b>
+
+harem-rarity-header-cont = 
+🔸 <b>{ $name } (cont.)</b>
+
+harem-event-header = 
+🔹 <b>{ $name }</b>
+
+harem-event-header-cont = 
+🔹 <b>{ $name } (cont.)</b>
+
+harem-anime-header = 
+☛ <b>{ $name }</b> ({ $userCount }/{ $dbTotal })
+✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧
+
+harem-anime-header-cont = 
+☛ <b>{ $name } (cont.)</b>
+✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧
+
+harem-line-format = ➢ ꙳ <code>{ $id }</code> ꙳ { $rarity } ꙳ <b>{ $name }</b>{ $events } { $count }x
+
 
 ############
 #HAREM MODES
@@ -369,7 +389,8 @@ top_btn_close =🗑
 top-empty = Nenhum usuário no ranking ainda.
 topcb-not-identified = Não foi possível identificar você.
 topcb-not-ranked = Você ainda não está no ranking.
-topcb-position = 🏆 Sua posição: { $position }\n📊 Total: { $total }
+topcb-position = 🏆 Sua posição: { $position }
+    📊 Total: { $total }
 
 ############
 
@@ -391,7 +412,14 @@ add-char-usage = Use: nome, anime, extras
 add-char-queue = 📦 Personagem adicionado à fila (posição { $pos }). Processando em breve...
 add-char-error = Erro ao adicionar personagem: { $error }
 add-char-success = Personagem adicionado com sucesso!
-add-char-preview = Nome: { $nome }\nAnime: { $anime }\nGenero: { $genero }\nMediatype: { $mediatype }\nData: { $media }\nLink: { $link }\nRarities: { $rarities }\nEvents: { $events }
+add-char-preview = Nome: { $nome }
+Anime: { $anime }
+Genero: { $genero }
+Mediatype: { $mediatype }
+Data: { $media }
+Link: { $link }
+Rarities: { $rarities }
+Events: { $events }
 add-char-default-value = valor padrao
 add-char-default-event = sem evento
 add-char-save-error = Erro ao salvar personagem.
@@ -414,18 +442,25 @@ add_character_edit_btn_events=eventos
 add_character_edit_btn_rarities=reridades
 add_character_edit_btn_confirm=salvar
 
-edit_character_prompt_nome = ✏️ Envie o novo nome:\n\n<b>Atual:</b> { $current }
-edit_character_prompt_anime = ✏️ Envie o novo anime:\n\n<b>Atual:</b> { $current }
-edit_character_prompt_events = ✏️ Envie os IDs dos eventos separados por vírgula:\n\n<b>Atual:</b> { $current }
-edit_character_prompt_rarities = ✏️ Envie os IDs das raridades separados por vírgula:\n\n<b>Atual:</b> { $current }
-edit-char-info = 🆔 ID: { $id }\n📛 Nome: { $name }\n📺 Anime: { $origem }
+edit_character_prompt_nome = ✏️ Envie o novo nome:
+    <b>Atual:</b> { $current }
+edit_character_prompt_anime = ✏️ Envie o novo anime:
+    <b>Atual:</b> { $current }
+edit_character_prompt_events = ✏️ Envie os IDs dos eventos separados por vírgula:
+    <b>Atual:</b> { $current }
+edit_character_prompt_rarities = ✏️ Envie os IDs das raridades separados por vírgula:
+    <b>Atual:</b> { $current }
+edit-char-info = 🆔 ID: { $id }
+📛 Nome: { $name }
+📺 Anime: { $origem }
 
 query_not_fould = Nenhum resultado encontrado
 
 ############
 # ANIMELIST #
 ############
-animelist-select-letter = Selecione uma letra do alfabeto:\n\n
+animelist-select-letter = Selecione uma letra do alfabeto:
+    
 animelist-no-anime = Nenhum anime encontrado com a letra { $letter }
 animelist-header = Anime com { $letter } ({ $total })
 animelist-page = Pagina { $page }/{ $totalPages }
@@ -451,10 +486,14 @@ haremmodecb-updated = Modo atualizado com sucesso para: { $mode }
 # TOPIC CONFIG #
 ############
 error-topic-group-only = ❌ Este comando deve ser usado em um grupo.
-error-topic-reply-msg = ❌ Responda a uma mensagem do grupo para definir o topic.\n\nUse: /setchattopic replying a uma mensagem
-error-topic-not-topic = ❌ A mensagem respondida não é de uma topic.\n\nUse este comando respondendo a uma mensagem de uma topic do fórum.
+error-topic-reply-msg = ❌ Responda a uma mensagem do grupo para definir o topic.
+    Use: /setchattopic replying a uma mensagem
+error-topic-not-topic = ❌ A mensagem respondida não é de uma topic.
+    Use este comando respondendo a uma mensagem de uma topic do fórum.
 error-topic-not-admin = ❌ Apenas administradores do grupo podem usar este comando.
-topic-config-success = ✅ Topic configurado!\n\n📝 Topic ID: { $topicId }\n\nAgora todas as mensagens de drop serão enviadas nesta topic.
+topic-config-success = ✅ Topic configurado!
+    📝 Topic ID: { $topicId }
+    Agora todas as mensagens de drop serão enviadas nesta topic.
 
 ############
 # ADD COLLECTION #
@@ -463,9 +502,14 @@ addcolletion-btn-yes = ✅ Sim
 addcolletion-btn-no = ❌ Não
 addcolletion-btn-view-harem = Ver harém
 addcolletion-btn-view-collection = Ver coleção
-addcolletion-confirm = Personagens ({ $count }):\n{ $list }\n\n{ $invalid }\n\nAdicionar à coleção do { $user }?
-addcolletion-success-single = ✅ Personagem adicionado à coleção!\n\nPor: { $user }
-addcolletion-success-multi = ✅ Personagens adicionados à coleção!\n\nPor: { $user }
+addcolletion-confirm = Personagens ({ $count }):
+{ $list }
+    { $invalid }
+    Adicionar à coleção do { $user }?
+addcolletion-success-single = ✅ Personagem adicionado à coleção!
+    Por: { $user }
+addcolletion-success-multi = ✅ Personagens adicionados à coleção!
+    Por: { $user }
 addcolletion-cancel = ❌ Ação cancelada.
 addcolletion-error-reply = ❌ Responda a uma mensagem do usuário para adicionar à coleção.
 addcolletion-error-need-id = ❌ Forneça o ID do personagem.
@@ -473,19 +517,35 @@ addcolletion-error-invalid-ids = ❌ IDs de personagem inválidos.
 addcolletion-error-no-char = ❌ Nenhum personagem encontrado no banco de dados.
 addcolletion-cache-not-found = Coleção não encontrada no cache.
 addcolletion-default-user = usuário
+############
+# MANEGER USER #
+############
+maneger-user-unban-btn= Desbanir
+maneger-user-ban-btn= Banir
 
 ############
 # BAN USER #
 ############
-banuser-usage-ban = Use: /banuser{ $prefix } <opcao>\n\nOpcoes:\n- ID numerico\n- @username\n- Responder mensagem do usuario
-banuser-usage-unban = Use: /unbanuser{ $prefix } <opcao>\n\nOpcoes:\n- ID numerico\n- @username\n- Responder mensagem do usuario
+banuser-usage-ban = Use: /banuser{ $prefix } <opcao>
+    Opcoes:
+    - ID numerico
+    - @username
+    - Responder mensagem do usuario
+banuser-try-ban-bot = Que maldade tentando me banir :()
+
+banuser-usage-unban = Use: /unbanuser{ $prefix } <opcao>
+    Opcoes:
+    - ID numerico
+    - @username
+    - Responder mensagem do usuario
 banuser-cannot-ban-admin = Nao e possivel banir um administrador do bot.
 banuser-cannot-unban-admin = Nao e possivel desbanir um administrador do bot.
 banuser-success-ban = Usuario { $name } ({ $id }) banido com sucesso!
 banuser-success-unban = Usuario { $name } ({ $id }) desbanido com sucesso!
 banuser-not-found = Usuario nao encontrado no banco de dados.
 banuser-list-empty = Nenhum usuario banido.
-banuser-list-title = Usuarios banidos:\n{ $list }
+banuser-list-title = Usuarios banidos:
+{ $list }
 banuser-list-error = Erro ao listar
 banuser-ban-error = Erro ao banir
 banuser-unban-error = Erro ao desbanir
@@ -494,8 +554,14 @@ banuser-unknown = Desconhecido
 ############
 # STATUS USER #
 ############
-statususer-usage = Use: /statususer <opcao>\n\nOpcoes:\n- ID numerico\n- @username\n- Responder mensagem do usuario
-statususer-not-found = Usuario #{ $id } nao encontrado no sistema.\n\nEste usuario nunca interagiu com o bot.
+statususer-usage = Use: /statususer <opcao>
+    Opcoes:
+    - ID numerico
+    - @username
+    - Responder mensagem do usuario
+statususer-not-found = Usuario #{ $id } nao encontrado no sistema.
+    Este usuario nunca interagiu com o bot.
+
 statususer-label-id = 🆔 ID:
 statususer-label-name = 👱 Nome:
 statususer-label-username = 🌐 Nome de usuario: @
@@ -544,7 +610,8 @@ setrarity-no-changes = Nenhuma alteração para salvar.
 setrarity-success = ✅ Raridade <b>{ $name }</b> salva com sucesso!
 setrarity-success-values = <b>Valores salvos:</b>
 setrarity-error-save = Erro ao salvar.
-setrarity-prompt-field = ✏️ Envie o novo { $label } para a raridade { $name } ({ $code }):\n\n<b>Valor atual:</b> { $current }
+setrarity-prompt-field = ✏️ Envie o novo { $label } para a raridade { $name } ({ $code }):
+    <b>Valor atual:</b> { $current }
 setrarity-field-name = nome
 setrarity-field-emoji = emoji
 setrarity-field-emoji-id = emoji ID
@@ -581,7 +648,8 @@ setevent-no-changes = Nenhuma alteração para salvar.
 setevent-success = ✅ Evento <b>{ $name }</b> salvo com sucesso!
 setevent-success-values = <b>Valores salvos:</b>
 setevent-error-save = Erro ao salvar.
-setevent-prompt-field = ✏️ Envie o novo { $label } para o evento { $name } ({ $code }):\n\n<b>Valor atual:</b> { $current }
+setevent-prompt-field = ✏️ Envie o novo { $label } para o evento { $name } ({ $code }):
+    <b>Valor atual:</b> { $current }
 setevent-field-name = nome
 setevent-field-emoji = emoji
 setevent-field-emoji-id = emoji ID

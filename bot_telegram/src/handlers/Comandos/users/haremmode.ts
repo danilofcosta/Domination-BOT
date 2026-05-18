@@ -31,7 +31,7 @@ export async function HaremmodeHandler(ctx: MyContext) {
     
     .text(`${currentMode === "event" ? "✅ " : ""}${ctx.t("haremmode-event")}`, "haremmode_event")
     .row()
-    .text(await ctx.t("close"), "close");
+    .text(await ctx.t("btn-close"), "close");
 
 await Sendmedia({
   ctx: ctx,

@@ -43,20 +43,12 @@ export async function Gift_Inline_query(ctx: MyContext) {
       ),
     }),
   );
-  try {
-    setTimeout(() => {
-      ctx.api.deleteMessage(ctx.chat!.id, ctx.msg?.message_id!).catch((e) => {
-        error("sucess ao enviar mensagem de nome incorreto", e);
-      });
-    }, 20000);
-  } catch (e) {
-    error("Erro ao enviar mensagem de nome incorreto", e);
-  }
 
   await showResults({
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
     text: ctx.t("select-inline-gift"),
+    isharem: true,
   });
 }

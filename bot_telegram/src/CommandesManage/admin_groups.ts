@@ -19,6 +19,7 @@ import { setChatTopicHandler } from '../handlers/Comandos/admin_groups/topic/set
 import { botPrefix, options } from './botConfigCommands.js';
 import { debug, warn } from '../utils/log.js';
 import { Sendmedia } from '../utils/sendmedia.js';
+import { setlangHandler } from '../handlers/Comandos/admin_groups/setlang.js';
 
 /**
  * Verifica se o usuário é admin do grupo
@@ -60,53 +61,62 @@ async function groupAdminOnly(ctx: MyContext, next: () => Promise<void>) {
 const adminGroupsCommands = new CommandGroup<MyContext>();
 
 export const adminGroupsCommands_dict = {
-  newtopic: {
-    command: 'newtopic' + botPrefix,
+  // newtopic: {
+  //   command: 'newtopic' + botPrefix,
+  //   description: {
+  //     en: 'Create a new forum topic',
+  //     pt: 'Criar um novo topic',
+  //   },
+  //   handler: newTopicHandler,
+  // },
+  // renametopic: {
+  //   command: 'renametopic' + botPrefix,
+  //   description: {
+  //     en: 'Rename the current topic',
+  //     pt: 'Renomear o tópico atual',
+  //   },
+  //   handler: renameTopicHandler,
+  // },
+  // setactiontopic: {
+  //   command: 'setactiontopic' + botPrefix,
+  //   description: {
+  //     en: 'Set current topic as default action topic',
+  //     pt: 'Definir o tópico atual como padrão para ações',
+  //   },
+  //   handler: setActionTopicHandler,
+  // },
+  // closetopic: {
+  //   command: 'closetopic' + botPrefix,
+  //   description: {
+  //     en: 'Close a forum topic',
+  //     pt: 'Fechar um topic',
+  //   },
+  //   handler: closeTopicHandler,
+  // },
+  // deletetopic: {
+  //   command: 'deletetopic' + botPrefix,
+  //   description: {
+  //     en: 'Delete a forum topic',
+  //     pt: 'Eliminar um topic',
+  //   },
+  //   handler: deleteTopicHandler,
+  // },
+  // setchattopic: {
+  //   command: 'setchattopic' + botPrefix,
+  //   description: {
+  //     en: 'Define the topic for drop messages',
+  //     pt: 'Define o topic para mensagens de drop',
+  //   },
+  //   handler: setChatTopicHandler,
+  // },
+    setlang: {
+    command: "setlang" + botPrefix,
     description: {
-      en: 'Create a new forum topic',
-      pt: 'Criar um novo topic',
+      pt: "Altera o idioma do bot",
+      en: "Change the bot language",
     },
-    handler: newTopicHandler,
-  },
-  renametopic: {
-    command: 'renametopic' + botPrefix,
-    description: {
-      en: 'Rename the current topic',
-      pt: 'Renomear o tópico atual',
-    },
-    handler: renameTopicHandler,
-  },
-  setactiontopic: {
-    command: 'setactiontopic' + botPrefix,
-    description: {
-      en: 'Set current topic as default action topic',
-      pt: 'Definir o tópico atual como padrão para ações',
-    },
-    handler: setActionTopicHandler,
-  },
-  closetopic: {
-    command: 'closetopic' + botPrefix,
-    description: {
-      en: 'Close a forum topic',
-      pt: 'Fechar um topic',
-    },
-    handler: closeTopicHandler,
-  },
-  deletetopic: {
-    command: 'deletetopic' + botPrefix,
-    description: {
-      en: 'Delete a forum topic',
-      pt: 'Eliminar um topic',
-    },
-    handler: deleteTopicHandler,
-  },
-  setchattopic: {
-    command: 'setchattopic' + botPrefix,
-    description: {
-      en: 'Define the topic for drop messages',
-      pt: 'Define o topic para mensagens de drop',
-    },
-    handler: setChatTopicHandler,
+    handler: setlangHandler,
+    scope: "all_group_chats",
   },
 } as const;
 

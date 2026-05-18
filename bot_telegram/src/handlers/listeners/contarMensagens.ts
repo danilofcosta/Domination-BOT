@@ -12,7 +12,7 @@ const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function contarMensagens(ctx: MyContext) {
   if (!ctx.chat) return;
-
+  console.log("----", ctx.from?.first_name, ctx.chat.title);
   const grupo = ctx.session.grupo;
   if (!grupo) {
     return; // removido log para não travar disk io
@@ -80,7 +80,10 @@ export async function contarMensagens(ctx: MyContext) {
     const character = grupo.character;
 
     const character_genero = ctx.t(
-      process.env.TYPE_BOT === ChatType.HUSBANDO ? "drop-gender-husbando" : "drop-gender-waifu");
+      process.env.TYPE_BOT === ChatType.HUSBANDO
+        ? "drop-gender-husbando"
+        : "drop-gender-waifu",
+    );
 
     const txt = ctx.t("drop_character_secret_caption", {
       charater_nome: character?.name ?? "??",

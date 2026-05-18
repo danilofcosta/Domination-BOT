@@ -11,7 +11,7 @@ const privateCommands = new CommandGroup<MyContext>();
 
 privateCommands
   .command("start", "Start the bot and get a greeting message", options)
-  .addToScope({ type: "all_private_chats" }, (ctx) => StartGreetings(ctx))
+ .addToScope({ type: "default" }, (ctx) => StartGreetings(ctx))
   .localize(LanguageCodes.Portuguese, "start", "Inicia a configuração do bot")
   .localize(LanguageCodes.English, "start", "Start the bot");
 

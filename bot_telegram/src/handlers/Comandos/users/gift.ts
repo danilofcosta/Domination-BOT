@@ -10,9 +10,16 @@ import { Sendmedia } from "../../../utils/sendmedia.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 import { ComandosUser } from "../../../CommandesManage/User.js";
 import { mentionUser } from "../../../utils/metion_user.js";
+import { Extract_id_user } from "../../../utils/extract_id_user.js";
 
 export async function giftHandler(ctx: MyContext) {
-  if (!ctx.message?.reply_to_message) {
+
+  const mentionedUser = await  Extract_id_user(ctx)
+
+
+
+
+  if (!ctx.message?.reply_to_message && !mentionedUser) {
     await Sendmedia({
       ctx,
       caption: ctx.t("gift_reply_instruction", {
@@ -21,7 +28,7 @@ export async function giftHandler(ctx: MyContext) {
     });
     return;
   }
-  const mentionedUser = ctx.message.reply_to_message.from;
+ 
 
   if (!mentionedUser?.id) {
     warn(`giftHandler - usuário inválido`, { userId: ctx.from?.id });
@@ -53,8 +60,32 @@ export async function giftHandler(ctx: MyContext) {
     });
     return;
   }
+let _text = ctx.message?.text || "";
 
-  const giftid = Number(ctx.match);
+if (ctx.message?.entities) {
+  const entities = [...ctx.message.entities]
+    .sort((a, b) => b.offset - a.offset);
+
+  for (const entity of entities) {
+    switch (entity.type) {
+      case "mention":
+      case "bot_command":
+      case "text_mention":
+      case "custom_emoji":
+      case "code":
+      case "blockquote":
+        _text =
+          _text.slice(0, entity.offset) +
+          _text.slice(entity.offset + entity.length);
+
+        break;
+    }
+  }
+}
+
+const giftid = Number(_text.trim());
+
+
   if (!giftid || isNaN(giftid)) {
     warn(`giftHandler - ID inválido`, { userId: ctx.from?.id, giftid });
 

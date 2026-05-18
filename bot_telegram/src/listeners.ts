@@ -1,37 +1,37 @@
-import { Composer } from 'grammy';
-import type { MyContext } from './utils/customTypes.js';
-import { contarMensagens } from './handlers/listeners/contarMensagens.js';
-import { haremInlineQuery } from './handlers/inline_query/harem_inline_query.js';
+import { Composer } from "grammy";
+import type { MyContext } from "./utils/customTypes.js";
+import { contarMensagens } from "./handlers/listeners/contarMensagens.js";
+import { haremInlineQuery } from "./handlers/inline_query/harem_inline_query.js";
 import {
   getCharacters,
   getCharactersall,
   QueryCharacet,
-} from './handlers/inline_query/inline_query.js';
-import { getCharacter, setCharacter, getCharList } from './cache/cache.js';
-import { addCharacter_edit_CallbackData } from './handlers/Comandos/admin_bot/manager_character/add/add_character_edit.js';
-import { debug, info, error as logError } from './utils/log.js';
-import { ChatType } from './utils/customTypes.js';
-import { inline_per } from './handlers/inline_query/inline_by_id.js';
-import { animeInlineQuery } from './handlers/inline_query/anime_inline_query.js';
-import { SetRarityReplyHandler } from './handlers/Comandos/admin_bot/configs/set_rarity.js';
-import { SetEventReplyHandler } from './handlers/Comandos/admin_bot/configs/set_event.js';
-import { animelistCallback } from './handlers/Comandos/users/animelist.js';
-import { Gift_Inline_query } from './handlers/inline_query/gift_iniline_query.js';
-import { Fav_Inline_query } from './handlers/inline_query/fav_iniline_query.js';
+} from "./handlers/inline_query/inline_query.js";
+import { getCharacter, setCharacter, getCharList } from "./cache/cache.js";
+import { addCharacter_edit_CallbackData } from "./handlers/Comandos/admin_bot/manager_character/add/add_character_edit.js";
+import { debug, info, error as logError } from "./utils/log.js";
+import { ChatType } from "./utils/customTypes.js";
+import { inline_per } from "./handlers/inline_query/inline_by_id.js";
+import { animeInlineQuery } from "./handlers/inline_query/anime_inline_query.js";
+import { SetRarityReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
+import { SetEventReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_event.js";
+import { animelistCallback } from "./handlers/Comandos/users/animelist.js";
+import { Gift_Inline_query } from "./handlers/inline_query/gift_iniline_query.js";
+import { Fav_Inline_query } from "./handlers/inline_query/fav_iniline_query.js";
 
 const listeners = new Composer<MyContext>();
 
-listeners.on('message:text', async (ctx, next) => {
+listeners.on("message:text", async (ctx, next) => {
   if (ctx.session.adminSetup?.action && ctx.session.adminSetup?.targetId) {
     const action = ctx.session.adminSetup.action;
     const targetId = ctx.session.adminSetup.targetId;
     const text = ctx.message.text;
 
-    if (action.startsWith('setrarity_')) {
+    if (action.startsWith("setrarity_")) {
       return SetRarityReplyHandler(ctx);
     }
 
-    if (action.startsWith('setevent_')) {
+    if (action.startsWith("setevent_")) {
       return SetEventReplyHandler(ctx);
     }
 
@@ -42,21 +42,27 @@ listeners.on('message:text', async (ctx, next) => {
       return;
     }
 
-    if (action === 'edit_nome') {
+    if (action === "edit_nome") {
       character.nome = text;
-    } else if (action === 'edit_anime') {
+    } else if (action === "edit_anime") {
       character.anime = text;
-    } else if (action === 'edit_events') {
-      if (text.toLowerCase() === 'null' || text === '') {
+    } else if (action === "edit_events") {
+      if (text.toLowerCase() === "null" || text === "") {
         character.events = undefined;
       } else {
-        character.events = text.split(',').map(t => parseInt(t.trim(), 10)).filter(n => !isNaN(n));
+        character.events = text
+          .split(",")
+          .map((t) => parseInt(t.trim(), 10))
+          .filter((n) => !isNaN(n));
       }
-    } else if (action === 'edit_rarities') {
-      if (text.toLowerCase() === 'null' || text === '') {
+    } else if (action === "edit_rarities") {
+      if (text.toLowerCase() === "null" || text === "") {
         character.rarities = undefined;
       } else {
-        character.rarities = text.split(',').map(t => parseInt(t.trim(), 10)).filter(n => !isNaN(n));
+        character.rarities = text
+          .split(",")
+          .map((t) => parseInt(t.trim(), 10))
+          .filter((n) => !isNaN(n));
       }
     }
 
@@ -69,10 +75,10 @@ listeners.on('message:text', async (ctx, next) => {
   return next();
 });
 
-listeners.on('callback_query:data', async (ctx, next) => {
-  const data = ctx.callbackQuery?.data || '';
+listeners.on("callback_query:data", async (ctx, next) => {
+  const data = ctx.callbackQuery?.data || "";
 
-  if (data.startsWith('al_')) {
+  if (data.startsWith("al_")) {
     await animelistCallback(ctx);
     return;
   }
@@ -80,7 +86,7 @@ listeners.on('callback_query:data', async (ctx, next) => {
   return next();
 });
 
-listeners.chatType(['group', 'supergroup']).on('message', contarMensagens);
+listeners.chatType(["group", "supergroup"]).on("message", contarMensagens);
 
 const userLatestQuery = new Map<number, string>();
 
@@ -89,9 +95,9 @@ setInterval(() => {
     userLatestQuery.clear();
   }
 }, 60000);
-listeners.on('inline_query', async (ctx) => {
+listeners.on("inline_query", async (ctx) => {
   const start = Date.now();
-  const query = ctx.inlineQuery?.query || '';
+  const query = ctx.inlineQuery?.query || "";
   const userId = ctx.from?.id;
   if (!userId) return;
 
@@ -100,10 +106,10 @@ listeners.on('inline_query', async (ctx) => {
 
   userLatestQuery.set(userId, queryId);
 
-  const queryParts = query.split('_');
+  const queryParts = query.split("_");
   const firstPart = queryParts[0];
 
-  debug('inline_query_start', { query, userId });
+  debug("inline_query_start", { query, userId });
 
   let answered = false;
   const originalAnswer = ctx.answerInlineQuery.bind(ctx);
@@ -111,7 +117,7 @@ listeners.on('inline_query', async (ctx) => {
   ctx.answerInlineQuery = async (results: any, other?: any) => {
     if (answered) return {} as any;
     if (userLatestQuery.get(userId) !== queryId) {
-      debug('inline_query_stale_discarded', { query, userId });
+      debug("inline_query_stale_discarded", { query, userId });
       return {} as any;
     }
     answered = true;
@@ -119,24 +125,29 @@ listeners.on('inline_query', async (ctx) => {
   };
 
   const processQuery = async () => {
-    if (query.startsWith('anime_')) {
+    if (query.startsWith("anime_")) {
       return await animeInlineQuery(ctx);
     }
 
-   if (query.startsWith('select_gift_to_')) {
+    if (query.startsWith("select_gift_to_")) {
       return await Gift_Inline_query(ctx);
     }
-   if (query.startsWith('select_my_fav')) {
+    // selecionar favarioto e inline
+    if (query.startsWith("select_my_fav")) {
       return await Fav_Inline_query(ctx);
     }
 
-    if (firstPart === 'harem' && queryParts[1] === 'user') {
+    if (firstPart === "harem" && queryParts[1] === "user") {
       return haremInlineQuery(ctx);
     }
 
-    if (firstPart === 'list' && queryParts[1] === 'char' && queryParts[2] === 'user') {
+    if (
+      firstPart === "list" &&
+      queryParts[1] === "char" &&
+      queryParts[2] === "user"
+    ) {
       const targetUserId = Number(queryParts[3]);
-      const genero = queryParts[4] as ChatType || ChatType.WAIFU;
+      const genero = (queryParts[4] as ChatType) || ChatType.WAIFU;
 
       const charListData = getCharList(targetUserId, genero);
 
@@ -144,16 +155,16 @@ listeners.on('inline_query', async (ctx) => {
       return await inline_per(ctx, charListData);
     }
 
-    if (query.startsWith('harem_user_')) {
+    if (query.startsWith("harem_user_")) {
       return haremInlineQuery(ctx);
     }
 
-    if (query !== '' && !isNaN(Number(query))) {
+    if (query !== "" && !isNaN(Number(query))) {
       await getCharacters(ctx);
       return;
     }
 
-    if (query === '') {
+    if (query === "") {
       await getCharactersall(ctx);
       return;
     }
@@ -163,20 +174,33 @@ listeners.on('inline_query', async (ctx) => {
   };
 
   try {
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 2500));
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("TIMEOUT")), 2500),
+    );
     await Promise.race([processQuery(), timeoutPromise]);
   } catch (err: any) {
-    if (err.message === 'TIMEOUT') {
-      debug('inline_query_timeout', { query, userId });
+    if (err.message === "TIMEOUT") {
+      debug("inline_query_timeout", { query, userId });
       if (!answered && userLatestQuery.get(userId) === queryId) {
-        try { await originalAnswer([]); answered = true; } catch (e) {}
+        try {
+          await originalAnswer([]);
+          answered = true;
+        } catch (e) {}
       }
     } else {
-      logError('inline_query_error', err);
+      logError("inline_query_error", err);
     }
   } finally {
     const duration = Date.now() - start;
-    info('Inline query [' + query + '] do usuario ' + userId + ' levou ' + duration + 'ms');
+    info(
+      "Inline query [" +
+        query +
+        "] do usuario " +
+        userId +
+        " levou " +
+        duration +
+        "ms",
+    );
   }
 });
 
