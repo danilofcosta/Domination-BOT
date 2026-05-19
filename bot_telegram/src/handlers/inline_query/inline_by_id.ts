@@ -9,7 +9,7 @@ export async function inline_per(ctx: MyContext, charListData: CharListData) {
   const characters = await (genero === ChatType.HUSBANDO
     ? prisma.characterHusbando.findMany({
         where: { id: { in: charListData.characterIds } },
-        take: 50,
+        take: 20,
         include: {
           HusbandoEvent: { include: { Event: true } },
           HusbandoRarity: { include: { Rarity: true } },
@@ -17,7 +17,7 @@ export async function inline_per(ctx: MyContext, charListData: CharListData) {
       })
     : prisma.characterWaifu.findMany({
         where: { id: { in: charListData.characterIds } },
-        take: 50,
+        take: 20,
         include: {
           WaifuEvent: { include: { Event: true } },
           WaifuRarity: { include: { Rarity: true } },

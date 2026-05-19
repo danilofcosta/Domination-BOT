@@ -13,6 +13,9 @@ import { extractListEmojisCharacter } from "../../../utils/manege_caption/extrac
 import { info, error, debug, warn } from "../../../utils/log.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { CreateOneBtn } from "../../../utils/btns.js";
+import { getRuntime } from "../../../runtime/groupRuntime.js";
+import { GetCharacterById } from "../../../utils/chareter/getbyid.js";
+import type { RuntimeDropState } from "../../../runtime/groupRuntime.js";
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x"];
@@ -57,6 +60,7 @@ function successDominarMessage(
   ctx: MyContext,
   character: Character,
   collection: Collection,
+  data: number | null,
 ) {
   if (!collection || !character) return ctx.t("success-dominar-fallback");
   const success_dominar_title = ctx.t("success_dominar_title", {
@@ -109,7 +113,7 @@ function successDominarMessage(
   const time: string =
     calcularTempo({
       inicio: ctx.message?.date || 0,
-      fim: ctx.session.grupo.data || 0,
+      fim: data || 0,
     }) || "0";
   const success_dominar_time = ctx.t("success_dominar_time", {
     time: time,
@@ -122,8 +126,8 @@ function successDominarMessage(
 
 const LOCK_TIMEOUT = 10000;
 
-function acquireLock(session: any, userId: number, now: number): boolean {
-  const currentLock = session.lock;
+function acquireLock(runtime: RuntimeDropState, userId: number, now: number): boolean {
+  const currentLock = runtime.lock;
   if (
     currentLock &&
     now - currentLock.timestamp < LOCK_TIMEOUT &&
@@ -131,13 +135,17 @@ function acquireLock(session: any, userId: number, now: number): boolean {
   ) {
     return false;
   }
-  session.lock = { userId, timestamp: now };
+  runtime.lock = { userId, timestamp: now };
   return true;
 }
 
 export async function CapturarCharacter(ctx: MyContext) {
   const tentativa = String(ctx.match).trim().toLocaleLowerCase();
-  const character = ctx.session.grupo.character;
+  if (!ctx.chat?.id) return;
+  const runtime = getRuntime(ctx.chat.id);
+  const character = runtime.characterId
+    ? await GetCharacterById(ctx.session.settings.genero, runtime.characterId)
+    : null;
   const type =
     ctx.session.settings.genero || process.env.TYPE_BOT || ChatType.WAIFU;
   const userId = Number(ctx.from?.id);
@@ -151,10 +159,10 @@ export async function CapturarCharacter(ctx: MyContext) {
   });
 
   const now = Date.now();
-  if (!acquireLock(ctx.session, userId, now)) {
-    const lockAge = now - ctx.session.lock!.timestamp;
+  if (!acquireLock(runtime, userId, now)) {
+    const lockAge = now - runtime.lock!.timestamp;
     warn(`CapturarCharacter - operação bloqueada (lock ativo)`, {
-      lockOwner: ctx.session.lock!.userId,
+      lockOwner: runtime.lock!.userId,
       lockAge,
       requestedBy: userId,
     });
@@ -192,7 +200,7 @@ export async function CapturarCharacter(ctx: MyContext) {
 
       const url = LinkMsg(
         Number(ctx.chat?.id),
-        Number(ctx.session.grupo.dropId),
+        Number(runtime.dropId),
       );
 
       try {
@@ -221,9 +229,9 @@ export async function CapturarCharacter(ctx: MyContext) {
       return;
     }
 
-    ctx.session.grupo.character = null;
-    ctx.session.grupo.dropId = null;
-    ctx.session.grupo.cont = 0;
+    runtime.characterId = null;
+    runtime.dropId = null;
+    runtime.cont = 0;
 
     info(`CapturarCharacter - nome correto, adicionando personagem`, {
       userId,
@@ -253,6 +261,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       ctx,
       character,
       character_collection,
+      runtime.data,
     );
     info(`Personagem adicionado com sucesso`, {
       userId,
@@ -294,17 +303,14 @@ export async function CapturarCharacter(ctx: MyContext) {
       });
     }
 
-    ctx.session.grupo = {
-      cont: 0,
-      dropId: null,
-      character: null,
-      data: null,
-      title: ctx.chat?.title || "",
-      directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
-    };
+    runtime.cont = 0;
+    runtime.dropId = null;
+    runtime.characterId = null;
+    runtime.data = null;
+    delete runtime.lock;
 
     return true;
   } finally {
-    delete ctx.session.lock;
+    delete runtime.lock;
   }
 }

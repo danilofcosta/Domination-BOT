@@ -11,7 +11,7 @@ export async function animeInlineQuery(ctx: MyContext) {
   const characters = genero === ChatType.HUSBANDO
     ? await prisma.characterHusbando.findMany({
         where: { origem: animeName },
-        take: 50,
+        take: 20,
         orderBy: { name: 'asc' },
         include: {
           HusbandoRarity: { include: { Rarity: true } },
@@ -20,7 +20,7 @@ export async function animeInlineQuery(ctx: MyContext) {
       })
     : await prisma.characterWaifu.findMany({
         where: { origem: animeName },
-        take: 50,
+        take: 20,
         orderBy: { name: 'asc' },
         include: {
           WaifuRarity: { include: { Rarity: true } },

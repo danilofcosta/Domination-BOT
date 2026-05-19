@@ -121,11 +121,7 @@ export function createResult(params: Params) {
         //   ${character.id}
         //   ${character.mediaType}
         //   `,
-        // );
-
-
-
-        
+        // );       
 
         return {
           type: "text",

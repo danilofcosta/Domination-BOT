@@ -8,7 +8,7 @@ import {
 import { createResult } from "./create_inline_result.js";
 import { showResults } from "./show_results_inline.js";
 
-export const LIMIT = 50;
+export const LIMIT = 20;
 
 export async function getHaremCollection(
   telegramId: number,

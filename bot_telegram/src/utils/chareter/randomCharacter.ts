@@ -1,34 +1,50 @@
 import { prisma } from "../../lib/prisma.js";
 import { ChatType, type Character } from "../customTypes.js";
-import { info, error, debug } from "../log.js";
+import { info, error } from "../log.js";
+
+const eventSelect = { select: { name: true, emoji: true, emoji_id: true } };
+const raritySelect = { select: { name: true, emoji: true, emoji_id: true } };
+
+const husbandoInclude = {
+  HusbandoEvent: { select: { Event: eventSelect } },
+  HusbandoRarity: { select: { Rarity: raritySelect } },
+} as const;
+
+const waifuInclude = {
+  WaifuEvent: { select: { Event: eventSelect } },
+  WaifuRarity: { select: { Rarity: raritySelect } },
+} as const;
 
 async function getRandom<T>(
   model: {
-    count: () => Promise<number>;
+    aggregate: (args: { _max: { id: true } }) => Promise<{ _max: { id: number | null } }>;
     findFirst: (args: any) => Promise<T | null>;
   },
   include: object,
 ): Promise<T | null> {
   try {
-    return prisma.$transaction(async () => {
-      const count = await model.count();
-      if (count === 0) {
-        debug(`getRandom - banco vazio, sem personagens`);
-        return null;
-      }
+    const result = await model.aggregate({ _max: { id: true } });
+    const maxId = result._max.id;
+    if (!maxId) return null;
 
-      const skip = Math.floor(Math.random() * count);
-      debug(`getRandom - buscando personagem`, { skip, total: count });
+    const randomId = Math.floor(Math.random() * maxId) + 1;
 
-      const result = await model.findFirst({
-        skip,
+    let character = await model.findFirst({
+      where: { id: { gte: randomId } },
+      orderBy: { id: "asc" },
+      include,
+    });
+
+    if (!character) {
+      character = await model.findFirst({
+        orderBy: { id: "asc" },
         include,
       });
+    }
 
-      return result;
-    });
+    return character;
   } catch (e) {
-    error("getRandom - erro ao buscar personagem", e);
+    error("getRandom - erro", e);
     return null;
   }
 }
@@ -39,23 +55,10 @@ export async function RandomCharacter(
   info(`RandomCharacter - buscando personagem aleatório`, { genero });
 
   if (genero === ChatType.HUSBANDO) {
-    return getRandom<Character>(prisma.characterHusbando, {
-      HusbandoEvent: {
-        include: { Event: true },
-      },
-      HusbandoRarity: {
-        include: { Rarity: true },
-      },
-    });
-  } else if (genero === ChatType.WAIFU) {
-    return getRandom<Character>(prisma.characterWaifu, {
-      WaifuEvent: {
-        include: { Event: true },
-      },
-      WaifuRarity: {
-        include: { Rarity: true },
-      },
-    });
+    return getRandom<Character>(prisma.characterHusbando, husbandoInclude);
+  }
+  if (genero === ChatType.WAIFU) {
+    return getRandom<Character>(prisma.characterWaifu, waifuInclude);
   }
   return null;
 }
@@ -65,24 +68,15 @@ export async function LastRandomCharacter(
 ): Promise<Character | null> {
   info(`LastRandomCharacter - buscando último personagem`, { genero });
   try {
-    const lastCharacter =
-      genero === ChatType.HUSBANDO
-        ? await prisma.characterHusbando.findFirst({
-            include: {
-              HusbandoEvent: { include: { Event: true } },
-              HusbandoRarity: { include: { Rarity: true } },
-            },
-            orderBy: { id: "desc" },
-          })
-        : await prisma.characterWaifu.findFirst({
-            include: {
-              WaifuEvent: { include: { Event: true } },
-              WaifuRarity: { include: { Rarity: true } },
-            },
-            orderBy: { id: "desc" },
-          });
-
-    return lastCharacter;
+    return genero === ChatType.HUSBANDO
+      ? await prisma.characterHusbando.findFirst({
+          include: husbandoInclude,
+          orderBy: { id: "desc" },
+        })
+      : await prisma.characterWaifu.findFirst({
+          include: waifuInclude,
+          orderBy: { id: "desc" },
+        });
   } catch (e) {
     error("LastRandomCharacter - erro ao buscar último personagem", e);
     return null;

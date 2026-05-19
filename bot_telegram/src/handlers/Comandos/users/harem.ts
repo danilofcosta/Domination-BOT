@@ -1,4 +1,5 @@
-﻿import { InlineKeyboard } from "grammy";
+﻿
+import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
@@ -13,22 +14,38 @@ import {
 } from "./harem_mode_build.js";
 import { Build_btn_harem } from "../../../utils/btns.js";
 
-const collectionInclude = {
-  Character: {
-    select: {
-      id: true,
-      name: true,
-      origem: true,
-      sourceType: true,
-      media: true,
-      mediaType: true,
-      WaifuEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
-      WaifuRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
-      HusbandoEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
-      HusbandoRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+function getCollectionInclude(isHusbando: boolean) {
+  if (isHusbando) {
+    return {
+      Character: {
+        select: {
+          id: true,
+          name: true,
+          origem: true,
+          sourceType: true,
+          media: true,
+          mediaType: true,
+          HusbandoEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
+          HusbandoRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+        },
+      },
+    };
+  }
+  return {
+    Character: {
+      select: {
+        id: true,
+        name: true,
+        origem: true,
+        sourceType: true,
+        media: true,
+        mediaType: true,
+        WaifuEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
+        WaifuRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+      },
     },
-  },
-};
+  };
+}
 
 export async function HaremHandler(ctx: MyContext, userId?: number) {
   info(`HaremHandler - carregando harém`, {
@@ -58,11 +75,11 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
     isHusbando
       ? prisma.husbandoCollection.findMany({
           where: { userId: BigInt(telegramId) },
-          include: collectionInclude,
+          include: getCollectionInclude(true),
         })
       : prisma.waifuCollection.findMany({
           where: { userId: BigInt(telegramId) },
-          include: collectionInclude,
+          include: getCollectionInclude(false),
         }),
   ]);
 

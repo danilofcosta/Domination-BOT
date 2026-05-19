@@ -1,4 +1,4 @@
-import type { Character, ChatType } from "./customTypes.js";
+import type { ChatType } from "./customTypes.js";
 
 export interface SessionData {
   settings: {
@@ -6,11 +6,6 @@ export interface SessionData {
   };
   locale: string;
   grupo: {
-    cont: number;
-    dropId: number | null;
-    data: number | null;
-    character: Character | null;
-    title: string | null | undefined;
     directMessagesTopicId: number | null | undefined;
   };
   adminSetup?: {
@@ -44,9 +39,5 @@ export interface SessionData {
   >;
   rarityListPage?: number;
   eventListPage?: number;
-  lock?: {
-    userId: number;
-    timestamp: number;
-  };
 }
 

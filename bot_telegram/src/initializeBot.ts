@@ -39,12 +39,7 @@ function getInitialSession(chatTypeBot: string): SessionData {
     settings: { genero: chatTypeBot as any },
     locale: "pt",
     grupo: {
-      title: null,
       directMessagesTopicId: null,
-      cont: 0,
-      dropId: null,
-      data: null,
-      character: null,
     },
   };
 }

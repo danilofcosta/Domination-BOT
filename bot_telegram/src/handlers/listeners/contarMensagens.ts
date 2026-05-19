@@ -5,22 +5,24 @@ import { DropCharacter } from "./doprar_per.js";
 import { error, info, log } from "../../utils/log.js";
 import { Sendmedia } from "../../utils/sendmedia.js";
 import { CreateOneBtn } from "../../utils/btns.js";
+import { getRuntime } from "../../runtime/groupRuntime.js";
+import { GetCharacterById } from "../../utils/chareter/getbyid.js";
 
 const DROP = 100;
-const UNDROP = DROP + 40;
+const UNDROP = DROP + 10;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function contarMensagens(ctx: MyContext) {
   if (!ctx.chat) return;
-  console.log("----", ctx.from?.first_name, ctx.chat.title);
-  const grupo = ctx.session.grupo;
-  if (!grupo) {
-    return; // removido log para não travar disk io
+  const runtime = getRuntime(ctx.chat.id);
+  if (!runtime) {
+    return;
   }
   const isDev = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
   const isTestGroup = TEST_GROUP_ID
     ? ctx.chat.id === Number(TEST_GROUP_ID)
     : false;
+  console.log("----", runtime.cont, ctx.from?.first_name, ctx.chat.title);
 
   const chatId = ctx.chat.id;
 
@@ -28,14 +30,10 @@ export async function contarMensagens(ctx: MyContext) {
    * CONTADOR EM MEMÓRIA
    * ========================= */
   if (isDev && isTestGroup) {
-    grupo.cont < 97 ? 97 : grupo.cont + 1;
+    runtime.cont < 97 ? 97 : runtime.cont + 1;
   } else {
-    grupo.cont += 1;
+    runtime.cont += 1;
   }
-  // console.log('-------------')
-  // console.log(ctx)
-  // console.log(ctx.from)
-  // console.log('-------------')
 
   /* =========================
    * BOT ADICIONADO NO GRUPO
@@ -52,20 +50,16 @@ export async function contarMensagens(ctx: MyContext) {
    * DROP
    * ========================= */
 
-  // se o contador for maior ou igual a DROP e não tiver dropId E não houver personagem pendente
-  if (grupo.cont >= DROP && !grupo.dropId && !grupo.character) {
-    // Agora suja a sessão pois queremos gravar o status base para o Drop
+  if (runtime.cont >= DROP && !runtime.dropId && !runtime.characterId) {
     const result = await DropCharacter(ctx);
     if (!result) {
-      // caso o drop falhe
-      grupo.cont = DROP - 10;
-
+      runtime.cont = DROP - 10;
       return;
     }
 
     if (result) {
       log("Drop executado com sucesso no chat", chatId);
-      const newCont = grupo.cont ?? DROP;
+      const newCont = runtime.cont ?? DROP;
     }
 
     return;
@@ -75,9 +69,10 @@ export async function contarMensagens(ctx: MyContext) {
    * UNDROP
    * ========================= */
 
-  //caso o contador seja maior ou igual ao UNDROP e tiver dropId
-  if (grupo.cont >= UNDROP && grupo.dropId != null) {
-    const character = grupo.character;
+  if (runtime.cont >= UNDROP && runtime.dropId != null) {
+    const character = runtime.characterId
+      ? await GetCharacterById(ctx.session.settings.genero, runtime.characterId)
+      : null;
 
     const character_genero = ctx.t(
       process.env.TYPE_BOT === ChatType.HUSBANDO
@@ -92,7 +87,7 @@ export async function contarMensagens(ctx: MyContext) {
     });
 
     try {
-      await ctx.api.deleteMessage(ctx.chat.id, grupo.dropId);
+      await ctx.api.deleteMessage(ctx.chat.id, runtime.dropId);
       const reply_markup = CreateOneBtn({
         text: ctx.t("drop_character_secret_btn"),
         callback: `click_${character?.id ?? "0"}`,
@@ -111,13 +106,10 @@ export async function contarMensagens(ctx: MyContext) {
     /* =========================
      * RESET
      * ========================= */
-    ctx.session.grupo = {
-      cont: 0,
-      dropId: null,
-      character: null,
-      data: null,
-      title: ctx.chat?.title || ctx.from?.first_name || "-",
-      directMessagesTopicId: ctx.session.grupo.directMessagesTopicId,
-    };
+    runtime.cont = 0;
+    runtime.dropId = null;
+    runtime.characterId = null;
+    runtime.data = null;
+    delete runtime.lock;
   }
 }

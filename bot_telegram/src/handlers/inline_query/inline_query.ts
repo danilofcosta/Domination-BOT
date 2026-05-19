@@ -6,7 +6,7 @@ import { prisma } from "../../lib/prisma.js";
 import { log } from "../../utils/log.js";
 import { bts_yes_or_no } from "../../utils/btns.js";
 import { charCountCache, getOrSet } from "../../cache/cache.js";
-const LIMIT = 25;
+const LIMIT = 20;
 
 // busca um personagem em modo inline
 export async function getCharacters(ctx: MyContext) {

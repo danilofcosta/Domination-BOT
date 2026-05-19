@@ -2,8 +2,8 @@ import { type MyContext } from "../../utils/customTypes.js";
 import { Sendmedia } from "../../utils/sendmedia.js";
 import { createSecretCaption } from "../../utils/manege_caption/form_caption.js";
 import { RandomCharacter } from "../../utils/chareter/randomCharacter.js";
-import type { Character } from "../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../utils/log.js";
+import { getRuntime } from "../../runtime/groupRuntime.js";
 
 export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
   info(`DropCharacter - drop iniciado`, {
@@ -47,12 +47,12 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
       charName: character.name,
     });
 
-    const grupo = ctx.session.grupo;
-    grupo.dropId = message.message_id;
-    grupo.cont = 100;
-    grupo.character = character;
-    grupo.data = message.date;
-    grupo.title = ctx.chat?.title || "";
+    if (!ctx.chat?.id) return null;
+    const runtime = getRuntime(ctx.chat.id);
+    runtime.dropId = message.message_id;
+    runtime.cont = 100;
+    runtime.characterId = character.id;
+    runtime.data = message.date;
     return true;
   } catch (e) {
     error(`DropCharacter - erro ao enviar mídia`, e);

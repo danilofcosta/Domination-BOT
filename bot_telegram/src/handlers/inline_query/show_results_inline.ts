@@ -25,7 +25,7 @@ export async function showResults({
 
   try {
     await ctx.answerInlineQuery(results, {
-      is_personal: false,
+      is_personal: true,
       cache_time: isharem ? 600 : 7200,
     //  cache_time:0,
       ...(next_offset !== undefined && { next_offset }),
