@@ -23,6 +23,9 @@ export async function RunWebHook(
   app.get("/ping", (req, res) => {
     res.status(200).json({ message: "pong" });
   });
+  // app.get("/ping", (req, res) => {
+  //   res.status(200).json({ message: "pong" });
+  // });
 
   // if (process.env.CHAT_ID_DEV && !init) {
   //   await bot.api.sendMessage(

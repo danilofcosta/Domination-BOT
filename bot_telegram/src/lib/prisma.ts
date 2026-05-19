@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as unknown as {
@@ -9,12 +9,7 @@ const globalForPrisma = globalThis as unknown as {
 
 const connectionString = process.env.DATABASE_URL!;
 
-const adapter = new PrismaPg({
-  connectionString,
-  max: 2,
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 30000,
-});
+const adapter = new PrismaNeon({ connectionString, });
 
 export const prisma =
   globalForPrisma.prisma ??
