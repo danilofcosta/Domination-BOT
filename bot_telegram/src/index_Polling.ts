@@ -1,4 +1,5 @@
 import { fatal, info } from "./utils/log.js";
+import { prisma } from "./lib/prisma.js";
 
 export async function RunPolling( bot:any,dbtest:Boolean) {
   console.log('RODANDO BOT Polling')
@@ -26,5 +27,6 @@ export async function RunPolling( bot:any,dbtest:Boolean) {
 
     fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
     await bot.stop();
+    await prisma.$disconnect();
   }
 }

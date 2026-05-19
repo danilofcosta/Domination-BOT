@@ -126,6 +126,7 @@ export async function banHandler(ctx: MyContext) {
       const banned = await prisma.user.findMany({
         where: { profileType: ProfileType.BANNED },
         select: { telegramId: true, telegramData: true },
+        take: 100,
       });
 
       if (banned.length === 0) {

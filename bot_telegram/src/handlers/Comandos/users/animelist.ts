@@ -22,33 +22,18 @@ import { buildLetterKeyboard } from "../../../utils/btns.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 
-/** Cache em memória para navegação de animes */
-const animeCache = new Map<
-  string,
-  { letter: string; animes: string[]; genero: ChatType; userId: number }
->();
+import { characterCache } from "../../../cache/cache.js";
 
-/**
- * Salva dados no cache
- * @param key - Chave do cache (userId + '_al')
- * @param data - Dados do anime (letter, animes, genero, userId)
- */
+/** Cache em memória para navegação de animes (5min TTL via LRU) */
 function setCache(
   key: string,
   data: { letter: string; animes: string[]; genero: ChatType; userId: number },
 ) {
-  animeCache.delete(key);
-  animeCache.set(key, data);
-  setTimeout(() => animeCache.delete(key), 300000);
+  characterCache.set(key, data);
 }
 
-/**
- * Recupera dados do cache
- * @param key - Chave do cache
- * @returns Dados do anime ou undefined
- */
 function getCache(key: string) {
-  return animeCache.get(key);
+  return characterCache.get(key);
 }
 
 /**
@@ -68,12 +53,14 @@ async function getAnimeList(
           distinct: ["origem"],
           where: { origem: { startsWith: letter } },
           orderBy: { origem: "asc" },
+          take: 50,
         })
       : await prisma.characterWaifu.findMany({
           select: { origem: true },
           distinct: ["origem"],
           where: { origem: { startsWith: letter } },
           orderBy: { origem: "asc" },
+          take: 50,
         });
 
   return characters.map((c) => c.origem);

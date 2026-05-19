@@ -27,108 +27,43 @@ export async function AddCharacterCollection({
   });
 
   try {
-    /**
-     * Busca usuário atual
-     * para evitar sobrescrever favoritos
-     */
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        telegramId,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const existingUser = await tx.user.findUnique({
+        where: { telegramId },
+        select: { favoriteWaifuId: true, favoriteHusbandoId: true },
+      });
 
-      select: {
-        favoriteWaifuId: true,
-        favoriteHusbandoId: true,
-      },
+      await tx.user.upsert({
+        where: { telegramId },
+        update: {
+          ...(from && { telegramData: from }),
+          ...(isWaifu && existingUser?.favoriteWaifuId == null && { favoriteWaifuId: characterId }),
+          ...(!isWaifu && existingUser?.favoriteHusbandoId == null && { favoriteHusbandoId: characterId }),
+        },
+        create: {
+          telegramId,
+          telegramData: from ?? {},
+          favoriteWaifuId: isWaifu ? characterId : null,
+          favoriteHusbandoId: !isWaifu ? characterId : null,
+          waifuConfig: {},
+          husbandoConfig: {},
+        },
+      });
+
+      const collection = isWaifu
+        ? await tx.waifuCollection.upsert({
+            where: { userId_characterId: { userId: telegramId, characterId } },
+            update: { count: { increment: 1 } },
+            create: { userId: telegramId, characterId, count: 1 },
+          })
+        : await tx.husbandoCollection.upsert({
+            where: { userId_characterId: { userId: telegramId, characterId } },
+            update: { count: { increment: 1 } },
+            create: { userId: telegramId, characterId, count: 1 },
+          });
+
+      return collection;
     });
-
-    /**
-     * Cria ou atualiza usuário
-     */
-    await prisma.user.upsert({
-      where: {
-        telegramId,
-      },
-
-      update: {
-        // Atualiza telegramData somente se existir
-        ...(from && {
-          telegramData: from,
-        }),
-
-        // Define waifu favorita somente se ainda for null
-        ...(isWaifu &&
-          existingUser?.favoriteWaifuId == null && {
-            favoriteWaifuId: characterId,
-          }),
-
-        // Define husbando favorito somente se ainda for null
-        ...(!isWaifu &&
-          existingUser?.favoriteHusbandoId == null && {
-            favoriteHusbandoId: characterId,
-          }),
-      },
-
-      create: {
-        telegramId,
-
-        telegramData: from ?? {},
-
-        favoriteWaifuId: isWaifu ? characterId : null,
-
-        favoriteHusbandoId: !isWaifu ? characterId : null,
-
-        waifuConfig: {},
-
-        husbandoConfig: {},
-      },
-    });
-
-    /**
-     * Atualiza coleção
-     */
-    const result = isWaifu
-      ? await prisma.waifuCollection.upsert({
-          where: {
-            userId_characterId: {
-              userId: telegramId,
-              characterId,
-            },
-          },
-
-          update: {
-            count: {
-              increment: 1,
-            },
-          },
-
-          create: {
-            userId: telegramId,
-            characterId,
-            count: 1,
-          },
-        })
-
-      : await prisma.husbandoCollection.upsert({
-          where: {
-            userId_characterId: {
-              userId: telegramId,
-              characterId,
-            },
-          },
-
-          update: {
-            count: {
-              increment: 1,
-            },
-          },
-
-          create: {
-            userId: telegramId,
-            characterId,
-            count: 1,
-          },
-        });
 
     debug("AddCharacterCollection OK", {
       telegramId: telegramId.toString(),

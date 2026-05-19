@@ -2,6 +2,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import type { MyContext } from "../../../../utils/customTypes.js";
 import { InlineKeyboard } from "grammy";
 import { error } from "../../../../utils/log.js";
+import { eventCache, getOrSet } from "../../../../cache/cache.js";
 import { extrair_customid } from "../../testes_commands.js";
 import { Id_to_enomji } from "../../../../utils/manege_caption/extractListEmojisCharacter.js";
 
@@ -150,15 +151,14 @@ export async function SetEventHandler(ctx: MyContext) {
     const page = Number(ctx.match) || 1;
     ctx.session.eventListPage = page;
 
+    const allEvents = await getOrSet(
+      eventCache,
+      "events:all",
+      () => prisma.event.findMany({ orderBy: { code: "asc" } }),
+    );
+    const totalCount = allEvents.length;
     const skip = (page - 1) * ITEMS_PER_PAGE;
-    const [allEvents, totalCount] = await Promise.all([
-      prisma.event.findMany({
-        skip,
-        take: ITEMS_PER_PAGE,
-        orderBy: { code: "asc" },
-      }),
-      prisma.event.count(),
-    ]);
+    const pageEvents = allEvents.slice(skip, skip + ITEMS_PER_PAGE);
 
     if (allEvents.length === 0) {
       return ctx.reply(ctx.t("setevent-empty"));
@@ -167,7 +167,7 @@ export async function SetEventHandler(ctx: MyContext) {
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
     const keyboard = new InlineKeyboard();
 
-    for (const event of allEvents) {
+    for (const event of pageEvents) {
       keyboard
         .text(
           `${event.emoji} ${event.name}`,
@@ -278,15 +278,14 @@ export async function SetEventCallback(ctx: MyContext) {
     const page = Math.max(1, Number(parts[2]) || 1);
     ctx.session.eventListPage = page;
 
+    const allEvents = await getOrSet(
+      eventCache,
+      "events:all",
+      () => prisma.event.findMany({ orderBy: { code: "asc" } }),
+    );
+    const totalCount = allEvents.length;
     const skip = (page - 1) * ITEMS_PER_PAGE;
-    const [allEvents, totalCount] = await Promise.all([
-      prisma.event.findMany({
-        skip,
-        take: ITEMS_PER_PAGE,
-        orderBy: { code: "asc" },
-      }),
-      prisma.event.count(),
-    ]);
+    const pageEvents = allEvents.slice(skip, skip + ITEMS_PER_PAGE);
 
     if (allEvents.length === 0) {
       await ctx.answerCallbackQuery(ctx.t("setevent-empty"));
@@ -296,7 +295,7 @@ export async function SetEventCallback(ctx: MyContext) {
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
     const keyboard = new InlineKeyboard();
 
-    for (const event of allEvents) {
+    for (const event of pageEvents) {
       keyboard
         .text(
           `${event.emoji} ${event.name}`,

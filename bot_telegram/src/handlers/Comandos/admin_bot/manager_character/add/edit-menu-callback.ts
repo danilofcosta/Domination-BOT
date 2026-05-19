@@ -1,5 +1,5 @@
 import { prisma } from "../../../../../lib/prisma.js";
-import { getCharacter, setCharacter, characterCache } from "../../../../../cache/cache.js";
+import { getCharacter, setCharacter, rarityCache, eventCache, getOrSet } from "../../../../../cache/cache.js";
 import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../../../utils/customTypes.js";
 import { addCharacter_edit_CallbackData } from "./add_character_edit.js";
@@ -10,42 +10,26 @@ const ITEMS_PER_PAGE = 10;
 type CachedEvent = { id: number; name: string; emoji: string };
 type CachedRarity = { id: number; name: string; emoji: string };
 
-function getCachedEventsAll(): CachedEvent[] | undefined {
-  return characterCache.get("edit_menu_events_all");
-}
-
-function setCachedEventsAll(data: CachedEvent[]) {
-  characterCache.set("edit_menu_events_all", data);
-}
-
-function getCachedRaritiesAll(): CachedRarity[] | undefined {
-  return characterCache.get("edit_menu_rarities_all");
-}
-
-function setCachedRaritiesAll(data: CachedRarity[]) {
-  characterCache.set("edit_menu_rarities_all", data);
-}
-
 async function getEventsAll(): Promise<CachedEvent[]> {
-  const cached = getCachedEventsAll();
-  if (cached) return cached;
-  const events = await prisma.event.findMany({
-    select: { id: true, name: true, emoji: true },
-    orderBy: { id: "asc" },
-  });
-  setCachedEventsAll(events);
-  return events;
+  return getOrSet(
+    eventCache,
+    "events:all",
+    () => prisma.event.findMany({
+      select: { id: true, name: true, emoji: true },
+      orderBy: { id: "asc" },
+    }),
+  );
 }
 
 async function getRaritiesAll(): Promise<CachedRarity[]> {
-  const cached = getCachedRaritiesAll();
-  if (cached) return cached;
-  const rarities = await prisma.rarity.findMany({
-    select: { id: true, name: true, emoji: true },
-    orderBy: { id: "asc" },
-  });
-  setCachedRaritiesAll(rarities);
-  return rarities;
+  return getOrSet(
+    rarityCache,
+    "rarities:all",
+    () => prisma.rarity.findMany({
+      select: { id: true, name: true, emoji: true },
+      orderBy: { id: "asc" },
+    }),
+  );
 }
 
 function paginate<T>(items: T[], page: number): T[] {

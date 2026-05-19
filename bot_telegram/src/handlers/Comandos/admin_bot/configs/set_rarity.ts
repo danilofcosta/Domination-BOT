@@ -2,6 +2,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import type { MyContext } from "../../../../utils/customTypes.js";
 import { InlineKeyboard } from "grammy";
 import { error } from "../../../../utils/log.js";
+import { rarityCache, getOrSet } from "../../../../cache/cache.js";
 import { extrair_customid } from "../../testes_commands.js";
 import { Id_to_enomji } from "../../../../utils/manege_caption/extractListEmojisCharacter.js";
 
@@ -150,15 +151,14 @@ export async function SetRarityHandler(ctx: MyContext) {
     const page = Number(ctx.match) || 1;
     ctx.session.rarityListPage = page;
 
+    const allRarities = await getOrSet(
+      rarityCache,
+      "rarities:all",
+      () => prisma.rarity.findMany({ orderBy: { code: "asc" } }),
+    );
+    const totalCount = allRarities.length;
     const skip = (page - 1) * ITEMS_PER_PAGE;
-    const [allRarities, totalCount] = await Promise.all([
-      prisma.rarity.findMany({
-        skip,
-        take: ITEMS_PER_PAGE,
-        orderBy: { code: "asc" },
-      }),
-      prisma.rarity.count(),
-    ]);
+    const pageRarities = allRarities.slice(skip, skip + ITEMS_PER_PAGE);
 
     if (allRarities.length === 0) {
       return ctx.reply(ctx.t("setrarity-empty"));
@@ -167,7 +167,7 @@ export async function SetRarityHandler(ctx: MyContext) {
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
     const keyboard = new InlineKeyboard();
 
-    for (const rarity of allRarities) {
+    for (const rarity of pageRarities) {
       keyboard
         .text(
           `${rarity.emoji} ${rarity.name}`,
@@ -278,15 +278,14 @@ export async function SetRarityCallback(ctx: MyContext) {
     const page = Math.max(1, Number(parts[2]) || 1);
     ctx.session.rarityListPage = page;
 
+    const allRarities = await getOrSet(
+      rarityCache,
+      "rarities:all",
+      () => prisma.rarity.findMany({ orderBy: { code: "asc" } }),
+    );
+    const totalCount = allRarities.length;
     const skip = (page - 1) * ITEMS_PER_PAGE;
-    const [allRarities, totalCount] = await Promise.all([
-      prisma.rarity.findMany({
-        skip,
-        take: ITEMS_PER_PAGE,
-        orderBy: { code: "asc" },
-      }),
-      prisma.rarity.count(),
-    ]);
+    const pageRarities = allRarities.slice(skip, skip + ITEMS_PER_PAGE);
 
     if (allRarities.length === 0) {
       await ctx.answerCallbackQuery(ctx.t("setrarity-empty"));
@@ -296,7 +295,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1;
     const keyboard = new InlineKeyboard();
 
-    for (const rarity of allRarities) {
+    for (const rarity of pageRarities) {
       keyboard
         .text(
           `${rarity.emoji} ${rarity.name}`,

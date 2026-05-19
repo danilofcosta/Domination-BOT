@@ -29,6 +29,7 @@ model CharacterHusbando {
   User               User[]
 
   @@index([name, origem])
+  @@index([origem])
 }
 
 model CharacterWaifu {
@@ -54,6 +55,7 @@ model CharacterWaifu {
   WaifuRarity      WaifuRarity[]
 
   @@index([name, origem])
+  @@index([origem])
 }
 
 model Event {
@@ -79,6 +81,8 @@ model HusbandoCollection {
 
   @@unique([userId, characterId])
   @@index([userId])
+  @@index([characterId])
+  @@index([createdAt])
 }
 
 model HusbandoEvent {
@@ -150,6 +154,8 @@ model WaifuCollection {
 
   @@unique([userId, characterId])
   @@index([userId])
+  @@index([characterId])
+  @@index([createdAt])
 }
 
 model WaifuEvent {

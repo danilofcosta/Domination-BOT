@@ -1,6 +1,7 @@
 import { type MiddlewareFn } from "grammy";
 import { ProfileType, type MyContext } from "./customTypes.js";
 import { prisma } from "../lib/prisma.js";
+import { adminGroupCache, permissionCache, getOrSet } from "../cache/cache.js";
 import { warn, error, debug, info } from "./log.js";
 import { Sendmedia } from "./sendmedia.js";
 
@@ -17,33 +18,6 @@ export const roleWeights: Record<ProfileType, number> = {
   [ProfileType.SUPREME]: 4,
 };
 
-type CacheEntry = {
-  isAdmin: boolean;
-  timestamp: number;
-};
-
-const adminCache = new Map<string, CacheEntry>();
-const CACHE_TTL = 60 * 1000;
-const MAX_CACHE_SIZE = 1000;
-
-function cleanupCache() {
-  if (adminCache.size >= MAX_CACHE_SIZE) {
-    const now = Date.now();
-    for (const [key, entry] of adminCache.entries()) {
-      if (now - entry.timestamp > CACHE_TTL) {
-        adminCache.delete(key);
-      }
-    }
-    if (adminCache.size >= MAX_CACHE_SIZE) {
-      const oldestKeys = [...adminCache.entries()]
-        .sort((a, b) => a[1].timestamp - b[1].timestamp)
-        .slice(0, Math.floor(MAX_CACHE_SIZE * 0.3))
-        .map(([key]) => key);
-      oldestKeys.forEach((key) => adminCache.delete(key));
-    }
-  }
-}
-
 async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
   const adminGroupId = process.env.GROUP_ADM;
   if (!adminGroupId) {
@@ -52,20 +26,13 @@ async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
   }
 
   const cacheKey = `${adminGroupId}:${userId}`;
-  const now = Date.now();
-  const cached = adminCache.get(cacheKey);
-
-  if (cached && now - cached.timestamp < CACHE_TTL) {
-    return cached.isAdmin;
-  }
-
-  cleanupCache();
+  const cached = adminGroupCache.get(cacheKey);
+  if (cached !== undefined) return cached;
 
   try {
     const member = await ctx.api.getChatMember(adminGroupId, userId);
     const isAdmin = ["administrator", "creator"].includes(member.status);
-    
-    adminCache.set(cacheKey, { isAdmin, timestamp: now });
+    adminGroupCache.set(cacheKey, isAdmin);
     return isAdmin;
   } catch (e) {
     error(`[Permissions] Erro ao verificar admin do grupo para usuário ${userId}`, e);
@@ -75,12 +42,18 @@ async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
 
 export async function getUserRole(userId: number): Promise<ProfileType> {
   try {
-    const user = await prisma.user.findUnique({
-      where: { telegramId: BigInt(userId) },
-      select: { profileType: true },
-    });
-
-    return (user?.profileType as ProfileType) || ProfileType.USER;
+    const role = await getOrSet(
+      permissionCache,
+      String(userId),
+      async () => {
+        const user = await prisma.user.findUnique({
+          where: { telegramId: BigInt(userId) },
+          select: { profileType: true },
+        });
+        return { role: (user?.profileType as ProfileType) || ProfileType.USER };
+      },
+    );
+    return role.role as ProfileType;
   } catch (e) {
     error(`[Permissions] Erro ao buscar role para usuário ${userId}`, e);
     return ProfileType.USER;

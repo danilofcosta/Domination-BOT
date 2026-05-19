@@ -3,6 +3,7 @@ import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { mentionUser } from "../../../utils/metion_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
+import { rankingCache, getOrSet } from "../../../cache/cache.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function topHandler(ctx: MyContext) {
@@ -12,31 +13,25 @@ export async function topHandler(ctx: MyContext) {
     genero: ctx.session.settings.genero,
   });
 
-  const ranking = isHusbando
-    ? await prisma.husbandoCollection.groupBy({
-        by: ["userId"],
-        _count: {
-          characterId: true,
-        },
-        orderBy: {
-          _count: {
-            characterId: "desc",
-          },
-        },
-        take: 10,
-      })
-    : await prisma.waifuCollection.groupBy({
-        by: ["userId"],
-        _count: {
-          characterId: true,
-        },
-        orderBy: {
-          _count: {
-            characterId: "desc",
-          },
-        },
-        take: 10,
-      });
+  const cacheKey = `top:${isHusbando ? "husbando" : "waifu"}`;
+  const ranking = await getOrSet(
+    rankingCache,
+    cacheKey,
+    () =>
+      isHusbando
+        ? prisma.husbandoCollection.groupBy({
+            by: ["userId"],
+            _count: { characterId: true },
+            orderBy: { _count: { characterId: "desc" } },
+            take: 10,
+          })
+        : prisma.waifuCollection.groupBy({
+            by: ["userId"],
+            _count: { characterId: true },
+            orderBy: { _count: { characterId: "desc" } },
+            take: 10,
+          }),
+  );
 
   if (!ranking.length) {
     warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
@@ -45,11 +40,10 @@ export async function topHandler(ctx: MyContext) {
 
   debug(`topHandler - usuários no ranking`, { count: ranking.length });
 
+  const userIds = ranking.map((r: any) => r.userId);
   const [users, character] = await Promise.all([
     prisma.user.findMany({
-      where: {
-        telegramId: { in: ranking.map((r) => r.userId) },
-      },
+      where: { telegramId: { in: userIds } },
       select: { telegramId: true, telegramData: true },
     }),
     isHusbando
@@ -61,7 +55,7 @@ export async function topHandler(ctx: MyContext) {
     users.map((u) => [Number(u.telegramId), u.telegramData as any]),
   );
 
-  const topUsers: string[] = ranking.map((item, index) => {
+  const topUsers: string[] = ranking.map((item: any, index: number) => {
     const userData = userMap.get(Number(item.userId)) ?? {};
     const name = userData.first_name || userData.username || "user";
     const mention = mentionUser(name, Number(item.userId));

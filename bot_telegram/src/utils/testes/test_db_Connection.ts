@@ -14,7 +14,5 @@ export async function testDBConnection() {
   } catch (error) {
     console.error(error);
     return false;
-  } finally {
-    await prisma.$disconnect();
   }
 }

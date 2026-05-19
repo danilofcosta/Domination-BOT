@@ -11,6 +11,48 @@ export const characterCache = new LRUCache<string, any>({
   ttl: 1000 * 60 * 10,
 });
 
+export const rarityCache = new LRUCache<string, any>({
+  max: 10,
+  ttl: 1000 * 60 * 5,
+});
+
+export const eventCache = new LRUCache<string, any>({
+  max: 10,
+  ttl: 1000 * 60 * 5,
+});
+
+export const rankingCache = new LRUCache<string, any>({
+  max: 10,
+  ttl: 1000 * 60 * 5,
+});
+
+export const permissionCache = new LRUCache<string, { role: string }>({
+  max: 2000,
+  ttl: 1000 * 60 * 2,
+});
+
+export const adminGroupCache = new LRUCache<string, boolean>({
+  max: 1000,
+  ttl: 1000 * 60 * 2,
+});
+
+export const charCountCache = new LRUCache<string, number>({
+  max: 10,
+  ttl: 1000 * 60 * 5,
+});
+
+export async function getOrSet<T>(
+  cache: LRUCache<string, any>,
+  key: string,
+  fetch: () => Promise<T>,
+): Promise<T> {
+  const cached = cache.get(key);
+  if (cached !== undefined) return cached;
+  const value = await fetch();
+  cache.set(key, value);
+  return value;
+}
+
 //cache da coleão do user
 export function getHarem(userId: number) {
   return haremCache.get(`harem:${userId}`);

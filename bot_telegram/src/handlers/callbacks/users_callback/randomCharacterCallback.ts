@@ -21,64 +21,64 @@ export async function randomCharacterCallback(ctx: MyContext) {
 
   const cooldownKey = `reaction:${userId}:${charId}:${charId}`;
   if (reactionCooldown.has(cooldownKey)) {
-    await ctx.answerCallbackQuery( );
+    await ctx.answerCallbackQuery();
     return;
   }
+
+  reactionCooldown.set(cooldownKey, true);
 
   const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
 
   try {
     if (action === "yes") {
-      if (isWaifu) {
-        await prisma.characterWaifu.update({
+      await prisma.$transaction(async (tx) => {
+        const charModel = isWaifu ? tx.characterWaifu : tx.characterHusbando;
+        await (charModel as any).update({
           where: { id: charId },
           data: { likes: { increment: 1 } },
         });
-      } else {
-        await prisma.characterHusbando.update({
-          where: { id: charId },
-          data: { likes: { increment: 1 } },
-        });
-      }
 
-      const user = await prisma.user.findUnique({ where: { telegramId: BigInt(userId) } });
-      if (user) {
-        const likesField = isWaifu ? "waifuLikes" : "husbandoLikes";
-        const currentLikes = (user as any)[likesField] as number[] || [];
-        if (!currentLikes.includes(charId)) {
-          await prisma.user.update({
-            where: { telegramId: BigInt(userId) },
-            data: { [likesField]: { push: charId } },
-          });
+        const user = await tx.user.findUnique({
+          where: { telegramId: BigInt(userId) },
+          select: { waifuLikes: true, husbandoLikes: true },
+        });
+
+        if (user) {
+          const likesField = isWaifu ? "waifuLikes" : "husbandoLikes";
+          const currentLikes = (user as any)[likesField] as number[] || [];
+          if (!currentLikes.includes(charId)) {
+            await tx.user.update({
+              where: { telegramId: BigInt(userId) },
+              data: { [likesField]: { push: charId } },
+            });
+          }
         }
-      }
+      });
     } else if (action === "no") {
-      if (isWaifu) {
-        await prisma.characterWaifu.update({
+      await prisma.$transaction(async (tx) => {
+        const charModel = isWaifu ? tx.characterWaifu : tx.characterHusbando;
+        await (charModel as any).update({
           where: { id: charId },
           data: { dislikes: { increment: 1 } },
         });
-      } else {
-        await prisma.characterHusbando.update({
-          where: { id: charId },
-          data: { dislikes: { increment: 1 } },
-        });
-      }
 
-      const user = await prisma.user.findUnique({ where: { telegramId: BigInt(userId) } });
-      if (user) {
-        const dislikesField = isWaifu ? "waifuDislikes" : "husbandoDislikes";
-        const currentDislikes = (user as any)[dislikesField] as number[] || [];
-        if (!currentDislikes.includes(charId)) {
-          await prisma.user.update({
-            where: { telegramId: BigInt(userId) },
-            data: { [dislikesField]: { push: charId } },
-          });
+        const user = await tx.user.findUnique({
+          where: { telegramId: BigInt(userId) },
+          select: { waifuDislikes: true, husbandoDislikes: true },
+        });
+
+        if (user) {
+          const dislikesField = isWaifu ? "waifuDislikes" : "husbandoDislikes";
+          const currentDislikes = (user as any)[dislikesField] as number[] || [];
+          if (!currentDislikes.includes(charId)) {
+            await tx.user.update({
+              where: { telegramId: BigInt(userId) },
+              data: { [dislikesField]: { push: charId } },
+            });
+          }
         }
-      }
+      });
     }
-
-    reactionCooldown.set(cooldownKey, true);
 
     const updatedChar = isWaifu
       ? await prisma.characterWaifu.findUnique({ where: { id: charId } })
@@ -92,7 +92,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
       `random-character-no-${charId}-${userId}`,
       updatedChar.likes.toString(),
       updatedChar.dislikes.toString(),
-         "5289772607556568230",
+      "5289772607556568230",
       "5318868949402667784",
     );
 

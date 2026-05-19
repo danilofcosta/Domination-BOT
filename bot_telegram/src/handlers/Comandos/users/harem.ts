@@ -13,6 +13,23 @@ import {
 } from "./harem_mode_build.js";
 import { Build_btn_harem } from "../../../utils/btns.js";
 
+const collectionInclude = {
+  Character: {
+    select: {
+      id: true,
+      name: true,
+      origem: true,
+      sourceType: true,
+      media: true,
+      mediaType: true,
+      WaifuEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
+      WaifuRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+      HusbandoEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
+      HusbandoRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+    },
+  },
+};
+
 export async function HaremHandler(ctx: MyContext, userId?: number) {
   info(`HaremHandler - carregando harém`, {
     userId: ctx.from?.id,
@@ -20,46 +37,34 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
   });
   const telegramId = userId ? userId : Number(ctx.from?.id);
 
-  const user = await prisma.user.findUnique({
-    where: {
-      telegramId: telegramId,
-    },
-    include: {
-      CharacterWaifu: {
-        include: {
-          WaifuEvent: { include: { Event: true } },
-          WaifuRarity: { include: { Rarity: true } },
-        },
-      },
-      CharacterHusbando: {
-        include: {
-          HusbandoEvent: { include: { Event: true } },
-          HusbandoRarity: { include: { Rarity: true } },
-        },
-      },
+  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
 
-      HusbandoCollection: {
-        include: {
-          Character: {
-            include: {
-              HusbandoEvent: { include: { Event: true } },
-              HusbandoRarity: { include: { Rarity: true } },
-            },
-          },
+  const [user, collection] = await Promise.all([
+    prisma.user.findUnique({
+      where: { telegramId },
+      select: {
+        husbandoConfig: true,
+        waifuConfig: true,
+        favoriteWaifuId: true,
+        favoriteHusbandoId: true,
+        CharacterWaifu: {
+          select: { id: true, name: true, media: true, mediaType: true },
+        },
+        CharacterHusbando: {
+          select: { id: true, name: true, media: true, mediaType: true },
         },
       },
-      WaifuCollection: {
-        include: {
-          Character: {
-            include: {
-              WaifuEvent: { include: { Event: true } },
-              WaifuRarity: { include: { Rarity: true } },
-            },
-          },
-        },
-      },
-    },
-  });
+    }),
+    isHusbando
+      ? prisma.husbandoCollection.findMany({
+          where: { userId: BigInt(telegramId) },
+          include: collectionInclude,
+        })
+      : prisma.waifuCollection.findMany({
+          where: { userId: BigInt(telegramId) },
+          include: collectionInclude,
+        }),
+  ]);
 
   if (!user) {
     warn(`HaremHandler - usuário não encontrado`, { userId: ctx.from?.id });
@@ -70,7 +75,6 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
     return;
   }
 
-  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
   const config = isHusbando
     ? (user.husbandoConfig as any) || {}
     : (user.waifuConfig as any) || {};
@@ -79,9 +83,7 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
   const data = isHusbando
     ? (user as any).CharacterHusbando
     : (user as any).CharacterWaifu;
-  const colletion = isHusbando
-    ? (user as any).HusbandoCollection
-    : (user as any).WaifuCollection;
+  const colletion = collection;
 
   let pages: string[] = [];
   if (mode === "rarity") {

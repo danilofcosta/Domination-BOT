@@ -5,14 +5,8 @@ import { createResult } from "./create_inline_result.js";
 import { prisma } from "../../lib/prisma.js";
 import { log } from "../../utils/log.js";
 import { bts_yes_or_no } from "../../utils/btns.js";
+import { charCountCache, getOrSet } from "../../cache/cache.js";
 const LIMIT = 25;
-
-declare global {
-  var cachedTotalWaifu: number;
-  var lastCountWaifuUpdate: number;
-  var cachedTotalHusbando: number;
-  var lastCountHusbUpdate: number;
-}
 
 // busca um personagem em modo inline
 export async function getCharacters(ctx: MyContext) {
@@ -119,19 +113,11 @@ export async function getCharactersall(ctx: MyContext) {
     ? { count: () => prisma.characterHusbando.count(), findMany: (args: any) => prisma.characterHusbando.findMany(args) }
     : { count: () => prisma.characterWaifu.count(), findMany: (args: any) => prisma.characterWaifu.findMany(args) };
 
-  let total = chatType === ChatType.HUSBANDO ? global.cachedTotalHusbando : global.cachedTotalWaifu;
-  const lastUpdate = chatType === ChatType.HUSBANDO ? global.lastCountHusbUpdate : global.lastCountWaifuUpdate;
-  
-  if (!total || Date.now() - (lastUpdate || 0) > 60000) {
-    total = await model.count();
-    if (chatType === ChatType.HUSBANDO) {
-      global.cachedTotalHusbando = total;
-      global.lastCountHusbUpdate = Date.now();
-    } else {
-      global.cachedTotalWaifu = total;
-      global.lastCountWaifuUpdate = Date.now();
-    }
-  }
+  const total = await getOrSet(
+    charCountCache,
+    chatType === ChatType.HUSBANDO ? "count:husbando" : "count:waifu",
+    () => model.count(),
+  );
 
   const [pers] = await Promise.all([
     model.findMany({

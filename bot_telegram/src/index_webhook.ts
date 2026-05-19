@@ -1,5 +1,6 @@
 import express from "express";
 import { webhookCallback } from "grammy";
+import { prisma } from "./lib/prisma.js";
 
 //let init = false;
 
@@ -30,6 +31,14 @@ export async function RunWebHook(
   //   );
   //   init = true;
   // }
+
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+
+  async function shutdown() {
+    await prisma.$disconnect();
+    process.exit(0);
+  }
 
   return app;
 }
