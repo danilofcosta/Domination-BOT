@@ -664,3 +664,8 @@ setlang-name-en = English
 setlang-name-es = Español
 setlang-name-ja = 日本語
 cmd-desc-setlang = ボットの言語を変更
+
+############################
+# ANTI-FLOOD #
+############################
+use-onLimitExceeded = { $mentionUser }がチャットに大量送信しています。10分間ボットを使用できません。

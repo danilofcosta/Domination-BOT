@@ -17,6 +17,7 @@ import { adminGroupsCommands } from "./CommandesManage/admin_groups.js";
 import { devCommands } from "./CommandesManage/devcommands.js";
 import { isUserBanned } from "./utils/permissions.js";
 import { customCommands } from "./CommandesManage/custom_commands.js";
+import { mentionUser } from "./utils/metion_user.js";
 import { error, warn } from "./utils/log.js";
 import type { SessionData } from "./utils/customInteface.js";
 import { Harem_setup } from "./handlers/callbacks/users_callback/harem_setup/harem_setup.js";
@@ -33,6 +34,7 @@ export const i18n = new I18n<MyContext>({
 });
 
 const fallbackSession = new Map<string, SessionData>();
+const blockedUsers = new Map<number, number>();
 
 function getInitialSession(chatTypeBot: string): SessionData {
   return {
@@ -60,14 +62,39 @@ export default async function initializeBot(
 
   bot.use(i18n.middleware());
 
-  //  bot.use(
-  //limit({
-  //      timeFrame: 1000,
-  //      limit: 3,
-  //    }),
-  //  );
+  // anti-block middleware: verifica se user está bloqueado
+  bot.use(async (ctx, next) => {
+    if (!ctx.from) return next();
+    const unblockAt = blockedUsers.get(ctx.from.id);
+    if (unblockAt && Date.now() < unblockAt) {
+      return;
+    }
+    if (unblockAt) {
+      blockedUsers.delete(ctx.from.id);
+    }
+    await next();
+  });
 
-  // ingnora mensagem de user banido
+  // rate limiter: bloqueia por 10 min se exceder 20 msgs / 2s
+  bot.use(
+    limit({
+      timeFrame: 2000,
+      limit: 20,
+      onLimitExceeded: async (ctx) => {
+        if (ctx.from) {
+          blockedUsers.set(ctx.from.id, Date.now() + 10 * 60 * 1000);
+          const name = ctx.from.first_name || ctx.from.username || "User";
+          const userMention = mentionUser(name, ctx.from.id);
+          await ctx.reply(ctx.t("use-onLimitExceeded", { mentionUser: userMention }), {
+            parse_mode: "HTML",
+          });
+        }
+      },
+      storageClient: "MEMORY_STORE",
+    }),
+  );
+
+  // ignora mensagem de user banido
   bot.use(async (ctx, next) => {
     if (!ctx.from) return;
     const banned = await isUserBanned(ctx.from.id);

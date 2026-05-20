@@ -664,3 +664,8 @@ setlang-name-en = English
 setlang-name-es = Español
 setlang-name-ja = 日本語
 cmd-desc-setlang = Cambia el idioma del bot
+
+############################
+# ANTI-FLOOD #
+############################
+use-onLimitExceeded = { $mentionUser } está inundando el chat. no podrá usar el bot por 10 minutos.
