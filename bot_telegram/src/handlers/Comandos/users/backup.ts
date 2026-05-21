@@ -9,10 +9,10 @@ export async function Backup_harem(ctx: MyContext) {
   if (ctx.chat?.type !== "private") {
    return await Sendmedia({
       ctx,
-      caption: ctx.t("open-private-label"),
+      caption: ctx.t("backup-open-private-label"),
       reply_markup: CreateOneBtn({
         callback: `http://t.me/${ctx.me.username}?start=backup`,
-        text: ctx.t("open-private-btn"),
+        text: ctx.t("backup-open-private-btn"),
         typeBtn: BTN_TYPE.url,
       }),
     });

@@ -562,34 +562,37 @@ setrarity-field-description = 説明
 # BACKUP #
 ############
 backup-title = アカウントバックアップ管理
-backup-btn-create = 🔐 バックアップ作成
-backup-btn-restore = ♻️ アカウント復元
-backup-btn-change = 🔄 パスワード変更
-backup-btn-remove = ❌ バックアップ削除
-backup-btn-info = ℹ️ 使い方
-backup-info-text = 🔐 <b>アカウントバックアップ</b>
+backup-btn-create = パスワード作成
+backup-btn-restore = アカウント復元
+backup-btn-change = パスワード変更
+backup-btn-remove = パスワード削除
+backup-btn-info = 使い方
+backup-open-private-label = これはプライベートな内容です、PVで話しましょう :3。
+backup-open-private-btn = プライベートで開く
+backup-info-text = <b>アカウントバックアップ</b>
 
     パスワードを使ってアカウントを保存・復元できます。
 
-    ✅ <b>作成：</b>パスワードを設定してアカウントを保護。
-    ♻️ <b>復元：</b>パスワードを使ってデータを復元。
-    ❌ <b>削除：</b>バックアップパスワードを削除。
+    <b>作成：</b>パスワードを設定してアカウントを保護。
+    <b>復元：</b>パスワードを使ってデータを復元。
+    <b>削除：</b>バックアップパスワードを削除。
 
-    パスワードは暗号化（SHA-256）されて保存され、ボットでも復元できません。
-backup-password-prompt = 🔐 バックアップ作成のパスワードを送信：
+    パスワードは暗号化（SHA-256）されて保存され、ボット :C でも復元できません。
+backup-password-prompt = バックアップ作成のパスワードを送信：
 
     パスワードは6文字以上必要です。
-backup-password-too-short = ❌ パスワードは6文字以上必要です。
-backup-create-success = ✅ バックアップを作成しました！
-backup-create-error = ❌ すでにバックアップがあります。先に削除してください。
-backup-restore-prompt = ♻️ バックアップのパスワードを送信：
-backup-restore-success = ✅ パスワードが正しいです！データはこちら...
-backup-restore-error = ❌ パスワードが違います。
-backup-remove-success = ✅ バックアップを削除しました。
-backup-remove-confirm = ❓ バックアップを削除してもよろしいですか？
-backup-no-backup = ❌ バックアップがありません。
-backup-cancelled = ❌ アクションがキャンセルされました。
-backup-password-saved = 新しいパスワードを設定しました。
+    自分で覚えておいてください、ボットは覚えません
+backup-password-too-short = パスワードは6文字以上必要です :/。
+backup-create-success = バックアップを作成しました :D
+backup-create-error = すでにバックアップがあります。先に削除してください。
+backup-restore-prompt = バックアップのパスワードを送信 +-+：
+backup-restore-success = :D パスワードが正しいです！データはこちら...
+backup-restore-error = パスワードが違います :0。
+backup-remove-success = バックアップを削除しました :P。
+backup-remove-confirm = +-+ バックアップを削除してもよろしいですか？
+backup-no-backup = -+- バックアップがありません。
+backup-cancelled = アクションがキャンセルされました。
+backup-password-saved = 新しいパスワードを設定しました :D。
 
 ############
 # SET EVENT #

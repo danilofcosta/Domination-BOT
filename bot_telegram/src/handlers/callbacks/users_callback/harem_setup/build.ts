@@ -6,6 +6,7 @@ import {
   SetModeHarem,
 } from "./base_harem_setup.js";
 import { botPrefix } from "../../../../CommandesManage/botConfigCommands.js";
+import { Backup_harem } from "../../../Comandos/users/backup.js";
 
 type BtnStyle = Parameters<Keyboard["text"]>[1];
 export function getAllButtons(data: HaremSetupDict): HaremBtn[] {
@@ -37,11 +38,21 @@ export interface HaremSetupDict {
 
 export const Harem_setup_dict: HaremSetupDict = {
   main: {
-    // Backup: {
-    //   text: "Backup",
-    //   icon: "5443127283898405358",
-    //   run: null,
-    // },
+    Backup: {
+      text: "Backup",
+      icon: "5443127283898405358",
+  run: async (ctx: MyContext) => {
+
+
+  await  Backup_harem(ctx)
+      
+      await ctx.reply("Fechado", {
+        reply_markup: {
+          remove_keyboard: true,
+        },
+      });
+    },
+    },
 
     Modo: {
       text: "Modo Harem"+ botPrefix,

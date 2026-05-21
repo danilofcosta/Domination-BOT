@@ -481,6 +481,8 @@ backup-btn-restore = Recuperar conta
 backup-btn-change =  Trocar senha
 backup-btn-remove =  Remover senha 
 backup-btn-info = Como funciona
+backup-open-private-label = Esse e um assunto particular vamos no pv :3.
+backup-open-private-btn =  Abrir no Privado
 backup-info-text = <b>Backup da sua conta</b>
 
     O backup permite salvar e recuperar sua conta usando uma senha.
