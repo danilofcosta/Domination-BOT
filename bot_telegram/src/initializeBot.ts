@@ -78,8 +78,8 @@ export default async function initializeBot(
   // rate limiter: bloqueia por 10 min se exceder 20 msgs / 2s
   bot.use(
     limit({
-      timeFrame: 2000,
-      limit: 20,
+      timeFrame: 1000,
+      limit: 30,
       onLimitExceeded: async (ctx) => {
         if (ctx.from) {
           blockedUsers.set(ctx.from.id, Date.now() + 10 * 60 * 1000);
