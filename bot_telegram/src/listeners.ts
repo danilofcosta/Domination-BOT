@@ -26,7 +26,7 @@ import { HaremHandler } from "./handlers/Comandos/users/harem.js";
 const listeners = new Composer<MyContext>();
 
 listeners.on("message:text", async (ctx, next) => {
-    const backupState = ctx.session.backupState;
+  const backupState = ctx.session.backupState;
   if (backupState) {
     const password = ctx.message.text.trim();
 
@@ -51,7 +51,7 @@ listeners.on("message:text", async (ctx, next) => {
             ? ctx.t("backup-password-saved")
             : ctx.t("backup-create-success"),
         );
-     await   Backup_harem(ctx)
+        await Backup_harem(ctx);
       } else if (backupState.action === "restore") {
         const oldUser = await prisma.user.findFirst({
           where: { backupHash: hash },
@@ -69,9 +69,9 @@ listeners.on("message:text", async (ctx, next) => {
         const currentTelegramId = BigInt(ctx.from!.id);
 
         if (oldUser.telegramId === currentTelegramId) {
-          await ctx.reply(ctx.t("backup-restore-success"));
-          HaremHandler(ctx)
-          return;
+       return   await ctx.reply(ctx.t("backup-profile-curret"));
+ 
+        
         }
 
         await prisma.$transaction(async (tx) => {
@@ -116,21 +116,38 @@ listeners.on("message:text", async (ctx, next) => {
               });
             }
           } else {
-            const mergeUnique = (a: number[], b: number[]) =>
-              [...new Set([...a, ...b])];
+            const mergeUnique = (a: number[], b: number[]) => [
+              ...new Set([...a, ...b]),
+            ];
 
             await tx.user.update({
               where: { telegramId: currentTelegramId },
               data: {
                 coins: currentUser.coins + oldUser.coins,
-                waifuLikes: mergeUnique(currentUser.waifuLikes, oldUser.waifuLikes),
-                husbandoLikes: mergeUnique(currentUser.husbandoLikes, oldUser.husbandoLikes),
-                waifuDislikes: mergeUnique(currentUser.waifuDislikes, oldUser.waifuDislikes),
-                husbandoDislikes: mergeUnique(currentUser.husbandoDislikes, oldUser.husbandoDislikes),
-                favoriteWaifuId: currentUser.favoriteWaifuId ?? oldUser.favoriteWaifuId,
-                favoriteHusbandoId: currentUser.favoriteHusbandoId ?? oldUser.favoriteHusbandoId,
-                waifuConfig: (currentUser.waifuConfig ?? oldUser.waifuConfig) as any,
-                husbandoConfig: (currentUser.husbandoConfig ?? oldUser.husbandoConfig) as any,
+                waifuLikes: mergeUnique(
+                  currentUser.waifuLikes,
+                  oldUser.waifuLikes,
+                ),
+                husbandoLikes: mergeUnique(
+                  currentUser.husbandoLikes,
+                  oldUser.husbandoLikes,
+                ),
+                waifuDislikes: mergeUnique(
+                  currentUser.waifuDislikes,
+                  oldUser.waifuDislikes,
+                ),
+                husbandoDislikes: mergeUnique(
+                  currentUser.husbandoDislikes,
+                  oldUser.husbandoDislikes,
+                ),
+                favoriteWaifuId:
+                  currentUser.favoriteWaifuId ?? oldUser.favoriteWaifuId,
+                favoriteHusbandoId:
+                  currentUser.favoriteHusbandoId ?? oldUser.favoriteHusbandoId,
+                waifuConfig: (currentUser.waifuConfig ??
+                  oldUser.waifuConfig) as any,
+                husbandoConfig: (currentUser.husbandoConfig ??
+                  oldUser.husbandoConfig) as any,
               },
             });
 
@@ -188,11 +205,11 @@ listeners.on("message:text", async (ctx, next) => {
           await tx.user.delete({
             where: { telegramId: oldUser.telegramId },
           });
-        });
+        })
 
         await ctx.reply(ctx.t("backup-restore-success"));
 
-     HaremHandler   (ctx)
+        HaremHandler(ctx);
       }
     } catch (e) {
       logError("backup password handler error", e);

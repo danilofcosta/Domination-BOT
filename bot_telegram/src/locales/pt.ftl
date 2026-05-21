@@ -507,7 +507,7 @@ backup-remove-confirm = +-+ Tem certeza que deseja remover o backup?
 backup-no-backup = -+- Você não possui backup.
 backup-cancelled =  Ação cancelada.
 backup-password-saved = Nova senha definida com sucesso :D.
-
+backup-profile-curret = porque você quer recuperar seu proprio perfil? 
 ############
 # HAREM MODE #
 ############
