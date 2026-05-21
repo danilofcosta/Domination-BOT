@@ -560,6 +560,39 @@ setrarity-field-emoji-id = emoji ID
 setrarity-field-description = description
 
 ############
+# BACKUP #
+############
+backup-title = Account backup management
+backup-btn-create = 🔐 Create backup
+backup-btn-restore = ♻️ Restore account
+backup-btn-change = 🔄 Change password
+backup-btn-remove = ❌ Remove backup
+backup-btn-info = ℹ️ How it works
+backup-info-text = 🔐 <b>Account Backup</b>
+
+    Backup allows you to save and restore your account using a password.
+
+    ✅ <b>Create backup:</b> Set a password to protect your account.
+    ♻️ <b>Restore:</b> Recover your data using the password.
+    ❌ <b>Remove:</b> Delete the backup password.
+
+    Your password is stored encrypted (SHA-256) and no one, not even the bot, can recover it.
+backup-password-prompt = 🔐 Send the password to create your backup:
+
+    The password must be at least 6 characters.
+backup-password-too-short = ❌ The password must be at least 6 characters.
+backup-create-success = ✅ Backup created successfully!
+backup-create-error = ❌ You already have a backup. Remove it first.
+backup-restore-prompt = ♻️ Send your backup password:
+backup-restore-success = ✅ Correct password! Here is your data...
+backup-restore-error = ❌ Incorrect password.
+backup-remove-success = ✅ Backup removed successfully.
+backup-remove-confirm = ❓ Are you sure you want to remove the backup?
+backup-no-backup = ❌ You don't have a backup.
+backup-cancelled = ❌ Action cancelled.
+backup-password-saved = New password set successfully.
+
+############
 # SET EVENT #
 ############
 setevent-edit-title = ✏️ Edit Event:

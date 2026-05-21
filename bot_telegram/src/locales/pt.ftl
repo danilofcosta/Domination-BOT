@@ -473,6 +473,40 @@ animelist-btn-prev = ◀️
 animelist-btn-next = ▶️
 
 ############
+# BACKUP #
+############
+backup-title = Gerenciamento de backup da sua conta
+backup-btn-create =  Criar senha 
+backup-btn-restore = Recuperar conta
+backup-btn-change =  Trocar senha
+backup-btn-remove =  Remover senha 
+backup-btn-info = Como funciona
+backup-info-text = <b>Backup da sua conta</b>
+
+    O backup permite salvar e recuperar sua conta usando uma senha.
+
+    <b>Criar backup:</b> Define uma senha para proteger sua conta.
+     <b>Recuperar:</b> Restaura seus dados usando a senha.
+    <b>Remover:</b> Apaga a senha de backup.
+
+    Sua senha é armazenada com criptografia (SHA-256) e ninguém, nem mesmo o bot :C , pode recuperá-la.
+backup-password-prompt = Envie a senha para criar seu backup:
+
+    A senha deve ter no mínimo 6 caracteres.
+    voçe deve lembrar dela poque eu não lembrarei 
+backup-password-too-short =  A senha deve ter no mínimo 6 caracteres :/.
+backup-create-success =  Backup criado com sucesso :D 
+backup-create-error =  Você já possui um backup. Remova-o primeiro.
+backup-restore-prompt =  Envie a senha do seu backup +-+:
+backup-restore-success = :D Senha correta! Aqui estão seus dados...
+backup-restore-error =  Senha incorreta :0.
+backup-remove-success =  Backup removido com sucesso :P.
+backup-remove-confirm = +-+ Tem certeza que deseja remover o backup?
+backup-no-backup = -+- Você não possui backup.
+backup-cancelled =  Ação cancelada.
+backup-password-saved = Nova senha definida com sucesso :D.
+
+############
 # HAREM MODE #
 ############
 haremmode-default = Padrão

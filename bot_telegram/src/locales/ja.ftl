@@ -559,6 +559,39 @@ setrarity-field-emoji-id = 絵文字ID
 setrarity-field-description = 説明
 
 ############
+# BACKUP #
+############
+backup-title = アカウントバックアップ管理
+backup-btn-create = 🔐 バックアップ作成
+backup-btn-restore = ♻️ アカウント復元
+backup-btn-change = 🔄 パスワード変更
+backup-btn-remove = ❌ バックアップ削除
+backup-btn-info = ℹ️ 使い方
+backup-info-text = 🔐 <b>アカウントバックアップ</b>
+
+    パスワードを使ってアカウントを保存・復元できます。
+
+    ✅ <b>作成：</b>パスワードを設定してアカウントを保護。
+    ♻️ <b>復元：</b>パスワードを使ってデータを復元。
+    ❌ <b>削除：</b>バックアップパスワードを削除。
+
+    パスワードは暗号化（SHA-256）されて保存され、ボットでも復元できません。
+backup-password-prompt = 🔐 バックアップ作成のパスワードを送信：
+
+    パスワードは6文字以上必要です。
+backup-password-too-short = ❌ パスワードは6文字以上必要です。
+backup-create-success = ✅ バックアップを作成しました！
+backup-create-error = ❌ すでにバックアップがあります。先に削除してください。
+backup-restore-prompt = ♻️ バックアップのパスワードを送信：
+backup-restore-success = ✅ パスワードが正しいです！データはこちら...
+backup-restore-error = ❌ パスワードが違います。
+backup-remove-success = ✅ バックアップを削除しました。
+backup-remove-confirm = ❓ バックアップを削除してもよろしいですか？
+backup-no-backup = ❌ バックアップがありません。
+backup-cancelled = ❌ アクションがキャンセルされました。
+backup-password-saved = 新しいパスワードを設定しました。
+
+############
 # SET EVENT #
 ############
 setevent-edit-title = ✏️ イベント編集：

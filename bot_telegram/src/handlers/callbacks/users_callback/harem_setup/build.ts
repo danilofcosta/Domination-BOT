@@ -5,6 +5,7 @@ import {
   NavigateMenuMode,
   SetModeHarem,
 } from "./base_harem_setup.js";
+import { botPrefix } from "../../../../CommandesManage/botConfigCommands.js";
 
 type BtnStyle = Parameters<Keyboard["text"]>[1];
 export function getAllButtons(data: HaremSetupDict): HaremBtn[] {
@@ -43,19 +44,19 @@ export const Harem_setup_dict: HaremSetupDict = {
     // },
 
     Modo: {
-      text: "Modo Harem",
+      text: "Modo Harem"+ botPrefix,
       icon: "5197269100878907942",
       run: (ctx) => NavigateMenu(ctx, Harem_setup_dict.modo),
     },
   },
   modo: {
     style: {
-      text: "style",
+      text: "style"+ botPrefix,
       icon: "5197269100878907942",
       run: null,
     },
     Paginas: {
-      text: "Paginas",
+      text: "Paginas"+ botPrefix,
       icon: "5226794488483047978",
       run: (ctx) => NavigateMenuMode(ctx, Harem_setup_dict.modos),
     },
@@ -63,25 +64,25 @@ export const Harem_setup_dict: HaremSetupDict = {
 
   modos: {
     default: {
-      text: "Padão",
+      text: "Padão "+ botPrefix,
       key: "default",
       icon: null,
       run: (ctx) => SetModeHarem(ctx, "default"),
     },
     latest: {
-      text: "recente",
+      text: "recente "+ botPrefix,
       icon: null,
       run: (ctx) => SetModeHarem(ctx, "latest"),
       key: "latest",
     },
     rarity: {
-      text: "Raridade",
+      text: "Raridade "+ botPrefix,
       icon: null,
       run: (ctx) => SetModeHarem(ctx, "rarity"),
       key: "rarity",
     },
     event: {
-      text: "Evento",
+      text: "Evento "+ botPrefix,
       icon: null,
 
       run: (ctx) => SetModeHarem(ctx, "event"),
@@ -90,11 +91,12 @@ export const Harem_setup_dict: HaremSetupDict = {
   },
 
   close: {
-    text: "Sair",
+    text: "Sair " + botPrefix,
     style: "danger",
     icon: "5237695957293875263",
 
     run: async (ctx: MyContext) => {
+      
       await ctx.reply("Fechado", {
         reply_markup: {
           remove_keyboard: true,

@@ -5,10 +5,25 @@ import { InlineKeyboard } from "grammy";
 import { helpCommand } from "./help.js";
 import { prisma } from "../../../lib/prisma.js";
 import { formatUptime } from "./status.js";
+import { Backup_harem } from "../users/backup.js";
 
 let lastRefreshTime = Date.now();
 
 export async function StartGreetings(ctx: MyContext) {
+  if (ctx.match) {
+    switch (ctx.match) {
+      case "help": {
+        helpCommand(ctx);
+        return;
+      }
+      case "backup": {
+        Backup_harem(ctx);
+      }
+      default:
+        return;
+    }
+  }
+
   if (ctx.chat?.type !== "private") {
     try {
       await ctx.react("❤");
@@ -29,10 +44,6 @@ export async function StartGreetings(ctx: MyContext) {
 
   const startTime = Date.now();
 
-  if (ctx.match === "help") {
-    helpCommand(ctx);
-    return;
-  }
   try {
     await ctx.react("⚡");
   } catch (error: any) {

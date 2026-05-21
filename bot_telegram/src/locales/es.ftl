@@ -559,6 +559,39 @@ setrarity-field-emoji-id = emoji ID
 setrarity-field-description = descripción
 
 ############
+# BACKUP #
+############
+backup-title = Gestión de copia de seguridad de tu cuenta
+backup-btn-create = 🔐 Crear copia
+backup-btn-restore = ♻️ Recuperar cuenta
+backup-btn-change = 🔄 Cambiar contraseña
+backup-btn-remove = ❌ Eliminar copia
+backup-btn-info = ℹ️ Cómo funciona
+backup-info-text = 🔐 <b>Copia de seguridad</b>
+
+    La copia de seguridad permite guardar y recuperar tu cuenta usando una contraseña.
+
+    ✅ <b>Crear:</b> Establece una contraseña para proteger tu cuenta.
+    ♻️ <b>Recuperar:</b> Restaura tus datos usando la contraseña.
+    ❌ <b>Eliminar:</b> Borra la contraseña de copia.
+
+    Tu contraseña se almacena cifrada (SHA-256) y nadie, ni siquiera el bot, puede recuperarla.
+backup-password-prompt = 🔐 Envía la contraseña para crear tu copia:
+
+    La contraseña debe tener al menos 6 caracteres.
+backup-password-too-short = ❌ La contraseña debe tener al menos 6 caracteres.
+backup-create-success = ✅ ¡Copia creada con éxito!
+backup-create-error = ❌ Ya tienes una copia. Elimínala primero.
+backup-restore-prompt = ♻️ Envía la contraseña de tu copia:
+backup-restore-success = ✅ ¡Contraseña correcta! Aquí están tus datos...
+backup-restore-error = ❌ Contraseña incorrecta.
+backup-remove-success = ✅ Copia eliminada con éxito.
+backup-remove-confirm = ❓ ¿Seguro que quieres eliminar la copia?
+backup-no-backup = ❌ No tienes una copia de seguridad.
+backup-cancelled = ❌ Acción cancelada.
+backup-password-saved = Nueva contraseña establecida con éxito.
+
+############
 # SET EVENT #
 ############
 setevent-edit-title = ✏️ Editar Evento:

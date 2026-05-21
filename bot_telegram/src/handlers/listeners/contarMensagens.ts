@@ -9,7 +9,7 @@ import { getRuntime } from "../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../utils/chareter/getbyid.js";
 
 const DROP = 100;
-const UNDROP = DROP + 10;
+const UNDROP = DROP + 40;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function contarMensagens(ctx: MyContext) {

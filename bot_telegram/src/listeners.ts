@@ -18,10 +18,189 @@ import { SetEventReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_
 import { animelistCallback } from "./handlers/Comandos/users/animelist.js";
 import { Gift_Inline_query } from "./handlers/inline_query/gift_iniline_query.js";
 import { Fav_Inline_query } from "./handlers/inline_query/fav_iniline_query.js";
+import { prisma } from "./lib/prisma.js";
+import { calcHash } from "./utils/calcHash.js";
+import { Backup_harem } from "./handlers/Comandos/users/backup.js";
+import { HaremHandler } from "./handlers/Comandos/users/harem.js";
 
 const listeners = new Composer<MyContext>();
 
 listeners.on("message:text", async (ctx, next) => {
+    const backupState = ctx.session.backupState;
+  if (backupState) {
+    const password = ctx.message.text.trim();
+
+    if (password.length < 6) {
+      await ctx.reply(ctx.t("backup-password-too-short"));
+      return;
+    }
+
+    ctx.session.backupState = undefined;
+
+    const hash = calcHash(password);
+
+    try {
+      if (backupState.action === "create" || backupState.action === "change") {
+        await prisma.user.upsert({
+          where: { telegramId: BigInt(ctx.from!.id) },
+          update: { backupHash: hash },
+          create: { telegramId: BigInt(ctx.from!.id), backupHash: hash },
+        });
+        await ctx.reply(
+          backupState.action === "change"
+            ? ctx.t("backup-password-saved")
+            : ctx.t("backup-create-success"),
+        );
+     await   Backup_harem(ctx)
+      } else if (backupState.action === "restore") {
+        const oldUser = await prisma.user.findFirst({
+          where: { backupHash: hash },
+          include: {
+            WaifuCollection: true,
+            HusbandoCollection: true,
+          },
+        });
+
+        if (!oldUser) {
+          await ctx.reply(ctx.t("backup-restore-error"));
+          return;
+        }
+
+        const currentTelegramId = BigInt(ctx.from!.id);
+
+        if (oldUser.telegramId === currentTelegramId) {
+          await ctx.reply(ctx.t("backup-restore-success"));
+          HaremHandler(ctx)
+          return;
+        }
+
+        await prisma.$transaction(async (tx) => {
+          const currentUser = await tx.user.findUnique({
+            where: { telegramId: currentTelegramId },
+          });
+
+          if (!currentUser) {
+            await tx.user.create({
+              data: {
+                telegramId: currentTelegramId,
+                telegramData: oldUser.telegramData as any,
+                coins: oldUser.coins,
+                waifuConfig: oldUser.waifuConfig as any,
+                husbandoConfig: oldUser.husbandoConfig as any,
+                favoriteWaifuId: oldUser.favoriteWaifuId,
+                favoriteHusbandoId: oldUser.favoriteHusbandoId,
+                waifuLikes: oldUser.waifuLikes,
+                husbandoLikes: oldUser.husbandoLikes,
+                waifuDislikes: oldUser.waifuDislikes,
+                husbandoDislikes: oldUser.husbandoDislikes,
+                backupHash: hash,
+              },
+            });
+
+            if (oldUser.WaifuCollection.length > 0) {
+              await tx.waifuCollection.createMany({
+                data: oldUser.WaifuCollection.map((c) => ({
+                  userId: currentTelegramId,
+                  characterId: c.characterId,
+                  count: c.count,
+                })),
+              });
+            }
+            if (oldUser.HusbandoCollection.length > 0) {
+              await tx.husbandoCollection.createMany({
+                data: oldUser.HusbandoCollection.map((c) => ({
+                  userId: currentTelegramId,
+                  characterId: c.characterId,
+                  count: c.count,
+                })),
+              });
+            }
+          } else {
+            const mergeUnique = (a: number[], b: number[]) =>
+              [...new Set([...a, ...b])];
+
+            await tx.user.update({
+              where: { telegramId: currentTelegramId },
+              data: {
+                coins: currentUser.coins + oldUser.coins,
+                waifuLikes: mergeUnique(currentUser.waifuLikes, oldUser.waifuLikes),
+                husbandoLikes: mergeUnique(currentUser.husbandoLikes, oldUser.husbandoLikes),
+                waifuDislikes: mergeUnique(currentUser.waifuDislikes, oldUser.waifuDislikes),
+                husbandoDislikes: mergeUnique(currentUser.husbandoDislikes, oldUser.husbandoDislikes),
+                favoriteWaifuId: currentUser.favoriteWaifuId ?? oldUser.favoriteWaifuId,
+                favoriteHusbandoId: currentUser.favoriteHusbandoId ?? oldUser.favoriteHusbandoId,
+                waifuConfig: (currentUser.waifuConfig ?? oldUser.waifuConfig) as any,
+                husbandoConfig: (currentUser.husbandoConfig ?? oldUser.husbandoConfig) as any,
+              },
+            });
+
+            for (const wc of oldUser.WaifuCollection) {
+              const existing = await tx.waifuCollection.findUnique({
+                where: {
+                  userId_characterId: {
+                    userId: currentTelegramId,
+                    characterId: wc.characterId,
+                  },
+                },
+              });
+              if (existing) {
+                await tx.waifuCollection.update({
+                  where: { id: existing.id },
+                  data: { count: existing.count + wc.count },
+                });
+              } else {
+                await tx.waifuCollection.create({
+                  data: {
+                    userId: currentTelegramId,
+                    characterId: wc.characterId,
+                    count: wc.count,
+                  },
+                });
+              }
+            }
+
+            for (const hc of oldUser.HusbandoCollection) {
+              const existing = await tx.husbandoCollection.findUnique({
+                where: {
+                  userId_characterId: {
+                    userId: currentTelegramId,
+                    characterId: hc.characterId,
+                  },
+                },
+              });
+              if (existing) {
+                await tx.husbandoCollection.update({
+                  where: { id: existing.id },
+                  data: { count: existing.count + hc.count },
+                });
+              } else {
+                await tx.husbandoCollection.create({
+                  data: {
+                    userId: currentTelegramId,
+                    characterId: hc.characterId,
+                    count: hc.count,
+                  },
+                });
+              }
+            }
+          }
+
+          await tx.user.delete({
+            where: { telegramId: oldUser.telegramId },
+          });
+        });
+
+        await ctx.reply(ctx.t("backup-restore-success"));
+
+     HaremHandler   (ctx)
+      }
+    } catch (e) {
+      logError("backup password handler error", e);
+      await ctx.reply(ctx.t("error-permission-internal"));
+    }
+    return;
+  }
+
   if (ctx.session.adminSetup?.action && ctx.session.adminSetup?.targetId) {
     const action = ctx.session.adminSetup.action;
     const targetId = ctx.session.adminSetup.targetId;

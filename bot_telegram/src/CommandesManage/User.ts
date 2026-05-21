@@ -13,6 +13,7 @@ import { animelistCommand } from "../handlers/Comandos/users/animelist.js";
 import { setlangHandler } from "../handlers/Comandos/admin_groups/setlang.js";
 import { debug } from "../utils/log.js";
 import { Ramdon_Character_Handler } from "../handlers/Comandos/globais/random_character.js";
+import { Backup_harem } from "../handlers/Comandos/users/backup.js";
 
 const UserCommands = new CommandGroup<MyContext>();
 
@@ -97,6 +98,15 @@ export const ComandosUser = {
       en: "List animes by letter",
     },
     handler: animelistCommand,
+    scope: "all_group_chats",
+  },
+   Backup_harem: {
+    command: "backup" + botPrefix,
+    description: {
+      pt: "backup do seu harem",
+      en: "List animes by letter",
+    },
+    handler: Backup_harem,
     scope: "all_group_chats",
   },
 

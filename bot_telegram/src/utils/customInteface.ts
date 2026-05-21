@@ -39,5 +39,8 @@ export interface SessionData {
   >;
   rarityListPage?: number;
   eventListPage?: number;
+  backupState?: {
+    action: "create" | "restore" | "change";
+  };
 }
 
