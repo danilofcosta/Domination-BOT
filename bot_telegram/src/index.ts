@@ -1,7 +1,7 @@
 import initializeBot from "./initializeBot.js";
 import "dotenv/config";
-import { testDBConnection } from "./utils/testes/test_db_connection.js";
 import { Environment_validation } from "./utils/testes/environment_validation.js";
+import { prisma } from "./lib/prisma.js";
 import { ChatType, NODE_ENV } from "./utils/customTypes.js";
 import { fatal, info } from "./utils/log.js";
 import { RunPolling } from "./index_Polling.js";
@@ -10,7 +10,15 @@ import express from "express";
 
 const start = async () => {
   await Environment_validation();
-  await testDBConnection();
+  console.log("teste de conexão com db");
+  try {
+    await prisma.$connect();
+    const result = await prisma.$queryRaw`SELECT 1 as test`;
+    console.log("✅ Conectado ao banco com sucesso!");
+    console.log("📊 Query teste:", result);
+  } catch (error) {
+    console.error(error);
+  }
   let app;
   let BOT_TOKEN =
     process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU
