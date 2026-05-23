@@ -22,7 +22,7 @@ export async function countMessages(ctx: MyContext) {
   const isTestGroup = TEST_GROUP_ID
     ? ctx.chat.id === Number(TEST_GROUP_ID)
     : false;
-  console.log("----", runtime.cont, ctx.from?.first_name, ctx.chat.title);
+ // console.log("----", runtime.cont, ctx.from?.first_name, ctx.chat.title);
 
   const chatId = ctx.chat.id;
 
