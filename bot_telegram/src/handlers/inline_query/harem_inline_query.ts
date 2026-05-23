@@ -104,7 +104,7 @@ export async function haremInlineQuery(ctx: MyContext) {
 
   const results = collection.map((item: CollectionItem) =>
     createResult({
-      ctx,
+      t: ctx.t,
       character: item,
       chatType: genero,
       noformat: true,

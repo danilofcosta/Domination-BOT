@@ -1,6 +1,6 @@
 import { Composer } from "grammy";
 import type { MyContext } from "./utils/customTypes.js";
-import { contarMensagens } from "./handlers/listeners/contarMensagens.js";
+import { countMessages } from "./handlers/listeners/message_counter.js";
 import { haremInlineQuery } from "./handlers/inline_query/harem_inline_query.js";
 import {
   getCharacters,
@@ -8,20 +8,20 @@ import {
   QueryCharacet,
 } from "./handlers/inline_query/inline_query.js";
 import { getCharacter, setCharacter, getCharList } from "./cache/cache.js";
-import { addCharacter_edit_CallbackData } from "./handlers/Comandos/admin_bot/manager_character/add/add_character_edit.js";
+import { addCharacter_edit_CallbackData } from "./handlers/commands/admin_bot/manager_character/add/add_character_edit.js";
 import { debug, info, error as logError } from "./utils/log.js";
 import { ChatType } from "./utils/customTypes.js";
 import { inline_per } from "./handlers/inline_query/inline_by_id.js";
 import { animeInlineQuery } from "./handlers/inline_query/anime_inline_query.js";
-import { SetRarityReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_rarity.js";
-import { SetEventReplyHandler } from "./handlers/Comandos/admin_bot/configs/set_event.js";
-import { animelistCallback } from "./handlers/Comandos/users/animelist.js";
+import { SetRarityReplyHandler } from "./handlers/commands/admin_bot/configs/set_rarity.js";
+import { SetEventReplyHandler } from "./handlers/commands/admin_bot/configs/set_event.js";
+import { animelistCallback } from "./handlers/commands/users/animelist.js";
 import { Gift_Inline_query } from "./handlers/inline_query/gift_iniline_query.js";
 import { Fav_Inline_query } from "./handlers/inline_query/fav_iniline_query.js";
 import { prisma } from "./lib/prisma.js";
 import { calcHash } from "./utils/calcHash.js";
-import { Backup_harem } from "./handlers/Comandos/users/backup.js";
-import { HaremHandler } from "./handlers/Comandos/users/harem.js";
+import { Backup_harem } from "./handlers/commands/users/backup.js";
+import { HaremHandler } from "./handlers/commands/users/harem.js";
 
 const listeners = new Composer<MyContext>();
 
@@ -282,7 +282,7 @@ listeners.on("callback_query:data", async (ctx, next) => {
   return next();
 });
 
-listeners.chatType(["group", "supergroup"]).on("message", contarMensagens);
+listeners.chatType(["group", "supergroup"]).on("message", countMessages);
 
 const userLatestQuery = new Map<number, string>();
 

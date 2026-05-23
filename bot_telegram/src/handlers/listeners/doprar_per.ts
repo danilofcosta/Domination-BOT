@@ -1,7 +1,7 @@
 import { type MyContext } from "../../utils/customTypes.js";
 import { Sendmedia } from "../../utils/sendmedia.js";
-import { createSecretCaption } from "../../utils/manege_caption/form_caption.js";
-import { RandomCharacter } from "../../utils/chareter/randomCharacter.js";
+import { createSecretCaption } from "../../utils/manage_captures/form_caption.js";
+import { RandomCharacter } from "../../utils/character/random_character.js";
 import { info, warn, error, debug } from "../../utils/log.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
 

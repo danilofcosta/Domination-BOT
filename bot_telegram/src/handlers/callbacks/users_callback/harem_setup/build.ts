@@ -5,8 +5,8 @@ import {
   NavigateMenuMode,
   SetModeHarem,
 } from "./base_harem_setup.js";
-import { botPrefix } from "../../../../CommandesManage/botConfigCommands.js";
-import { Backup_harem } from "../../../Comandos/users/backup.js";
+import { botPrefix } from "../../../../commands/botConfigCommands.js";
+import { Backup_harem } from "../../../commands/users/backup.js";
 
 type BtnStyle = Parameters<Keyboard["text"]>[1];
 export function getAllButtons(data: HaremSetupDict): HaremBtn[] {

@@ -5,7 +5,7 @@ import type { SessionFlavor } from "grammy";
 
 
 import type { User } from "grammy/types";
-import type { SessionData } from "./customInteface.js";
+import type { SessionData } from "../types/session.js";
 import type { WaifuCollection } from "@prisma/client";
 import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "@prisma/client";
 import type { prisma } from "../lib/prisma.js";
@@ -123,9 +123,16 @@ export interface PreCharacter {
   genero: ChatType;
   mediatype: MediaType;
   media: string;
+  mediaUniqueId?: string;
   username: string;
   user_id: number;
   extras?: Record<string, any>;
+}
+
+export interface MediaResult {
+  fileId: string;
+  fileUniqueId?: string;
+  type: MediaType;
 }
  export type CollectionItem =
   | Awaited<ReturnType<typeof prisma.waifuCollection.findMany>>[number]

@@ -1,0 +1,190 @@
+/**
+ * Admin Bot Commands
+ */
+
+import { CommandGroup, LanguageCodes } from '@grammyjs/commands';
+import { ProfileType, type MyContext } from '../utils/customTypes.js';
+import { botPrefix, options } from './botConfigCommands.js';
+import { onlyRoleBotAdmin } from '../utils/permissions.js';
+
+import { AddCharacterHandler } from '../handlers/commands/admin_bot/manager_character/add/add_character.js';
+import { addCollection } from '../handlers/commands/admin_bot/manage_users/add_collection.js';
+
+import { SetRarityHandler } from '../handlers/commands/admin_bot/configs/set_rarity.js';
+import { SetEventHandler } from '../handlers/commands/admin_bot/configs/set_event.js';
+
+import { enviarLogs } from '../handlers/commands/testes_commands.js';
+
+import {
+  banHandler,
+  listBannedHandler,
+  unbanHandler,
+  // unbanHandler,
+  // listBannedHandler,
+} from '../handlers/commands/admin_bot/manage_users/ban_user_handler.js';
+
+import { statusUserHandler } from '../handlers/commands/admin_bot/manage_users/status_user.js';
+
+import { debug } from '../utils/log.js';
+import { OpenHaremUser } from '../handlers/commands/admin_bot/manage_users/open_harem.js';
+
+type AdminCommand = {
+  minPermission: ProfileType;
+  command: string;
+  description: {
+    en: string;
+    pt: string;
+  };
+  handler: (ctx: MyContext) => Promise<any>;
+};
+
+export const adminCommands_bot_dict = {
+  addchar: {
+    minPermission: ProfileType.ADMIN,
+    command: 'addchar' + botPrefix,
+    description: {
+      en: 'Add a character to the database (admin)',
+      pt: 'Adicionar um personagem ao banco de dados (admin)',
+    },
+    handler: AddCharacterHandler,
+  },
+
+  addCollection: {
+    minPermission: ProfileType.ADMIN,
+    command: 'addCollection' + botPrefix,
+    description: {
+      en: 'Add a character to the collection user (admin)',
+      pt: 'Adicionar um personagem ao harem de um user (admin)',
+    },
+    handler: addCollection,
+  },
+
+  setrarity: {
+    minPermission: ProfileType.ADMIN,
+    command: 'setrarity' + botPrefix,
+    description: {
+      en: 'Edit rarity settings (emoji, name, emoji_id)',
+      pt: 'Editar configuracoes de raridade (emoji, nome, emoji_id)',
+    },
+    handler: SetRarityHandler,
+  },
+
+  setevent: {
+    minPermission: ProfileType.ADMIN,
+    command: 'setevent' + botPrefix,
+    description: {
+      en: 'Edit event settings (emoji, name, emoji_id)',
+      pt: 'Editar configuracoes de evento (emoji, nome, emoji_id)',
+    },
+    handler: SetEventHandler,
+  },
+
+  logserros: {
+    minPermission: ProfileType.ADMIN,
+    command: 'logserros' + botPrefix,
+    description: {
+      en: 'Send error logs',
+      pt: 'Enviar logs de erros',
+    },
+    handler: enviarLogs,
+  },
+
+  logs: {
+    minPermission: ProfileType.ADMIN,
+    command: 'logs' + botPrefix,
+    description: {
+      en: 'Send combined logs',
+      pt: 'Enviar logs gerais',
+    },
+    handler: enviarLogs,
+  },
+
+  banuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'banuser' + botPrefix,
+    description: {
+      en: 'Ban a user from the bot',
+      pt: 'Banir um usuario do bot',
+    },
+    handler: banHandler,
+  },
+
+  unbanuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'unbanuser' + botPrefix,
+    description: {
+      en: 'Unban a user from the bot',
+      pt: 'Desbanir um usuario do bot',
+    },
+    handler: unbanHandler,
+  },
+
+  listbanned: {
+    minPermission: ProfileType.ADMIN,
+    command: 'listeban' + botPrefix,
+    description: {
+      en: 'List all banned users',
+      pt: 'Listar todos os usuarios banidos',
+    },
+    handler: listBannedHandler,
+  },
+
+  statususer: {
+    minPermission: ProfileType.ADMIN,
+    command: 'statususer' + botPrefix,
+    description: {
+      en: 'Get user status information',
+      pt: 'Ver informacoes de status do usuario',
+    },
+    handler: statusUserHandler,
+  },
+  openharemuser: {
+    minPermission: ProfileType.ADMIN,
+    command: 'openharem' + botPrefix,
+    description: {
+      en: '-',
+      pt: 'abrir Harem do user ',
+    },
+    handler: OpenHaremUser,
+  },
+  
+} as const satisfies Record<string, AdminCommand>;
+
+const adminCommands_bot = new CommandGroup<MyContext>();
+
+for (const value of Object.values(adminCommands_bot_dict)) {
+  adminCommands_bot
+    .command(value.command, value.description.en, async (ctx) => {
+      debug(
+        'Comando admin',
+        value.command,
+        'executado por',
+        ctx.from?.username || ctx.from?.id,
+      );
+
+      const next = async () => {
+        await value.handler(ctx);
+      };
+
+      if (value.minPermission) {
+        return await onlyRoleBotAdmin(value.minPermission)(ctx, next);
+      }
+
+      return await next();
+    },options
+  
+  
+  
+  
+  
+  
+  )
+    // .localize(LanguageCodes.English, value.command, value.description.en)
+    .localize(
+      LanguageCodes.Portuguese,
+      value.command,
+      value.description.pt,
+    );
+}
+
+export { adminCommands_bot };

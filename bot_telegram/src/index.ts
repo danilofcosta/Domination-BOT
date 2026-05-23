@@ -2,7 +2,7 @@ import initializeBot from "./initializeBot.js";
 import "dotenv/config";
 
 import { Environment_validation } from "./utils/testes/environment_validation.js";
-import { testDBConnection } from "./utils/testes/test_db_Connection.js";
+import { testDBConnection } from "./utils/testes/test_db_connection.js";
 import { ChatType, NODE_ENV } from "./utils/customTypes.js";
 import { fatal, info } from "./utils/log.js";
 import { RunPolling } from "./index_Polling.js";
@@ -19,7 +19,8 @@ const start = async () => {
       : process.env.BOT_TOKEN_HUSBANDO;
 
   if (process.env.BOT_TOKEN_TESTE) {
-    console.log("bot teste");
+    console.log("bot teste",  process.env.NODE_ENV);
+  
     BOT_TOKEN = process.env.BOT_TOKEN_TESTE;
     const bot = await initializeBot(
       process.env.TYPE_BOT as ChatType,

@@ -2,7 +2,7 @@ import { prisma } from "../../../lib/prisma.js";
 import { getGiftUser } from "../../../cache/cache.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
-import { mentionUser } from "../../../utils/metion_user.js";
+import { mentionUser } from "../../../utils/mention_user.js";
 
 export async function giftConfirmHandler(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;

@@ -461,20 +461,20 @@ topic-config-success = ✅ ¡Tema configurado!\n\n📝 ID del tema: { $topicId }
 ############
 # ADD COLLECTION #
 ############
-addcolletion-btn-yes = ✅ Sí
-addcolletion-btn-no = ❌ No
-addcolletion-btn-view-harem = Ver harén
-addcolletion-btn-view-collection = Ver colección
-addcolletion-confirm = Personajes ({ $count }):\n{ $list }\n\n{ $invalid }\n\n¿Agregar a la colección de { $user }?
-addcolletion-success-single = ✅ ¡Personaje agregado a la colección!\n\nPor: { $user }
-addcolletion-success-multi = ✅ ¡Personajes agregados a la colección!\n\nPor: { $user }
-addcolletion-cancel = ❌ Acción cancelada.
-addcolletion-error-reply = ❌ Responde a un mensaje del usuario para agregar a la colección.
-addcolletion-error-need-id = ❌ Proporciona el ID del personaje.
-addcolletion-error-invalid-ids = ❌ IDs de personaje inválidos.
-addcolletion-error-no-char = ❌ No se encontraron personajes en la base de datos.
-addcolletion-cache-not-found = Colección no encontrada en caché.
-addcolletion-default-user = usuario
+addCollection-btn-yes = ✅ Sí
+addCollection-btn-no = ❌ No
+addCollection-btn-view-harem = Ver harén
+addCollection-btn-view-collection = Ver colección
+addCollection-confirm = Personajes ({ $count }):\n{ $list }\n\n{ $invalid }\n\n¿Agregar a la colección de { $user }?
+addCollection-success-single = ✅ ¡Personaje agregado a la colección!\n\nPor: { $user }
+addCollection-success-multi = ✅ ¡Personajes agregados a la colección!\n\nPor: { $user }
+addCollection-cancel = ❌ Acción cancelada.
+addCollection-error-reply = ❌ Responde a un mensaje del usuario para agregar a la colección.
+addCollection-error-need-id = ❌ Proporciona el ID del personaje.
+addCollection-error-invalid-ids = ❌ IDs de personaje inválidos.
+addCollection-error-no-char = ❌ No se encontraron personajes en la base de datos.
+addCollection-cache-not-found = Colección no encontrada en caché.
+addCollection-default-user = usuario
 
 ############
 # MANEGER USER #
@@ -646,7 +646,7 @@ cmd-desc-fav = Muestra tu personaje favorito
 cmd-desc-gift = Regala un personaje a otro usuario
 cmd-desc-myinfo = Muestra tu información
 cmd-desc-addchar = Agregar un personaje a la base de datos (admin)
-cmd-desc-addcolletion = Agregar un personaje al harén de un usuario (admin)
+cmd-desc-addCollection = Agregar un personaje al harén de un usuario (admin)
 cmd-desc-setrarity = Editar configuración de rareza (emoji, nombre, emoji_id)
 cmd-desc-setevent = Editar configuración de evento (emoji, nombre, emoji_id)
 cmd-desc-logserros = Enviar registros de errores

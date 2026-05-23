@@ -56,7 +56,7 @@ export async function Addchatmanual(ctx: MyContext) {
       let caption = create_caption({
         character: character_db,
         chatType: ChatType.WAIFU,
-        ctx,
+        t: ctx.t,
         noformat: false,
       });
 

@@ -462,20 +462,20 @@ topic-config-success = ✅ Topic configured!\n\n📝 Topic ID: { $topicId }\n\nN
 ############
 # ADD COLLECTION #
 ############
-addcolletion-btn-yes = ✅ Yes
-addcolletion-btn-no = ❌ No
-addcolletion-btn-view-harem = View harem
-addcolletion-btn-view-collection = View collection
-addcolletion-confirm = Characters ({ $count }):\n{ $list }\n\n{ $invalid }\n\nAdd to { $user }'s collection?
-addcolletion-success-single = ✅ Character added to collection!\n\nBy: { $user }
-addcolletion-success-multi = ✅ Characters added to collection!\n\nBy: { $user }
-addcolletion-cancel = ❌ Action canceled.
-addcolletion-error-reply = ❌ Reply to a user message to add to collection.
-addcolletion-error-need-id = ❌ Provide the character ID.
-addcolletion-error-invalid-ids = ❌ Invalid character IDs.
-addcolletion-error-no-char = ❌ No characters found in the database.
-addcolletion-cache-not-found = Collection not found in cache.
-addcolletion-default-user = user
+addCollection-btn-yes = ✅ Yes
+addCollection-btn-no = ❌ No
+addCollection-btn-view-harem = View harem
+addCollection-btn-view-collection = View collection
+addCollection-confirm = Characters ({ $count }):\n{ $list }\n\n{ $invalid }\n\nAdd to { $user }'s collection?
+addCollection-success-single = ✅ Character added to collection!\n\nBy: { $user }
+addCollection-success-multi = ✅ Characters added to collection!\n\nBy: { $user }
+addCollection-cancel = ❌ Action canceled.
+addCollection-error-reply = ❌ Reply to a user message to add to collection.
+addCollection-error-need-id = ❌ Provide the character ID.
+addCollection-error-invalid-ids = ❌ Invalid character IDs.
+addCollection-error-no-char = ❌ No characters found in the database.
+addCollection-cache-not-found = Collection not found in cache.
+addCollection-default-user = user
 
 ############
 # MANEGER USER #
@@ -647,7 +647,7 @@ cmd-desc-fav = Show your favorite character
 cmd-desc-gift = Gift a character to another user
 cmd-desc-myinfo = Show your information
 cmd-desc-addchar = Add a character to the database (admin)
-cmd-desc-addcolletion = Add a character to a user's harem (admin)
+cmd-desc-addCollection = Add a character to a user's harem (admin)
 cmd-desc-setrarity = Edit rarity settings (emoji, name, emoji_id)
 cmd-desc-setevent = Edit event settings (emoji, name, emoji_id)
 cmd-desc-logserros = Send error logs

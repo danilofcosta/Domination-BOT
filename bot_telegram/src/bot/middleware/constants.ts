@@ -1,0 +1,8 @@
+export const BLOCK_DURATION_MS = 10 * 60 * 1000;
+export const GROUP_CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+export const CAPTURE_LOCK_TIMEOUT_MS = 10000;
+export const DELETE_TIMEOUT_MS = 60000;
+export const PRISMA_TIMEOUT_MS = 10000;
+export const UPLOAD_TIMEOUT_MS = 10000;
+export const INLINE_QUERY_TIMEOUT_MS = 2500;
+export const DELETE_AFTER_DROP_MS = 120000;

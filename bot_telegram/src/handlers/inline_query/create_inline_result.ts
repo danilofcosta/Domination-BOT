@@ -7,8 +7,8 @@ import type {
   InlineQueryResultCachedVideo,
 } from "grammy/types";
 
-import { MediaType, type MyContext } from "../../utils/customTypes.js";
-import { create_caption } from "../../utils/manege_caption/create_caption.js";
+import { MediaType } from "../../utils/customTypes.js";
+import { create_caption } from "../../utils/manage_captures/create_caption.js";
 import type {
   Character,
   ChatType,
@@ -18,7 +18,7 @@ import { warn, error } from "../../utils/log.js";
 
 
 export interface Params {
-  ctx: MyContext | any;
+  t: (key: string, params?: Record<string, string | number>) => string;
   chatType: ChatType;
   character: Character | Collection;
   noformat: boolean | undefined | null;

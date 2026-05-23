@@ -35,7 +35,7 @@ export async function animeInlineQuery(ctx: MyContext) {
   const results = characters.map((char: any) => {
     return createResult({
       character: char,
-      ctx,
+      t: ctx.t,
       noformat: true,
       chatType: genero,
     });

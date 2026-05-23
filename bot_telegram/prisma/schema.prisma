@@ -12,6 +12,7 @@ model CharacterHusbando {
   origem             String               @db.VarChar(100)
   mediaType          MediaType
   media              String
+  mediaUniqueId      String?
   slug               String               @unique
   extras             Json?
   createdAt          DateTime             @default(now())
@@ -38,6 +39,7 @@ model CharacterWaifu {
   origem           String            @db.VarChar(100)
   mediaType        MediaType
   media            String
+  mediaUniqueId    String?
   extras           Json?
   slug             String            @unique
   createdAt        DateTime          @default(now())

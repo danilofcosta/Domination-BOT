@@ -27,7 +27,7 @@ export async function inline_per(ctx: MyContext, charListData: CharListData) {
   const results = characters.map((char: any) => {
     return createResult({
       character: char,
-      ctx,
+      t: ctx.t,
       noformat: true,
       chatType: genero,
     });

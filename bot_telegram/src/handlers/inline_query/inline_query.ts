@@ -34,7 +34,7 @@ export async function getCharacters(ctx: MyContext) {
   if (!per) return;
   const result = createResult({
     character: per,
-    ctx,
+    t: ctx.t,
     noformat: true,
     chatType: _chatType,
   });
@@ -76,7 +76,7 @@ export async function QueryCharacet(ctx: MyContext) {
 
   const results = characters.map((char) =>
       
-    createResult({ character: char, ctx, noformat: true, chatType  ,reply_markup:    bts_yes_or_no(
+    createResult({ character: char, t: ctx.t, noformat: true, chatType  ,reply_markup:    bts_yes_or_no(
       ctx,
       `random-character-yes-${char.id}-${3}`,
       `random-character-no-${char.id}-${2}`,
@@ -137,7 +137,7 @@ export async function getCharactersall(ctx: MyContext) {
   const results = pers.map((per) =>
     createResult({
       character: per,
-      ctx: ctx,
+      t: ctx.t,
       noformat: true,
       chatType: chatType,
     }),

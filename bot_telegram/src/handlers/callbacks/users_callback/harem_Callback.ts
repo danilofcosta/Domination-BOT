@@ -88,8 +88,15 @@ export async function haremCallback(ctx: MyContext) {
       reply_markup: keyboard,
       parse_mode: "HTML",
     });
-  } catch (e) {
+  } catch (e: any) {
+    if (e?.description?.includes("there is no caption")) {
+      await ctx.editMessageText(harem[page], {
+        reply_markup: keyboard,
+        parse_mode: "HTML",
+      });
+    } else {
       error(`haremCallback - erro ao editar caption`, e);
+    }
   }
 
   await ctx.answerCallbackQuery();

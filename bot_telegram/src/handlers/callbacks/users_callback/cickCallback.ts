@@ -1,8 +1,8 @@
-import { GetCharacterById } from "../../../utils/chareter/getbyid.js";
+import { GetCharacterById } from "../../../utils/character/get_by_id.js";
 import type { Character, MyContext } from "../../../utils/customTypes.js";
 import { debug } from "../../../utils/log.js";
-import { create_caption } from "../../../utils/manege_caption/create_caption.js";
-import { mentionUser } from "../../../utils/metion_user.js";
+import { create_caption } from "../../../utils/manage_captures/create_caption.js";
+import { mentionUser } from "../../../utils/mention_user.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 //click_id
 export async function ClickByDetail_Callback(ctx: MyContext) {
@@ -18,7 +18,7 @@ export async function ClickByDetail_Callback(ctx: MyContext) {
   }
 
   let caption = create_caption({
-    ctx: ctx,
+    t: ctx.t,
     character: character,
     chatType: ctx.session.settings.genero,
     noformat: false,

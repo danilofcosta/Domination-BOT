@@ -461,20 +461,20 @@ topic-config-success = ✅ トピックを設定しました！\n\n📝 トピ�
 ############
 # ADD COLLECTION #
 ############
-addcolletion-btn-yes = ✅ はい
-addcolletion-btn-no = ❌ いいえ
-addcolletion-btn-view-harem = ハーレムを見る
-addcolletion-btn-view-collection = コレクションを見る
-addcolletion-confirm = キャラクター（{ $count }）：\n{ $list }\n\n{ $invalid }\n\n{ $user }のコレクションに追加しますか？
-addcolletion-success-single = ✅ キャラクターをコレクションに追加しました！\n\n追加者：{ $user }
-addcolletion-success-multi = ✅ キャラクターをコレクションに追加しました！\n\n追加者：{ $user }
-addcolletion-cancel = ❌ アクションがキャンセルされました。
-addcolletion-error-reply = ❌ ユーザーのメッセージに返信してコレクションに追加してください。
-addcolletion-error-need-id = ❌ キャラクターIDを指定してください。
-addcolletion-error-invalid-ids = ❌ 無効なキャラクターIDです。
-addcolletion-error-no-char = ❌ データベースにキャラクターが見つかりません。
-addcolletion-cache-not-found = キャッシュにコレクションが見つかりません。
-addcolletion-default-user = ユーザー
+addCollection-btn-yes = ✅ はい
+addCollection-btn-no = ❌ いいえ
+addCollection-btn-view-harem = ハーレムを見る
+addCollection-btn-view-collection = コレクションを見る
+addCollection-confirm = キャラクター（{ $count }）：\n{ $list }\n\n{ $invalid }\n\n{ $user }のコレクションに追加しますか？
+addCollection-success-single = ✅ キャラクターをコレクションに追加しました！\n\n追加者：{ $user }
+addCollection-success-multi = ✅ キャラクターをコレクションに追加しました！\n\n追加者：{ $user }
+addCollection-cancel = ❌ アクションがキャンセルされました。
+addCollection-error-reply = ❌ ユーザーのメッセージに返信してコレクションに追加してください。
+addCollection-error-need-id = ❌ キャラクターIDを指定してください。
+addCollection-error-invalid-ids = ❌ 無効なキャラクターIDです。
+addCollection-error-no-char = ❌ データベースにキャラクターが見つかりません。
+addCollection-cache-not-found = キャッシュにコレクションが見つかりません。
+addCollection-default-user = ユーザー
 
 ############
 # MANEGER USER #
@@ -646,7 +646,7 @@ cmd-desc-fav = お気に入りキャラクターを表示
 cmd-desc-gift = キャラクターを他のユーザーにギフト
 cmd-desc-myinfo = あなたの情報を表示
 cmd-desc-addchar = データベースにキャラクターを追加（管理者）
-cmd-desc-addcolletion = ユーザーのハーレムにキャラクターを追加（管理者）
+cmd-desc-addCollection = ユーザーのハーレムにキャラクターを追加（管理者）
 cmd-desc-setrarity = レアリティ設定を編集（絵文字、名前、絵文字ID）
 cmd-desc-setevent = イベント設定を編集（絵文字、名前、絵文字ID）
 cmd-desc-logserros = エラーログを送信

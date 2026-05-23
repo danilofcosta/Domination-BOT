@@ -88,11 +88,11 @@ export interface AddToCollectionData {
 }
 
 export function setAddToCollection(userId: number, characterId: number, data: AddToCollectionData) {
-  characterCache.set(`addcolletion:${userId}:${characterId}`, data);
+  characterCache.set(`addCollection:${userId}:${characterId}`, data);
 }
 
 export function getAddToCollection(userId: number, characterId: number): AddToCollectionData | undefined {
-  return characterCache.get(`addcolletion:${userId}:${characterId}`);
+  return characterCache.get(`addCollection:${userId}:${characterId}`);
 }
 
 export interface AddToCollectionMultiData {
@@ -103,11 +103,11 @@ export interface AddToCollectionMultiData {
 }
 
 export function setAddToCollectionMulti(userId: number, data: AddToCollectionMultiData) {
-  characterCache.set(`addcolletion:${userId}:multi`, data);
+  characterCache.set(`addCollection:${userId}:multi`, data);
 }
 
 export function getAddToCollectionMulti(userId: number): AddToCollectionMultiData | undefined {
-  return characterCache.get(`addcolletion:${userId}:multi`);
+  return characterCache.get(`addCollection:${userId}:multi`);
 }
 
 export interface CharListData {

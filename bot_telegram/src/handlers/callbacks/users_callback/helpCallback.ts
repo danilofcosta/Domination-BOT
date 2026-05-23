@@ -1,12 +1,12 @@
 import { InlineKeyboard } from 'grammy';
 import type { MyContext } from '../../../utils/customTypes.js';
-import { ComandosUser } from '../../../CommandesManage/User.js';
-import { adminGroupsCommands_dict } from '../../../CommandesManage/admin_groups.js';
-import { adminCommands_bot_dict } from '../../../CommandesManage/adminCommands_bot.js';
+import { ComandosUser } from '../../../commands/User.js';
+import { adminGroupsCommands_dict } from '../../../commands/admin_groups.js';
+import { adminCommands_bot_dict } from '../../../commands/adminCommands_bot.js';
 import { debug } from '../../../utils/log.js';
 import { getUserRole, roleWeights } from '../../../utils/permissions.js';
-import { typeBot } from '../../../CommandesManage/botConfigCommands.js';
-import { helpCommand } from '../../Comandos/globais/help.js';
+import { typeBot } from '../../../commands/botConfigCommands.js';
+import { helpCommand } from '../../commands/globais/help.js';
 import { EditOrSendText } from '../../../utils/EditOrSendText.js';
 
 

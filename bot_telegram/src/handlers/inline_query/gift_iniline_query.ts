@@ -32,7 +32,7 @@ export async function Gift_Inline_query(ctx: MyContext) {
 
   const results = collection.map((item: CollectionItem) =>
     createResult({
-      ctx,
+      t: ctx.t,
       character: item,
       chatType: genero,
       noformat: true,

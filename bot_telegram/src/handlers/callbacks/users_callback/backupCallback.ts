@@ -4,7 +4,7 @@ import type { MyContext } from "../../../utils/customTypes.js";
 import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { calcHash } from "../../../utils/calcHash.js";
 import { error } from "../../../utils/log.js";
-import { Backup_harem } from "../../Comandos/users/backup.js";
+import { Backup_harem } from "../../commands/users/backup.js";
 
 export async function backupCallback(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;

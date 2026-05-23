@@ -537,25 +537,25 @@ topic-config-success = ✅ Topic configurado!
 ############
 # ADD COLLECTION #
 ############
-addcolletion-btn-yes = ✅ Sim
-addcolletion-btn-no = ❌ Não
-addcolletion-btn-view-harem = Ver harém
-addcolletion-btn-view-collection = Ver coleção
-addcolletion-confirm = Personagens ({ $count }):
+addCollection-btn-yes = ✅ Sim
+addCollection-btn-no = ❌ Não
+addCollection-btn-view-harem = Ver harém
+addCollection-btn-view-collection = Ver coleção
+addCollection-confirm = Personagens ({ $count }):
 { $list }
     { $invalid }
     Adicionar à coleção do { $user }?
-addcolletion-success-single = ✅ Personagem adicionado à coleção!
+addCollection-success-single = ✅ Personagem adicionado à coleção!
     Por: { $user }
-addcolletion-success-multi = ✅ Personagens adicionados à coleção!
+addCollection-success-multi = ✅ Personagens adicionados à coleção!
     Por: { $user }
-addcolletion-cancel = ❌ Ação cancelada.
-addcolletion-error-reply = ❌ Responda a uma mensagem do usuário para adicionar à coleção.
-addcolletion-error-need-id = ❌ Forneça o ID do personagem.
-addcolletion-error-invalid-ids = ❌ IDs de personagem inválidos.
-addcolletion-error-no-char = ❌ Nenhum personagem encontrado no banco de dados.
-addcolletion-cache-not-found = Coleção não encontrada no cache.
-addcolletion-default-user = usuário
+addCollection-cancel = ❌ Ação cancelada.
+addCollection-error-reply = ❌ Responda a uma mensagem do usuário para adicionar à coleção.
+addCollection-error-need-id = ❌ Forneça o ID do personagem.
+addCollection-error-invalid-ids = ❌ IDs de personagem inválidos.
+addCollection-error-no-char = ❌ Nenhum personagem encontrado no banco de dados.
+addCollection-cache-not-found = Coleção não encontrada no cache.
+addCollection-default-user = usuário
 ############
 # MANEGER USER #
 ############
@@ -709,7 +709,7 @@ cmd-desc-fav = Mostra o seu personagem favorito
 cmd-desc-gift = Presenteia um personagem para outro usuario
 cmd-desc-myinfo = Mostra as suas informacoes
 cmd-desc-addchar = Adicionar um personagem ao banco de dados (admin)
-cmd-desc-addcolletion = Adicionar um personagem ao harem de um user (admin)
+cmd-desc-addCollection = Adicionar um personagem ao harem de um user (admin)
 cmd-desc-setrarity = Editar configuracoes de raridade (emoji, nome, emoji_id)
 cmd-desc-setevent = Editar configuracoes de evento (emoji, nome, emoji_id)
 cmd-desc-logserros = Enviar logs de erros
