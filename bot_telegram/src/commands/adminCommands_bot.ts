@@ -27,6 +27,7 @@ import { statusUserHandler } from '../handlers/commands/admin_bot/manage_users/s
 
 import { debug } from '../utils/log.js';
 import { OpenHaremUser } from '../handlers/commands/admin_bot/manage_users/open_harem.js';
+import { listActiveChats } from '../handlers/commands/admin_bot/manage_users/active_chats.js';
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -137,6 +138,15 @@ export const adminCommands_bot_dict = {
       pt: 'Ver informacoes de status do usuario',
     },
     handler: statusUserHandler,
+  },
+  activechats: {
+    minPermission: ProfileType.ADMIN,
+    command: 'activechats' + botPrefix,
+    description: {
+      en: 'List all active chats where the bot is used',
+      pt: 'Listar todos os chats ativos onde o bot é usado',
+    },
+    handler: listActiveChats,
   },
   openharemuser: {
     minPermission: ProfileType.ADMIN,

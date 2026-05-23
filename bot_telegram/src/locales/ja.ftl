@@ -702,6 +702,19 @@ setlang-name-ja = 日本語
 cmd-desc-setlang = ボットの言語を変更
 
 ############################
+# ACTIVE CHATS #
+############################
+activechats-header = <b>📋 アクティブチャット ({$total}):</b>
+activechats-none = アクティブなチャットが見つかりません。
+activechats-line-group = {$n}. <b>{$title}</b>\n   👥 グループ | {$count}x | <code>{$chatId}</code>
+activechats-line-channel = {$n}. <b>{$title}</b>\n   📢 チャンネル | {$count}x | <code>{$chatId}</code>
+activechats-btn-prev = ◀ 前へ
+activechats-btn-next = 次へ ▶
+activechats-btn-close = ❌ 閉じる
+activechats-no-name = 名前なし
+activechats-no-access = アクセス不可
+
+############################
 # ANTI-FLOOD #
 ############################
 use-onLimitExceeded = { $mentionUser }がチャットに大量送信しています。10分間ボットを使用できません。

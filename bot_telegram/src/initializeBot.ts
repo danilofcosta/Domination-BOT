@@ -54,7 +54,7 @@ export default async function initializeBot(
 
   bot.use(
     session({
-      getSessionKey: (ctx) => `${ChatTypeBot}_${ctx.chat?.id || ctx.from?.id}`,
+      getSessionKey: (ctx) => `${ChatTypeBot}_${ctx.chat?.id || ctx.from?.id}_type_${ctx.chat?.type}`,
       initial: () => getInitialSession(ChatTypeBot),
       storage: new PrismaAdapter(prisma.session as any),
     }),
@@ -65,9 +65,9 @@ export default async function initializeBot(
   bot.use(rateLimiter);
   bot.use(banCheck);
 
-  if (process.env.NODE_ENV === "development") {
-    await registerCommands(bot);
-  }
+  // if (process.env.NODE_ENV === "production") {
+  //   await registerCommands(bot);
+  // }
 
   bot.use(privateCommands);
   bot.use(UserCommands);

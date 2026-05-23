@@ -32,7 +32,7 @@ export async function confirmCharacterAdd(ctx: MyContext, charId: number) {
       name: character.nome.trim(),
       origem: character.anime.trim(),
       mediaType: character.mediatype,
-      media: character.media ?? null,
+      media: character.media,
       mediaUniqueId: character.mediaUniqueId,
       slug,
     };
@@ -81,6 +81,16 @@ export async function confirmCharacterAdd(ctx: MyContext, charId: number) {
           },
         });
 
+
+    if (!character_db){
+
+      return    await Sendmedia({
+      ctx,
+      caption:ctx.t('error-add-character-db'),
+    
+    });
+    }
+
     let caption = create_caption({
       character: character_db,
       chatType: ctx.session.settings.genero,
@@ -95,14 +105,13 @@ export async function confirmCharacterAdd(ctx: MyContext, charId: number) {
       ),
     })}`;
 
-    await Sendmedia({
+await Sendmedia({
       ctx,
       chat_id: process.env.DATABASE_TELEGREM_ID,
       caption,
       per: character_db,
     });
 
-    await ctx.deleteMessage().catch(() => {});
   } catch (error) {
     console.error(error);
     await ctx.answerCallbackQuery(ctx.t("add-char-save-error"));

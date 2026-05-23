@@ -18,6 +18,7 @@ import { SetEventCallback } from "./handlers/commands/admin_bot/configs/set_even
 import { setlangCallback } from "./handlers/callbacks/callback_admin_bot/setlangCallback.js";
 import { unbanCallback } from "./handlers/callbacks/callback_admin_bot/unbanCallback.js";
 import { backupCallback } from "./handlers/callbacks/users_callback/backupCallback.js";
+import { activeChatsPagination } from "./handlers/commands/admin_bot/manage_users/active_chats.js";
 import { error } from "./utils/log.js";
 
 const callbacks = new Composer<MyContext>();
@@ -51,5 +52,7 @@ callbacks.callbackQuery(/^setevent_/, SetEventCallback);
 callbacks.callbackQuery(/^setlang_/, setlangCallback);
 callbacks.callbackQuery(/^maneger_user_unban-(\d+)/, unbanCallback);
 callbacks.callbackQuery(/^backup:/, backupCallback);
+callbacks.callbackQuery(/^activechats_page:/, activeChatsPagination);
+callbacks.callbackQuery("noop__", async (ctx) => ctx.answerCallbackQuery());
 
 export { callbacks };

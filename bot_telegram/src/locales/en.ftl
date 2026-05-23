@@ -703,6 +703,19 @@ setlang-name-ja = 日本語
 cmd-desc-setlang = Change the bot language
 
 ############################
+# ACTIVE CHATS #
+############################
+activechats-header = <b>📋 Active chats ({$total}):</b>
+activechats-none = No active chats found.
+activechats-line-group = {$n}. <b>{$title}</b>\n   👥 Group | {$count}x | <code>{$chatId}</code>
+activechats-line-channel = {$n}. <b>{$title}</b>\n   📢 Channel | {$count}x | <code>{$chatId}</code>
+activechats-btn-prev = ◀ Previous
+activechats-btn-next = Next ▶
+activechats-btn-close = ❌ Close
+activechats-no-name = No name
+activechats-no-access = no access
+
+############################
 # ANTI-FLOOD #
 ############################
 use-onLimitExceeded = { $mentionUser } is flooding the chat. will not be able to use the bot for 10 minutes.
