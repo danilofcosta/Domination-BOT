@@ -2,6 +2,7 @@ import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl";
 
 import { prisma } from "@/lib/prisma";
 import { Characterdb } from "@/lib/types";
+import { unstable_cache } from "next/cache";
 
 type WithDisplay<T> = T & {
   displayUrl: string | null;
@@ -28,19 +29,15 @@ async function mapWithDisplay<T extends Characterdb>(
   );
 }
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const skip = parseInt(url.searchParams.get("skip") || "0");
-  const take = parseInt(url.searchParams.get("take") || "20");
-  const sort = url.searchParams.get("sort") || "recent";
-  console.log(`Home sort: ${sort}, take: ${take}, skip: ${skip}`);
-  let orderBy: any;
-  if (sort === "likes") {
-    orderBy = [{ likes: "desc" }, { id: "asc" }];
-  } else {
-    orderBy = [{ createdAt: "desc" }, { id: "asc" }];
-  }
-  try {
+const getCachedHomeData = unstable_cache(
+  async (skip: number, take: number, sort: string) => {
+    let orderBy: any;
+    if (sort === "likes") {
+      orderBy = [{ likes: "desc" }, { id: "asc" }];
+    } else {
+      orderBy = [{ createdAt: "desc" }, { id: "asc" }];
+    }
+
     const [waifusRaw, husbandosRaw] = await Promise.all([
       prisma.characterWaifu.findMany({
         skip,
@@ -59,10 +56,21 @@ export async function GET(req: Request) {
       mapWithDisplay(husbandosRaw, "husbando"),
     ]);
 
-    return Response.json({
-      waifus,
-      husbandos,
-    });
+    return { waifus, husbandos };
+  },
+  ["home-data"],
+  { revalidate: 60, tags: ["home"] },
+);
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const skip = parseInt(url.searchParams.get("skip") || "0");
+  const take = parseInt(url.searchParams.get("take") || "20");
+  const sort = url.searchParams.get("sort") || "recent";
+  console.log(`Home sort: ${sort}, take: ${take}, skip: ${skip}`);
+  try {
+    const data = await getCachedHomeData(skip, take, sort);
+    return Response.json(data);
   } catch (e: any) {
     console.log("Erro  em buscar dados:", `CODIGO ${e.code}: ${e.message}`, e);
     return Response.json({

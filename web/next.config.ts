@@ -23,7 +23,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['192.168.0.102'],
+  allowedDevOrigins: ['umbrel.local'],
   poweredByHeader: false,
   experimental: {
     serverActions: {

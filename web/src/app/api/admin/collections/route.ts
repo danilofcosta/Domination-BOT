@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 
-export async function GET() {
-  try {
+const getCachedCollections = unstable_cache(
+  async () => {
     const topWaifus = await prisma.waifuCollection.groupBy({
       by: ["characterId"],
       _sum: { count: true },
@@ -104,16 +105,24 @@ export async function GET() {
     });
 
     const totalCollections = (waifuTotal._sum?.count || 0) + (husbandoTotal._sum?.count || 0);
-
     const totalUsers = userIds.length;
 
-    return NextResponse.json({
+    return {
       topWaifus: topWaifuResults,
       topHusbandos: topHusbandoResults,
       topOwners,
       totalCollections,
       totalUsers,
-    });
+    };
+  },
+  ["admin-collections"],
+  { revalidate: 120, tags: ["collections"] },
+);
+
+export async function GET() {
+  try {
+    const data = await getCachedCollections();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Erro ao buscar estatísticas:", error);
     return NextResponse.json({ error: "Erro ao buscar estatísticas" }, { status: 500 });

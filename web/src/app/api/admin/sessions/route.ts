@@ -1,16 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 
-export async function GET() {
-  try {
+const getCachedSessions = unstable_cache(
+  async () => {
     const sessions = await prisma.session.findMany({
       orderBy: { key: "desc" },
     });
 
-    return NextResponse.json(sessions.map(s => ({
+    return sessions.map(s => ({
       key: s.key,
       value: typeof s.value === 'string' ? JSON.parse(s.value) : s.value,
-    })));
+    }));
+  },
+  ["admin-sessions"],
+  { revalidate: 60, tags: ["sessions"] },
+);
+
+export async function GET() {
+  try {
+    const data = await getCachedSessions();
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Erro ao buscar sessões:", error);
     return NextResponse.json({ error: "Failed to fetch sessions" }, { status: 500 });

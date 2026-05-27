@@ -444,6 +444,7 @@ add_character_edit_btn_anime = Anime
 add_character_edit_btn_events=eventos
 add_character_edit_btn_rarities=reridades
 add_character_edit_btn_confirm=salvar
+add_character_edit_btn_cancel = cancelar
 
 edit_character_prompt_nome = ✏️ Envie o novo nome:
     <b>Atual:</b> { $current }

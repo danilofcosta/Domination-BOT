@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function POST() {
+export async function POST(request: Request) {
   const cookieStore = await cookies();
-  
+
   cookieStore.set("admin_session", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -12,5 +12,6 @@ export async function POST() {
     maxAge: 0,
   });
 
-  return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_URL || "http://localhost:3000"));
+  const baseUrl = new URL(request.url).origin;
+  return NextResponse.redirect(new URL("/login", baseUrl));
 }

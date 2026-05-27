@@ -5,7 +5,7 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { SourceType, ProfileType } from "../../../generated/prisma/client";
 import { slugify } from "@/lib/telegram/create_slug";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
 import {
@@ -36,68 +36,69 @@ const mediaCache = new LRUCache<string, string>({
 
 // --- Dashboard & Stats ---
 
-export async function getDashboardData() {
-  try {
-    const [
-      totalUsers,
-      totalWaifus,
-      totalHusbandos,
-      totalCollectionsWaifu,
-      totalCollectionsHusbando,
-      profileDistribution,
-      totalLikes,
-      totalDislikes,
-      mediaTypeDistribution,
-      sourceTypeDistribution,
-      topEvents,
-      topRarities,
-      recentWaifus,
-      recentHusbandos,
-      totalEvents,
-      totalRarities,
-      totalGroups,
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.characterWaifu.count(),
-      prisma.characterHusbando.count(),
-      prisma.waifuCollection.count(),
-      prisma.husbandoCollection.count(),
-      prisma.user.groupBy({
-        by: ["profileType"],
-        _count: { profileType: true },
-      }),
-      prisma.$queryRaw`SELECT COALESCE(SUM(likes), 0) as total FROM "CharacterWaifu" UNION ALL SELECT COALESCE(SUM(likes), 0) FROM "CharacterHusbando"`.then(
-        (r) =>
-          (r as any[]).reduce(
-            (acc: number, row: any) => acc + Number(row.total),
-            0,
-          ),
-      ),
-      prisma.$queryRaw`SELECT COALESCE(SUM(dislikes), 0) as total FROM "CharacterWaifu" UNION ALL SELECT COALESCE(SUM(dislikes), 0) FROM "CharacterHusbando"`.then(
-        (r) =>
-          (r as any[]).reduce(
-            (acc: number, row: any) => acc + Number(row.total),
-            0,
-          ),
-      ),
-      prisma.$queryRaw`
-        SELECT "mediaType", COUNT(*) as count FROM "CharacterWaifu" GROUP BY "mediaType"
-        UNION ALL
-        SELECT "mediaType", COUNT(*) FROM "CharacterHusbando" GROUP BY "mediaType"
-      `.then((r) => {
-        const map = new Map<string, number>();
-        (r as any[]).forEach((row: any) => {
-          const key = row.mediaType || "UNKNOWN";
-          map.set(key, (map.get(key) || 0) + Number(row.count));
-        });
-        return Array.from(map.entries()).map(([name, value]) => ({
-          name,
-          value,
-        }));
-      }),
-      prisma.$queryRaw`
-        SELECT "sourceType", COUNT(*) as count FROM "CharacterWaifu" GROUP BY "sourceType"
-        UNION ALL
+export const getDashboardData = unstable_cache(
+  async () => {
+    try {
+      const [
+        totalUsers,
+        totalWaifus,
+        totalHusbandos,
+        totalCollectionsWaifu,
+        totalCollectionsHusbando,
+        profileDistribution,
+        totalLikes,
+        totalDislikes,
+        mediaTypeDistribution,
+        sourceTypeDistribution,
+        topEvents,
+        topRarities,
+        recentWaifus,
+        recentHusbandos,
+        totalEvents,
+        totalRarities,
+        totalGroups,
+      ] = await Promise.all([
+        prisma.user.count(),
+        prisma.characterWaifu.count(),
+        prisma.characterHusbando.count(),
+        prisma.waifuCollection.count(),
+        prisma.husbandoCollection.count(),
+        prisma.user.groupBy({
+          by: ["profileType"],
+          _count: { profileType: true },
+        }),
+        prisma.$queryRaw`SELECT COALESCE(SUM(likes), 0) as total FROM "CharacterWaifu" UNION ALL SELECT COALESCE(SUM(likes), 0) FROM "CharacterHusbando"`.then(
+          (r) =>
+            (r as any[]).reduce(
+              (acc: number, row: any) => acc + Number(row.total),
+              0,
+            ),
+        ),
+        prisma.$queryRaw`SELECT COALESCE(SUM(dislikes), 0) as total FROM "CharacterWaifu" UNION ALL SELECT COALESCE(SUM(dislikes), 0) FROM "CharacterHusbando"`.then(
+          (r) =>
+            (r as any[]).reduce(
+              (acc: number, row: any) => acc + Number(row.total),
+              0,
+            ),
+        ),
+        prisma.$queryRaw`
+          SELECT "mediaType", COUNT(*) as count FROM "CharacterWaifu" GROUP BY "mediaType"
+          UNION ALL
+          SELECT "mediaType", COUNT(*) FROM "CharacterHusbando" GROUP BY "mediaType"
+        `.then((r) => {
+          const map = new Map<string, number>();
+          (r as any[]).forEach((row: any) => {
+            const key = row.mediaType || "UNKNOWN";
+            map.set(key, (map.get(key) || 0) + Number(row.count));
+          });
+          return Array.from(map.entries()).map(([name, value]) => ({
+            name,
+            value,
+          }));
+        }),
+        prisma.$queryRaw`
+          SELECT "sourceType", COUNT(*) as count FROM "CharacterWaifu" GROUP BY "sourceType"
+          UNION ALL
         SELECT "sourceType", COUNT(*) FROM "CharacterHusbando" GROUP BY "sourceType"
       `.then((r) => {
         const map = new Map<string, number>();
@@ -253,46 +254,52 @@ export async function getDashboardData() {
       recentCharacters: { waifus: [], husbandos: [] },
     };
   }
-}
+},
+  ["dashboard-data"],
+  { revalidate: 60, tags: ["dashboard"] },
+);
 
 // --- Users ---
 
-export async function getUsers() {
-  try {
-    const users = await prisma.user.findMany({
-      orderBy: { id: "desc" },
-      include: {
-        _count: {
-          select: {
-            WaifuCollection: true,
-            HusbandoCollection: true,
+export const getUsers = unstable_cache(
+  async () => {
+    try {
+      const users = await prisma.user.findMany({
+        orderBy: { id: "desc" },
+        include: {
+          _count: {
+            select: {
+              WaifuCollection: true,
+              HusbandoCollection: true,
+            },
+          },
+          CharacterWaifu: {
+            include: {
+              WaifuEvent: { include: { Event: true } },
+              WaifuRarity: { include: { Rarity: true } },
+            },
+          },
+          CharacterHusbando: {
+            include: {
+              HusbandoEvent: { include: { Event: true } },
+              HusbandoRarity: { include: { Rarity: true } },
+            },
           },
         },
-        CharacterWaifu: {
-          include: {
-            WaifuEvent: { include: { Event: true } },
-            WaifuRarity: { include: { Rarity: true } },
-          },
-        },
-        CharacterHusbando: {
-          include: {
-            HusbandoEvent: { include: { Event: true } },
-            HusbandoRarity: { include: { Rarity: true } },
-          },
-        },
-      },
-    });
+      });
 
-    // Tratamento de BigInt para JSON
-    return users.map((u) => ({
-      ...u,
-      telegramId: u.telegramId.toString(),
-    }));
-  } catch (error) {
-    console.error("Erro ao buscar usuários:", error);
-    return [];
-  }
-}
+      return users.map((u) => ({
+        ...u,
+        telegramId: u.telegramId.toString(),
+      }));
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+      return [];
+    }
+  },
+  ["admin-users"],
+  { revalidate: 60, tags: ["users"] },
+);
 
 export async function deleteUser(telegramId: string) {
   const session = await getSession();
@@ -304,6 +311,7 @@ export async function deleteUser(telegramId: string) {
     await prisma.user.delete({ where: { telegramId: BigInt(telegramId) } });
     revalidatePath("/admin");
     revalidatePath("/admin/users");
+    revalidateTag("users", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao excluir usuário:", error);
@@ -346,6 +354,7 @@ export async function updateUserProfileType(
     });
     revalidatePath("/admin");
     revalidatePath("/admin/users");
+    revalidateTag("users", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar perfil:", error);
@@ -379,6 +388,7 @@ export async function createEvent(formData: FormData) {
     });
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao criar evento:", error);
@@ -396,6 +406,7 @@ export async function deleteEvent(id: number) {
   try {
     await prisma.event.delete({ where: { id } });
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao excluir evento:", error);
@@ -417,6 +428,7 @@ export async function updateEvent(id: number, formData: FormData) {
     });
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar evento:", error);
@@ -450,6 +462,7 @@ export async function createRarity(formData: FormData) {
     });
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao criar raridade:", error);
@@ -467,6 +480,7 @@ export async function deleteRarity(id: number) {
   try {
     await prisma.rarity.delete({ where: { id } });
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao excluir raridade:", error);
@@ -488,6 +502,7 @@ export async function updateRarity(id: number, formData: FormData) {
     });
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar raridade:", error);
@@ -684,6 +699,8 @@ export async function createCharacter(formData: FormData) {
     }
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
+    revalidateTag("filters", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao criar personagem:", error);
@@ -818,6 +835,8 @@ export async function updateCharacter(
     }
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
+    revalidateTag("filters", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar personagem:", error);
@@ -853,6 +872,8 @@ export async function deleteCharacter(
     }
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
+    revalidateTag("filters", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao excluir personagem:", error);
@@ -905,6 +926,8 @@ export async function bulkUpdateCharacters(
     }
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
+    revalidateTag("filters", { expire: 60 });
     return { success: true, updated: ids.length };
   } catch (error) {
     console.error("Erro ao atualizar personagens em massa:", error);
@@ -1106,6 +1129,7 @@ export async function updateTelegramGroup(id: number, formData: FormData) {
     });
 
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar grupo do Telegram:", error);
@@ -1124,6 +1148,7 @@ export async function deleteTelegramGroup(id: number) {
   try {
     await prisma.telegramGroup.delete({ where: { id } });
     revalidatePath("/admin");
+    revalidateTag("dashboard", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao excluir grupo do Telegram:", error);
@@ -1170,6 +1195,7 @@ export async function adjustUserCoins(
     });
 
     revalidatePath("/admin");
+    revalidateTag("users", { expire: 60 });
     return { success: true, newCoins };
   } catch (error) {
     console.error("Erro ao ajustar moedas:", error);

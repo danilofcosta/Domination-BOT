@@ -11,6 +11,7 @@ import { TelegramGroupManagement } from "@/components/groups/telegram-group-mana
 import { UserManagementTable_page } from "@/components/user/user-management-table-page";
 import { SessionLogsBots } from "@/components/sessions/session-logs-bots";
 import { CollectionStats } from "@/components/collections/collection-stats";
+import { ProfileSettings } from "@/components/profile/profile-settings";
 import { getSession } from "@/lib/auth/auth";
 
 export default async function Page({
@@ -174,6 +175,18 @@ export default async function Page({
               <div className="h-1 w-12 bg-primary rounded-full mt-1" />
             </div>
             <CollectionStats />
+          </div>
+        )}
+
+        {activeTab === "profile" && (
+          <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+            <ProfileSettings
+              currentUser={{
+                firstName: session?.firstName || "Usuário",
+                profileType: session?.profileType || "USER",
+                telegramId: session?.telegramId || "",
+              }}
+            />
           </div>
         )}
       </main>

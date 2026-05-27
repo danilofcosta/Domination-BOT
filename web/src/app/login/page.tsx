@@ -11,7 +11,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/admin";
 
-  const [loginMode, setLoginMode] = useState<"telegram" | "credentials">("telegram");
+  const [loginMode, setLoginMode] = useState<"telegram" | "credentials">("credentials");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -122,17 +122,6 @@ function LoginContent() {
                 <div className="flex bg-muted/50 rounded-xl p-1 border border-border/30">
                   <button
                     type="button"
-                    onClick={() => setLoginMode("telegram")}
-                    className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
-                      loginMode === "telegram"
-                        ? "bg-primary text-primary-foreground shadow-lg"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    Telegram
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => setLoginMode("credentials")}
                     className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
                       loginMode === "credentials"
@@ -141,6 +130,17 @@ function LoginContent() {
                     }`}
                   >
                     Credenciais
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLoginMode("telegram")}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                      loginMode === "telegram"
+                        ? "bg-primary text-primary-foreground shadow-lg"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Telegram
                   </button>
                 </div>
 

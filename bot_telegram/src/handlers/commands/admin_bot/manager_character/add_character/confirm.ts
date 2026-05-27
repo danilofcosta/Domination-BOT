@@ -48,7 +48,8 @@ export async function confirmCharacterAdd(ctx: MyContext, charId: number) {
 
     await Sendmedia({
       ctx,
-      chat_id: process.env.DATABASE_TELEGRAM_ID,
+
+      chat_id: process.env.DATABASE_TELEGREM_ID,
       caption,
       per: character_db,
     });

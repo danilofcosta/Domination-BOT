@@ -28,6 +28,7 @@ import {
   SparklesIcon,
   FileJsonIcon,
   TrophyIcon,
+  UserIcon,
   X,
 } from "lucide-react";
 
@@ -61,6 +62,12 @@ const navItems = [
       { title: "Grupos Telegram", url: "/admin?tab=groups", icon: Settings2Icon },
       { title: "Sessões Bots", url: "/admin?tab=session_logs_bots", icon: FileJsonIcon },
       { title: "Top Coleções", url: "/admin?tab=collections", icon: TrophyIcon },
+    ],
+  },
+  {
+    title: "Conta",
+    items: [
+      { title: "Perfil", url: "/admin?tab=profile", icon: UserIcon },
     ],
   },
   {
