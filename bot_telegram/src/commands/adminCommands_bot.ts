@@ -7,7 +7,7 @@ import { ProfileType, type MyContext } from '../utils/customTypes.js';
 import { botPrefix, options } from './botConfigCommands.js';
 import { onlyRoleBotAdmin } from '../utils/permissions.js';
 
-import { AddCharacterHandler } from '../handlers/commands/admin_bot/manager_character/add/add_character.js';
+import { AddCharacterHandler } from '../handlers/commands/admin_bot/manager_character/add_character/handler.js';
 import { addCollection } from '../handlers/commands/admin_bot/manage_users/add_collection.js';
 
 import { SetRarityHandler } from '../handlers/commands/admin_bot/configs/set_rarity.js';

@@ -1,7 +1,7 @@
 import { getCharacter } from "../../../../../cache/cache.js";
 import type { MyContext, PreCharacter } from "../../../../../utils/customTypes.js";
 
-export async function addCharacter_edit_CallbackData(
+export async function addCharacterEditMenu(
   ctx: MyContext,
   id_cached: string | undefined,
 ) {
@@ -25,7 +25,7 @@ export async function addCharacter_edit_CallbackData(
     mediatype: character.mediatype,
     media: character.media,
   });
-  // add text no local
+
   const inline_keyboard = [
     [
       {
@@ -51,6 +51,9 @@ export async function addCharacter_edit_CallbackData(
       {
         text: ctx.t("add_character_edit_btn_confirm"),
         callback_data: `edit_character_edit_confirm_${id_cached}`,
+      },      {
+        text: ctx.t("add_character_edit_btn_cancel"),
+        callback_data: `close`,
       },
     ],
   ];

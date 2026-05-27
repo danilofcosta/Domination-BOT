@@ -2,7 +2,6 @@ import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { buildKeyboard } from "../../../utils/btns.js";
-import { AddCharacterHandler } from "../admin_bot/manager_character/add/add_character.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 
 const help_dict = {

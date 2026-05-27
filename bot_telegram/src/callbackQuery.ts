@@ -8,8 +8,8 @@ import { haremmodeCallback } from "./handlers/callbacks/users_callback/haremmode
 import { topCallbackQuery } from "./handlers/callbacks/users_callback/topCallbackQuery.js";
 import { helpCommand } from "./handlers/commands/globais/help.js";
 import { helpCallback } from "./handlers/callbacks/users_callback/helpCallback.js";
-import { addCharacterCallbackData } from "./handlers/commands/admin_bot/manager_character/add/add_character_callback.js";
-import { handleEditMenuCallback } from "./handlers/commands/admin_bot/manager_character/add/edit-menu-callback.js";
+import { addCharacterCallbackData } from "./handlers/commands/admin_bot/manager_character/add_character/callback.js";
+import { handleEditMenuCallback } from "./handlers/commands/admin_bot/manager_character/add_character/edit.callback.js";
 import { ClickByDetail_Callback } from "./handlers/callbacks/users_callback/cickCallback.js";
 import { randomCharacterCallback } from "./handlers/callbacks/users_callback/randomCharacterCallback.js";
 import { addCollectionCallback } from "./handlers/callbacks/callback_admin_bot/add_collection.js";

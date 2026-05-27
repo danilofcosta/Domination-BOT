@@ -8,7 +8,7 @@ import {
   QueryCharacet,
 } from "./handlers/inline_query/inline_query.js";
 import { getCharacter, setCharacter, getCharList } from "./cache/cache.js";
-import { addCharacter_edit_CallbackData } from "./handlers/commands/admin_bot/manager_character/add/add_character_edit.js";
+import { addCharacterEditMenu } from "./handlers/commands/admin_bot/manager_character/add_character/edit.ui.js";
 import { debug, info, error as logError } from "./utils/log.js";
 import { ChatType } from "./utils/customTypes.js";
 import { inline_per } from "./handlers/inline_query/inline_by_id.js";
@@ -265,7 +265,7 @@ listeners.on("message:text", async (ctx, next) => {
     setCharacter(numTargetId, character);
     ctx.session.adminSetup = { action: null, targetId: null };
 
-    await addCharacter_edit_CallbackData(ctx, String(numTargetId));
+    await addCharacterEditMenu(ctx, String(numTargetId));
     return;
   }
   return next();
