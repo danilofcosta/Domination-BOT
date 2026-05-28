@@ -12,6 +12,7 @@ const LIMIT = 20;
 export async function getCharacters(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
   const query = ctx.inlineQuery.query;
+  if (!query || isNaN(Number(query))) return;
    let _chatType = Get_chatType(ctx);
 
   const per =

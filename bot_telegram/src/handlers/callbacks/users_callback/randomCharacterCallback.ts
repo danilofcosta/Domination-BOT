@@ -1,6 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../utils/customTypes.js";
-import { reactionCooldown } from "../../../cache/cache.js";
+import { reactionCooldown, characterCache } from "../../../cache/cache.js";
 import { warn, error } from "../../../utils/log.js";
 import { bts_yes_or_no } from "../../../utils/btns.js";
 
@@ -79,6 +79,8 @@ export async function randomCharacterCallback(ctx: MyContext) {
         }
       });
     }
+
+    characterCache.delete(`GetCharacterById:${isWaifu ? ChatType.WAIFU : ChatType.HUSBANDO}:${charId}`);
 
     const updatedChar = isWaifu
       ? await prisma.characterWaifu.findUnique({ where: { id: charId } })

@@ -41,6 +41,11 @@ export const charCountCache = new LRUCache<string, number>({
   ttl: 1000 * 60 * 5,
 });
 
+export const maxIdCache = new LRUCache<string, number>({
+  max: 10,
+  ttl: 1000 * 60 * 5,
+});
+
 export async function getOrSet<T>(
   cache: LRUCache<string, any>,
   key: string,

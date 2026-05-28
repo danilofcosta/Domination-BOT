@@ -2,6 +2,7 @@ import { prisma } from "../../../../../lib/prisma.js";
 import { Prisma } from "@prisma/client";
 import { generateSlug } from "../utils/slug.js";
 import type { ChatType } from "../../../../../utils/customTypes.js";
+import { maxIdCache } from "../../../../../cache/cache.js";
 
 export type CreateCharacterData = {
   nome: string;
@@ -39,8 +40,10 @@ export async function createCharacter(data: CreateCharacterData) {
 
   const slug = generateSlug(data.nome, data.anime);
 
+  const cacheKey = data.genero === "husbando" ? "maxId:husbando" : "maxId:waifu";
+
   if (data.genero === "husbando") {
-    return await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const char = await tx.characterHusbando.create({
         data: {
           name: data.nome,
@@ -72,9 +75,11 @@ export async function createCharacter(data: CreateCharacterData) {
       });
       return char;
     });
+    maxIdCache.delete(cacheKey);
+    return result;
   }
 
-  return await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const char = await tx.characterWaifu.create({
       data: {
         name: data.nome,
@@ -106,6 +111,8 @@ export async function createCharacter(data: CreateCharacterData) {
     });
     return char;
   });
+  maxIdCache.delete(cacheKey);
+  return result;
 }
 
 export async function getCharacterById(id: number, genero: ChatType) {

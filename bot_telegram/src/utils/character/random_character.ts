@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 import { ChatType, type Character } from "../customTypes.js";
 import { info, error } from "../log.js";
+import { maxIdCache, getOrSet } from "../../cache/cache.js";
 
 const eventSelect = { select: { name: true, emoji: true, emoji_id: true } };
 const raritySelect = { select: { name: true, emoji: true, emoji_id: true } };
@@ -21,10 +22,13 @@ async function getRandom<T>(
     findFirst: (args: any) => Promise<T | null>;
   },
   include: object,
+  cacheKey: string,
 ): Promise<T | null> {
   try {
-    const result = await model.aggregate({ _max: { id: true } });
-    const maxId = result._max.id;
+    const maxId = await getOrSet(maxIdCache, cacheKey, async () => {
+      const result = await model.aggregate({ _max: { id: true } });
+      return result._max.id;
+    });
     if (!maxId) return null;
 
     const randomId = Math.floor(Math.random() * maxId) + 1;
@@ -55,10 +59,10 @@ export async function RandomCharacter(
   info(`RandomCharacter - buscando personagem aleatório`, { genero });
 
   if (genero === ChatType.HUSBANDO) {
-    return getRandom<Character>(prisma.characterHusbando, husbandoInclude);
+    return getRandom<Character>(prisma.characterHusbando, husbandoInclude, "maxId:husbando");
   }
   if (genero === ChatType.WAIFU) {
-    return getRandom<Character>(prisma.characterWaifu, waifuInclude);
+    return getRandom<Character>(prisma.characterWaifu, waifuInclude, "maxId:waifu");
   }
   return null;
 }

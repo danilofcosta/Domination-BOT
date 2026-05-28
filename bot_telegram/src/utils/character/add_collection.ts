@@ -17,7 +17,6 @@ export async function AddCharacterCollection({
 }: AddCharacterCollectionForm) {
   const isWaifu = type === "waifu";
 
-  // Garantindo compatibilidade com BigInt do Prisma
   const telegramId = BigInt(userId);
 
   info("AddCharacterCollection", {
@@ -28,47 +27,51 @@ export async function AddCharacterCollection({
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      //user ja tem um favorito?
-      const existingUser = await tx.user.findUnique({
-        where: { telegramId },
-        select: { favoriteWaifuId: true, favoriteHusbandoId: true },
-      });
-
-      //verifica se o user existe caso existir e o favorito for null add o persogem atual
-      //caso favorito existir deve manter 
-      // caso user n existir deve ser criado (telegramId) obrigatorio 
-
-
+      // 1. Garantir que o user existe (sem lógica de favorito)
       await tx.user.upsert({
         where: { telegramId },
         update: {
           ...(from && { telegramData: from }),
-          ...(isWaifu && existingUser?.favoriteWaifuId == null && { favoriteWaifuId: characterId }),
-          ...(!isWaifu && existingUser?.favoriteHusbandoId == null && { favoriteHusbandoId: characterId }),
         },
         create: {
           telegramId,
           telegramData: from ?? {},
-          favoriteWaifuId: isWaifu ? characterId : null,
-          favoriteHusbandoId: !isWaifu ? characterId : null,
           waifuConfig: {},
           husbandoConfig: {},
         },
       });
-// add persogem na coleção do user 
-// caso o persogem ja exista incrementa mais 1 no count
 
-      const collection = isWaifu
-        ? await tx.waifuCollection.upsert({
-            where: { userId_characterId: { userId: telegramId, characterId } },
-            update: { count: { increment: 1 } },
-            create: { userId: telegramId, characterId, count: 1 },
-          })
-        : await tx.husbandoCollection.upsert({
-            where: { userId_characterId: { userId: telegramId, characterId } },
-            update: { count: { increment: 1 } },
-            create: { userId: telegramId, characterId, count: 1 },
-          });
+      // 2. Atribuir favorito atômico (só se ainda for null)
+      if (isWaifu) {
+        await tx.user.updateMany({
+          where: { telegramId, favoriteWaifuId: null },
+          data: { favoriteWaifuId: characterId },
+        });
+      } else {
+        await tx.user.updateMany({
+          where: { telegramId, favoriteHusbandoId: null },
+          data: { favoriteHusbandoId: characterId },
+        });
+      }
+
+      // 3. Inserir/incrementar coleção sem queimar sequence
+      const table = isWaifu ? '"WaifuCollection"' : '"HusbandoCollection"';
+      const [collection] = await tx.$queryRawUnsafe<Array<{ id: number; count: number }>>(
+        `
+        WITH updated AS (
+          UPDATE ${table}
+          SET "count" = "count" + 1, "updatedAt" = NOW()
+          WHERE "userId" = $1::bigint AND "characterId" = $2
+          RETURNING id, count
+        )
+        INSERT INTO ${table} ("userId", "characterId", "count", "createdAt", "updatedAt")
+        SELECT $1::bigint, $2, 1, NOW(), NOW()
+        WHERE NOT EXISTS (SELECT 1 FROM updated)
+        RETURNING id, count
+        `,
+        telegramId,
+        characterId,
+      );
 
       return collection;
     });
@@ -78,9 +81,8 @@ export async function AddCharacterCollection({
       characterId,
       count: result.count,
     });
-    
-    // caso sucesso retorna a per na coleção 
-    return result;
+
+    return result as any;
   } catch (e) {
     error("AddCharacterCollection ERROR", e);
 
