@@ -162,6 +162,17 @@ export const adminCommands_bot_dict = {
 
 const adminCommands_bot = new CommandGroup<MyContext>();
 
-// loop de registro desativado
+for (const [key, value] of Object.entries(adminCommands_bot_dict)) {
+  const handlerWrapper = async (ctx: MyContext) => {
+    debug("AdminCommand", value.command, "executado por", ctx.from?.username);
+    await onlyRoleBotAdmin(value.minPermission)(ctx, async () => {
+      await value.handler(ctx);
+    });
+  };
+
+  adminCommands_bot
+    .command(value.command, value.description.pt, handlerWrapper, options)
+    .addToScope({ type: "all_private_chats" }, handlerWrapper);
+}
 
 export { adminCommands_bot };

@@ -16,7 +16,7 @@ export async function countMessages(ctx: MyContext) {
   if (!ctx.chat) return;
 
   const runtime = getRuntime(ctx.chat.id);
-  console.log('chatid',ctx.chat.id,'name_grupo',ctx.chat.title, 'cont',runtime.cont )
+ // console.log('chatid',ctx.chat.id,'name_grupo',ctx.chat.title, 'cont',runtime.cont )
 
   if (!runtime) {
     return;
