@@ -8,7 +8,7 @@ import { CreateOneBtn } from "../../utils/btns.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../utils/character/get_by_id.js";
 
-const DROP = 10;
+const DROP = 100;
 const UNDROP = DROP + 40;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
