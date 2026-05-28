@@ -113,7 +113,7 @@ const giftid = Number(_text.trim());
   });
 
   const GiftCharacter = await findCollectionWithIncludes({
-    isWaifu: ctx.session.settings.genero === ChatType.WAIFU,
+    isWaifu: ctx.botType === ChatType.WAIFU,
     telegramId: ctx.from!.id,
     characterId: giftid,
   });
@@ -127,14 +127,14 @@ const giftid = Number(_text.trim());
     await Sendmedia({
       ctx,
       caption: ctx.t("fav-not-found", {
-        genero: ctx.session.settings.genero.toLowerCase(),
+        genero: ctx.botType.toLowerCase(),
       }),
     });
     return;
   }
 
   const characterData =
-    ctx.session.settings.genero === ChatType.WAIFU
+    ctx.botType === ChatType.WAIFU
       ? (GiftCharacter as any).Character
       : (GiftCharacter as any).Character;
 

@@ -43,7 +43,7 @@ if (action === "no") {
 
     return;
   }
-  const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
+  const isWaifu = ctx.botType === ChatType.WAIFU;
   info(`giftConfirmHandler - processando presente`, {
     senderId,
     receiverId,

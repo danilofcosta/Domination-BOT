@@ -201,7 +201,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
     anime: anime.trim(),
     rarities,
     events,
-    genero: ctx.session.settings.genero,
+    genero: ctx.botType,
     mediatype: media.type,
     media: media.fileId,
     mediaUniqueId: media.fileUniqueId,

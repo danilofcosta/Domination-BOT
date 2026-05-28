@@ -5,6 +5,7 @@ import { error } from "../../../../utils/log.js";
 import { rarityCache, getOrSet } from "../../../../cache/cache.js";
 import { extrair_customid } from "../../testes_commands.js";
 import { Id_to_enomji } from "../../../../utils/manage_captures/extract_emojis.js";
+import { getRarityEditCache, clearRarityEditCache, getAdminSetup, setAdminSetup, clearAdminSetup } from "../../../../cache/workflowState.js";
 
 interface RarityEditCache {
   name?: string;
@@ -113,25 +114,6 @@ function getEditKeyboard(
   return keyboard;
 }
 
-function getRarityEditCache(
-  ctx: MyContext,
-  rarityCode: string,
-): RarityEditCache {
-  if (!ctx.session.rarityEdits) {
-    ctx.session.rarityEdits = {};
-  }
-  if (!ctx.session.rarityEdits[rarityCode]) {
-    ctx.session.rarityEdits[rarityCode] = {};
-  }
-  return ctx.session.rarityEdits[rarityCode];
-}
-
-function clearRarityEditCache(ctx: MyContext, rarityCode: string): void {
-  if (ctx.session.rarityEdits && ctx.session.rarityEdits[rarityCode]) {
-    delete ctx.session.rarityEdits[rarityCode];
-  }
-}
-
 function hasChanges(cache: RarityEditCache): boolean {
   return Object.values(cache).some((v) => v !== undefined);
 }
@@ -149,7 +131,6 @@ export async function SetRarityHandler(ctx: MyContext) {
 
   if (!input) {
     const page = Number(ctx.match) || 1;
-    ctx.session.rarityListPage = page;
 
     const allRarities = await getOrSet(
       rarityCache,
@@ -242,7 +223,7 @@ export async function SetRarityHandler(ctx: MyContext) {
   }
 
   const cache = getRarityEditCache(ctx, rarity.code);
-  const currentPage = ctx.session.rarityListPage || 1;
+  const currentPage = 1;
   const keyboard = getEditKeyboard(ctx, rarity.code, hasChanges(cache), currentPage);
   const message = await formatEditMessage(rarity, cache, ctx);
 
@@ -268,7 +249,7 @@ export async function SetRarityCallback(ctx: MyContext) {
     await ctx.answerCallbackQuery();
     const keyboard = new InlineKeyboard().text(
       ctx.t("setrarity-btn-back-list"),
-      `setrarity_list_${ctx.session.rarityListPage || 1}`,
+      `setrarity_list_${1}`,
     );
     await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
     return;
@@ -276,7 +257,6 @@ export async function SetRarityCallback(ctx: MyContext) {
 
   if (action === "list") {
     const page = Math.max(1, Number(parts[2]) || 1);
-    ctx.session.rarityListPage = page;
 
     const allRarities = await getOrSet(
       rarityCache,
@@ -349,7 +329,7 @@ export async function SetRarityCallback(ctx: MyContext) {
 
     clearRarityEditCache(ctx, rarityCode);
     const cache = getRarityEditCache(ctx, rarityCode);
-    const currentPage = ctx.session.rarityListPage || 1;
+    const currentPage = 1;
     const keyboard = getEditKeyboard(
       ctx,
       rarity.code,
@@ -388,7 +368,7 @@ export async function SetRarityCallback(ctx: MyContext) {
       const keyboard = new InlineKeyboard();
       keyboard.text(
         ctx.t("setrarity-btn-back-list"),
-        `setrarity_list_${ctx.session.rarityListPage || 1}`,
+        `setrarity_list_${1}`,
       );
       await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
       await ctx.answerCallbackQuery(ctx.t("setrarity-no-changes"));
@@ -423,7 +403,7 @@ export async function SetRarityCallback(ctx: MyContext) {
 
       const keyboard = new InlineKeyboard().text(
         ctx.t("setrarity-btn-back-list"),
-        `setrarity_list_${ctx.session.rarityListPage || 1}`,
+        `setrarity_list_${1}`,
       );
 
       await ctx.editMessageText(message, {
@@ -456,12 +436,15 @@ export async function SetRarityCallback(ctx: MyContext) {
       return;
     }
 
-    if (!ctx.session.adminSetup) {
-      ctx.session.adminSetup = { action: null, targetId: null };
+    if (!getAdminSetup(ctx)) {
+      setAdminSetup(ctx, { action: null, targetId: null });
     }
     const normalizedField = field === "emojiid" ? "emojiId" : field;
-    ctx.session.adminSetup.action = `setrarity_${normalizedField}`;
-    ctx.session.adminSetup.targetId = rarityCode;
+    const currentSetup = getAdminSetup(ctx);
+    if (currentSetup) {
+      currentSetup.action = `setrarity_${normalizedField}`;
+      currentSetup.targetId = rarityCode;
+    }
 
     const currentValues: Record<string, string> = {
       name: rarity.name,
@@ -530,9 +513,11 @@ function extractCustomEmojiId(
 
 export async function SetRarityReplyHandler(ctx: MyContext) {
   if (!ctx.message?.text && !ctx.message?.caption) return;
-  if (!ctx.session.adminSetup?.action?.startsWith("setrarity_")) return;
 
-  const { action, targetId } = ctx.session.adminSetup;
+  const adminSetup = getAdminSetup(ctx);
+  if (!adminSetup?.action?.startsWith("setrarity_")) return;
+
+  const { action, targetId } = adminSetup;
   const field = action.replace("setrarity_", "");
   let newValue = ctx.message.text?.trim() || ctx.message.caption?.trim() || "";
 
@@ -562,7 +547,7 @@ export async function SetRarityReplyHandler(ctx: MyContext) {
       break;
   }
 
-  ctx.session.adminSetup = { action: null, targetId: null };
+  clearAdminSetup(ctx);
 
   const rarity = await prisma.rarity.findUnique({
     where: { code: targetId! },
@@ -577,7 +562,7 @@ export async function SetRarityReplyHandler(ctx: MyContext) {
     ctx,
     rarity.code,
     hasChanges(cache),
-    ctx.session.rarityListPage || 1,
+    1,
   );
   const message = await formatEditMessage(rarity, cache, ctx);
 

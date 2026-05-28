@@ -27,7 +27,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
 
   reactionCooldown.set(cooldownKey, true);
 
-  const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
+  const isWaifu = ctx.botType === ChatType.WAIFU;
 
   try {
     if (action === "yes") {

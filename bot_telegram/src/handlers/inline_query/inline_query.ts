@@ -163,7 +163,7 @@ function Get_chatType(
   let chatType: ChatType | undefined;
 
     try {
-    chatType = ctx.session.settings.genero
+    chatType = ctx.botType
   } catch (e) {
     log("erro ao buscar chat type");
     process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU

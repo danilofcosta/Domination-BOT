@@ -2,9 +2,11 @@ import type { Character, MyContext } from "./customTypes.js";
 
 import { InputFile, InlineKeyboard } from "grammy";
 import fs from "fs";
+import { prisma } from "../lib/prisma.js";
 
 import { MediaType } from "@prisma/client";
 import { error, debug } from "./log.js";
+import { getCachedTopic, setCachedTopic } from "../cache/topicCache.js";
 
  
 interface Media {
@@ -34,7 +36,25 @@ export async function Sendmedia(params: ParamsSendMedia) {
     throw new Error("chat_id não fornecido e ctx.chat.id não disponível");
   }
 
-  const directTopicId = ctx.session.grupo.directMessagesTopicId;
+  const directTopicId = await (async () => {
+    const chatId = ctx.chat?.id;
+    if (!chatId) return undefined;
+    const cached = getCachedTopic(chatId);
+    if (cached !== undefined) return cached || undefined;
+    try {
+      const group = await prisma.telegramGroup.findUnique({
+        where: { groupId: BigInt(chatId) },
+        select: { configuration: true },
+      });
+      if (group?.configuration && typeof group.configuration === "object" && "directMessagesTopicId" in (group.configuration as any)) {
+        const tid = Number((group.configuration as any).directMessagesTopicId);
+        setCachedTopic(chatId, tid);
+        return tid;
+      }
+    } catch { /* fallback */ }
+    setCachedTopic(chatId, 0);
+    return undefined;
+  })();
   const topicId = message_thread_id ?? directTopicId ?? undefined;
   const messageId = ctx.message?.message_id;
 

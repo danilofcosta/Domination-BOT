@@ -66,7 +66,7 @@ export async function addCollectionCallback(ctx: MyContext) {
           type:
             ((isMulti
               ? getAddToCollectionMulti(userId)?.genero
-              : ctx.session.settings.genero) as ChatType) || ChatType.WAIFU,
+              : ctx.botType) as ChatType) || ChatType.WAIFU,
           userId,
           from: isMulti ? getAddToCollectionMulti(userId)?.from : ctx.from,
           characterId: charId,

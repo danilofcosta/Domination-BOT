@@ -50,11 +50,11 @@ function getCollectionInclude(isHusbando: boolean) {
 export async function HaremHandler(ctx: MyContext, userId?: number) {
   info(`HaremHandler - carregando harém`, {
     userId: ctx.from?.id,
-    genero: ctx.session.settings.genero,
+    genero: ctx.botType,
   });
   const telegramId = userId ? userId : Number(ctx.from?.id);
 
-  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+  const isHusbando = ctx.botType === ChatType.HUSBANDO;
 
   const [user, collection] = await Promise.all([
     prisma.user.findUnique({

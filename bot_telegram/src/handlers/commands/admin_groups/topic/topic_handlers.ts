@@ -1,5 +1,42 @@
 import type { MyContext } from "../../../../utils/customTypes.js";
 import { info, warn, error } from "../../../../utils/log.js";
+import { prisma } from "../../../../lib/prisma.js";
+import { getCachedTopic, setCachedTopic } from "../../../../cache/topicCache.js";
+
+async function getTopicId(chatId: number): Promise<number | null> {
+  const cached = getCachedTopic(chatId);
+  if (cached !== undefined) return cached;
+  try {
+    const group = await prisma.telegramGroup.findUnique({
+      where: { groupId: BigInt(chatId) },
+      select: { configuration: true },
+    });
+    if (group?.configuration && typeof group.configuration === "object" && "directMessagesTopicId" in (group.configuration as any)) {
+      const tid = Number((group.configuration as any).directMessagesTopicId);
+      setCachedTopic(chatId, tid);
+      return tid;
+    }
+  } catch { /* fallback */ }
+  return null;
+}
+
+async function setTopicId(chatId: number, topicId: number): Promise<void> {
+  setCachedTopic(chatId, topicId);
+  try {
+    const existing = await prisma.telegramGroup.findUnique({
+      where: { groupId: BigInt(chatId) },
+      select: { configuration: true },
+    });
+    const config = (existing?.configuration as Record<string, any>) || {};
+    config.directMessagesTopicId = topicId;
+    await prisma.telegramGroup.update({
+      where: { groupId: BigInt(chatId) },
+      data: { configuration: config },
+    });
+  } catch (e) {
+    warn("topic_handlers - erro ao salvar topicId no DB", e);
+  }
+}
 
 async function checkIsForumChat(ctx: MyContext): Promise<boolean> {
   const chat = ctx.chat;
@@ -123,7 +160,7 @@ export async function renameTopicHandler(ctx: MyContext) {
 
   const topicId = ctx.message?.reply_to_message?.message_thread_id 
     || ctx.message?.message_thread_id 
-    || ctx.session.grupo.directMessagesTopicId;
+    || await getTopicId(chat.id);
 
   if (!topicId) {
     await ctx.reply(ctx.t("error-topic-id"));
@@ -167,14 +204,14 @@ export async function setActionTopicHandler(ctx: MyContext) {
     return;
   }
 
-  const topicId = ctx.message?.message_thread_id || ctx.session.grupo.directMessagesTopicId;
+  const topicId = ctx.message?.message_thread_id || await getTopicId(chat.id);
 
   if (!topicId) {
     await ctx.reply(ctx.t("error-topic-id"));
     return;
   }
 
-  ctx.session.grupo.directMessagesTopicId = topicId;
+  await setTopicId(chat.id, topicId);
 
   info("setActionTopicHandler - topic de ação configurado", { userId, chatId: chat.id, topicId });
   await ctx.reply(ctx.t("setactiontopic-success"));
@@ -211,7 +248,7 @@ export async function closeTopicHandler(ctx: MyContext) {
   if (ctx.message?.reply_to_message) {
     topicId = ctx.message.reply_to_message.message_thread_id;
   } else {
-    topicId = ctx.message?.message_thread_id || ctx.session.grupo.directMessagesTopicId;
+    topicId = ctx.message?.message_thread_id || await getTopicId(chat.id);
   }
 
   if (!topicId) {
@@ -261,7 +298,7 @@ export async function deleteTopicHandler(ctx: MyContext) {
   if (ctx.message?.reply_to_message) {
     topicId = ctx.message.reply_to_message.message_thread_id;
   } else {
-    topicId = ctx.message?.message_thread_id || ctx.session.grupo.directMessagesTopicId;
+    topicId = ctx.message?.message_thread_id || await getTopicId(chat.id);
   }
 
   if (!topicId) {

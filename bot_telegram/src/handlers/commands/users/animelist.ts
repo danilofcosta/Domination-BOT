@@ -99,8 +99,7 @@ async function showAnimeList(
   page: number = 1,
 ) {
   const userId = ctx.from?.id ?? 0;
-  const envType = process.env.TYPE_BOT || "waifu";
-  const genero = (ctx.session.settings?.genero || envType) as ChatType;
+  const genero = ctx.botType;
 
   const animes = await getAnimeList(letter, genero);
 
@@ -174,8 +173,7 @@ async function showAnimeList(
  */
 export async function animelistCommand(ctx: MyContext) {
   const userId = ctx.from?.id ?? 0;
-  const envType = process.env.TYPE_BOT || "waifu";
-  const genero = (ctx.session.settings?.genero || envType) as ChatType;
+  const genero = ctx.botType;
   const cacheKey = String(userId) + "_al";
 
   setCache(cacheKey, { letter: "", animes: [], genero, userId });

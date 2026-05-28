@@ -10,7 +10,7 @@ export async function createSecretCaption(
   const { emoji_event, emoji_raridade } = extractListEmojisCharacter(character, false);
 
   const generoTexto = ctx.t(
-    ctx.session.settings.genero === ChatType.HUSBANDO
+    ctx.botType === ChatType.HUSBANDO
       ? "form-caption-gender-husbando"
       : "form-caption-gender-waifu");
 

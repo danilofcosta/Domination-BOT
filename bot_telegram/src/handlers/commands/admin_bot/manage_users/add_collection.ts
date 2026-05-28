@@ -10,14 +10,9 @@ import { prisma } from "../../../../lib/prisma.js";
 import { mentionUser } from "../../../../utils/mention_user.js";
 
 export async function addCollection(ctx: MyContext) {
-  let genero: ChatType = ctx.session.settings.genero || ChatType.WAIFU;
+  const genero: ChatType = ctx.botType;
   let userId: number = 0;
   let from: any = undefined;
-
-  genero =
-    ctx.session.settings.genero ||
-    (process.env.TYPE_BOT as ChatType) ||
-    ChatType.WAIFU;
 
   if (ctx?.message?.reply_to_message) {
     const User = ctx.message.reply_to_message.from;

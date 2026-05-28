@@ -25,7 +25,7 @@ export async function NavigateMenuMode(
       where: { telegramId: BigInt(ctx.from.id) },
     });
     if (user) {
-      const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+      const isHusbando = ctx.botType === ChatType.HUSBANDO;
       const config = isHusbando
         ? (user.husbandoConfig as any) || {}
         : (user.waifuConfig as any) || {};
@@ -48,7 +48,7 @@ export async function NavigateMenuMode(
 }
 
 export async function SetModeHarem(ctx: MyContext, key: string) {
-  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+  const isHusbando = ctx.botType === ChatType.HUSBANDO;
 
   const userId = ctx.from?.id;
   if (!userId) {

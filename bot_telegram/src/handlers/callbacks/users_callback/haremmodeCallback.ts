@@ -19,7 +19,7 @@ export async function haremmodeCallback(ctx: MyContext) {
     return;
   }
 
-  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+  const isHusbando = ctx.botType === ChatType.HUSBANDO;
   let config = isHusbando
     ? (user.husbandoConfig as any) || {}
     : (user.waifuConfig as any) || {};

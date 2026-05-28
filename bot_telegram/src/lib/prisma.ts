@@ -16,7 +16,7 @@ export const prisma =
   new PrismaClient({
     adapter,
     errorFormat: "minimal",
-    log: ["warn", "error"],
+    log: ["warn", "error","info","query",],
     transactionOptions: {
       maxWait: 5000,
       timeout: 10000,

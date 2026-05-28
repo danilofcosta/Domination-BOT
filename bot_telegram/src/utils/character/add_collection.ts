@@ -28,10 +28,16 @@ export async function AddCharacterCollection({
 
   try {
     const result = await prisma.$transaction(async (tx) => {
+      //user ja tem um favorito?
       const existingUser = await tx.user.findUnique({
         where: { telegramId },
         select: { favoriteWaifuId: true, favoriteHusbandoId: true },
       });
+
+      //verifica se o user existe caso existir e o favorito for null add o persogem atual
+      //caso favorito existir deve manter 
+      // caso user n existir deve ser criado (telegramId) obrigatorio 
+
 
       await tx.user.upsert({
         where: { telegramId },
@@ -49,6 +55,8 @@ export async function AddCharacterCollection({
           husbandoConfig: {},
         },
       });
+// add persogem na coleção do user 
+// caso o persogem ja exista incrementa mais 1 no count
 
       const collection = isWaifu
         ? await tx.waifuCollection.upsert({
@@ -70,7 +78,8 @@ export async function AddCharacterCollection({
       characterId,
       count: result.count,
     });
-
+    
+    // caso sucesso retorna a per na coleção 
     return result;
   } catch (e) {
     error("AddCharacterCollection ERROR", e);

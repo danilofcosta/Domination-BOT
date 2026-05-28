@@ -12,7 +12,7 @@ type BtnStyle = Parameters<Keyboard["text"]>[1];
 export function getAllButtons(data: HaremSetupDict): HaremBtn[] {
   return Object.entries(data).flatMap(([key, value]) =>
     key === "close" ? [value] : Object.values(value),
-  );
+  ).filter(btn => btn.run != null);
 }
 export interface HaremBtn {
   text: string;

@@ -8,10 +8,10 @@ import { getRuntime } from "../../runtime/groupRuntime.js";
 export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
   info(`DropCharacter - drop iniciado`, {
     chatId: ctx.chat?.id,
-    genero: ctx.session.settings.genero,
+    genero: ctx.botType,
   });
 
-  const character = await RandomCharacter(ctx.session.settings.genero);
+  const character = await RandomCharacter(ctx.botType);
   if (!character) {
     warn(`DropCharacter - nenhum personagem disponível`, {
       chatId: ctx.chat?.id,

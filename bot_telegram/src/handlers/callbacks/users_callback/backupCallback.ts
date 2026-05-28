@@ -5,6 +5,7 @@ import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { calcHash } from "../../../utils/calcHash.js";
 import { error } from "../../../utils/log.js";
 import { Backup_harem } from "../../commands/users/backup.js";
+import { clearBackupState, setBackupState } from "../../../cache/workflowState.js";
 
 export async function backupCallback(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;
@@ -79,7 +80,8 @@ async function handleRemoveConfirm(
 }
 
 async function handleCancel(ctx: MyContext) {
-  ctx.session.backupState = undefined;
+  const userId = ctx.from?.id;
+  if (userId) clearBackupState(userId);
 
   await EditOrSendText({
     ctx,
@@ -121,7 +123,8 @@ async function handleCreate(
     return;
   }
 
-  ctx.session.backupState = { action: "create" };
+  const userId = ctx.from?.id;
+  if (userId) setBackupState(userId, { action: "create" });
 
   const keyboard = new InlineKeyboard().text(ctx.t("btn-no"), "close");
 
@@ -135,7 +138,8 @@ async function handleCreate(
 }
 
 async function handleChange(ctx: MyContext) {
-  ctx.session.backupState = { action: "change" };
+  const userId = ctx.from?.id;
+  if (userId) setBackupState(userId, { action: "change" });
 
   const keyboard = new InlineKeyboard().text(ctx.t("btn-no"), "close");
 
@@ -161,7 +165,8 @@ async function handleRestore(
     return;
   }
 
-  ctx.session.backupState = { action: "restore" };
+  const userId = ctx.from?.id;
+  if (userId) setBackupState(userId, { action: "restore" });
 
   const keyboard = new InlineKeyboard().text(ctx.t("btn-no"), "close");
 

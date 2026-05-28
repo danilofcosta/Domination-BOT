@@ -19,7 +19,7 @@ export async function Myinfos(ctx: MyContext) {
     return;
   }
 
-  const isWaifu = ctx.session.settings.genero === ChatType.WAIFU;
+  const isWaifu = ctx.botType === ChatType.WAIFU;
 
   const user = await prisma.user.findUnique({
     where: {
@@ -67,7 +67,7 @@ export async function Myinfos(ctx: MyContext) {
     }),
     ctx.t("myinfo-id", { id: ctx.from!.id }),
     ctx.t("myinfo-total", {
-      genero: ctx.session.settings.genero,
+      genero: ctx.botType,
       total: totalUser,
     }),
     ctx.t("myinfo-harem", {

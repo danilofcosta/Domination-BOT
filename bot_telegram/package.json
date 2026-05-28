@@ -32,7 +32,6 @@
     "@grammyjs/menu": "^1.2.0",
     "@grammyjs/ratelimiter": "^1.2.1",
     "@grammyjs/runner": "^1.0.4",
-    "@grammyjs/storage-prisma": "^2.5.1",
     "@prisma/adapter-neon": "^7.8.0",
     "@prisma/client": "^7.7.0",
     "dayjs": "^1.11.9",

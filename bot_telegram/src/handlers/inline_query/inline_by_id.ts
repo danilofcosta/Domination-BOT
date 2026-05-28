@@ -4,7 +4,7 @@ import { ChatType, type MyContext } from "../../utils/customTypes.js";
 import { createResult } from "./create_inline_result.js";
 
 export async function inline_per(ctx: MyContext, charListData: CharListData) {
-  const genero = ctx.session.settings.genero || process.env.TYPE_BOT;
+  const genero = ctx.botType;
 
   const characters = await (genero === ChatType.HUSBANDO
     ? prisma.characterHusbando.findMany({

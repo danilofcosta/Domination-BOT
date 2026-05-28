@@ -2,7 +2,7 @@ import initializeBot from "./initializeBot.js";
 import "dotenv/config";
 
 import { Environment_validation } from "./utils/testes/environment_validation.js";
-import { testDBConnection } from "./utils/testes/test_db_connection.js";
+import { testDBConnection } from "./utils/testes/test_db_Connection.js";
 import { ChatType, NODE_ENV } from "./utils/customTypes.js";
 import { fatal, info } from "./utils/log.js";
 import { RunPolling } from "./index_Polling.js";

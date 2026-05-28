@@ -28,7 +28,7 @@ export const rankingCache = new LRUCache<string, any>({
 
 export const permissionCache = new LRUCache<string, { role: string }>({
   max: 2000,
-  ttl: 1000 * 60 * 2,
+  ttl: 1000 * 60 * 15,
 });
 
 export const adminGroupCache = new LRUCache<string, boolean>({

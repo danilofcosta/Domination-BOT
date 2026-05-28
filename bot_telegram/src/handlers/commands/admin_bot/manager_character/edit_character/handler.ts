@@ -22,7 +22,7 @@ export async function editCharHandler(ctx: MyContext) {
     return ctx.reply(ctx.t("error-not-id"));
   }
 
-  const genero = ctx.session.settings.genero || ChatType.WAIFU;
+  const genero = ctx.botType;
 
   const character = await getCharacterById(charid, genero);
 

@@ -7,10 +7,10 @@ import { rankingCache, getOrSet } from "../../../cache/cache.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 
 export async function topHandler(ctx: MyContext) {
-  const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+  const isHusbando = ctx.botType === ChatType.HUSBANDO;
   info(`topHandler - carregando ranking`, {
     userId: ctx.from?.id,
-    genero: ctx.session.settings.genero,
+    genero: ctx.botType,
   });
 
   const cacheKey = `top:${isHusbando ? "husbando" : "waifu"}`;

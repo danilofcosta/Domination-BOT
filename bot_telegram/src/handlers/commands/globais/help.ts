@@ -46,7 +46,7 @@ export async function helpCommand(ctx: MyContext) {
 
   const caption = ctx.t("help-caption", {
     botName: ctx.me.first_name,
-    genero: ctx.session.settings.genero,
+    genero: ctx.botType,
   });
 
   const reply_markup = buildKeyboard(ctx, help_dict);

@@ -5,6 +5,7 @@ import { error } from "../../../../utils/log.js";
 import { eventCache, getOrSet } from "../../../../cache/cache.js";
 import { extrair_customid } from "../../testes_commands.js";
 import { Id_to_enomji } from "../../../../utils/manage_captures/extract_emojis.js";
+import { getEventEditCache, clearEventEditCache, getAdminSetup, setAdminSetup, clearAdminSetup } from "../../../../cache/workflowState.js";
 
 interface EventEditCache {
   name?: string;
@@ -113,25 +114,6 @@ function getEditKeyboard(
   return keyboard;
 }
 
-function getEventEditCache(
-  ctx: MyContext,
-  eventCode: string,
-): EventEditCache {
-  if (!ctx.session.eventEdits) {
-    ctx.session.eventEdits = {};
-  }
-  if (!ctx.session.eventEdits[eventCode]) {
-    ctx.session.eventEdits[eventCode] = {};
-  }
-  return ctx.session.eventEdits[eventCode];
-}
-
-function clearEventEditCache(ctx: MyContext, eventCode: string): void {
-  if (ctx.session.eventEdits && ctx.session.eventEdits[eventCode]) {
-    delete ctx.session.eventEdits[eventCode];
-  }
-}
-
 function hasChanges(cache: EventEditCache): boolean {
   return Object.values(cache).some((v) => v !== undefined);
 }
@@ -149,7 +131,6 @@ export async function SetEventHandler(ctx: MyContext) {
 
   if (!input) {
     const page = Number(ctx.match) || 1;
-    ctx.session.eventListPage = page;
 
     const allEvents = await getOrSet(
       eventCache,
@@ -242,7 +223,7 @@ export async function SetEventHandler(ctx: MyContext) {
   }
 
   const cache = getEventEditCache(ctx, event.code);
-  const currentPage = ctx.session.eventListPage || 1;
+  const currentPage = 1;
   const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), currentPage);
   const message = await formatEditMessage(event, cache, ctx);
 
@@ -268,7 +249,7 @@ export async function SetEventCallback(ctx: MyContext) {
     await ctx.answerCallbackQuery();
     const keyboard = new InlineKeyboard().text(
       ctx.t("setevent-btn-back-list"),
-      `setevent_list_${ctx.session.eventListPage || 1}`,
+      `setevent_list_${1}`,
     );
     await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
     return;
@@ -276,7 +257,6 @@ export async function SetEventCallback(ctx: MyContext) {
 
   if (action === "list") {
     const page = Math.max(1, Number(parts[2]) || 1);
-    ctx.session.eventListPage = page;
 
     const allEvents = await getOrSet(
       eventCache,
@@ -349,7 +329,7 @@ export async function SetEventCallback(ctx: MyContext) {
 
     clearEventEditCache(ctx, eventCode);
     const cache = getEventEditCache(ctx, eventCode);
-    const currentPage = ctx.session.eventListPage || 1;
+    const currentPage = 1;
     const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), currentPage);
     const message = await formatEditMessage(event, cache, ctx);
 
@@ -381,7 +361,7 @@ export async function SetEventCallback(ctx: MyContext) {
 
     if (!hasChanges(cache)) {
       const keyboard = new InlineKeyboard();
-      keyboard.text(ctx.t("setevent-btn-back-list"), `setevent_list_${ctx.session.eventListPage || 1}`);
+      keyboard.text(ctx.t("setevent-btn-back-list"), `setevent_list_${1}`);
       await ctx.editMessageReplyMarkup({ reply_markup: keyboard });
       await ctx.answerCallbackQuery(ctx.t("setevent-no-changes"));
       return;
@@ -415,7 +395,7 @@ export async function SetEventCallback(ctx: MyContext) {
 
       const keyboard = new InlineKeyboard().text(
         ctx.t("setevent-btn-back-list"),
-        `setevent_list_${ctx.session.eventListPage || 1}`,
+        `setevent_list_${1}`,
       );
 
       await ctx.editMessageText(message, {
@@ -448,12 +428,15 @@ export async function SetEventCallback(ctx: MyContext) {
       return;
     }
 
-    if (!ctx.session.adminSetup) {
-      ctx.session.adminSetup = { action: null, targetId: null };
+    if (!getAdminSetup(ctx)) {
+      setAdminSetup(ctx, { action: null, targetId: null });
     }
     const normalizedField = field === "emojiid" ? "emojiId" : field;
-    ctx.session.adminSetup.action = `setevent_${normalizedField}`;
-    ctx.session.adminSetup.targetId = eventCode;
+    const currentSetup = getAdminSetup(ctx);
+    if (currentSetup) {
+      currentSetup.action = `setevent_${normalizedField}`;
+      currentSetup.targetId = eventCode;
+    }
 
     const currentValues: Record<string, string> = {
       name: event.name,
@@ -522,9 +505,11 @@ function extractCustomEmojiId(
 
 export async function SetEventReplyHandler(ctx: MyContext) {
   if (!ctx.message?.text && !ctx.message?.caption) return;
-  if (!ctx.session.adminSetup?.action?.startsWith("setevent_")) return;
 
-  const { action, targetId } = ctx.session.adminSetup;
+  const adminSetup = getAdminSetup(ctx);
+  if (!adminSetup?.action?.startsWith("setevent_")) return;
+
+  const { action, targetId } = adminSetup;
   const field = action.replace("setevent_", "");
   let newValue = ctx.message.text?.trim() || ctx.message.caption?.trim() || "";
 
@@ -554,7 +539,7 @@ export async function SetEventReplyHandler(ctx: MyContext) {
       break;
   }
 
-  ctx.session.adminSetup = { action: null, targetId: null };
+  clearAdminSetup(ctx);
 
   const event = await prisma.event.findUnique({
     where: { code: targetId! },
@@ -565,7 +550,7 @@ export async function SetEventReplyHandler(ctx: MyContext) {
     return;
   }
 
-  const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), ctx.session.eventListPage || 1);
+  const keyboard = getEditKeyboard(ctx, event.code, hasChanges(cache), 1);
   const message = await formatEditMessage(event, cache, ctx);
 
   await ctx.reply(message, {

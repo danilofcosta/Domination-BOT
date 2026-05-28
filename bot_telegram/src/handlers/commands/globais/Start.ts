@@ -53,7 +53,7 @@ export async function StartGreetings(ctx: MyContext) {
   }
   const header = ctx.t("start-greeting-header", { botName: ctx.me.first_name });
   const boby = ctx.t("start-greeting-body", {
-    genero: ctx.session.settings.genero,
+    genero: ctx.botType,
   });
 
   const dbPing = await prisma.$queryRaw<[{ now: Date }]>`
@@ -71,7 +71,7 @@ export async function StartGreetings(ctx: MyContext) {
     `➺ <b>ᴘɪɴɢ:</b>  ${dbPing}ms\n➺ <b>ᴜᴘᴛɪᴍᴇ:</b> ${uptime}`.trim();
   greeting = `${greeting}\n\n ${status}`;
   const character = await LastRandomCharacter(
-    ctx.session.settings.genero || process.env.TYPE_BOT,
+    ctx.botType,
   );
 
   const replaymarkup = new InlineKeyboard()

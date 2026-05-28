@@ -5,6 +5,7 @@ import { addCharacterEditMenu } from "./edit.ui.js";
 import { confirmCharacterAdd } from "./confirm.js";
 import { getEventsAll } from "../services/event.service.js";
 import { getRaritiesAll } from "../services/rarity.service.js";
+import { setAdminSetup } from "../../../../../cache/workflowState.js";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -117,7 +118,7 @@ export async function handleEditMenuCallback(ctx: MyContext) {
       await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
       return;
     }
-    ctx.session.adminSetup = { action: "edit_nome", targetId: id };
+    setAdminSetup(ctx, { action: "edit_nome", targetId: id });
     await ctx.reply(ctx.t("edit_character_prompt_nome", { current: character.nome }), {
       parse_mode: "HTML",
       reply_markup: { force_reply: true },
@@ -134,7 +135,7 @@ export async function handleEditMenuCallback(ctx: MyContext) {
       await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
       return;
     }
-    ctx.session.adminSetup = { action: "edit_anime", targetId: id };
+    setAdminSetup(ctx, { action: "edit_anime", targetId: id });
     await ctx.reply(ctx.t("edit_character_prompt_anime", { current: character.anime }), {
       parse_mode: "HTML",
       reply_markup: { force_reply: true },

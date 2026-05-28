@@ -1,5 +1,7 @@
 import type { MyContext } from "../../../../utils/customTypes.js";
 import { info, warn, debug } from "../../../../utils/log.js";
+import { prisma } from "../../../../lib/prisma.js";
+import { setCachedTopic } from "../../../../cache/topicCache.js";
 
 export async function setChatTopicHandler(ctx: MyContext) {
   const chat = ctx.chat;
@@ -34,7 +36,22 @@ export async function setChatTopicHandler(ctx: MyContext) {
     return;
   }
 
-  ctx.session.grupo.directMessagesTopicId = topicId;
+  setCachedTopic(chat.id, topicId);
+
+  try {
+    const existing = await prisma.telegramGroup.findUnique({
+      where: { groupId: BigInt(chat.id) },
+      select: { configuration: true },
+    });
+    const config = (existing?.configuration as Record<string, any>) || {};
+    config.directMessagesTopicId = topicId;
+    await prisma.telegramGroup.update({
+      where: { groupId: BigInt(chat.id) },
+      data: { configuration: config },
+    });
+  } catch (e) {
+    warn("setChatTopicHandler - erro ao salvar topicId no DB", e);
+  }
 
   info(`setChatTopicHandler - topic configurado`, { userId, chatId: chat.id, topicId });
 

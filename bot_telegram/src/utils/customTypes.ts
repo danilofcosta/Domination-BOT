@@ -1,11 +1,9 @@
 // src/types.ts
 import type { Context } from "grammy";
 import type { I18nFlavor } from "@grammyjs/i18n";
-import type { SessionFlavor } from "grammy";
 
 
 import type { User } from "grammy/types";
-import type { SessionData } from "../types/session.js";
 import type { WaifuCollection } from "@prisma/client";
 import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "@prisma/client";
 import type { prisma } from "../lib/prisma.js";
@@ -61,7 +59,7 @@ export type BTN_STYLE = "primary" | "success" | "danger" | undefined
  * Contexto customizado
  * ========================= */
 
-export type MyContext = Context & I18nFlavor & SessionFlavor<SessionData>;
+export type MyContext = Context & I18nFlavor & { botType: ChatType };
 
 export type TipoMessageEntity =
   | "mention"

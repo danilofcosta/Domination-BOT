@@ -52,7 +52,7 @@ export async function favCharacter(ctx: MyContext) {
   info(`favCharacter - buscando personagem`, { userId: userid, favid });
 
   const FavCharacter =
-    ctx.session.settings.genero === ChatType.WAIFU
+    ctx.botType === ChatType.WAIFU
       ? await prisma.waifuCollection.findFirst({
           where: {
             characterId: favid,
@@ -86,7 +86,7 @@ export async function favCharacter(ctx: MyContext) {
       userId: userid,
       favid,
     });
-    const genero = ctx.session.settings.genero?.toLocaleLowerCase() || "waifu";
+    const genero = ctx.botType;
     return await Sendmedia({
       ctx,
       caption: ctx.t("fav-not-found", {
@@ -105,7 +105,7 @@ export async function favCharacter(ctx: MyContext) {
     id_personagem: favid || "",
     character_name: FavCharacter.Character.name || "",
     character_anime: FavCharacter.Character.origem || "",
-    gender: ctx.session.settings.genero || process.env.TYPE_BOT,
+    gender: ctx.botType,
   });
 
   const reply_markup = bts_yes_or_no(

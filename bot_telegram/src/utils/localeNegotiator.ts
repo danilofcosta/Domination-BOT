@@ -1,14 +1,14 @@
 import { prisma } from "../lib/prisma.js";
+import { getCachedLocale, setCachedLocale } from "../cache/localeCache.js";
 
 export default async function localeNegotiator(ctx: any) {
-  if (ctx.session?.locale) {
-    return ctx.session.locale;
-  }
+  const chatId = ctx.chat?.id;
+  if (!chatId) return "pt";
 
-  if (!ctx.chat) {
-    return "pt";
-  }
-  const chatType = ctx.chat.type || "unknown";
+  const cached = getCachedLocale(chatId);
+  if (cached) return cached;
+
+  const chatType = ctx.chat?.type || "unknown";
 
   if (chatType === "private" && ctx.from?.id) {
     try {
@@ -18,12 +18,28 @@ export default async function localeNegotiator(ctx: any) {
       });
       if (user?.language) {
         const lang = user.language.toLowerCase();
-        if (ctx.session) ctx.session.locale = lang;
+        setCachedLocale(chatId, lang);
         return lang;
       }
-    } catch {
-      // fallback
-    }
+    } catch { /* fallback */ }
+    setCachedLocale(chatId, "pt");
+    return "pt";
+  }
+
+  if (chatType === "group" || chatType === "supergroup") {
+    try {
+      const group = await prisma.telegramGroup.findUnique({
+        where: { groupId: BigInt(chatId) },
+        select: { configuration: true },
+      });
+      if (group?.configuration && typeof group.configuration === "object" && "locale" in (group.configuration as any)) {
+        const lang = String((group.configuration as any).locale).toLowerCase();
+        setCachedLocale(chatId, lang);
+        return lang;
+      }
+    } catch { /* fallback */ }
+    setCachedLocale(chatId, "pt");
+    return "pt";
   }
 
   return "pt";

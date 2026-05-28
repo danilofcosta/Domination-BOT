@@ -38,7 +38,7 @@ export async function Ramdon_Character_Handler(ctx: MyContext) {
     const capiton = create_caption({
       t: ctx.t,
       character: Random_Character,
-      chatType: ctx.session.settings.genero,
+      chatType: ctx.botType,
       noformat: false,
     });
 

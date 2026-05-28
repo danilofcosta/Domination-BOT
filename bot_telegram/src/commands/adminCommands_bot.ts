@@ -162,39 +162,6 @@ export const adminCommands_bot_dict = {
 
 const adminCommands_bot = new CommandGroup<MyContext>();
 
-for (const value of Object.values(adminCommands_bot_dict)) {
-  adminCommands_bot
-    .command(value.command, value.description.en, async (ctx) => {
-      debug(
-        'Comando admin',
-        value.command,
-        'executado por',
-        ctx.from?.username || ctx.from?.id,
-      );
-
-      const next = async () => {
-        await value.handler(ctx);
-      };
-
-      if (value.minPermission) {
-        return await onlyRoleBotAdmin(value.minPermission)(ctx, next);
-      }
-
-      return await next();
-    },options
-  
-  
-  
-  
-  
-  
-  )
-    // .localize(LanguageCodes.English, value.command, value.description.en)
-    .localize(
-      LanguageCodes.Portuguese,
-      value.command,
-      value.description.pt,
-    );
-}
+// loop de registro desativado
 
 export { adminCommands_bot };

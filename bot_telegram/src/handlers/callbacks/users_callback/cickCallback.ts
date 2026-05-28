@@ -9,7 +9,7 @@ export async function ClickByDetail_Callback(ctx: MyContext) {
   const [_, id] = ctx.match ? (ctx.match as any).input.split("_") : [];
 
   const character = await GetCharacterById(
-    ctx.session.settings.genero || process.env.TYPE_BOT,
+    ctx.botType,
     Number(id),
   );
   if (!character) {
@@ -20,7 +20,7 @@ export async function ClickByDetail_Callback(ctx: MyContext) {
   let caption = create_caption({
     t: ctx.t,
     character: character,
-    chatType: ctx.session.settings.genero,
+    chatType: ctx.botType,
     noformat: false,
   });
 

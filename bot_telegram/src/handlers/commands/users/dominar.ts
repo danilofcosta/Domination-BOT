@@ -66,7 +66,7 @@ function successDominarMessage(
   const success_dominar_title = ctx.t("success_dominar_title", {
     usermention: mentionUser(ctx.from?.first_name || "user", ctx.from?.id || 0),
     genero: ctx.t(
-      ctx.session.settings.genero === ChatType.WAIFU
+      ctx.botType === ChatType.WAIFU
         ? "success-dominar-genero-waifu"
         : "success-dominar-genero-husbando",
     ),
@@ -144,10 +144,10 @@ export async function CapturarCharacter(ctx: MyContext) {
   if (!ctx.chat?.id) return;
   const runtime = getRuntime(ctx.chat.id);
   const character = runtime.characterId
-    ? await GetCharacterById(ctx.session.settings.genero, runtime.characterId)
+    ? await GetCharacterById(ctx.botType, runtime.characterId)
     : null;
   const type =
-    ctx.session.settings.genero || process.env.TYPE_BOT || ChatType.WAIFU;
+    ctx.botType;
   const userId = Number(ctx.from?.id);
 
   info(`CapturarCharacter - tentativa: "${tentativa}"`, {

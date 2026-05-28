@@ -8,13 +8,16 @@ import { CreateOneBtn } from "../../utils/btns.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../utils/character/get_by_id.js";
 
-const DROP = 100;
+const DROP = 10;
 const UNDROP = DROP + 40;
 const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function countMessages(ctx: MyContext) {
   if (!ctx.chat) return;
+
   const runtime = getRuntime(ctx.chat.id);
+  console.log('chatid',ctx.chat.id,'name_grupo',ctx.chat.title, 'cont',runtime.cont )
+
   if (!runtime) {
     return;
   }
@@ -71,7 +74,7 @@ export async function countMessages(ctx: MyContext) {
 
   if (runtime.cont >= UNDROP && runtime.dropId != null) {
     const character = runtime.characterId
-      ? await GetCharacterById(ctx.session.settings.genero, runtime.characterId)
+      ? await GetCharacterById(ctx.botType, runtime.characterId)
       : null;
 
     const character_genero = ctx.t(

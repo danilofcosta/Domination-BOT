@@ -4,7 +4,7 @@ import { createResult } from "./create_inline_result.js";
 
 export async function animeInlineQuery(ctx: MyContext) {
   const query = ctx.inlineQuery?.query || '';
-  const genero = (ctx.session.settings?.genero || process.env.TYPE_BOT || 'waifu') as ChatType;
+  const genero = ctx.botType;
 
   const animeName = query.replace('anime_', '');
 

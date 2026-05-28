@@ -97,7 +97,7 @@ export async function favConfirmHandler(ctx: MyContext) {
   // const capiton = create_caption({
   //   ctx: ctx,
   //   character: collection.Character,
-  //   chatType: ctx.session.settings.genero,
+  //   chatType: ctx.botType,
   //   noformat: false,
   // });
 

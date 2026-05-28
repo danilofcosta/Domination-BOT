@@ -22,11 +22,13 @@ import { prisma } from "./lib/prisma.js";
 import { calcHash } from "./utils/calcHash.js";
 import { Backup_harem } from "./handlers/commands/users/backup.js";
 import { HaremHandler } from "./handlers/commands/users/harem.js";
+import { getBackupState, clearBackupState, getAdminSetup, clearAdminSetup } from "./cache/workflowState.js";
 
 const listeners = new Composer<MyContext>();
 
 listeners.on("message:text", async (ctx, next) => {
-  const backupState = ctx.session.backupState;
+  const userId = ctx.from?.id;
+  const backupState = userId ? getBackupState(userId) : undefined;
   if (backupState) {
     const password = ctx.message.text.trim();
 
@@ -35,7 +37,7 @@ listeners.on("message:text", async (ctx, next) => {
       return;
     }
 
-    ctx.session.backupState = undefined;
+    if (userId) clearBackupState(userId);
 
     const hash = calcHash(password);
 
@@ -218,9 +220,10 @@ listeners.on("message:text", async (ctx, next) => {
     return;
   }
 
-  if (ctx.session.adminSetup?.action && ctx.session.adminSetup?.targetId) {
-    const action = ctx.session.adminSetup.action;
-    const targetId = ctx.session.adminSetup.targetId;
+  const adminSetup = getAdminSetup(ctx);
+  if (adminSetup?.action && adminSetup?.targetId) {
+    const action = adminSetup.action;
+    const targetId = adminSetup.targetId;
     const text = ctx.message.text;
 
     if (action.startsWith("setrarity_")) {
@@ -234,7 +237,7 @@ listeners.on("message:text", async (ctx, next) => {
     const numTargetId = Number(targetId);
     let character = getCharacter(numTargetId);
     if (!character) {
-      ctx.session.adminSetup = { action: null, targetId: null };
+      clearAdminSetup(ctx);
       return;
     }
 
@@ -263,7 +266,7 @@ listeners.on("message:text", async (ctx, next) => {
     }
 
     setCharacter(numTargetId, character);
-    ctx.session.adminSetup = { action: null, targetId: null };
+    clearAdminSetup(ctx);
 
     await addCharacterEditMenu(ctx, String(numTargetId));
     return;

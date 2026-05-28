@@ -16,7 +16,7 @@ export async function topCallbackQuery(ctx: MyContext) {
       });
     }
 
-    const isHusbando = ctx.session.settings.genero === ChatType.HUSBANDO;
+    const isHusbando = ctx.botType === ChatType.HUSBANDO;
 
     const ranking = isHusbando
       ? await prisma.husbandoCollection.groupBy({
