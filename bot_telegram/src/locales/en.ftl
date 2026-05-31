@@ -384,6 +384,8 @@ add_character_btn_cancel = No
 add_character_btn_edit = edit
 add_character_not_reply = use in reply to media video/photo
 add-char-only-photo-video = Only photo or video is supported.
+add-char-document-too-large = The document exceeds the 20MB limit. Send the image/video directly (not as a document).
+add-char-document-not-media = The document is not a valid image or video. Send a photo or video directly.
 add-char-usage = Use: name, anime, extras
 add-char-queue = 📦 Character added to queue (position { $pos }). Processing soon...
 add-char-error = Error adding character: { $error }
@@ -392,6 +394,18 @@ add-char-preview = Name: { $nome }\nAnime: { $anime }\nGender: { $genero }\nMedi
 add-char-default-value = default value
 add-char-default-event = no event
 add-char-save-error = Error saving character.
+tipo-foto = photo
+tipo-video = video
+tipo-gif = GIF
+tipo-video-animado = animated video
+set-bot-pic-not-reply = Reply to a photo, video or GIF (max 10s) to set as bot profile picture.
+set-bot-pic-confirm = Do you want to set this { $tipo } as bot profile picture?
+set-bot-pic-success = ✅ Bot profile picture updated successfully!
+set-bot-pic-error = Error updating bot profile picture: { $error }
+set-bot-pic-too-small = The photo is too small. Send a photo at least 320x320 pixels.
+set-bot-pic-video-too-long = The { $tipo } exceeds 10 seconds. Send one of max 10 seconds.
+set-bot-pic-video-invalid = Video format not accepted. Send a GIF or an MP4 video.
+set-bot-pic-video-not-square = The video needs to be square (1:1 aspect ratio). Send a GIF or crop the video to square.
 
 ############
 # EDIT CHARACTER #

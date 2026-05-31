@@ -58,7 +58,7 @@ edit_char_prompt = Editar Personagem: { $name } ({ $anime })
 Selecione o que deseja editar:
 
 btn-edit-name = Nome
-btn-edit-anime = Origem
+btn-edit-anime = Origemn
 btn-edit-media = Mídia
 btn-edit-rarity = Raridade
 
@@ -411,21 +411,34 @@ add_character_btn_cancel = Não
 add_character_btn_edit = edit
 add_character_not_reply = use em resposta a midia video/foto 
 add-char-only-photo-video = Only photo or video is supported.
+add-char-document-too-large = O documento excede o limite de 20MB. Envie a imagem/vídeo diretamente (não como documento).
+add-char-document-not-media = O documento não é uma imagem ou vídeo válido. Envie uma foto ou vídeo diretamente.
 add-char-usage = Use: nome, anime, extras
 add-char-queue = 📦 Personagem adicionado à fila (posição { $pos }). Processando em breve...
 add-char-error = Erro ao adicionar personagem: { $error }
 add-char-success = Personagem adicionado com sucesso!
 add-char-preview = Nome: { $nome }
-Anime: { $anime }
-Genero: { $genero }
-Mediatype: { $mediatype }
-Data: { $media }
-Link: { $link }
-Rarities: { $rarities }
-Events: { $events }
+    Anime: { $anime }
+    Gênero: { $genero }
+    Tipo de mídia: { $mediatype }
+    Link: { $link }
+    Raridades: { $rarities }
+    Eventos: { $events }
 add-char-default-value = valor padrao
 add-char-default-event = sem evento
 add-char-save-error = Erro ao salvar personagem.
+tipo-foto = foto
+tipo-video = vídeo
+tipo-gif = GIF
+tipo-video-animado = vídeo animado
+set-bot-pic-not-reply = Responda a uma foto, vídeo ou GIF (máx 10s) para definir como foto de perfil do bot.
+set-bot-pic-confirm = Deseja definir essa { $tipo } como foto de perfil do bot?
+set-bot-pic-success = ✅ Foto de perfil do bot atualizada com sucesso!
+set-bot-pic-error = Erro ao atualizar foto de perfil: { $error }
+set-bot-pic-too-small = A foto é muito pequena. Envie uma foto com pelo menos 320x320 pixels.
+set-bot-pic-video-too-long = O { $tipo } excede 10 segundos. Envie um de no máximo 10 segundos.
+set-bot-pic-video-invalid = Formato de vídeo não aceito. Envie um GIF ou um vídeo em MP4.
+set-bot-pic-video-not-square = O vídeo precisa ser quadrado (proporção 1:1). Envie um GIF ou corte o vídeo para formato quadrado.
 
 ############
 # EDIT CHARACTER #
@@ -770,8 +783,10 @@ cmd-desc-setlang = Altera o idioma do bot
 ############################
 activechats-header = <b>📋 Chats ativos ({$total}):</b>
 activechats-none = Nenhum chat ativo encontrado.
-activechats-line-group = {$n}. <b>{$title}</b>\n   👥 Grupo | {$count}x | <code>{$chatId}</code>
-activechats-line-channel = {$n}. <b>{$title}</b>\n   📢 Canal | {$count}x | <code>{$chatId}</code>
+activechats-line-group = {$n}. <b>{$title}</b>
+       👥 Grupo | {$count}x | <code>{$chatId}</code>
+activechats-line-channel = {$n}. <b>{$title}</b>
+       📢 Canal | {$count}x | <code>{$chatId}</code>
 activechats-btn-prev = ◀ Anterior
 activechats-btn-next = Próximo ▶
 activechats-btn-close = ❌ Fechar

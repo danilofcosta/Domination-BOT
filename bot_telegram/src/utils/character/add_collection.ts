@@ -69,11 +69,11 @@ export async function AddCharacterCollection({
         WHERE NOT EXISTS (SELECT 1 FROM updated)
         RETURNING id, count
         `,
-        telegramId,
+        telegramId.toString(),
         characterId,
       );
 
-      return collection;
+      return collection ?? null;
     });
 
     debug("AddCharacterCollection OK", {

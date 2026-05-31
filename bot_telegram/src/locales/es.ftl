@@ -383,6 +383,8 @@ add_character_btn_cancel = No
 add_character_btn_edit = editar
 add_character_not_reply = usa en respuesta a un medio video/foto
 add-char-only-photo-video = Solo se admiten fotos o videos.
+add-char-document-too-large = El documento supera el límite de 20MB. Envía la imagen/video directamente (no como documento).
+add-char-document-not-media = El documento no es una imagen o video válido. Envía una foto o video directamente.
 add-char-usage = Usa: nombre, anime, extras
 add-char-queue = 📦 Personaje agregado a la cola (posición { $pos }). Procesando pronto...
 add-char-error = Error al agregar personaje: { $error }
@@ -391,6 +393,18 @@ add-char-preview = Nombre: { $nome }\nAnime: { $anime }\nGénero: { $genero }\nM
 add-char-default-value = valor por defecto
 add-char-default-event = sin evento
 add-char-save-error = Error al guardar personaje.
+tipo-foto = foto
+tipo-video = video
+tipo-gif = GIF
+tipo-video-animado = video animado
+set-bot-pic-not-reply = Responde a una foto, video o GIF (máx 10s) para establecer como foto de perfil del bot.
+set-bot-pic-confirm = ¿Deseas establecer este { $tipo } como foto de perfil del bot?
+set-bot-pic-success = ✅ ¡Foto de perfil del bot actualizada con éxito!
+set-bot-pic-error = Error al actualizar la foto de perfil: { $error }
+set-bot-pic-too-small = La foto es demasiado pequeña. Envía una foto de al menos 320x320 píxeles.
+set-bot-pic-video-too-long = El { $tipo } supera los 10 segundos. Envía uno de máximo 10 segundos.
+set-bot-pic-video-invalid = Formato de video no aceptado. Envía un GIF o un video en MP4.
+set-bot-pic-video-not-square = El video debe ser cuadrado (proporción 1:1). Envía un GIF o recorta el video a formato cuadrado.
 
 ############
 # EDIT CHARACTER #

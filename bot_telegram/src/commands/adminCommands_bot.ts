@@ -28,6 +28,7 @@ import { statusUserHandler } from '../handlers/commands/admin_bot/manage_users/s
 import { debug } from '../utils/log.js';
 import { OpenHaremUser } from '../handlers/commands/admin_bot/manage_users/open_harem.js';
 import { listActiveChats } from '../handlers/commands/admin_bot/manage_users/active_chats.js';
+import { SetBotPicHandler } from '../handlers/commands/admin_bot/manage_bot/set_bot_pic.js';
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -156,6 +157,16 @@ export const adminCommands_bot_dict = {
       pt: 'abrir Harem do user ',
     },
     handler: OpenHaremUser,
+  },
+
+  setbotpic: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: 'setbotpic' + botPrefix,
+    description: {
+      en: 'Change bot profile picture (reply to a photo)',
+      pt: 'Alterar foto de perfil do bot (responda a uma foto)',
+    },
+    handler: SetBotPicHandler,
   },
   
 } as const satisfies Record<string, AdminCommand>;

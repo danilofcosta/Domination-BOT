@@ -14,8 +14,8 @@ const start = async () => {
   try {
     await prisma.$connect();
     const result = await prisma.$queryRaw`SELECT 1 as test`;
-    console.log("✅ Conectado ao banco com sucesso!");
-    console.log("📊 Query teste:", result);
+    console.log(" Conectado ao banco com sucesso!");
+    console.log(" Query teste:", result);
   } catch (error) {
     console.error(error);
   }

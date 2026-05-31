@@ -122,7 +122,6 @@ async function confirmCharacter(ctx: MyContext, data: PreCharacter) {
     anime: anime,
     genero: genero,
     mediatype: mediatype,
-    media: media,
     link: LinkMsg(Number(ctx.chat?.id), Number(idchat)),
     rarities: textoRarities,
     events: textoEvents,
@@ -154,7 +153,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
   let text_command: string | undefined;
   let reply = ctx.message?.reply_to_message;
 
-  if (ctx.message?.caption && (ctx.message?.photo || ctx.message?.video)) {
+  if (ctx.message?.caption && (ctx.message?.photo || ctx.message?.video || ctx.message?.document)) {
     reply = (ctx?.message as any) ?? undefined;
   }
 
@@ -166,7 +165,19 @@ export async function AddCharacterHandler(ctx: MyContext) {
   const media = getMedia(reply);
 
   if (!media) {
-    ctx.reply(ctx.t("add-char-only-photo-video"));
+    if (reply.document) {
+      const doc = reply.document;
+      const isMedia = doc.mime_type?.startsWith("image/") || doc.mime_type?.startsWith("video/");
+      if (!isMedia) {
+        ctx.reply(ctx.t("add-char-document-not-media"));
+      } else if (doc.file_size && doc.file_size > 20 * 1024 * 1024) {
+        ctx.reply(ctx.t("add-char-document-too-large"));
+      } else {
+        ctx.reply(ctx.t("add-char-only-photo-video"));
+      }
+    } else {
+      ctx.reply(ctx.t("add-char-only-photo-video"));
+    }
     return;
   }
 

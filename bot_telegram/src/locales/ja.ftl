@@ -383,6 +383,8 @@ add_character_btn_cancel = いいえ
 add_character_btn_edit = 編集
 add_character_not_reply = メディア（写真/動画）への返信で使用してください
 add-char-only-photo-video = 写真または動画のみ対応しています。
+add-char-document-too-large = ドキュメントが20MBの制限を超えています。画像/動画を直接送信してください（ドキュメントとしてではなく）。
+add-char-document-not-media = ドキュメントは有効な画像または動画ではありません。写真または動画を直接送信してください。
 add-char-usage = 使用方法：名前, アニメ, 追加情報
 add-char-queue = 📦 キャラクターがキューに追加されました（位置 { $pos }）。まもなく処理されます...
 add-char-error = キャラクター追加エラー：{ $error }
@@ -391,6 +393,18 @@ add-char-preview = 名前：{ $nome }\nアニメ：{ $anime }\n性別：{ $gener
 add-char-default-value = デフォルト値
 add-char-default-event = イベントなし
 add-char-save-error = キャラクターの保存中にエラーが発生しました。
+tipo-foto = 写真
+tipo-video = 動画
+tipo-gif = GIF
+tipo-video-animado = アニメーション動画
+set-bot-pic-not-reply = ボットのプロフィール写真として設定するには、写真、動画、GIF（最大10秒）に返信してください。
+set-bot-pic-confirm = この{ $tipo }をボットのプロフィール写真に設定しますか？
+set-bot-pic-success = ✅ ボットのプロフィール写真を更新しました！
+set-bot-pic-error = プロフィール写真の更新エラー: { $error }
+set-bot-pic-too-small = 写真が小さすぎます。少なくとも320x320ピクセルの写真を送信してください。
+set-bot-pic-video-too-long = { $tipo }が10秒を超えています。最大10秒のものを送信してください。
+set-bot-pic-video-invalid = 動画形式がサポートされていません。GIFまたはMP4動画を送信してください。
+set-bot-pic-video-not-square = 動画は正方形（1:1のアスペクト比）である必要があります。GIFを送信するか、動画を正方形にトリミングしてください。
 
 ############
 # EDIT CHARACTER #

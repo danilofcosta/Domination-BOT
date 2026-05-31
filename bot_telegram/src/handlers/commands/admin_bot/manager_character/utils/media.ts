@@ -18,5 +18,20 @@ export function getMedia(reply: any): MediaResult | undefined {
     };
   }
 
+  if (reply.document) {
+    const doc = reply.document;
+    const isImage = doc.mime_type?.startsWith("image/");
+    const isVideo = doc.mime_type?.startsWith("video/");
+    const isWithinLimit = doc.file_size && doc.file_size <= 20 * 1024 * 1024;
+
+    if ((isImage || isVideo) && isWithinLimit) {
+      return {
+        fileId: doc.file_id,
+        fileUniqueId: doc.file_unique_id,
+        type: isImage ? MediaType.IMAGE_FILEID : MediaType.VIDEO_FILEID,
+      };
+    }
+  }
+
   return undefined;
 }

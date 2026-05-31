@@ -138,6 +138,20 @@ export const reactionCooldown = new LRUCache<string, boolean>({
   ttl: 1000 * 60 * 10,
 });
 
+export interface SetBotPicData {
+  fileId: string;
+  userId: number;
+  mediaType: 'photo' | 'video';
+}
+
+export function setBotPic(userId: number, data: SetBotPicData) {
+  characterCache.set(`setbotpic:${userId}`, data);
+}
+
+export function getBotPic(userId: number): SetBotPicData | undefined {
+  return characterCache.get(`setbotpic:${userId}`);
+}
+
 // usado para save para editar persogem
 export function getCharacterEdit(characterId: number): PreCharacter {
   return characterCache.get(`characteredit:${characterId}`);
