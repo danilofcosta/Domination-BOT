@@ -240,8 +240,9 @@ thank-you-add-group = Obrigado por me adicionar ao grupo <b>{ $groupName }</b>! 
 ###############
 # DOPRAR PERSONAGWM#
 ###############
-new_character_secret_caption={$emoji_raridade} {$charater_genero}  apareceu!
-    capture :  <code> /dominar Nome </code>
+new_character_secret_caption={$emoji_raridade} <b> {$charater_genero}  Apareceu!
+  capture enviando  </b>
+     /dominar <code>  Nome </code>
 
 drop_character_secret_caption =  {$charater_genero}  ja fugiu !
     O nome é <code> {$charater_nome} - {$charater_anime} </code>

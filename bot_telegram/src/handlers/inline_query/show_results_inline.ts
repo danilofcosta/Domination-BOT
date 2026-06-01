@@ -24,8 +24,12 @@ export async function showResults({
   const btnText = text || ctx.t("inline-default-btn");
 
   try {
+    // caso uso de cache o telegram n chama o webhook || polling
     await ctx.answerInlineQuery(results, {
-      is_personal: true,
+      //cache compartilhado entre consulta caso isharem = true
+      is_personal:isharem? true:false,
+      //cache 10 m caso  isharem  caso false 2 h
+
       cache_time: isharem ? 600 : 7200,
     //  cache_time:0,
       ...(next_offset !== undefined && { next_offset }),
