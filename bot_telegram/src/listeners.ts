@@ -1,23 +1,24 @@
 import { Composer } from "grammy";
 import type { MyContext } from "./utils/customTypes.js";
 import { countMessages } from "./handlers/listeners/message_counter.js";
-import { haremInlineQuery } from "./handlers/inline_query/harem_inline_query.js";
+import { haremInlineQuery } from "./handlers/inline_query/harem/harem_inline_query.js";
 import {
   getCharacters,
   getCharactersall,
   QueryCharacet,
-} from "./handlers/inline_query/inline_query.js";
+} from "./handlers/inline_query/global/inline_query.js";
 import { getCharacter, setCharacter, getCharList } from "./cache/cache.js";
 import { addCharacterEditMenu } from "./handlers/commands/admin_bot/manager_character/add_character/edit.ui.js";
 import { debug, info, error as logError } from "./utils/log.js";
 import { ChatType } from "./utils/customTypes.js";
-import { inline_per } from "./handlers/inline_query/inline_by_id.js";
-import { animeInlineQuery } from "./handlers/inline_query/anime_inline_query.js";
+import { inline_per } from "./handlers/inline_query/global/inline_by_id.js";
+import { animeInlineQuery } from "./handlers/inline_query/global/anime_inline_query.js";
 import { SetRarityReplyHandler } from "./handlers/commands/admin_bot/configs/set_rarity.js";
 import { SetEventReplyHandler } from "./handlers/commands/admin_bot/configs/set_event.js";
 import { animelistCallback } from "./handlers/commands/users/animelist.js";
-import { Gift_Inline_query } from "./handlers/inline_query/gift_iniline_query.js";
-import { Fav_Inline_query } from "./handlers/inline_query/fav_iniline_query.js";
+import { Gift_Inline_query } from "./handlers/inline_query/harem/gift_iniline_query.js";
+import { Fav_Inline_query } from "./handlers/inline_query/harem/fav_iniline_query.js";
+import { searchHarem } from "./handlers/inline_query/harem/search_haren.js";
 import { prisma } from "./lib/prisma.js";
 import { calcHash } from "./utils/calcHash.js";
 import { Backup_harem } from "./handlers/commands/users/backup.js";
@@ -71,9 +72,9 @@ listeners.on("message:text", async (ctx, next) => {
         const currentTelegramId = BigInt(ctx.from!.id);
 
         if (oldUser.telegramId === currentTelegramId) {
-       return   await ctx.reply(ctx.t("backup-profile-curret"));
- 
-        
+          return await ctx.reply(ctx.t("backup-profile-curret"));
+
+
         }
 
         await prisma.$transaction(async (tx) => {
@@ -354,6 +355,10 @@ listeners.on("inline_query", async (ctx) => {
       return await inline_per(ctx, charListData);
     }
 
+    if (query.startsWith("my:")) {
+      return await searchHarem(ctx);
+    }
+
     if (query.startsWith("harem_user_")) {
       return haremInlineQuery(ctx);
     }
@@ -384,7 +389,7 @@ listeners.on("inline_query", async (ctx) => {
         try {
           await originalAnswer([]);
           answered = true;
-        } catch (e) {}
+        } catch (e) { }
       }
     } else {
       logError("inline_query_error", err);
@@ -393,12 +398,12 @@ listeners.on("inline_query", async (ctx) => {
     const duration = Date.now() - start;
     info(
       "Inline query [" +
-        query +
-        "] do usuario " +
-        userId +
-        " levou " +
-        duration +
-        "ms",
+      query +
+      "] do usuario " +
+      userId +
+      " levou " +
+      duration +
+      "ms",
     );
   }
 });

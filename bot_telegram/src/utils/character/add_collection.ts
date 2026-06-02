@@ -76,6 +76,14 @@ export async function AddCharacterCollection({
       return collection ?? null;
     });
 
+    if (!result) {
+      debug("AddCharacterCollection retornou null", {
+        telegramId: telegramId.toString(),
+        characterId,
+      });
+      return null;
+    }
+
     debug("AddCharacterCollection OK", {
       telegramId: telegramId.toString(),
       characterId,

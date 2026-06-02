@@ -1,15 +1,17 @@
-import { bts_yes_or_no } from "../../utils/btns.js";
+import { bts_yes_or_no } from "../../../utils/btns.js";
 import type {
   ChatType,
   CollectionItem,
   MyContext,
-} from "../../utils/customTypes.js";
-import { createResult } from "./create_inline_result.js";
-import { getHaremCollection, LIMIT } from "./harem_inline_query.js";
-import { showResults } from "./show_results_inline.js";
+} from "../../../utils/customTypes.js";
+import { createResult } from "../create_inline_result.js";
+import { showResults } from "../show_results_inline.js";
+import { getHaremCollection } from "./harem_inline_query.js";
 
 export async function Fav_Inline_query(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
+
+    const LIMIT = 20;
 
   const genero = process.env.TYPE_BOT as ChatType;
 
@@ -20,11 +22,11 @@ export async function Fav_Inline_query(ctx: MyContext) {
 
   const offset = Number(ctx.inlineQuery.offset || "0");
 
-  const { collection, total } = await getHaremCollection(
+  const { collection, total } = await getHaremCollection({
     telegramId,
     offset,
     genero,
-  );
+  });
 
   const results = collection.map((item: CollectionItem) =>
     createResult({
@@ -45,6 +47,6 @@ export async function Fav_Inline_query(ctx: MyContext) {
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
     text: ctx.t("fav-btn-select"),
-    isharem:true
+    isharem: true
   });
 }

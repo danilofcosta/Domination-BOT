@@ -1,36 +1,35 @@
-import { ChatType, type MyContext } from "../../utils/customTypes.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 
-import { showResults } from "./show_results_inline.js";
-import { createResult } from "./create_inline_result.js";
-import { prisma } from "../../lib/prisma.js";
-import { log } from "../../utils/log.js";
-import { bts_yes_or_no } from "../../utils/btns.js";
-import { charCountCache, getOrSet } from "../../cache/cache.js";
-const LIMIT = 20;
+import { showResults } from "../show_results_inline.js";
+import { createResult } from "../create_inline_result.js";
+import { prisma } from "../../../lib/prisma.js";
+import { log } from "../../../utils/log.js";
+import { bts_yes_or_no } from "../../../utils/btns.js";
+import { charCountCache, getOrSet } from "../../../cache/cache.js";
 
 // busca um personagem em modo inline
 export async function getCharacters(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
   const query = ctx.inlineQuery.query;
   if (!query || isNaN(Number(query))) return;
-   let _chatType = Get_chatType(ctx);
+  let _chatType = Get_chatType(ctx);
 
   const per =
     _chatType === ChatType.HUSBANDO
       ? await prisma.characterHusbando.findFirst({
-          where: { id: Number(query) },
-          include: {
-            HusbandoEvent: { include: { Event: true } }, 
-            HusbandoRarity: { include: { Rarity: true } },
-          },
-        })
+        where: { id: Number(query) },
+        include: {
+          HusbandoEvent: { include: { Event: true } },
+          HusbandoRarity: { include: { Rarity: true } },
+        },
+      })
       : await prisma.characterWaifu.findFirst({
-          where: { id: Number(query) },
-          include: {
-            WaifuEvent: { include: { Event: true } }, 
-            WaifuRarity: { include: { Rarity: true } },
-          },
-        });
+        where: { id: Number(query) },
+        include: {
+          WaifuEvent: { include: { Event: true } },
+          WaifuRarity: { include: { Rarity: true } },
+        },
+      });
   // console.log("Result:", per);
   if (!per) return;
   const result = createResult({
@@ -50,6 +49,8 @@ export async function getCharacters(ctx: MyContext) {
 
 
 export async function QueryCharacet(ctx: MyContext) {
+  const LIMIT = 20;
+
   if (!ctx.inlineQuery) return;
   const query = ctx.inlineQuery.query.trim();
   const offset = Number(ctx.inlineQuery.offset || "0");
@@ -76,17 +77,18 @@ export async function QueryCharacet(ctx: MyContext) {
   ]);
 
   const results = characters.map((char) =>
-      
-    createResult({ character: char, t: ctx.t, noformat: true, chatType  ,reply_markup:    bts_yes_or_no(
-      ctx,
-      `random-character-yes-${char.id}-${3}`,
-      `random-character-no-${char.id}-${2}`,
-      char.likes.toString(),
-      char.dislikes.toString(),
-      "5289772607556568230",
-      "5318868949402667784",
-    )
-})
+
+    createResult({
+      character: char, t: ctx.t, noformat: true, chatType, reply_markup: bts_yes_or_no(
+        ctx,
+        `random-character-yes-${char.id}-${3}`,
+        `random-character-no-${char.id}-${2}`,
+        char.likes.toString(),
+        char.dislikes.toString(),
+        "5289772607556568230",
+        "5318868949402667784",
+      )
+    })
   );
 
   await showResults({
@@ -97,14 +99,15 @@ export async function QueryCharacet(ctx: MyContext) {
       ? ctx.t('query_not_fould')
       : `${ctx.t('Logo_bt')} : ${total}`,
 
-    
-      
+
+
   });
 }
 
 // busca todos os personagens em modo inline
 export async function getCharactersall(ctx: MyContext) {
   let chatType = Get_chatType(ctx);
+    const LIMIT = 20;
   // if (!ctx.inlineQuery) return;
   const offset = Number(ctx.inlineQuery?.offset) || 0;
 
@@ -160,10 +163,10 @@ export async function getCharactersall(ctx: MyContext) {
 
 function Get_chatType(
   ctx: MyContext
-){
+) {
   let chatType: ChatType | undefined;
 
-    try {
+  try {
     chatType = ctx.botType
   } catch (e) {
     log("erro ao buscar chat type");

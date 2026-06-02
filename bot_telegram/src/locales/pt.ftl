@@ -339,6 +339,12 @@ harem_no_user = vc nao tem um harem
 harem-empty = Nenhum personagem.
 harem-no-event = Sem Evento
 harem-unknown-anime = Desconhecido
+
+############
+# SEARCH HAREM #
+############
+search-harem-title = Pesquisar harem
+search-harem-not-found = Nada encontrado
 harem-rarity-header = 
 🔸 <b>{ $name }</b>
 
