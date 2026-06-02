@@ -63,11 +63,16 @@ export async function AddCharacterCollection({
           SET "count" = "count" + 1, "updatedAt" = NOW()
           WHERE "userId" = $1::bigint AND "characterId" = $2
           RETURNING id, count
+        ),
+        inserted AS (
+          INSERT INTO ${table} ("userId", "characterId", "count", "createdAt", "updatedAt")
+          SELECT $1::bigint, $2, 1, NOW(), NOW()
+          WHERE NOT EXISTS (SELECT 1 FROM updated)
+          RETURNING id, count
         )
-        INSERT INTO ${table} ("userId", "characterId", "count", "createdAt", "updatedAt")
-        SELECT $1::bigint, $2, 1, NOW(), NOW()
-        WHERE NOT EXISTS (SELECT 1 FROM updated)
-        RETURNING id, count
+        SELECT id, count FROM updated
+        UNION ALL
+        SELECT id, count FROM inserted
         `,
         telegramId.toString(),
         characterId,
