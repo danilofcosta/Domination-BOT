@@ -100,6 +100,10 @@ async function addCharacterDirect(
 
     await sendAddedNotification(ctx, character_db, data, isNoautor);
   } catch (e: any) {
+    if (e?.code === "P2002" && e?.meta?.target?.includes?.("mediaUniqueId")) {
+      await ctx.reply(ctx.t("add-char-error-media-unique"));
+      return;
+    }
     console.error("addCharacterDirect error:", e);
     await ctx.reply(
       ctx.t("add-char-error", { error: e?.message || "erro desconhecido" }),

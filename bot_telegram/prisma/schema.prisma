@@ -12,7 +12,7 @@ model CharacterHusbando {
   origem             String               @db.VarChar(100)
   mediaType          MediaType
   media              String
-  mediaUniqueId      String?
+  mediaUniqueId      String?  @unique
   slug               String               @unique
   extras             Json?
   createdAt          DateTime             @default(now())

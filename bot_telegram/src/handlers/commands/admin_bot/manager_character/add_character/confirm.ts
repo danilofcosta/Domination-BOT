@@ -4,6 +4,7 @@ import { mentionUser } from "../../../../../utils/mention_user.js";
 import { Sendmedia } from "../../../../../utils/sendmedia.js";
 import { create_caption } from "../../../../../utils/manage_captures/create_caption.js";
 import { createCharacter } from "../services/character.service.js";
+import { error as logError } from "../../../../../utils/log.js";
 
 export async function confirmCharacterAdd(ctx: MyContext, charId: number) {
   const character = getCharacter(charId);
@@ -55,8 +56,12 @@ export async function confirmCharacterAdd(ctx: MyContext, charId: number) {
     });
 
     await ctx.deleteMessage().catch(() => {});
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    logError("confirmCharacterAdd error", error);
+    if (error?.code === "P2002" && error?.meta?.target?.includes?.("mediaUniqueId")) {
+      await ctx.answerCallbackQuery(ctx.t("add-char-error-media-unique"));
+      return;
+    }
     await ctx.answerCallbackQuery(ctx.t("add-char-save-error"));
   }
 }

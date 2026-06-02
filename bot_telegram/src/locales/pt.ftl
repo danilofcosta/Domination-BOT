@@ -435,6 +435,7 @@ add-char-preview = Nome: { $nome }
 add-char-default-value = valor padrao
 add-char-default-event = sem evento
 add-char-save-error = Erro ao salvar personagem.
+add-char-error-media-unique = ❌ Esta mídia já está em uso por outro personagem. Envie uma mídia diferente.
 tipo-foto = foto
 tipo-video = vídeo
 tipo-gif = GIF
