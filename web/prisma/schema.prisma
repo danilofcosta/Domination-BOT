@@ -174,9 +174,11 @@ model TelegramGroup {
   updatedAt     DateTime @default(now())
 }
 
-model Session {
+model BotSession {
   key   String @id
   value Json
+
+  @@map("BotSession")
 }
 
 enum Language {

@@ -4,7 +4,7 @@ import { cache } from "@/lib/cache";
 
 const getCachedSessions = cache(
   async () => {
-    const sessions = await prisma.session.findMany({
+    const sessions = await prisma.botSession.findMany({
       orderBy: { key: "desc" },
     });
 
@@ -31,7 +31,7 @@ export async function GET() {
 
 export async function DELETE() {
   try {
-    await prisma.session.deleteMany({});
+    await prisma.botSession.deleteMany({});
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Erro ao resetar sessões:", error);

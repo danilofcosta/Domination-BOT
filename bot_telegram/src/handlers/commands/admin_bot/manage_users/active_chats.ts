@@ -43,7 +43,7 @@ async function getChatTitle(ctx: MyContext, chatId: string): Promise<string> {
 }
 
 async function getProcessedData(ctx: MyContext) {
-  const sessions = await prisma.session.findMany({ select: { key: true } });
+  const sessions = await prisma.botSession.findMany({ select: { key: true } });
 
   const countMap = new Map<string, { type: string; count: number }>();
 

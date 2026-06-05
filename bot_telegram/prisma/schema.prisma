@@ -116,9 +116,11 @@ model Rarity {
   WaifuRarity    WaifuRarity[]
 }
 
-model Session {
+model BotSession {
   key   String @id
   value Json
+
+  @@map("BotSession")
 }
 
 model User {
