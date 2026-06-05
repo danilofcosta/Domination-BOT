@@ -15,6 +15,10 @@ export async function AddCharacterCollection({
   from,
   characterId,
 }: AddCharacterCollectionForm) {
+  if (type !== "waifu" && type !== "husbando") {
+    throw new Error(`Invalid collection type: ${type}`);
+  }
+
   const isWaifu = type === "waifu";
 
   const telegramId = BigInt(userId);
@@ -54,31 +58,19 @@ export async function AddCharacterCollection({
         });
       }
 
-      // 3. Inserir/incrementar coleção sem queimar sequence
-      const table = isWaifu ? '"WaifuCollection"' : '"HusbandoCollection"';
-      const [collection] = await tx.$queryRawUnsafe<Array<{ id: number; count: number }>>(
-        `
-        WITH updated AS (
-          UPDATE ${table}
-          SET "count" = "count" + 1, "updatedAt" = NOW()
-          WHERE "userId" = $1::bigint AND "characterId" = $2
-          RETURNING id, count
-        ),
-        inserted AS (
-          INSERT INTO ${table} ("userId", "characterId", "count", "createdAt", "updatedAt")
-          SELECT $1::bigint, $2, 1, NOW(), NOW()
-          WHERE NOT EXISTS (SELECT 1 FROM updated)
-          RETURNING id, count
-        )
-        SELECT id, count FROM updated
-        UNION ALL
-        SELECT id, count FROM inserted
-        `,
-        telegramId.toString(),
-        characterId,
-      );
+      const collection = isWaifu
+        ? await tx.waifuCollection.upsert({
+            where: { userId_characterId: { userId: telegramId, characterId } },
+            update: { count: { increment: 1 } },
+            create: { userId: telegramId, characterId, count: 1 },
+          })
+        : await tx.husbandoCollection.upsert({
+            where: { userId_characterId: { userId: telegramId, characterId } },
+            update: { count: { increment: 1 } },
+            create: { userId: telegramId, characterId, count: 1 },
+          });
 
-      return collection ?? null;
+      return collection;
     });
 
     if (!result) {

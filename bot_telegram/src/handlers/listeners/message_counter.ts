@@ -1,4 +1,4 @@
-import type { User } from "grammy/types";
+import type { ReactionType, User } from "grammy/types";
 import { ChatType, NODE_ENV, type MyContext } from "../../utils/customTypes.js";
 import { botNewgroupMember } from "./botNewgroupMember.js";
 import { DropCharacter } from "./doprar_per.js";
@@ -10,44 +10,56 @@ import { GetCharacterById } from "../../utils/character/get_by_id.js";
 
 const DROP = 100;
 const UNDROP = DROP + 40;
-const TEST_GROUP_ID = process.env.TEST_GROUP_ID;
 
 export async function countMessages(ctx: MyContext) {
   if (!ctx.chat) return;
+  const chatId = ctx.chat.id;
 
-  const runtime = getRuntime(ctx.chat.id);
- // console.log('chatid',ctx.chat.id,'name_grupo',ctx.chat.title, 'cont',runtime.cont )
+  const runtime = getRuntime(chatId);
 
   if (!runtime) {
     return;
   }
-  const isDev = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
-  const isTestGroup = TEST_GROUP_ID
-    ? ctx.chat.id === Number(TEST_GROUP_ID)
-    : false;
- // console.log("----", runtime.cont, ctx.from?.first_name, ctx.chat.title);
-
-  const chatId = ctx.chat.id;
-
-  /* =========================
-   * CONTADOR EM MEMÓRIA
-   * ========================= */
-  if (isDev && isTestGroup) {
-    runtime.cont < 97 ? 97 : runtime.cont + 1;
-  } else {
-    runtime.cont += 1;
-  }
-
+  // incrementa o contador de mensagens
+  runtime.cont += 1;
   /* =========================
    * BOT ADICIONADO NO GRUPO
    * ========================= */
   if (ctx.message?.new_chat_members) {
     const newMembers: User[] = ctx.message.new_chat_members;
-
+    // Verifica se o bot foi adicionado ao grupo
     if (newMembers.some((member) => member.id === ctx.me.id)) {
       return botNewgroupMember(ctx);
     }
   }
+
+
+// Reage a mensagens que contenham o comando "/dominar" pq  sla 
+  if (ctx.message?.text && ctx.message.text.includes("/dominar")) {
+    try {
+      const reaction = [
+        "💘",
+        "😍",
+        "🥰",
+        "😘",
+        "😻",
+        "💕",
+        "💖",
+        "💗",
+        "💓",
+        "💝",
+      ] as unknown as ReactionType[];
+
+      const randomReaction = reaction[Math.floor(Math.random() * reaction.length)] as ReactionType;
+
+
+      await ctx.react(randomReaction);
+    } catch (err) {
+      error("Erro ao reagir à mensagem:", err);
+    }}
+
+
+
 
   /* =========================
    * DROP
@@ -55,6 +67,8 @@ export async function countMessages(ctx: MyContext) {
 
   if (runtime.cont >= DROP && !runtime.dropId && !runtime.characterId) {
     const result = await DropCharacter(ctx);
+
+    // Se o resultado for falso, significa que o drop não foi executado (por exemplo, por falta de personagens disponíveis), então ajustamos o contador para tentar novamente em breve, evitando que o drop seja tentado a cada mensagem.
     if (!result) {
       runtime.cont = DROP - 10;
       return;
@@ -62,7 +76,8 @@ export async function countMessages(ctx: MyContext) {
 
     if (result) {
       log("Drop executado com sucesso no chat", chatId);
-      const newCont = runtime.cont ?? DROP;
+     // const newCont = runtime.cont ?? DROP;
+         return;
     }
 
     return;
@@ -73,6 +88,7 @@ export async function countMessages(ctx: MyContext) {
    * ========================= */
 
   if (runtime.cont >= UNDROP && runtime.dropId != null) {
+   
     const character = runtime.characterId
       ? await GetCharacterById(ctx.botType, runtime.characterId)
       : null;

@@ -1,5 +1,5 @@
 import { LRUCache } from "lru-cache";
-import type { PreCharacter } from "../utils/customTypes.js";
+import type { ChatType, PreCharacter } from "../utils/customTypes.js";
 
 export const haremCache = new LRUCache<string, any>({
   max: 1000,
@@ -88,7 +88,7 @@ export function getGiftUser(id: number) {
 export interface AddToCollectionData {
   userId: number;
   characterId: number;
-  genero: string;
+  genero: ChatType;
   from: any;
 }
 
@@ -103,7 +103,7 @@ export function getAddToCollection(userId: number, characterId: number): AddToCo
 export interface AddToCollectionMultiData {
   userId: number;
   characterIds: number[];
-  genero: string;
+  genero: ChatType;
   from: any;
 }
 

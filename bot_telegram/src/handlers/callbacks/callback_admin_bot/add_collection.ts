@@ -63,10 +63,7 @@ export async function addCollectionCallback(ctx: MyContext) {
 
       for (const charId of characterIds) {
         const result = await AddCharacterCollection({
-          type:
-            ((isMulti
-              ? getAddToCollectionMulti(userId)?.genero
-              : ctx.botType) as ChatType) || ChatType.WAIFU,
+          type: (isMulti ? getAddToCollectionMulti(userId)?.genero : ctx.botType) || ChatType.WAIFU,
           userId,
           from: isMulti ? getAddToCollectionMulti(userId)?.from : ctx.from,
           characterId: charId,
