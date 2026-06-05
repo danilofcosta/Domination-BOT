@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl";
 import { Characterdb } from "@/lib/types";
-import { unstable_cache } from "next/cache";
+import { cache } from "@/lib/cache";
 
 type WithDisplay<T> = T & { displayUrl: string | null };
 
@@ -36,7 +36,7 @@ interface CharactersParams {
   page: number;
 }
 
-const getCachedCharacters = unstable_cache(
+const getCachedCharacters = cache(
   async (params: CharactersParams) => {
     const { type, sort, search, rarityId, eventId, sourceType, anime, page } = params;
     const take = 24;
@@ -142,5 +142,9 @@ export async function GET(req: Request) {
   };
 
   const data = await getCachedCharacters(params);
-  return Response.json(data);
+  return new Response(JSON.stringify(data), {
+    headers: {
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+    },
+  });
 }

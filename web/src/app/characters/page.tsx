@@ -90,7 +90,11 @@ export default function CharactersPage() {
       const normalized = normalizeCharacters(data.waifus || [], data.husbandos || []);
       
       if (append) {
-        setCollection(prev => [...prev, ...normalized]);
+        setCollection(prev => {
+          const existingIds = new Set(prev.map(p => `${p.type}-${p.id}`));
+          const uniqueNew = normalized.filter(n => !existingIds.has(`${n.type}-${n.id}`));
+          return [...prev, ...uniqueNew];
+        });
       } else {
         setCollection(normalized);
       }

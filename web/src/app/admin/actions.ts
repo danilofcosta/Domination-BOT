@@ -5,7 +5,8 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { SourceType, ProfileType } from "../../../generated/prisma/client";
 import { slugify } from "@/lib/telegram/create_slug";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cache } from "@/lib/cache";
 import fs from "fs/promises";
 import path from "path";
 import {
@@ -36,7 +37,7 @@ const mediaCache = new LRUCache<string, string>({
 
 // --- Dashboard & Stats ---
 
-export const getDashboardData = unstable_cache(
+export const getDashboardData = cache(
   async () => {
     try {
       const [
@@ -261,7 +262,7 @@ export const getDashboardData = unstable_cache(
 
 // --- Users ---
 
-export const getUsers = unstable_cache(
+export const getUsers = cache(
   async () => {
     try {
       const users = await prisma.user.findMany({
@@ -701,6 +702,8 @@ export async function createCharacter(formData: FormData) {
     revalidatePath("/admin");
     revalidateTag("dashboard", { expire: 60 });
     revalidateTag("filters", { expire: 60 });
+    revalidateTag("characters", { expire: 60 });
+    revalidateTag("home", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao criar personagem:", error);
@@ -837,6 +840,8 @@ export async function updateCharacter(
     revalidatePath("/admin");
     revalidateTag("dashboard", { expire: 60 });
     revalidateTag("filters", { expire: 60 });
+    revalidateTag("characters", { expire: 60 });
+    revalidateTag("home", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar personagem:", error);
@@ -874,6 +879,8 @@ export async function deleteCharacter(
     revalidatePath("/admin");
     revalidateTag("dashboard", { expire: 60 });
     revalidateTag("filters", { expire: 60 });
+    revalidateTag("characters", { expire: 60 });
+    revalidateTag("home", { expire: 60 });
     return { success: true };
   } catch (error) {
     console.error("Erro ao excluir personagem:", error);
@@ -928,6 +935,8 @@ export async function bulkUpdateCharacters(
     revalidatePath("/admin");
     revalidateTag("dashboard", { expire: 60 });
     revalidateTag("filters", { expire: 60 });
+    revalidateTag("characters", { expire: 60 });
+    revalidateTag("home", { expire: 60 });
     return { success: true, updated: ids.length };
   } catch (error) {
     console.error("Erro ao atualizar personagens em massa:", error);
@@ -1030,6 +1039,8 @@ export async function linkCharacter(
       revalidatePath(`/characters/${slug}`);
     }
     revalidatePath("/");
+    revalidateTag("characters", { expire: 60 });
+    revalidateTag("home", { expire: 60 });
 
     return { success: true };
   } catch (error) {

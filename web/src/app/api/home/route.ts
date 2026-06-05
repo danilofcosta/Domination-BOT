@@ -2,7 +2,7 @@ import { resolveMediaUrl } from "@/lib/uteis/resolveMediaUrl";
 
 import { prisma } from "@/lib/prisma";
 import { Characterdb } from "@/lib/types";
-import { unstable_cache } from "next/cache";
+import { cache } from "@/lib/cache";
 
 type WithDisplay<T> = T & {
   displayUrl: string | null;
@@ -29,7 +29,7 @@ async function mapWithDisplay<T extends Characterdb>(
   );
 }
 
-const getCachedHomeData = unstable_cache(
+const getCachedHomeData = cache(
   async (skip: number, take: number, sort: string) => {
     let orderBy: any;
     if (sort === "likes") {
@@ -70,7 +70,11 @@ export async function GET(req: Request) {
   console.log(`Home sort: ${sort}, take: ${take}, skip: ${skip}`);
   try {
     const data = await getCachedHomeData(skip, take, sort);
-    return Response.json(data);
+    return new Response(JSON.stringify(data), {
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+      },
+    });
   } catch (e: any) {
     console.log("Erro  em buscar dados:", `CODIGO ${e.code}: ${e.message}`, e);
     return Response.json({

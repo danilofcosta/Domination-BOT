@@ -25,6 +25,18 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['umbrel.local'],
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.myanimelist.net",
+      },
+      {
+        protocol: "https",
+        hostname: "api.telegram.org",
+      },
+    ],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "20mb",

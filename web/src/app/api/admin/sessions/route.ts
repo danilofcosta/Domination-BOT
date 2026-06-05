@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { unstable_cache } from "next/cache";
+import { cache } from "@/lib/cache";
 
-const getCachedSessions = unstable_cache(
+const getCachedSessions = cache(
   async () => {
     const sessions = await prisma.session.findMany({
       orderBy: { key: "desc" },
@@ -20,7 +20,9 @@ const getCachedSessions = unstable_cache(
 export async function GET() {
   try {
     const data = await getCachedSessions();
-    return NextResponse.json(data);
+    return new Response(JSON.stringify(data), {
+      headers: { "Cache-Control": "no-store, must-revalidate" },
+    });
   } catch (error) {
     console.error("Erro ao buscar sessões:", error);
     return NextResponse.json({ error: "Failed to fetch sessions" }, { status: 500 });

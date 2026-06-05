@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { cache } from "@/lib/cache";
 import Link from "next/link";
 import {
   Calendar,
@@ -20,59 +21,68 @@ import { getOrFetchMalData, type MalCharacterData } from "@/lib/jikan";
 import { MalCacheClient } from "./mal-cache-client";
 
 
-async function getCharacter(slug: string) {
-  const typeHint = slug.includes("waifu") ? "waifu" : "husbando";
-  let mainSlug = slug.replace(
-    new RegExp(`_${typeHint}$`),
-    ""
-  );
-  mainSlug = decodeURIComponent(mainSlug);
+const getCachedCharacter = cache(
+  async (slug: string) => {
+    const typeHint = slug.includes("waifu") ? "waifu" : "husbando";
+    let mainSlug = slug.replace(
+      new RegExp(`_${typeHint}$`),
+      "",
+    );
+    mainSlug = decodeURIComponent(mainSlug);
 
-  let character: any = null;
+    let character: any = null;
 
-  if (typeHint === "waifu" || typeHint === "husbando") {
-    character =
-      typeHint === "waifu"
-        ? await prisma.characterWaifu.findUnique({
-          where: { slug: mainSlug },
+    if (typeHint === "waifu" || typeHint === "husbando") {
+      character =
+        typeHint === "waifu"
+          ? await prisma.characterWaifu.findUnique({
+            where: { slug: mainSlug },
+            include: {
+              WaifuEvent: { include: { Event: true } },
+              WaifuRarity: { include: { Rarity: true } },
+            },
+          })
+          : await prisma.characterHusbando.findUnique({
+            where: { slug: mainSlug },
+            include: {
+              HusbandoEvent: { include: { Event: true } },
+              HusbandoRarity: { include: { Rarity: true } },
+            },
+          })
+
+      if (character) character = { ...character, type: typeHint };
+    }
+
+    if (!character) {
+      const [waifu, husbando] = await Promise.all([
+        prisma.characterWaifu.findFirst({
+          where: { slug: { equals: slug, mode: "insensitive" } },
           include: {
             WaifuEvent: { include: { Event: true } },
             WaifuRarity: { include: { Rarity: true } },
           },
-        })
-        : await prisma.characterHusbando.findUnique({
-          where: { slug: mainSlug },
+        }),
+        prisma.characterHusbando.findFirst({
+          where: { slug: { equals: slug, mode: "insensitive" } },
           include: {
             HusbandoEvent: { include: { Event: true } },
             HusbandoRarity: { include: { Rarity: true } },
           },
-        })
+        }),
+      ]);
 
-    if (character) character = { ...character, type: typeHint };
-  }
+      if (waifu) character = { ...waifu, type: "waifu" as const };
+      else if (husbando) character = { ...husbando, type: "husbando" as const };
+    }
 
-  if (!character) {
-    const [waifu, husbando] = await Promise.all([
-      prisma.characterWaifu.findFirst({
-        where: { slug: { equals: slug, mode: "insensitive" } },
-        include: {
-          WaifuEvent: { include: { Event: true } },
-          WaifuRarity: { include: { Rarity: true } },
-        },
-      }),
-      prisma.characterHusbando.findFirst({
-        where: { slug: { equals: slug, mode: "insensitive" } },
-        include: {
-          HusbandoEvent: { include: { Event: true } },
-          HusbandoRarity: { include: { Rarity: true } },
-        },
-      }),
-    ]);
+    return character;
+  },
+  ["character-detail"],
+  { revalidate: 60, tags: ["characters"] },
+);
 
-    if (waifu) character = { ...waifu, type: "waifu" as const };
-    else if (husbando) character = { ...husbando, type: "husbando" as const };
-  }
-
+async function getCharacter(slug: string) {
+  const character = await getCachedCharacter(slug);
   if (!character) return null;
 
   const { extras, malData } = await getOrFetchMalData(

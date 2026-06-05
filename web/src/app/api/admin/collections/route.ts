@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { unstable_cache } from "next/cache";
+import { cache } from "@/lib/cache";
 
-const getCachedCollections = unstable_cache(
+const getCachedCollections = cache(
   async () => {
     const topWaifus = await prisma.waifuCollection.groupBy({
       by: ["characterId"],
@@ -122,7 +122,9 @@ const getCachedCollections = unstable_cache(
 export async function GET() {
   try {
     const data = await getCachedCollections();
-    return NextResponse.json(data);
+    return new Response(JSON.stringify(data), {
+      headers: { "Cache-Control": "no-store, must-revalidate" },
+    });
   } catch (error) {
     console.error("Erro ao buscar estatísticas:", error);
     return NextResponse.json({ error: "Erro ao buscar estatísticas" }, { status: 500 });

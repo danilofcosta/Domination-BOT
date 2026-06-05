@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { unstable_cache } from "next/cache";
+import { cache } from "@/lib/cache";
 
-const getCachedFilters = unstable_cache(
+const getCachedFilters = cache(
   async () => {
     const [rarities, events, waifuAnimes, husbandoAnimes] = await Promise.all([
       prisma.rarity.findMany({
@@ -40,5 +40,9 @@ const getCachedFilters = unstable_cache(
 
 export async function GET() {
   const data = await getCachedFilters();
-  return Response.json(data);
+  return new Response(JSON.stringify(data), {
+    headers: {
+      "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
+    },
+  });
 }
