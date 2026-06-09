@@ -3,6 +3,8 @@ import { InlineKeyboard } from "grammy";
 import type { MyContext } from "../../../../../utils/customTypes.js";
 import { addCharacterEditMenu } from "./edit.ui.js";
 import { confirmCharacterAdd } from "./confirm.js";
+import { confirmCharacterEdit } from "../edit_character/confirm.js";
+import { editCharacterEditMenu } from "../edit_character/edit.ui.js";
 import { getEventsAll } from "../services/event.service.js";
 import { getRaritiesAll } from "../services/rarity.service.js";
 import { setAdminSetup } from "../../../../../cache/workflowState.js";
@@ -229,10 +231,37 @@ export async function handleEditMenuCallback(ctx: MyContext) {
     return;
   }
 
+  const matchMedia = data.match(/^edit_character_edit_media_(\d+)$/);
+  if (matchMedia) {
+    const id = matchMedia[1];
+    const character = getCharacter(Number(id));
+    if (!character) {
+      await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
+      return;
+    }
+    const editMessageId = ctx.callbackQuery?.message?.message_id;
+    setAdminSetup(ctx, { action: "edit_media", targetId: id, messageId: editMessageId });
+    await ctx.reply(ctx.t("edit_character_prompt_media"), {
+      parse_mode: "HTML",
+      reply_markup: { force_reply: true },
+    });
+    await ctx.answerCallbackQuery();
+    return;
+  }
+
   const matchConfirm = data.match(/^edit_character_edit_confirm_(\d+)$/);
   if (matchConfirm) {
-    const id = matchConfirm[1];
-    await confirmCharacterAdd(ctx, Number(id));
+    const id = Number(matchConfirm[1]);
+    const character = getCharacter(id);
+    if (!character) {
+      await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
+      return;
+    }
+    if (character.editId) {
+      await confirmCharacterEdit(ctx, id);
+    } else {
+      await confirmCharacterAdd(ctx, id);
+    }
     return;
   }
 }

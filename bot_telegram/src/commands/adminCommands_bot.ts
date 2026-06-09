@@ -29,6 +29,7 @@ import { debug } from '../utils/log.js';
 import { OpenHaremUser } from '../handlers/commands/admin_bot/manage_users/open_harem.js';
 import { listActiveChats } from '../handlers/commands/admin_bot/manage_users/active_chats.js';
 import { SetBotPicHandler } from '../handlers/commands/admin_bot/manage_bot/set_bot_pic.js';
+import { editCharHandler } from '../handlers/commands/admin_bot/manager_character/edit_character/handler.js';
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -50,6 +51,15 @@ export const adminCommands_bot_dict = {
     },
     handler: AddCharacterHandler,
   },
+  // editchar: {
+  //   minPermission: ProfileType.ADMIN,
+  //   command: 'editchar' + botPrefix,
+  //   description: {
+  //     en: 'Edit a character in the database (admin)',
+  //     pt: 'Editar um personagem no banco de dados (admin)',
+  //   },
+  //   handler: editCharHandler,
+  // },
 
   addCollection: {
     minPermission: ProfileType.ADMIN,

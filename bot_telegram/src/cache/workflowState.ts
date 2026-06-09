@@ -3,6 +3,7 @@ type AdminSetupAction =
   | "edit_anime"
   | "edit_events"
   | "edit_rarities"
+  | "edit_media"
   | `setrarity_${string}`
   | `setevent_${string}`
   | null;
@@ -10,6 +11,7 @@ type AdminSetupAction =
 interface AdminSetup {
   action: AdminSetupAction;
   targetId: string | null;
+  messageId?: number;
 }
 
 interface RarityEditCache {

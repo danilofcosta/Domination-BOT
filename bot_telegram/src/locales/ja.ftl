@@ -423,7 +423,9 @@ add_character_edit_btn_nome = 名前
 add_character_edit_btn_anime = アニメ
 add_character_edit_btn_events = イベント
 add_character_edit_btn_rarities = レアリティ
+add_character_edit_btn_media = メディア
 add_character_edit_btn_confirm = 保存
+add_character_edit_btn_cancel = キャンセル
 
 edit_character_prompt_nome = ✏️ 新しい名前を送信してください：
     <b>現在：</b>{ $current }
@@ -433,6 +435,10 @@ edit_character_prompt_events = ✏️ イベントIDをカンマ区切りで送�
     <b>現在：</b>{ $current }
 edit_character_prompt_rarities = ✏️ レアリティIDをカンマ区切りで送信してください：
     <b>現在：</b>{ $current }
+edit_character_prompt_media = 写真またはビデオに返信して新しいメディアを送信してください：
+edit_character_prompt_media_reply = 新しいメディア（写真またはビデオ）を含むメッセージに返信してください。
+edit_character_prompt_media_invalid = 返信されたメッセージに有効なメディアが含まれていません。写真またはビデオを送信してください。
+edit-char-success = ✅ キャラクターが正常に更新されました！
 edit-char-info = 🆔 ID：{ $id }
 📛 名前：{ $name }
 📺 アニメ：{ $origem }

@@ -240,7 +240,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       try {
         await Sendmedia({
           ctx,
-          caption: ctx.t("daily_dominar_limit", { limit: String(DAILY_LIMIT) ,genero: type === ChatType.WAIFU ? "waifu" : "husbando"}),
+          caption: ctx.t("daily_dominar_limit", {genero: type === ChatType.WAIFU ? "waifu" : "husbando"}),
         });
       } catch (e) {
         error("Erro ao enviar mensagem de limite diário", e);

@@ -424,7 +424,9 @@ add_character_edit_btn_nome = Name
 add_character_edit_btn_anime = Anime
 add_character_edit_btn_events = events
 add_character_edit_btn_rarities = rarities
+add_character_edit_btn_media = Media
 add_character_edit_btn_confirm = save
+add_character_edit_btn_cancel = cancel
 
 edit_character_prompt_nome = ✏️ Send the new name:
     <b>Current:</b> { $current }
@@ -434,6 +436,10 @@ edit_character_prompt_events = ✏️ Send the event IDs separated by commas:
     <b>Current:</b> { $current }
 edit_character_prompt_rarities = ✏️ Send the rarity IDs separated by commas:
     <b>Current:</b> { $current }
+edit_character_prompt_media = Send the new media by replying to a photo or video:
+edit_character_prompt_media_reply = Reply to a message containing the new media (photo or video).
+edit_character_prompt_media_invalid = The replied message does not contain valid media. Send a photo or video.
+edit-char-success = ✅ Character updated successfully!
 edit-char-info = 🆔 ID: { $id }
 📛 Name: { $name }
 📺 Anime: { $origem }

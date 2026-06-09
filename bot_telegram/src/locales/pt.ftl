@@ -315,8 +315,7 @@ success_dominar_btn = 𝑴𝑬𝑼 𝑯𝑨𝑹𝑬𝑴
 success-dominar-fallback = vc tem um personagem novo!
 success-dominar-genero-waifu = uma waifu
 success-dominar-genero-husbando = um husbando
-daily_dominar_limit = ❌ Limite diário atingido! Você já dominou { $limit } personagens hoje. Tente novamente amanhã.
-daily_dominar_limit=Já recolheu + { $limit }  {$genero} demais, vamos deixar algumas para amanhã
+daily_dominar_limit=Já recolheu {$genero} demais, vamos deixar algumas para amanhã
 
 
 ############
@@ -468,21 +467,27 @@ add_character_edit_btn_nome=Nome
 add_character_edit_btn_anime = Anime
 add_character_edit_btn_events=eventos
 add_character_edit_btn_rarities=reridades
+add_character_edit_btn_media = Mídia
 add_character_edit_btn_confirm=salvar
 add_character_edit_btn_cancel = cancelar
 
-edit_character_prompt_nome = ✏️ Envie o novo nome:
+edit_character_prompt_nome =  Envie o novo nome:
     <b>Atual:</b> { $current }
-edit_character_prompt_anime = ✏️ Envie o novo anime:
+edit_character_prompt_anime =  Envie o novo anime:
     <b>Atual:</b> { $current }
-edit_character_prompt_events = ✏️ Envie os IDs dos eventos separados por vírgula:
+edit_character_prompt_events =  Envie os IDs dos eventos separados por vírgula:
     <b>Atual:</b> { $current }
-edit_character_prompt_rarities = ✏️ Envie os IDs das raridades separados por vírgula:
+edit_character_prompt_rarities =  Envie os IDs das raridades separados por vírgula:
     <b>Atual:</b> { $current }
-edit-char-info = 🆔 ID: { $id }
-📛 Nome: { $name }
-📺 Anime: { $origem }
-
+edit_character_prompt_media = Envie a nova mídia respondendo a uma foto ou vídeo:
+edit_character_prompt_media_reply = Responda a uma mensagem que contenha a nova mídia (foto ou vídeo).
+edit_character_prompt_media_invalid = A mensagem respondida não contém uma mídia válida. Envie uma foto ou vídeo.
+edit-char-success = ✅ Personagem atualizado com sucesso!
+edit-char-info =  ID: { $id }
+     Nome: { $name }
+     Anime: { $origem }
+     
+ 
 query_not_fould = Nenhum resultado encontrado
 
 ############

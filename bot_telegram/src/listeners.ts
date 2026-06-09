@@ -9,8 +9,10 @@ import {
 } from "./handlers/inline_query/global/inline_query.js";
 import { getCharacter, setCharacter, getCharList } from "./cache/cache.js";
 import { addCharacterEditMenu } from "./handlers/commands/admin_bot/manager_character/add_character/edit.ui.js";
+import { editCharacterEditMenu } from "./handlers/commands/admin_bot/manager_character/edit_character/edit.ui.js";
+import { getMedia } from "./handlers/commands/admin_bot/manager_character/utils/media.js";
 import { debug, info, error as logError } from "./utils/log.js";
-import { ChatType } from "./utils/customTypes.js";
+import { ChatType, MediaType } from "./utils/customTypes.js";
 import { inline_per } from "./handlers/inline_query/global/inline_by_id.js";
 import { animeInlineQuery } from "./handlers/inline_query/global/anime_inline_query.js";
 import { SetRarityReplyHandler } from "./handlers/commands/admin_bot/configs/set_rarity.js";
@@ -26,6 +28,67 @@ import { HaremHandler } from "./handlers/commands/users/harem.js";
 import { getBackupState, clearBackupState, getAdminSetup, clearAdminSetup } from "./cache/workflowState.js";
 
 const listeners = new Composer<MyContext>();
+
+async function handleEditMediaMessage(ctx: MyContext) {
+  const adminSetup = getAdminSetup(ctx);
+  if (adminSetup?.action !== "edit_media" || !adminSetup?.targetId) return false;
+  if (!ctx.message) return false;
+
+  const numTargetId = Number(adminSetup.targetId);
+  const character = getCharacter(numTargetId);
+  if (!character) {
+    clearAdminSetup(ctx);
+    return true;
+  }
+
+  let reply = ctx.message.reply_to_message;
+  if (!reply) {
+    if (ctx.message.photo || ctx.message.video || ctx.message.document) {
+      reply = ctx.message as any;
+    }
+  }
+  if (!reply) {
+    await ctx.reply(ctx.t("edit_character_prompt_media_reply"));
+    return true;
+  }
+  const media = getMedia(reply);
+  if (!media) {
+    await ctx.reply(ctx.t("edit_character_prompt_media_invalid"));
+    return true;
+  }
+  character.media = media.fileId;
+  character.mediaUniqueId = media.fileUniqueId;
+  character.mediatype = media.type;
+
+  const editMessageId = adminSetup?.messageId;
+  if (editMessageId && ctx.chat?.id) {
+    const inputMedia =
+      media.type === MediaType.VIDEO_FILEID
+        ? { type: "video" as const, media: media.fileId }
+        : { type: "photo" as const, media: media.fileId };
+    await ctx.api.editMessageMedia(ctx.chat.id, editMessageId, inputMedia).catch(() => {});
+  }
+
+  setCharacter(numTargetId, character);
+  clearAdminSetup(ctx);
+
+  if (character.editId) {
+    await editCharacterEditMenu(ctx, String(numTargetId));
+  } else {
+    await addCharacterEditMenu(ctx, String(numTargetId));
+  }
+  return true;
+}
+
+listeners.on(":photo", async (ctx, next) => {
+  if (await handleEditMediaMessage(ctx)) return;
+  return next();
+});
+
+listeners.on(":video", async (ctx, next) => {
+  if (await handleEditMediaMessage(ctx)) return;
+  return next();
+});
 
 listeners.on("message:text", async (ctx, next) => {
   const userId = ctx.from?.id;
@@ -264,12 +327,19 @@ listeners.on("message:text", async (ctx, next) => {
           .map((t) => parseInt(t.trim(), 10))
           .filter((n) => !isNaN(n));
       }
+    } else if (action === "edit_media") {
+      if (await handleEditMediaMessage(ctx)) return;
+      return;
     }
 
     setCharacter(numTargetId, character);
     clearAdminSetup(ctx);
 
-    await addCharacterEditMenu(ctx, String(numTargetId));
+    if (character.editId) {
+      await editCharacterEditMenu(ctx, String(numTargetId));
+    } else {
+      await addCharacterEditMenu(ctx, String(numTargetId));
+    }
     return;
   }
   return next();

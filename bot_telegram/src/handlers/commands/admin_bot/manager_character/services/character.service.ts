@@ -115,6 +115,97 @@ export async function createCharacter(data: CreateCharacterData) {
   return result;
 }
 
+export type UpdateCharacterData = {
+  nome: string;
+  anime: string;
+  mediatype: string;
+  media: string;
+  mediaUniqueId?: string;
+  rarities?: number[];
+  events?: number[];
+  addby?: any;
+};
+
+export async function updateCharacter(id: number, genero: ChatType, data: UpdateCharacterData) {
+  if (genero === "husbando") {
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.husbandoRarity.deleteMany({ where: { characterId: id } });
+      await tx.husbandoEvent.deleteMany({ where: { characterId: id } });
+
+      return tx.characterHusbando.update({
+        where: { id },
+        data: {
+          name: data.nome,
+          origem: data.anime,
+          mediaType: data.mediatype as any,
+          media: data.media,
+          mediaUniqueId: data.mediaUniqueId,
+          addby: data.addby ?? Prisma.JsonNull,
+          ...(data.rarities?.length && {
+            HusbandoRarity: {
+              create: data.rarities.map((rarityId) => ({
+                Rarity: { connect: { id: rarityId } },
+              })),
+            },
+          }),
+          ...(data.events?.length && {
+            HusbandoEvent: {
+              create: data.events.map((eventId) => ({
+                Event: { connect: { id: eventId } },
+              })),
+            },
+          }),
+        },
+        include: {
+          HusbandoRarity: { include: { Rarity: true } },
+          HusbandoEvent: { include: { Event: true } },
+        },
+      });
+    });
+
+    maxIdCache.delete("maxId:husbando");
+    return result;
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.waifuRarity.deleteMany({ where: { characterId: id } });
+    await tx.waifuEvent.deleteMany({ where: { characterId: id } });
+
+    return tx.characterWaifu.update({
+      where: { id },
+      data: {
+        name: data.nome,
+        origem: data.anime,
+        mediaType: data.mediatype as any,
+        media: data.media,
+        mediaUniqueId: data.mediaUniqueId,
+        addby: data.addby ?? Prisma.JsonNull,
+        ...(data.rarities?.length && {
+          WaifuRarity: {
+            create: data.rarities.map((rarityId) => ({
+              Rarity: { connect: { id: rarityId } },
+            })),
+          },
+        }),
+        ...(data.events?.length && {
+          WaifuEvent: {
+            create: data.events.map((eventId) => ({
+              Event: { connect: { id: eventId } },
+            })),
+          },
+        }),
+      },
+      include: {
+        WaifuRarity: { include: { Rarity: true } },
+        WaifuEvent: { include: { Event: true } },
+      },
+    });
+  });
+
+  maxIdCache.delete("maxId:waifu");
+  return result;
+}
+
 export async function getCharacterById(id: number, genero: ChatType) {
   if (genero === "husbando") {
     return await prisma.characterHusbando.findUnique({

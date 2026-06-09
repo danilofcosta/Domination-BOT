@@ -1,6 +1,8 @@
-import type { MyContext } from "../../../../../utils/customTypes.js";
-import { ChatType } from "../../../../../utils/customTypes.js";
+import type { MyContext, PreCharacter } from "../../../../../utils/customTypes.js";
+import { ChatType, MediaType } from "../../../../../utils/customTypes.js";
+import { setCharacter } from "../../../../../cache/cache.js";
 import { getCharacterById } from "../services/character.service.js";
+import { editCharacterEditMenu } from "./edit.ui.js";
 
 export async function editCharHandler(ctx: MyContext) {
   let charid: number | undefined;
@@ -30,7 +32,38 @@ export async function editCharHandler(ctx: MyContext) {
     return ctx.reply(ctx.t("error-character-not-found"));
   }
 
-  await ctx.reply(ctx.t("edit-char-info", { id: character.id, name: character.name, origem: character.origem }), {
-    parse_mode: "HTML",
-  });
+  let rarities: number[] | undefined;
+  let events: number[] | undefined;
+
+  if ("HusbandoRarity" in character && character.HusbandoRarity) {
+    rarities = character.HusbandoRarity.map((r: { rarityId: number }) => r.rarityId);
+  } else if ("WaifuRarity" in character && character.WaifuRarity) {
+    rarities = character.WaifuRarity.map((r: { rarityId: number }) => r.rarityId);
+  }
+
+  if ("HusbandoEvent" in character && character.HusbandoEvent) {
+    events = character.HusbandoEvent.map((e: { eventId: number }) => e.eventId);
+  } else if ("WaifuEvent" in character && character.WaifuEvent) {
+    events = character.WaifuEvent.map((e: { eventId: number }) => e.eventId);
+  }
+
+  const preChar: PreCharacter = {
+    nome: character.name,
+    anime: character.origem,
+    rarities,
+    events,
+    genero: ctx.botType,
+    mediatype: character.mediaType as unknown as MediaType,
+    media: character.media,
+    mediaUniqueId: character.mediaUniqueId ?? undefined,
+    username: ctx.from?.first_name || "",
+    user_id: ctx.from?.id || 0,
+    extras: ctx.from as Record<string, any>,
+    editId: character.id,
+  };
+
+  const cacheId = character.id;
+  setCharacter(cacheId, preChar);
+
+  await editCharacterEditMenu(ctx, String(cacheId));
 }

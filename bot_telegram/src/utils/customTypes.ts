@@ -125,6 +125,7 @@ export interface PreCharacter {
   username: string;
   user_id: number;
   extras?: Record<string, any>;
+  editId?: number;
 }
 
 export interface MediaResult {

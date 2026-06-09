@@ -1,0 +1,84 @@
+import { getCharacter } from "../../../../../cache/cache.js";
+import type { MyContext, PreCharacter } from "../../../../../utils/customTypes.js";
+
+export async function editCharacterEditMenu(
+  ctx: MyContext,
+  id_cached: string | undefined,
+) {
+  const character: PreCharacter | undefined = getCharacter(Number(id_cached));
+  if (!character) {
+    await ctx.answerCallbackQuery(ctx.t("error-character-not-found"));
+    return;
+  }
+
+  const caption = ctx.t("edit_character_edit_caption", {
+    nome: character.nome,
+    anime: character.anime,
+    genero: character.genero === "husbando" ? "Husbando" : "Waifu",
+    rarities: character.rarities?.length
+      ? character.rarities.join(", ")
+      : "valor padrao",
+    events: character.events?.length
+      ? character.events.join(", ")
+      : "sem evento ",
+    mediatype: character.mediatype,
+    media: character.media,
+  });
+
+  const inline_keyboard = [
+    [
+      {
+        text: ctx.t("add_character_edit_btn_nome"),
+        callback_data: `edit_character_edit_nome_${id_cached}`,
+      },
+      {
+        text: ctx.t("add_character_edit_btn_anime"),
+        callback_data: `edit_character_edit_anime_${id_cached}`,
+      },
+    ],
+    [
+      {
+        text: ctx.t("add_character_edit_btn_events"),
+        callback_data: `edit_character_edit_events_${id_cached}_1`,
+      },
+      {
+        text: ctx.t("add_character_edit_btn_rarities"),
+        callback_data: `edit_character_edit_rarities_${id_cached}_1`,
+      },
+    ],
+    [
+      {
+        text: ctx.t("add_character_edit_btn_media"),
+        callback_data: `edit_character_edit_media_${id_cached}`,
+      },
+    ],
+    [
+      {
+        text: ctx.t("add_character_edit_btn_confirm"),
+        callback_data: `edit_character_edit_confirm_${id_cached}`,
+      },
+      {
+        text: ctx.t("add_character_edit_btn_cancel"),
+        callback_data: `close`,
+      },
+    ],
+  ];
+
+  if (ctx.callbackQuery) {
+    await ctx
+      .editMessageText(caption, {
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard,
+        },
+      })
+      .catch(() => {});
+  } else {
+    await ctx.reply(caption, {
+      parse_mode: "HTML",
+      reply_markup: {
+        inline_keyboard,
+      },
+    });
+  }
+}
