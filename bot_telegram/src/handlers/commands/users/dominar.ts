@@ -18,7 +18,7 @@ import { GetCharacterById } from "../../../utils/character/get_by_id.js";
 import type { RuntimeDropState } from "../../../runtime/groupRuntime.js";
 
 function verificarNome(personagem: string, tentativa: string) {
-  const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x"];
+  const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x",".","..","..."];
 
   const normalize = (str: string) =>
     str
