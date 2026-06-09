@@ -11,7 +11,7 @@ import { RunPolling } from "./index_Polling.js";
 await Environment_validation();
 await testDBConnection();
 
-// 🔐 tokens
+
 const BOT_TOKEN_WAIFU = process.env.BOT_TOKEN_WAIFU;
 const BOT_TOKEN_HUSBANDO = process.env.BOT_TOKEN_HUSBANDO;
 

@@ -316,6 +316,7 @@ success-dominar-fallback = vc tem um personagem novo!
 success-dominar-genero-waifu = uma waifu
 success-dominar-genero-husbando = um husbando
 daily_dominar_limit = ❌ Limite diário atingido! Você já dominou { $limit } personagens hoje. Tente novamente amanhã.
+daily_dominar_limit=Já recolheu + { $limit }  {$genero} demais, vamos deixar algumas para amanhã
 
 
 ############

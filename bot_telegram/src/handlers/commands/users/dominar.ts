@@ -17,8 +17,8 @@ import { getRuntime } from "../../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../../utils/character/get_by_id.js";
 import { checkDailyLimit } from "../../../cache/redis.js";
 import type { RuntimeDropState } from "../../../runtime/groupRuntime.js";
+import { DAILY_LIMIT } from "../../../bot/middleware/constants.js";
 
-const DAILY_LIMIT = 50;
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x",".","..","..."];
@@ -234,13 +234,13 @@ export async function CapturarCharacter(ctx: MyContext) {
       return;
     }
 
-    const withinLimit = await checkDailyLimit(userId, DAILY_LIMIT);
+    const withinLimit = await checkDailyLimit(userId, type, DAILY_LIMIT);
     if (!withinLimit) {
       warn(`CapturarCharacter - limite diário atingido`, { userId });
       try {
         await Sendmedia({
           ctx,
-          caption: ctx.t("daily_dominar_limit", { limit: String(DAILY_LIMIT) }),
+          caption: ctx.t("daily_dominar_limit", { limit: String(DAILY_LIMIT) ,genero: type === ChatType.WAIFU ? "waifu" : "husbando"}),
         });
       } catch (e) {
         error("Erro ao enviar mensagem de limite diário", e);

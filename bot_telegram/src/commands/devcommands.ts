@@ -24,7 +24,7 @@ async function ForceDrop(ctx: MyContext) {
 }
 
 devCommands.command(
-  "dev",
+  "dev2",
   "Forçar drop de personagem",
   ForceDrop,
   options,

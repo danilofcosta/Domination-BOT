@@ -2,12 +2,12 @@ import { limit } from "@grammyjs/ratelimiter";
 import type { MyContext } from "../../utils/customTypes.js";
 import { mentionUser } from "../../utils/mention_user.js";
 import { blockedUsers } from "./blocked_users.js";
-import { BLOCK_DURATION_MS } from "./constants.js";
+import { BLOCK_DURATION_MS, LIMIT, TIMEFAME } from "./constants.js";
 import redis from "../../cache/redis.js";
 
 export const rateLimiter = limit({
-  timeFrame: 1000,
-  limit: 30,
+  timeFrame: TIMEFAME,
+  limit: LIMIT,
   onLimitExceeded: async (ctx) => {
     const myCtx = ctx as unknown as MyContext;
     if (myCtx.from) {

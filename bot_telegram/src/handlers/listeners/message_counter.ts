@@ -7,9 +7,8 @@ import { Sendmedia } from "../../utils/sendmedia.js";
 import { CreateOneBtn } from "../../utils/btns.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../utils/character/get_by_id.js";
+import { DROP, UNDROP } from "../../bot/middleware/constants.js";
 
-const DROP = 100;
-const UNDROP = DROP + 40;
 
 export async function countMessages(ctx: MyContext) {
   if (!ctx.chat) return;
