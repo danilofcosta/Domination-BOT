@@ -301,6 +301,7 @@ success_dominar_btn = 𝐌𝐈 𝐇𝐀𝐑É𝐍
 success-dominar-fallback = ¡tienes un nuevo personaje!
 success-dominar-genero-waifu = una waifu
 success-dominar-genero-husbando = un husbando
+daily_dominar_limit = ❌ ¡Límite diario alcanzado! Ya has dominado { $limit } personajes hoy. Inténtalo de nuevo mañana.
 
 
 ############

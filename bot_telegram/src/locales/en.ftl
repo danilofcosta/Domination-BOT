@@ -301,6 +301,7 @@ success_dominar_btn = 𝐌𝐘 𝐇𝐀𝐑𝐄𝐌
 success-dominar-fallback = you have a new character!
 success-dominar-genero-waifu = a waifu
 success-dominar-genero-husbando = a husbando
+daily_dominar_limit = ❌ Daily limit reached! You have already dominated { $limit } characters today. Try again tomorrow.
 
 
 ############

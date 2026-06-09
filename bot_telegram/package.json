@@ -41,6 +41,7 @@
     "lru-cache": "^11.2.6",
     "pg": "^8.20.0",
     "prisma": "^7.7.0",
+    "redis": "^6.0.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   }

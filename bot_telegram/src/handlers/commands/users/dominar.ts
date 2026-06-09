@@ -15,7 +15,10 @@ import { Sendmedia } from "../../../utils/sendmedia.js";
 import { CreateOneBtn } from "../../../utils/btns.js";
 import { getRuntime } from "../../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../../utils/character/get_by_id.js";
+import { checkDailyLimit } from "../../../cache/redis.js";
 import type { RuntimeDropState } from "../../../runtime/groupRuntime.js";
+
+const DAILY_LIMIT = 50;
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = ["da", "de", "do", "dos", "das", "the", "a", "an", "&", "x",".","..","..."];
@@ -228,6 +231,20 @@ export async function CapturarCharacter(ctx: MyContext) {
         error("Erro ao enviar mensagem de nome incorreto", e);
       }
 
+      return;
+    }
+
+    const withinLimit = await checkDailyLimit(userId, DAILY_LIMIT);
+    if (!withinLimit) {
+      warn(`CapturarCharacter - limite diário atingido`, { userId });
+      try {
+        await Sendmedia({
+          ctx,
+          caption: ctx.t("daily_dominar_limit", { limit: String(DAILY_LIMIT) }),
+        });
+      } catch (e) {
+        error("Erro ao enviar mensagem de limite diário", e);
+      }
       return;
     }
 

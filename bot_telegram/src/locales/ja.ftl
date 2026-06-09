@@ -301,6 +301,7 @@ success_dominar_btn = マイハーレム
 success-dominar-fallback = 新しいキャラクターを獲得しました！
 success-dominar-genero-waifu = ワイフ
 success-dominar-genero-husbando = ハズバンド
+daily_dominar_limit = ❌ 1日の上限に達しました！今日はすでに{ $limit }体のキャラクターを支配しています。明日もう一度お試しください。
 
 
 ############

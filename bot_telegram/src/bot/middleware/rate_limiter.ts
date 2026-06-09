@@ -3,6 +3,7 @@ import type { MyContext } from "../../utils/customTypes.js";
 import { mentionUser } from "../../utils/mention_user.js";
 import { blockedUsers } from "./blocked_users.js";
 import { BLOCK_DURATION_MS } from "./constants.js";
+import redis from "../../cache/redis.js";
 
 export const rateLimiter = limit({
   timeFrame: 1000,
@@ -18,5 +19,5 @@ export const rateLimiter = limit({
       });
     }
   },
-  storageClient: "MEMORY_STORE",
+  storageClient: redis,
 });
