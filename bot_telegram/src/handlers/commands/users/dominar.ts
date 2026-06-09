@@ -29,7 +29,9 @@ function verificarNome(personagem: string, tentativa: string) {
 
   const nomeParts = normalize(personagem);
   const tentativaParts = normalize(tentativa);
-
+if (tentativaParts.length === 0) {
+    return false;
+}
   return tentativaParts.every((p) => nomeParts.includes(p));
 }
 function calcularTempo({ inicio, fim }: { inicio: number; fim: number }) {
