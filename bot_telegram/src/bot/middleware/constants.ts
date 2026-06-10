@@ -15,8 +15,8 @@ export const DELETE_AFTER_DROP_MS = 120000;
 export const DAILY_LIMIT = 50;
 
 // Configurações para o rate limiter (limitação de mensagens por usuário por segundo)
-export const TIMEFAME = 1000;
-export const LIMIT = 30;
+export const TIMEFAME = 2000;
+export const LIMIT = 20;
 // Duração do bloqueio em milissegundos (15 minutos)
 export const BLOCK_DURATION_MS = 15 * 60 * 1000;
 
