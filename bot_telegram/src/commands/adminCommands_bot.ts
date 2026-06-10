@@ -71,25 +71,25 @@ export const adminCommands_bot_dict = {
     handler: addCollection,
   },
 
-  setrarity: {
-    minPermission: ProfileType.ADMIN,
-    command: 'setrarity' + botPrefix,
-    description: {
-      en: 'Edit rarity settings (emoji, name, emoji_id)',
-      pt: 'Editar configuracoes de raridade (emoji, nome, emoji_id)',
-    },
-    handler: SetRarityHandler,
-  },
+  // setrarity: {
+  //   minPermission: ProfileType.ADMIN,
+  //   command: 'setrarity' + botPrefix,
+  //   description: {
+  //     en: 'Edit rarity settings (emoji, name, emoji_id)',
+  //     pt: 'Editar configuracoes de raridade (emoji, nome, emoji_id)',
+  //   },
+  //   handler: SetRarityHandler,
+  // },
 
-  setevent: {
-    minPermission: ProfileType.ADMIN,
-    command: 'setevent' + botPrefix,
-    description: {
-      en: 'Edit event settings (emoji, name, emoji_id)',
-      pt: 'Editar configuracoes de evento (emoji, nome, emoji_id)',
-    },
-    handler: SetEventHandler,
-  },
+  // setevent: {
+  //   minPermission: ProfileType.ADMIN,
+  //   command: 'setevent' + botPrefix,
+  //   description: {
+  //     en: 'Edit event settings (emoji, name, emoji_id)',
+  //     pt: 'Editar configuracoes de evento (emoji, nome, emoji_id)',
+  //   },
+  //   handler: SetEventHandler,
+  // },
 
   logserros: {
     minPermission: ProfileType.ADMIN,
@@ -112,7 +112,7 @@ export const adminCommands_bot_dict = {
   },
 
   banuser: {
-    minPermission: ProfileType.ADMIN,
+    minPermission: ProfileType.SUPER_ADMIN,
     command: 'banuser' + botPrefix,
     description: {
       en: 'Ban a user from the bot',

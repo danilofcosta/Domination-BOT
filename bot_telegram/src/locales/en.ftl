@@ -231,6 +231,18 @@ add_bot_new_group = ✅ I was added to a new group!
 
 thank-you-add-group = Thank you for adding me to the group <b>{ $groupName }</b>! Keep contributing :D You earned 40 coins!
 
+bot_new_group_member_count = Group "{ $groupName }" has { $count } members
+
+bot_new_group_too_few_members = The group needs at least 40 members for me to stay. Currently has { $count } members.
+
+bot_new_group_left_chat = Left group "{ $groupName }" ({ $groupId }) because it only has { $count } members (minimum: 40).
+
+bot_leave_group_btn = Leave group
+bot_leave_group_confirm = Are you sure you want to leave group <b>"{ $groupName }"</b>?
+bot_leave_group_confirm_btn = Yes, leave
+bot_leave_group_cancel_btn = No
+bot_leave_group_done = Left group <b>"{ $groupName }"</b>.
+
 
 ###############
 # DROP CHARACTER #

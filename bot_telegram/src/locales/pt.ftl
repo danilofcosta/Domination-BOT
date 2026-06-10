@@ -236,6 +236,18 @@ add_bot_new_group =✅ Fui adicionado a um novo grupo!
 
 thank-you-add-group = Obrigado por me adicionar ao grupo <b>{ $groupName }</b>! Continue contribuindo :D Você ganhou 40 coins!
 
+bot_new_group_member_count = Grupo "{ $groupName }" tem { $count } membros
+
+bot_new_group_too_few_members = O grupo precisa ter pelo menos 40 membros para eu permanecer. Atualmente tem { $count } membros.
+
+bot_new_group_left_chat = Saí do grupo "{ $groupName }" ({ $groupId }) por ter apenas { $count } membros (mínimo: 40).
+
+bot_leave_group_btn = Sair do grupo
+bot_leave_group_confirm = Tem certeza que deseja sair do grupo <b>"{ $groupName }"</b>?
+bot_leave_group_confirm_btn = Sim, sair
+bot_leave_group_cancel_btn = Não
+bot_leave_group_done = Saí do grupo <b>"{ $groupName }"</b>.
+
 
 ###############
 # DOPRAR PERSONAGWM#

@@ -7,6 +7,7 @@ import { Extract_id_user } from "../../../../utils/extract_id_user.js";
 import { Sendmedia } from "../../../../utils/sendmedia.js";
 import { mentionUser } from "../../../../utils/mention_user.js";
 import { CreateOneBtn } from "../../../../utils/btns.js";
+import { permissionCache } from "../../../../cache/cache.js";
 
 export async function banHandler(ctx: MyContext) {
   const result = await Extract_id_user(ctx);
@@ -34,34 +35,54 @@ export async function banHandler(ctx: MyContext) {
 
    info('banHandler - banindo usuario', { adminId: ctx.from?.id, targetId: result.id });
 
-    await prisma.user.upsert({
-      where: { telegramId: BigInt(result.id) },
-      update: { profileType: ProfileType.BANNED },
-      create: {
-        telegramId: BigInt(result.id),
-        profileType: ProfileType.BANNED,
-        telegramData: (result || {}) as any,
-        favoriteWaifuId: null,
-        favoriteHusbandoId: null,
-        waifuConfig: {},
-        husbandoConfig: {},
-      },
-    });
-
-    // const targetName = result.userData?.first_name || result.userData?.username || result.userId.toString();
-    // await ctx.reply(ctx.t("banuser-success-ban", { name: targetName, id: result.userId }));
-
-    return  await Sendmedia(
-      {
-        ctx,
-        caption:`${mentionUser(result.first_name,result.id)} <code>${result.id} ${ ProfileType.BANNED} </code>`,
-        reply_markup:CreateOneBtn(
-          {
-            text:ctx.t('maneger-user-unban-btn'),callback:`maneger_user_unban-${result.id}`
-          }
-        )
+    const matchText = (ctx.match as string)?.trim() || "";
+    let reason = "";
+    if (matchText) {
+      const idStr = String(result.id);
+      if (matchText.startsWith(idStr)) {
+        reason = matchText.slice(idStr.length).trim();
+      } else if (matchText.startsWith("@")) {
+        const spaceIdx = matchText.indexOf(" ");
+        reason = spaceIdx > 0 ? matchText.slice(spaceIdx + 1).trim() : "";
+      } else {
+        reason = matchText;
       }
-    )
+    }
+
+    const targetBigInt = BigInt(result.id);
+
+    await prisma.$transaction([
+      prisma.husbandoCollection.deleteMany({ where: { userId: targetBigInt } }),
+      prisma.waifuCollection.deleteMany({ where: { userId: targetBigInt } }),
+      prisma.user.upsert({
+        where: { telegramId: targetBigInt },
+        update: { profileType: ProfileType.BANNED },
+        create: {
+          telegramId: targetBigInt,
+          profileType: ProfileType.BANNED,
+          telegramData: (result || {}) as any,
+          favoriteWaifuId: null,
+          favoriteHusbandoId: null,
+          waifuConfig: {},
+          husbandoConfig: {},
+        },
+      }),
+    ]);
+
+    permissionCache.delete(String(result.id));
+
+    const banCaption = reason
+      ? `${mentionUser(result.first_name, result.id)} foi banido.\nMotivo: ${reason}`
+      : `${mentionUser(result.first_name, result.id)} foi banido.`;
+
+    return await Sendmedia({
+      ctx,
+      caption: banCaption,
+      reply_markup: CreateOneBtn({
+        text: ctx.t('maneger-user-unban-btn'),
+        callback: `maneger_user_unban-${result.id}`,
+      }),
+    });
   }
 
   export async function unbanHandler(ctx: MyContext) {
@@ -105,6 +126,8 @@ export async function banHandler(ctx: MyContext) {
       where: { telegramId: BigInt(result.id) },
       data: { profileType: ProfileType.USER },
     });
+
+    permissionCache.delete(String(result.id));
 
     const targetData = user.telegramData as Record<string, any> | null;
     const targetName = targetData?.first_name || targetData?.username || result.id.toString();

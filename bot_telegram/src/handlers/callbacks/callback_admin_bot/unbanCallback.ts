@@ -4,6 +4,7 @@ import { info, warn, error } from "../../../utils/log.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { CreateOneBtn } from "../../../utils/btns.js";
 import { mentionUser } from "../../../utils/mention_user.js";
+import { permissionCache } from "../../../cache/cache.js";
 
 export async function unbanCallback(ctx: MyContext) {
   if (!ctx.match) return;
@@ -31,6 +32,8 @@ export async function unbanCallback(ctx: MyContext) {
       where: { id: user.id },
       data: { profileType: ProfileType.USER },
     });
+
+    permissionCache.delete(String(targetId));
 
     info("unbanCallback - usuário desbanido", { adminId: ctx.from?.id, targetId });
 

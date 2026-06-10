@@ -231,6 +231,18 @@ add_bot_new_group = ✅ 新しいグループに追加されました！
 
 thank-you-add-group = グループ<b>{ $groupName }</b>に追加してくれてありがとう！これからも貢献してください :D 40コインを獲得しました！
 
+bot_new_group_member_count = グループ「{ $groupName }」のメンバー数：{ $count }
+
+bot_new_group_too_few_members = グループには最低40人のメンバーが必要です。現在のメンバー数：{ $count }人。
+
+bot_new_group_left_chat = メンバーが{ $count }人（最低40人）しかいないため、グループ「{ $groupName }」（{ $groupId }）から退出しました。
+
+bot_leave_group_btn = グループを退出
+bot_leave_group_confirm = グループ<b>「{ $groupName }」</b>から退出してもよろしいですか？
+bot_leave_group_confirm_btn = はい、退出
+bot_leave_group_cancel_btn = いいえ
+bot_leave_group_done = グループ<b>「{ $groupName }」</b>から退出しました。
+
 
 ###############
 # DROP CHARACTER #

@@ -1,4 +1,5 @@
-﻿import { Language } from "@prisma/client";
+﻿import { InlineKeyboard } from "grammy";
+import { Language } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { mentionUser } from "../../utils/mention_user.js";
 import { info, warn, error, debug } from "../../utils/log.js";
@@ -7,12 +8,18 @@ async function botNewgroupMember(ctx: any) {
   info(`botNewgroupMember - bot adicionado a novo grupo`);
 
   try {
-    const newMember = ctx.message.new_chat_members?.[0];
+    const newMembers = ctx.message.new_chat_members;
     const chat = ctx.message.chat;
     const addedBy = ctx.message.from;
 
-    if (!newMember) {
+    if (!newMembers || newMembers.length === 0) {
       warn(`botNewgroupMember - nenhum membro encontrado`);
+      return;
+    }
+
+    const botIsNewMember = newMembers.some((m: any) => m.id === ctx.bot.id);
+    if (!botIsNewMember) {
+      debug(`botNewgroupMember - bot não está entre os novos membros, ignorando`);
       return;
     }
 
@@ -30,6 +37,58 @@ async function botNewgroupMember(ctx: any) {
       memberCount = await ctx.api.getChatMemberCount(chat.id);
     } catch (e) {
       warn(`botNewgroupMember - erro ao obter memberCount`, e);
+    }
+
+    if (process.env.GROUP_ADM) {
+      try {
+        await ctx.api.sendMessage(
+          process.env.GROUP_ADM,
+          ctx.t("bot_new_group_member_count", {
+            groupName: chat.title || "?",
+            count: memberCount ?? "?",
+          }),
+          { parse_mode: "HTML" },
+        );
+      } catch (e) {
+        warn(`botNewgroupMember - erro ao enviar contagem para adm`, e);
+      }
+    }
+
+    if (memberCount !== null && memberCount < 40) {
+      try {
+        await ctx.api.sendMessage(
+          chat.id,
+          ctx.t("bot_new_group_too_few_members", { count: memberCount }),
+          { parse_mode: "HTML" },
+        );
+      } catch (e) {
+        warn(`botNewgroupMember - erro ao avisar grupo sobre saída`, e);
+      }
+
+      try {
+        await ctx.api.leaveChat(chat.id);
+        info(`botNewgroupMember - saiu do grupo ${chat.id} (< 40 membros)`);
+
+        if (process.env.GROUP_ADM) {
+          try {
+            await ctx.api.sendMessage(
+              process.env.GROUP_ADM,
+              ctx.t("bot_new_group_left_chat", {
+                groupName: chat.title || "?",
+                groupId: chat.id,
+                count: memberCount,
+              }),
+              { parse_mode: "HTML" },
+            );
+          } catch (e) {
+            warn(`botNewgroupMember - erro ao notificar adm sobre saída`, e);
+          }
+        }
+      } catch (e) {
+        warn(`botNewgroupMember - erro ao sair do grupo`, e);
+      }
+
+      return;
     }
 
     try {
@@ -125,8 +184,13 @@ async function botNewgroupMember(ctx: any) {
 
     if (process.env.GROUP_ADM) {
       try {
+        const keyboard = new InlineKeyboard().text(
+          ctx.t("bot_leave_group_btn"),
+          `leavegroup_${chat.id}`,
+        );
         await ctx.api.sendMessage(process.env.GROUP_ADM, log, {
           parse_mode: `HTML`,
+          reply_markup: keyboard,
         });
         info(`botNewgroupMember - notifica\u00e7\u00e3o enviada`, {
           groupId: chat.id,

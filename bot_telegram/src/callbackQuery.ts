@@ -20,6 +20,7 @@ import { unbanCallback } from "./handlers/callbacks/callback_admin_bot/unbanCall
 import { backupCallback } from "./handlers/callbacks/users_callback/backupCallback.js";
 import { activeChatsPagination } from "./handlers/commands/admin_bot/manage_users/active_chats.js";
 import { SetBotPicCallback } from "./handlers/commands/admin_bot/manage_bot/set_bot_pic.js";
+import { leaveGroupCallback } from "./handlers/callbacks/callback_admin_bot/leaveGroup.js";
 import { error } from "./utils/log.js";
 
 const callbacks = new Composer<MyContext>();
@@ -55,6 +56,7 @@ callbacks.callbackQuery(/^maneger_user_unban-(\d+)/, unbanCallback);
 callbacks.callbackQuery(/^backup:/, backupCallback);
 callbacks.callbackQuery(/^activechats_page:/, activeChatsPagination);
 callbacks.callbackQuery(/^setbotpic_/, SetBotPicCallback);
+callbacks.callbackQuery(/^leavegroup_/, leaveGroupCallback);
 callbacks.callbackQuery("noop__", async (ctx) => ctx.answerCallbackQuery());
 
 export { callbacks };

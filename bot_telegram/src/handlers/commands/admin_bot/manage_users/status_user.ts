@@ -60,6 +60,10 @@ interface UserStatusResult {
 async function getUserStatus(ctx: MyContext, userId: number, userData?: TelegramUserData) {
   const user = await prisma.user.findUnique({
     where: { telegramId: BigInt(userId) },
+    include: {
+      HusbandoCollection: { select: { id: true } },
+      WaifuCollection: { select: { id: true } },
+    },
   }) as UserStatusResult | null;
 
   if (!user) return null;
