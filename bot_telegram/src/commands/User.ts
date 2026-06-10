@@ -14,6 +14,7 @@ import { setlangHandler } from "../handlers/commands/admin_groups/setlang.js";
 import { debug } from "../utils/log.js";
 import { Ramdon_Character_Handler } from "../handlers/commands/globais/random_character.js";
 import { Backup_harem } from "../handlers/commands/users/backup.js";
+import { idHandler } from "../handlers/commands/users/id.js";
 
 const UserCommands = new CommandGroup<MyContext>();
 
@@ -108,6 +109,15 @@ export const ComandosUser = {
     },
     handler: Backup_harem,
     scope: "all_group_chats",
+  },
+
+  id: {
+    command: "id",
+    description: {
+      pt: "Mostra o ID do chat e do usuario",
+      en: "Show chat and user ID",
+    },
+    handler: idHandler,
   },
 
 } as const;

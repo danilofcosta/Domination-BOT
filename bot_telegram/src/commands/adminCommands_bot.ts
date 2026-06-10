@@ -30,6 +30,7 @@ import { OpenHaremUser } from '../handlers/commands/admin_bot/manage_users/open_
 import { listActiveChats } from '../handlers/commands/admin_bot/manage_users/active_chats.js';
 import { SetBotPicHandler } from '../handlers/commands/admin_bot/manage_bot/set_bot_pic.js';
 import { editCharHandler } from '../handlers/commands/admin_bot/manager_character/edit_character/handler.js';
+import { leaveGroupHandler } from '../handlers/commands/admin_groups/leaveGroup.js';
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -177,6 +178,16 @@ export const adminCommands_bot_dict = {
       pt: 'Alterar foto de perfil do bot (responda a uma foto)',
     },
     handler: SetBotPicHandler,
+  },
+
+  leavegroup: {
+    minPermission: ProfileType.ADMIN,
+    command: 'leavegroup' + botPrefix,
+    description: {
+      en: 'Make the bot leave the group',
+      pt: 'Faz o bot sair do grupo',
+    },
+    handler: leaveGroupHandler,
   },
   
 } as const satisfies Record<string, AdminCommand>;
