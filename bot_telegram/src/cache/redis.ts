@@ -9,8 +9,8 @@ export const redis = {
   pexpire: (key: string, ms: number) => client.pExpire(key, ms),
 };
 
-export async function checkDailyLimit(userId: number, type: string, maxLimit: number): Promise<boolean> {
-  const key = `daily_dominar:${type}:${userId}`;
+export async function checkDailyLimit(userId: number,  maxLimit: number): Promise<boolean> {
+  const key = `daily_dominar:${userId}`;
   const count = await redis.incr(key);
 
   if (count === 1) {

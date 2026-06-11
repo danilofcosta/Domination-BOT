@@ -234,7 +234,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       return;
     }
 
-    const withinLimit = await checkDailyLimit(userId, type, DAILY_LIMIT);
+    const withinLimit = await checkDailyLimit(userId, DAILY_LIMIT);
     if (!withinLimit) {
       warn(`CapturarCharacter - limite diário atingido`, { userId });
       try {
