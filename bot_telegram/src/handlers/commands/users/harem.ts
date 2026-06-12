@@ -1,7 +1,7 @@
 ﻿
 import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { ChatType, ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { setHarem } from "../../../cache/cache.js";
 import { mentionUser } from "../../../utils/mention_user.js";
@@ -13,6 +13,7 @@ import {
   Harem_mode_default,
 } from "./harem_mode_build.js";
 import { Build_btn_harem } from "../../../utils/btns.js";
+import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 
 function getCollectionInclude(isHusbando: boolean) {
   if (isHusbando) {
@@ -64,6 +65,7 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
         waifuConfig: true,
         favoriteWaifuId: true,
         favoriteHusbandoId: true,
+        telegramData: true,
         CharacterWaifu: {
           select: { id: true, name: true, media: true, mediaType: true },
         },
@@ -137,16 +139,21 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
   const harem_logo = ctx.t("harem_logo", {
     usermention:
       mentionUser(
-        `<b>${ctx.from?.first_name}</b>` || "user",
-        ctx.from?.id || 0,
+        `<b>${user?.telegramData?.first_name}</b>` || "user",
+        user?.telegramData?.id || 0,
       ) || "User",
   });
+
+  const callerRole = await getUserRole(ctx.from?.id ?? 0);
+  const canDelete = roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
 
   const reply_markup = Build_btn_harem({
     ctx: ctx,
     current_page: 0,
     total_page: pages.length,
-    userId: telegramId,
+    userId: ctx.from?.id || 0 ,
+    isadmin: userId?true:false ,
+    canDelete,
   });
 
   try {

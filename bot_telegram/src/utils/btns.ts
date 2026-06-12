@@ -111,12 +111,16 @@ export function Build_btn_harem({
   current_page,
   total_page,
   nextJump,
+  isadmin = false,
+  canDelete = false,
 }: {
   ctx: any;
   userId: number | string;
   current_page: number;
   total_page: number;
   nextJump?: number;
+  isadmin?: boolean;
+  canDelete?: boolean;
 }) {
   const totalPages = total_page || 1;
 
@@ -161,6 +165,13 @@ export function Build_btn_harem({
     )
     .icon("5372825386591732174")
     .style("danger");
+    
+    if (canDelete) {
+      reply_markup
+        .row()
+        .text(ctx.t("harem_btn_delete"), `harem_user_${userId}_delete`)
+        .style("danger");
+    }
 
   return reply_markup;
 }

@@ -1,9 +1,12 @@
 import { InlineKeyboard, Keyboard } from "grammy";
-import { getHarem } from "../../../cache/cache.js";
+import { getHarem, setHarem, permissionCache } from "../../../cache/cache.js";
 import type { MyContext } from "../../../utils/customTypes.js";
+import { ProfileType } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
 import {  Harem_setup_dict } from "./harem_setup/build.js";
-import { Build_btn_harem, Build_btn_Keyboard } from "../../../utils/btns.js";
+import { Build_btn_harem, Build_btn_Keyboard, bts_yes_or_no } from "../../../utils/btns.js";
+import { prisma } from "../../../lib/prisma.js";
+import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 // recebe s chamadas do bts do harem via callback
 //   camada experada : prefixo ,prefixo2 , id do user , ação , extras 
 // harem_user_000000_close
@@ -17,8 +20,12 @@ export async function haremCallback(ctx: MyContext) {
   const [tag, userTag, userid, action, pageRaw, jumpRaw] = parts;
 
   const userId = Number(userid);
+
+  const callerRole = await getUserRole(ctx.from?.id ?? 0);
+  const isSuperAdmin = roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
+
 // autentição dono do hare
-  if (ctx.from?.id !== userId) {
+  if (ctx.from?.id !== userId && !isSuperAdmin) {
     warn(`haremCallback - usuário não autorizado`, {
       expected: userId,
       actual: ctx.from?.id,
@@ -34,6 +41,22 @@ export async function haremCallback(ctx: MyContext) {
     return;
   }
 
+  if (action === "delete") {
+    if (roleWeights[callerRole] < roleWeights[ProfileType.SUPER_ADMIN]) {
+      await ctx.answerCallbackQuery(ctx.t("harem_delete_no_permission"));
+      return;
+    }
+
+    return await ctx.reply(ctx.t("harem_delete_confirm"), {
+      reply_markup: bts_yes_or_no(
+        ctx,
+        `harem_user_${userId}_del_yes`,
+        `harem_user_${userId}_del_no`,
+        ctx.t("harem_delete_yes"),
+        ctx.t("harem_delete_no"),
+      ),
+    });
+  }
 
   if (action === "opensetup") {
     // abre os btns no lugar fo teclado do user 
@@ -60,6 +83,47 @@ export async function haremCallback(ctx: MyContext) {
 
   if (isNaN(page)) return;
 
+  if (action === "del") {
+    if (pageRaw === "yes") {
+      const targetRole = await getUserRole(userId);
+      if (roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
+        await ctx.deleteMessage().catch(() => {});
+        await ctx.reply(ctx.t("harem_delete_cannot_admin"));
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      await prisma.$transaction([
+        prisma.husbandoCollection.deleteMany({ where: { userId: BigInt(userId) } }),
+        prisma.waifuCollection.deleteMany({ where: { userId: BigInt(userId) } }),
+        prisma.user.upsert({
+          where: { telegramId: BigInt(userId) },
+          update: { profileType: ProfileType.BANNED },
+          create: {
+            telegramId: BigInt(userId),
+            profileType: ProfileType.BANNED,
+            telegramData: {},
+            favoriteWaifuId: null,
+            favoriteHusbandoId: null,
+            waifuConfig: {},
+            husbandoConfig: {},
+          },
+        }),
+      ]);
+
+      permissionCache.delete(String(userId));
+      setHarem(userId, null);
+
+      await ctx.deleteMessage().catch(() => {});
+      await ctx.reply(ctx.t("harem_delete_success"));
+    } else {
+      await ctx.deleteMessage().catch(() => {});
+    }
+
+    await ctx.answerCallbackQuery();
+    return;
+  }
+
   let jump = Number(jumpRaw ?? 2);
   if (isNaN(jump)) jump = 2;
 
@@ -80,6 +144,8 @@ export async function haremCallback(ctx: MyContext) {
     total_page: total,
     userId: userId,
     nextJump: nextJump,
+    isadmin: true,
+    canDelete: isSuperAdmin,
   });
 
   try {

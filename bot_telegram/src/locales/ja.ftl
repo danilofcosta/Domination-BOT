@@ -533,6 +533,20 @@ banuser-unban-error = BAN解除エラー
 banuser-unknown = 不明
 
 ############
+# CLEAR HAREM #
+############
+clearharem_usage = 使い方：/clearharem <オプション>
+    オプション：
+    - 数値ID
+    - @username
+    - ユーザーメッセージに返信
+clearharem_confirm = このユーザーのハーレムを削除してもよろしいですか？
+clearharem_yes = はい、削除する
+clearharem_no = キャンセル
+clearharem_success = ハーレムを削除しました。
+clearharem_cannot_admin = 管理者のハーレムは削除できません。
+
+############
 # STATUS USER #
 ############
 statususer-usage = 使い方：/statususer <オプション>\n\nオプション：\n- 数値ID\n- @username\n- ユーザーメッセージに返信
@@ -685,6 +699,7 @@ cmd-desc-setevent = イベント設定を編集（絵文字、名前、絵文字
 cmd-desc-logserros = エラーログを送信
 cmd-desc-logs = 一般ログを送信
 cmd-desc-banuser = ユーザーをBAN
+cmd-desc-clearharem = ユーザーのハーレムを消去
 cmd-desc-unbanuser = ユーザーのBANを解除
 cmd-desc-listeban = BANされたユーザーの一覧
 cmd-desc-statususer = ユーザーのステータス情報を表示

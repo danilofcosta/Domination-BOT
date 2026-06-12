@@ -533,6 +533,20 @@ banuser-unban-error = Error al desbanear
 banuser-unknown = Desconocido
 
 ############
+# CLEAR HAREM #
+############
+clearharem_usage = Usa: /clearharem <opción>
+    Opciones:
+    - ID numérico
+    - @username
+    - Responder mensaje del usuario
+clearharem_confirm = ¿Estás seguro de que deseas eliminar el harén de este usuario?
+clearharem_yes = Sí, eliminar
+clearharem_no = Cancelar
+clearharem_success = Harén eliminado con éxito.
+clearharem_cannot_admin = No se puede eliminar el harén de un administrador.
+
+############
 # STATUS USER #
 ############
 statususer-usage = Usa: /statususer <opción>\n\nOpciones:\n- ID numérico\n- @username\n- Responder mensaje del usuario
@@ -685,6 +699,7 @@ cmd-desc-setevent = Editar configuración de evento (emoji, nombre, emoji_id)
 cmd-desc-logserros = Enviar registros de errores
 cmd-desc-logs = Enviar registros generales
 cmd-desc-banuser = Banear a un usuario del bot
+cmd-desc-clearharem = Limpiar el harén de un usuario
 cmd-desc-unbanuser = Desbanear a un usuario del bot
 cmd-desc-listeban = Listar todos los usuarios baneados
 cmd-desc-statususer = Ver información de estado del usuario

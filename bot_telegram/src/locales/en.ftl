@@ -335,6 +335,13 @@ harem_btn_fast_page = ⚡️²
 harem_btn_next_page = ➡️
 harem_btn_close = 🗑
 harem_btn_web_app = 🌐 web
+harem_btn_delete = Delete Harem
+harem_delete_confirm = Are you sure you want to delete this harem and ban this user?
+harem_delete_yes = Yes, delete and ban
+harem_delete_no = Cancel
+harem_delete_success = Harem deleted and user banned.
+harem_delete_cannot_admin = Cannot delete an administrator's harem.
+harem_delete_no_permission = Only SUPER_ADMIN or higher can delete harems.
 harem_no_user = you do not have a harem
 harem-empty = No characters.
 harem-no-event = No Event
@@ -534,6 +541,20 @@ banuser-unban-error = Error unbanning
 banuser-unknown = Unknown
 
 ############
+# CLEAR HAREM #
+############
+clearharem_usage = Use: /clearharem <option>
+    Options:
+    - Numeric ID
+    - @username
+    - Reply to user message
+clearharem_confirm = Are you sure you want to clear this user's harem?
+clearharem_yes = Yes, clear
+clearharem_no = Cancel
+clearharem_success = Harem cleared successfully.
+clearharem_cannot_admin = Cannot clear an administrator's harem.
+
+############
 # STATUS USER #
 ############
 statususer-usage = Use: /statususer <option>\n\nOptions:\n- Numeric ID\n- @username\n- Reply to user message
@@ -686,6 +707,7 @@ cmd-desc-setevent = Edit event settings (emoji, name, emoji_id)
 cmd-desc-logserros = Send error logs
 cmd-desc-logs = Send general logs
 cmd-desc-banuser = Ban a user from the bot
+cmd-desc-clearharem = Clear a user's harem
 cmd-desc-unbanuser = Unban a user from the bot
 cmd-desc-listeban = List all banned users
 cmd-desc-statususer = View user status information

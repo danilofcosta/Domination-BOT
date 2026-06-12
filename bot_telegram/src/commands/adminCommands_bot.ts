@@ -19,9 +19,9 @@ import {
   banHandler,
   listBannedHandler,
   unbanHandler,
-  // unbanHandler,
-  // listBannedHandler,
 } from '../handlers/commands/admin_bot/manage_users/ban_user_handler.js';
+
+import { clearHaremHandler } from '../handlers/commands/admin_bot/manage_users/clear_harem_handler.js';
 
 import { statusUserHandler } from '../handlers/commands/admin_bot/manage_users/status_user.js';
 
@@ -120,6 +120,34 @@ export const adminCommands_bot_dict = {
       pt: 'Banir um usuario do bot',
     },
     handler: banHandler,
+  },  
+  banuser_Prefix: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: 'banuser' ,
+    description: {
+      en: 'Ban a user from the bot',
+      pt: 'Banir um usuario do bot',
+    },
+    handler: banHandler,
+  },
+
+  clearharem: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: 'clearharem' + botPrefix,
+    description: {
+      en: 'Clear a user harem and ban the user',
+      pt: 'Limpar o harem de um usuario e bani-lo',
+    },
+    handler: clearHaremHandler,
+  },
+  clearharem_Prefix: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: 'clearharem',
+    description: {
+      en: 'Clear a user harem and ban the user',
+      pt: 'Limpar o harem de um usuario e bani-lo',
+    },
+    handler: clearHaremHandler,
   },
 
   unbanuser: {
@@ -134,7 +162,7 @@ export const adminCommands_bot_dict = {
 
   listbanned: {
     minPermission: ProfileType.ADMIN,
-    command: 'listeban' + botPrefix,
+    command: 'listeban',
     description: {
       en: 'List all banned users',
       pt: 'Listar todos os usuarios banidos',

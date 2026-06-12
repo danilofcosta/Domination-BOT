@@ -21,6 +21,7 @@ import { backupCallback } from "./handlers/callbacks/users_callback/backupCallba
 import { activeChatsPagination } from "./handlers/commands/admin_bot/manage_users/active_chats.js";
 import { SetBotPicCallback } from "./handlers/commands/admin_bot/manage_bot/set_bot_pic.js";
 import { leaveGroupCallback } from "./handlers/callbacks/callback_admin_bot/leaveGroup.js";
+import { clearHaremCallback } from "./handlers/commands/admin_bot/manage_users/clear_harem_handler.js";
 import { error } from "./utils/log.js";
 
 const callbacks = new Composer<MyContext>();
@@ -57,6 +58,7 @@ callbacks.callbackQuery(/^backup:/, backupCallback);
 callbacks.callbackQuery(/^activechats_page:/, activeChatsPagination);
 callbacks.callbackQuery(/^setbotpic_/, SetBotPicCallback);
 callbacks.callbackQuery(/^leavegroup_/, leaveGroupCallback);
+callbacks.callbackQuery(/^clearharem_/, clearHaremCallback);
 callbacks.callbackQuery("noop__", async (ctx) => ctx.answerCallbackQuery());
 
 export { callbacks };

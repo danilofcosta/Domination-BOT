@@ -349,6 +349,13 @@ harem_btn_fast_page=⚡️²
 harem_btn_next_page=➡️
 harem_btn_close=🗑
 harem_btn_web_app= 🌐 web
+harem_btn_delete=Excluir Harem
+harem_delete_confirm=Tem certeza que deseja excluir o harem e banir este usuario?
+harem_delete_yes=Sim, excluir e banir
+harem_delete_no=Cancelar
+harem_delete_success=Harem excluido e usuario banido.
+harem_delete_cannot_admin=Nao e possivel excluir o harem de um administrador.
+harem_delete_no_permission=Apenas SUPER_ADMIN ou superior pode excluir harens.
 harem_no_user = vc nao tem um harem
 harem-empty = Nenhum personagem.
 harem-no-event = Sem Evento
@@ -634,9 +641,23 @@ banuser-unban-error = Erro ao desbanir
 banuser-unknown = Desconhecido
 
 ############
+# CLEAR HAREM #
+############
+clearharem_usage = Use: /clearharem &lt;opcao&gt;
+    Opcoes:
+    - ID numerico
+    - @username
+    - Responder mensagem do usuario
+clearharem_confirm = Tem certeza que deseja excluir o harem deste usuario?
+clearharem_yes = Sim, excluir
+clearharem_no = Cancelar
+clearharem_success = Harem excluido com sucesso.
+clearharem_cannot_admin = Nao e possivel excluir o harem de um administrador.
+
+############
 # STATUS USER #
 ############
-statususer-usage = Use: /statususer <opcao>
+statususer-usage = Use: /statususer &lt;opcao&gt;
     Opcoes:
     - ID numerico
     - @username
@@ -758,6 +779,7 @@ cmd-desc-setevent = Editar configuracoes de evento (emoji, nome, emoji_id)
 cmd-desc-logserros = Enviar logs de erros
 cmd-desc-logs = Enviar logs gerais
 cmd-desc-banuser = Banir um usuario do bot
+cmd-desc-clearharem = Limpar o harem de um usuario
 cmd-desc-unbanuser = Desbanir um usuario do bot
 cmd-desc-listeban = Listar todos os usuarios banidos
 cmd-desc-statususer = Ver informacoes de status do usuario
