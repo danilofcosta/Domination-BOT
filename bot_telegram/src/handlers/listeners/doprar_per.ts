@@ -69,6 +69,7 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
 
 
 async function sortearRaridade() {
+  info(`sortearRaridade - iniciando sorteio de raridade`);
   const raridades = await prisma.rarity.findMany({
     select: {
       id: true,
@@ -88,9 +89,11 @@ async function sortearRaridade() {
     sorteio -= raridade.weight;
 
     if (sorteio <= 0) {
+      info(`sortearRaridade - raridade sorteada: ${raridade.code}`);
       return raridade;
     }
   }
+
 
   return raridades[0];
 }
