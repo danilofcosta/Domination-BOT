@@ -166,7 +166,7 @@ export function Build_btn_harem({
     .icon("5372825386591732174")
     .style("danger");
     
-    if (canDelete) {
+    if (canDelete && isadmin) {
       reply_markup
         .row()
         .text(ctx.t("harem_btn_delete"), `harem_user_${userId}_delete`)

@@ -5,7 +5,10 @@ import { EditOrSendText } from "../../../utils/EditOrSendText.js";
 import { calcHash } from "../../../utils/calcHash.js";
 import { error } from "../../../utils/log.js";
 import { Backup_harem } from "../../commands/users/backup.js";
-import { clearBackupState, setBackupState } from "../../../cache/workflowState.js";
+import {
+  clearBackupState,
+  setBackupState,
+} from "../../../cache/workflowState.js";
 
 export async function backupCallback(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;
@@ -20,7 +23,7 @@ export async function backupCallback(ctx: MyContext) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.telegramUser.findUnique({
       where: { telegramId: userId },
     });
 
@@ -42,54 +45,54 @@ export async function backupCallback(ctx: MyContext) {
       case "cancel":
         return handleCancel(ctx);
       default:
-  await ctx.answerCallbackQuery();
-}
+        await ctx.answerCallbackQuery();
+    }
 
-async function handleRemoveConfirm(
-  ctx: MyContext,
-  user: { backupHash: string | null } | null,
-) {
-  if (!user?.backupHash) {
-    await EditOrSendText({
-      ctx,
-      caption: ctx.t("backup-no-backup"),
-    });
-    await ctx.answerCallbackQuery();
-    return;
-  }
+    async function handleRemoveConfirm(
+      ctx: MyContext,
+      user: { backupHash: string | null } | null,
+    ) {
+      if (!user?.backupHash) {
+        await EditOrSendText({
+          ctx,
+          caption: ctx.t("backup-no-backup"),
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
 
-  try {
-    await prisma.user.update({
-      where: { telegramId: BigInt(ctx.from!.id) },
-      data: { backupHash: null },
-    });
+      try {
+        await prisma.telegramUser.update({
+          where: { telegramId: BigInt(ctx.from!.id) },
+          data: { backupHash: null },
+        });
 
-    await EditOrSendText({
-      ctx,
-      caption: ctx.t("backup-remove-success"),
-    });
-  } catch (e) {
-    error("backup remove error", e);
-    await EditOrSendText({
-      ctx,
-      caption: ctx.t("error-permission-internal"),
-    });
-  }
+        await EditOrSendText({
+          ctx,
+          caption: ctx.t("backup-remove-success"),
+        });
+      } catch (e) {
+        error("backup remove error", e);
+        await EditOrSendText({
+          ctx,
+          caption: ctx.t("error-permission-internal"),
+        });
+      }
 
-  await ctx.answerCallbackQuery();
-}
+      await ctx.answerCallbackQuery();
+    }
 
-async function handleCancel(ctx: MyContext) {
-  const userId = ctx.from?.id;
-  if (userId) clearBackupState(userId);
+    async function handleCancel(ctx: MyContext) {
+      const userId = ctx.from?.id;
+      if (userId) clearBackupState(userId);
 
-  await EditOrSendText({
-    ctx,
-    caption: ctx.t("backup-cancelled"),
-  });
+      await EditOrSendText({
+        ctx,
+        caption: ctx.t("backup-cancelled"),
+      });
 
-  await ctx.answerCallbackQuery();
-}
+      await ctx.answerCallbackQuery();
+    }
   } catch (e) {
     error("backupCallback error", e);
     await ctx.answerCallbackQuery(ctx.t("error-permission-internal"));

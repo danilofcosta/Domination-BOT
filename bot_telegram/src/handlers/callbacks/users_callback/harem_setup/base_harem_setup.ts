@@ -21,7 +21,7 @@ export async function NavigateMenuMode(
 ) {
   let currentMode = "default";
   if (ctx.from?.id) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.telegramUser.findUnique({
       where: { telegramId: BigInt(ctx.from.id) },
     });
     if (user) {
@@ -59,7 +59,7 @@ export async function SetModeHarem(ctx: MyContext, key: string) {
     haremMode: key,
   };
 
-  const result = await prisma.user.update({
+  const result = await prisma.telegramUser.update({
     where: { telegramId: BigInt(userId) },
     data: isHusbando ? { husbandoConfig: config } : { waifuConfig: config },
   });

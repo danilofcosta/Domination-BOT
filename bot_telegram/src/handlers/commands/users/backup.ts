@@ -7,7 +7,7 @@ import { prisma } from "../../../lib/prisma.js";
 export async function Backup_harem(ctx: MyContext) {
   const text = String(ctx.match).trim().toLocaleLowerCase();
   if (ctx.chat?.type !== "private") {
-   return await Sendmedia({
+    return await Sendmedia({
       ctx,
       caption: ctx.t("backup-open-private-label"),
       reply_markup: CreateOneBtn({
@@ -18,7 +18,7 @@ export async function Backup_harem(ctx: MyContext) {
     });
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.telegramUser.findUnique({
     where: { telegramId: BigInt(ctx.from!.id) },
     select: { backupHash: true },
   });
@@ -39,8 +39,9 @@ export async function Backup_harem(ctx: MyContext) {
 
   keyboard
     .row()
-    .text(ctx.t("backup-btn-info"), "backup:info").row().text('','close')
-
+    .text(ctx.t("backup-btn-info"), "backup:info")
+    .row()
+    .text("", "close");
 
   await ctx.reply(ctx.t("backup-title"), {
     reply_markup: keyboard,

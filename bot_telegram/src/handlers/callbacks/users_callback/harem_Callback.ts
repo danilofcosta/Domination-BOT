@@ -3,15 +3,18 @@ import { getHarem, setHarem, permissionCache } from "../../../cache/cache.js";
 import type { MyContext } from "../../../utils/customTypes.js";
 import { ProfileType } from "../../../utils/customTypes.js";
 import { info, warn, error, debug } from "../../../utils/log.js";
-import {  Harem_setup_dict } from "./harem_setup/build.js";
-import { Build_btn_harem, Build_btn_Keyboard, bts_yes_or_no } from "../../../utils/btns.js";
+import { Harem_setup_dict } from "./harem_setup/build.js";
+import {
+  Build_btn_harem,
+  Build_btn_Keyboard,
+  bts_yes_or_no,
+} from "../../../utils/btns.js";
 import { prisma } from "../../../lib/prisma.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 // recebe s chamadas do bts do harem via callback
-//   camada experada : prefixo ,prefixo2 , id do user , ação , extras 
+//   camada experada : prefixo ,prefixo2 , id do user , ação , extras
 // harem_user_000000_close
 // harem_user_000000_pagenext_2
-
 
 export async function haremCallback(ctx: MyContext) {
   const match = ctx.match as any;
@@ -22,9 +25,10 @@ export async function haremCallback(ctx: MyContext) {
   const userId = Number(userid);
 
   const callerRole = await getUserRole(ctx.from?.id ?? 0);
-  const isSuperAdmin = roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
+  const isSuperAdmin =
+    roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
 
-// autentição dono do hare
+  // autentição dono do hare
   if (ctx.from?.id !== userId && !isSuperAdmin) {
     warn(`haremCallback - usuário não autorizado`, {
       expected: userId,
@@ -34,8 +38,7 @@ export async function haremCallback(ctx: MyContext) {
     return;
   }
 
-
-// tenta deleta a mensagem
+  // tenta deleta a mensagem
   if (action === "close") {
     await ctx.deleteMessage().catch(() => {});
     return;
@@ -59,20 +62,18 @@ export async function haremCallback(ctx: MyContext) {
   }
 
   if (action === "opensetup") {
-    // abre os btns no lugar fo teclado do user 
-    
-    const keyboard = Build_btn_Keyboard(
-      Harem_setup_dict.main
-    );
+    // abre os btns no lugar fo teclado do user
+
+    const keyboard = Build_btn_Keyboard(Harem_setup_dict.main);
 
     return await ctx.reply("Escolha uma opção:", {
       reply_markup: keyboard,
     });
   }
-  
+
   // busca paginas salva em cache
   const harem = await getHarem(userId);
-  
+
   if (!harem) {
     warn(`haremCallback - harém não encontrado no cache`, { userId });
     return;
@@ -94,9 +95,13 @@ export async function haremCallback(ctx: MyContext) {
       }
 
       await prisma.$transaction([
-        prisma.husbandoCollection.deleteMany({ where: { userId: BigInt(userId) } }),
-        prisma.waifuCollection.deleteMany({ where: { userId: BigInt(userId) } }),
-        prisma.user.upsert({
+        prisma.husbandoCollection.deleteMany({
+          where: { userId: BigInt(userId) },
+        }),
+        prisma.waifuCollection.deleteMany({
+          where: { userId: BigInt(userId) },
+        }),
+        prisma.telegramUser.upsert({
           where: { telegramId: BigInt(userId) },
           update: { profileType: ProfileType.BANNED },
           create: {
@@ -167,4 +172,3 @@ export async function haremCallback(ctx: MyContext) {
 
   await ctx.answerCallbackQuery();
 }
-

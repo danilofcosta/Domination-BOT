@@ -13,7 +13,7 @@ export async function unbanCallback(ctx: MyContext) {
   if (!targetId) return;
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.telegramUser.findUnique({
       where: { telegramId: BigInt(targetId) },
       select: { id: true, profileType: true, telegramData: true },
     });
@@ -28,14 +28,17 @@ export async function unbanCallback(ctx: MyContext) {
       return;
     }
 
-    await prisma.user.update({
+    await prisma.telegramUser.update({
       where: { id: user.id },
       data: { profileType: ProfileType.USER },
     });
 
     permissionCache.delete(String(targetId));
 
-    info("unbanCallback - usuário desbanido", { adminId: ctx.from?.id, targetId });
+    info("unbanCallback - usuário desbanido", {
+      adminId: ctx.from?.id,
+      targetId,
+    });
 
     const data = user.telegramData as Record<string, any> | null;
     const name = data?.first_name || targetId.toString();
@@ -47,7 +50,7 @@ export async function unbanCallback(ctx: MyContext) {
           text: ctx.t("maneger-user-ban-btn"),
           callback: `maneger_user_ban-${targetId}`,
         }),
-      }
+      },
     );
 
     await ctx.answerCallbackQuery();

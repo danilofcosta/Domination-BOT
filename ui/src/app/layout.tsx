@@ -38,12 +38,12 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <SidebarProvider>
           <TooltipProvider>
-            <Sidebar variant="sidebar">
+            <Sidebar variant="floating" collapsible="icon" >
               <AppSidebar />
             </Sidebar>
+            {/* <SidebarTrigger /> */}
 
             <SidebarInset>
-            <SidebarTrigger />
 
               <main>{children}</main>
               <Toaster />

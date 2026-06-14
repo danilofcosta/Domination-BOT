@@ -25,13 +25,19 @@ import { prisma } from "./lib/prisma.js";
 import { calcHash } from "./utils/calcHash.js";
 import { Backup_harem } from "./handlers/commands/users/backup.js";
 import { HaremHandler } from "./handlers/commands/users/harem.js";
-import { getBackupState, clearBackupState, getAdminSetup, clearAdminSetup } from "./cache/workflowState.js";
+import {
+  getBackupState,
+  clearBackupState,
+  getAdminSetup,
+  clearAdminSetup,
+} from "./cache/workflowState.js";
 
 const listeners = new Composer<MyContext>();
 
 async function handleEditMediaMessage(ctx: MyContext) {
   const adminSetup = getAdminSetup(ctx);
-  if (adminSetup?.action !== "edit_media" || !adminSetup?.targetId) return false;
+  if (adminSetup?.action !== "edit_media" || !adminSetup?.targetId)
+    return false;
   if (!ctx.message) return false;
 
   const numTargetId = Number(adminSetup.targetId);
@@ -66,7 +72,9 @@ async function handleEditMediaMessage(ctx: MyContext) {
       media.type === MediaType.VIDEO_FILEID
         ? { type: "video" as const, media: media.fileId }
         : { type: "photo" as const, media: media.fileId };
-    await ctx.api.editMessageMedia(ctx.chat.id, editMessageId, inputMedia).catch(() => {});
+    await ctx.api
+      .editMessageMedia(ctx.chat.id, editMessageId, inputMedia)
+      .catch(() => {});
   }
 
   setCharacter(numTargetId, character);
@@ -107,7 +115,7 @@ listeners.on("message:text", async (ctx, next) => {
 
     try {
       if (backupState.action === "create" || backupState.action === "change") {
-        await prisma.user.upsert({
+        await prisma.telegramUser.upsert({
           where: { telegramId: BigInt(ctx.from!.id) },
           update: { backupHash: hash },
           create: { telegramId: BigInt(ctx.from!.id), backupHash: hash },
@@ -119,7 +127,7 @@ listeners.on("message:text", async (ctx, next) => {
         );
         await Backup_harem(ctx);
       } else if (backupState.action === "restore") {
-        const oldUser = await prisma.user.findFirst({
+        const oldUser = await prisma.telegramUser.findFirst({
           where: { backupHash: hash },
           include: {
             WaifuCollection: true,
@@ -136,8 +144,6 @@ listeners.on("message:text", async (ctx, next) => {
 
         if (oldUser.telegramId === currentTelegramId) {
           return await ctx.reply(ctx.t("backup-profile-curret"));
-
-
         }
 
         await prisma.$transaction(async (tx) => {
@@ -271,7 +277,7 @@ listeners.on("message:text", async (ctx, next) => {
           await tx.user.delete({
             where: { telegramId: oldUser.telegramId },
           });
-        })
+        });
 
         await ctx.reply(ctx.t("backup-restore-success"));
 
@@ -459,7 +465,7 @@ listeners.on("inline_query", async (ctx) => {
         try {
           await originalAnswer([]);
           answered = true;
-        } catch (e) { }
+        } catch (e) {}
       }
     } else {
       logError("inline_query_error", err);
@@ -468,12 +474,12 @@ listeners.on("inline_query", async (ctx) => {
     const duration = Date.now() - start;
     info(
       "Inline query [" +
-      query +
-      "] do usuario " +
-      userId +
-      " levou " +
-      duration +
-      "ms",
+        query +
+        "] do usuario " +
+        userId +
+        " levou " +
+        duration +
+        "ms",
     );
   }
 });

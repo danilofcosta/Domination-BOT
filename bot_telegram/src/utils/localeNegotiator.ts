@@ -12,7 +12,7 @@ export default async function localeNegotiator(ctx: any) {
 
   if (chatType === "private" && ctx.from?.id) {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.telegramUser.findUnique({
         where: { telegramId: BigInt(ctx.from.id) },
         select: { language: true },
       });
@@ -21,7 +21,9 @@ export default async function localeNegotiator(ctx: any) {
         setCachedLocale(chatId, lang);
         return lang;
       }
-    } catch { /* fallback */ }
+    } catch {
+      /* fallback */
+    }
     setCachedLocale(chatId, "pt");
     return "pt";
   }
@@ -32,12 +34,18 @@ export default async function localeNegotiator(ctx: any) {
         where: { groupId: BigInt(chatId) },
         select: { configuration: true },
       });
-      if (group?.configuration && typeof group.configuration === "object" && "locale" in (group.configuration as any)) {
+      if (
+        group?.configuration &&
+        typeof group.configuration === "object" &&
+        "locale" in (group.configuration as any)
+      ) {
         const lang = String((group.configuration as any).locale).toLowerCase();
         setCachedLocale(chatId, lang);
         return lang;
       }
-    } catch { /* fallback */ }
+    } catch {
+      /* fallback */
+    }
     setCachedLocale(chatId, "pt");
     return "pt";
   }

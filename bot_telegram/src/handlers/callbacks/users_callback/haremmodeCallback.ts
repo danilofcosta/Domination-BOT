@@ -11,7 +11,7 @@ export async function haremmodeCallback(ctx: MyContext) {
 
   if (!userId) return;
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.telegramUser.findUnique({
     where: { telegramId: BigInt(userId) },
   });
   if (!user) {
@@ -37,7 +37,7 @@ export async function haremmodeCallback(ctx: MyContext) {
 
   config.haremMode = modeMatch;
 
-  await prisma.user.update({
+  await prisma.telegramUser.update({
     where: { telegramId: BigInt(userId) },
     data: isHusbando ? { husbandoConfig: config } : { waifuConfig: config },
   });

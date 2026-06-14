@@ -17,9 +17,11 @@ async function botNewgroupMember(ctx: any) {
       return;
     }
 
-    const botIsNewMember = newMembers.some((m: any) => m.id === ctx.bot.id);
+    const botIsNewMember = newMembers.some((m: any) => m?.id === ctx.me.id);
     if (!botIsNewMember) {
-      debug(`botNewgroupMember - bot não está entre os novos membros, ignorando`);
+      debug(
+        `botNewgroupMember - bot não está entre os novos membros, ignorando`,
+      );
       return;
     }
 
@@ -98,7 +100,7 @@ async function botNewgroupMember(ctx: any) {
     }
 
     try {
-      const botMember = await ctx.api.getChatMember(chat.id, ctx.bot.id);
+      const botMember = await ctx.api.getChatMember(chat.id, ctx.me.id);
       botIsAdmin = ["administrator", "creator"].includes(botMember.status);
       if (botMember.status === "administrator") {
         botPermissions = {
@@ -153,10 +155,10 @@ async function botNewgroupMember(ctx: any) {
       await ctx.api.sendMessage(
         addedBy.id,
         ctx.t("thank-you-add-group", { groupName: chat.title || "grupo" }),
-        { parse_mode: "HTML" }
+        { parse_mode: "HTML" },
       );
 
-      await prisma.user.upsert({
+      await prisma.telegramUser.upsert({
         where: { telegramId: BigInt(addedBy.id) },
         update: { coins: { increment: 40 } },
         create: {

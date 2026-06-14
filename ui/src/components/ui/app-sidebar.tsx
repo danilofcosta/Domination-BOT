@@ -25,7 +25,7 @@ import { SidebarHeaderLogo } from "../theme/SidebarHeaderLogo";
 export function AppSidebar() {
   return (
     <>
-      <SidebarHeader className="border-b">
+      <SidebarHeader className="border-b" >
         <SidebarHeaderLogo />
       </SidebarHeader>
 

@@ -4,7 +4,10 @@ import { ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { warn } from "../../../utils/log.js";
 import { prisma } from "../../../lib/prisma.js";
-import { getCachedLocale, setCachedLocale } from "../../../cache/localeCache.js";
+import {
+  getCachedLocale,
+  setCachedLocale,
+} from "../../../cache/localeCache.js";
 import localeNegotiator from "../../../utils/localeNegotiator.js";
 
 async function canChangeLanguage(ctx: MyContext): Promise<boolean> {
@@ -16,7 +19,8 @@ async function canChangeLanguage(ctx: MyContext): Promise<boolean> {
     try {
       const member = await ctx.api.getChatMember(chatId, userId);
       if (member.status === "creator") return true;
-      if (member.status === "administrator" && (member as any).can_change_info) return true;
+      if (member.status === "administrator" && (member as any).can_change_info)
+        return true;
     } catch {
       warn("setlang - erro ao verificar admin do grupo");
     }
@@ -37,20 +41,27 @@ async function setLanguage(ctx: MyContext, lang: string) {
 
   const chatType = ctx.chat?.type;
   if (chatType === "private" && ctx.from?.id) {
-    const langMap: Record<string, any> = { pt: "PT", en: "EN", es: "ES", ja: "JA" };
-    await prisma.user.upsert({
-      where: { telegramId: BigInt(ctx.from.id) },
-      update: { language: langMap[lang] || "PT" },
-      create: {
-        telegramId: BigInt(ctx.from.id),
-        language: langMap[lang] || "PT",
-        telegramData: {},
-        favoriteWaifuId: null,
-        favoriteHusbandoId: null,
-        waifuConfig: {},
-        husbandoConfig: {},
-      },
-    }).catch(() => warn("setlang - erro ao salvar locale no User"));
+    const langMap: Record<string, any> = {
+      pt: "PT",
+      en: "EN",
+      es: "ES",
+      ja: "JA",
+    };
+    await prisma.telegramUser
+      .upsert({
+        where: { telegramId: BigInt(ctx.from.id) },
+        update: { language: langMap[lang] || "PT" },
+        create: {
+          telegramId: BigInt(ctx.from.id),
+          language: langMap[lang] || "PT",
+          telegramData: {},
+          favoriteWaifuId: null,
+          favoriteHusbandoId: null,
+          waifuConfig: {},
+          husbandoConfig: {},
+        },
+      })
+      .catch(() => warn("setlang - erro ao salvar locale no User"));
   } else if (chatType === "group" || chatType === "supergroup") {
     try {
       const existing = await prisma.telegramGroup.findUnique({
@@ -78,15 +89,19 @@ export async function setlangHandler(ctx: MyContext) {
   const input = ctx.match ? String(ctx.match).trim().toLowerCase() : "";
 
   if (!input) {
-    const currentLang = ctx.chat ? (getCachedLocale(ctx.chat.id) || await localeNegotiator(ctx) || "pt") : "pt";
+    const currentLang = ctx.chat
+      ? getCachedLocale(ctx.chat.id) || (await localeNegotiator(ctx)) || "pt"
+      : "pt";
     const currentLabel = ctx.t(`setlang-name-${currentLang}`);
 
-    const keyboard =InlineKeyboard.from(
-  i18n.locales.map((locale: string) => [{
-    text: `${currentLang === locale ? "✅ " : ""}${ctx.t(`setlang-btn-${locale}`)}`,
-    callback_data: `setlang_${locale}`,
-  }]),
-);
+    const keyboard = InlineKeyboard.from(
+      i18n.locales.map((locale: string) => [
+        {
+          text: `${currentLang === locale ? "✅ " : ""}${ctx.t(`setlang-btn-${locale}`)}`,
+          callback_data: `setlang_${locale}`,
+        },
+      ]),
+    );
 
     await ctx.reply(
       `${ctx.t("setlang-title")}\n${ctx.t("setlang-current", { lang: currentLabel })}`,

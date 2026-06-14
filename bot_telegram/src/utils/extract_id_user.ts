@@ -8,7 +8,9 @@ export interface TelegramUserData {
   is_bot?: boolean;
 }
 
-export async function Extract_id_user(ctx: MyContext): Promise<TelegramUserData | null> {
+export async function Extract_id_user(
+  ctx: MyContext,
+): Promise<TelegramUserData | null> {
   const reply_to_message = ctx.message?.reply_to_message;
 
   if (reply_to_message?.from) {
@@ -24,8 +26,10 @@ export async function Extract_id_user(ctx: MyContext): Promise<TelegramUserData 
       }
 
       case "phone_number": {
-        const phoneText = ctx.message.text
-          ?.slice(entity.offset, entity.offset + entity.length);
+        const phoneText = ctx.message.text?.slice(
+          entity.offset,
+          entity.offset + entity.length,
+        );
         if (!phoneText) return null;
         const id = Number(phoneText.replace(/\D/g, ""));
         if (!id) return null;
@@ -39,7 +43,7 @@ export async function Extract_id_user(ctx: MyContext): Promise<TelegramUserData 
 
         if (!username) return null;
 
-        const user = await prisma.user.findFirst({
+        const user = await prisma.telegramUser.findFirst({
           where: {
             telegramData: {
               path: ["username"],
@@ -48,7 +52,7 @@ export async function Extract_id_user(ctx: MyContext): Promise<TelegramUserData 
           },
         });
 
-        return user?.telegramData as TelegramUserData | undefined ?? null;
+        return (user?.telegramData as TelegramUserData | undefined) ?? null;
       }
     }
   }

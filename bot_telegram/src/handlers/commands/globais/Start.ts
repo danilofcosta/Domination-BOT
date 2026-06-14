@@ -1,4 +1,4 @@
-import type { MyContext } from "../../../utils/customTypes.js";
+import { ProfileType, type MyContext } from "../../../utils/customTypes.js";
 import { LastRandomCharacter } from "../../../utils/character/random_character.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { InlineKeyboard } from "grammy";
@@ -6,6 +6,9 @@ import { helpCommand } from "./help.js";
 import { prisma } from "../../../lib/prisma.js";
 import { formatUptime } from "./status.js";
 import { Backup_harem } from "../users/backup.js";
+import { calcHash } from "../../../utils/calcHash.js";
+import { onlyRoleBotAdmin } from "../../../utils/permissions.js";
+import { CreateLoginWeb } from "./createlogin_web.js";
 
 let lastRefreshTime = Date.now();
 
@@ -19,10 +22,18 @@ export async function StartGreetings(ctx: MyContext) {
       case "backup": {
         Backup_harem(ctx);
       }
+      case "myacontweb": {
+       return await onlyRoleBotAdmin(ProfileType.ADMIN,)(ctx, async () => {
+            await CreateLoginWeb(ctx);
+          });
+        
+        break;
+      }
       default:
         return;
     }
   }
+// caso nao tenha match, ou seja, seja apenas /start, entao segue o fluxo normal
 
   if (ctx.chat?.type !== "private") {
     try {

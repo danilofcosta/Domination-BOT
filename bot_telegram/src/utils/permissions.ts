@@ -35,24 +35,23 @@ async function isGroupAdmin(ctx: MyContext, userId: number): Promise<boolean> {
     adminGroupCache.set(cacheKey, isAdmin);
     return isAdmin;
   } catch (e) {
-    error(`[Permissions] Erro ao verificar admin do grupo para usuário ${userId}`, e);
+    error(
+      `[Permissions] Erro ao verificar admin do grupo para usuário ${userId}`,
+      e,
+    );
     return false;
   }
 }
 
 export async function getUserRole(userId: number): Promise<ProfileType> {
   try {
-    const role = await getOrSet(
-      permissionCache,
-      String(userId),
-      async () => {
-        const user = await prisma.user.findUnique({
-          where: { telegramId: BigInt(userId) },
-          select: { profileType: true },
-        });
-        return { role: (user?.profileType as ProfileType) || ProfileType.USER };
-      },
-    );
+    const role = await getOrSet(permissionCache, String(userId), async () => {
+      const user = await prisma.telegramUser.findUnique({
+        where: { telegramId: BigInt(userId) },
+        select: { profileType: true },
+      });
+      return { role: (user?.profileType as ProfileType) || ProfileType.USER };
+    });
     return role.role as ProfileType;
   } catch (e) {
     error(`[Permissions] Erro ao buscar role para usuário ${userId}`, e);
@@ -65,7 +64,9 @@ export async function isUserBanned(userId: number): Promise<boolean> {
   return roleWeights[role] === roleWeights[ProfileType.BANNED];
 }
 
-export function onlyRoleBotAdmin(requiredRole: ProfileType): MiddlewareFn<MyContext> {
+export function onlyRoleBotAdmin(
+  requiredRole: ProfileType,
+): MiddlewareFn<MyContext> {
   return async (ctx, next) => {
     try {
       const from = ctx.from;
@@ -75,11 +76,15 @@ export function onlyRoleBotAdmin(requiredRole: ProfileType): MiddlewareFn<MyCont
       }
 
       const userId = from.id;
-      debug(`[Permissions] Verificando permissões para usuário ${userId} (${from.username || "no-username"}). Required: ${requiredRole}`);
+      debug(
+        `[Permissions] Verificando permissões para usuário ${userId} (${from.username || "no-username"}). Required: ${requiredRole}`,
+      );
 
       const isGroupAdm = await isGroupAdmin(ctx, userId);
       if (isGroupAdm) {
-        info(`[Permissions] Acesso concedido: Usuário ${userId} é admin do grupo.`);
+        info(
+          `[Permissions] Acesso concedido: Usuário ${userId} é admin do grupo.`,
+        );
         return await next();
       }
 
@@ -88,21 +93,28 @@ export function onlyRoleBotAdmin(requiredRole: ProfileType): MiddlewareFn<MyCont
       const requiredWeight = roleWeights[requiredRole];
 
       if (userWeight >= requiredWeight) {
-        info(`[Permissions] Acesso concedido: Usuário ${userId} tem role ${userRole} (requerido: ${requiredRole}).`);
+        info(
+          `[Permissions] Acesso concedido: Usuário ${userId} tem role ${userRole} (requerido: ${requiredRole}).`,
+        );
         return await next();
       }
 
-      debug(`[Permissions] Acesso negado: Usuário ${userId} tem role ${userRole} (requerido: ${requiredRole}).`);
-      
-      const message = ctx.t 
+      debug(
+        `[Permissions] Acesso negado: Usuário ${userId} tem role ${userRole} (requerido: ${requiredRole}).`,
+      );
+
+      const message = ctx.t
         ? ctx.t("errors.no_permission")
         : "❌ Você não tem permissão suficiente para usar este comando.";
 
-      return await Sendmedia({ctx,caption:message});
+      return await Sendmedia({ ctx, caption: message });
     } catch (e) {
       error("[Permissions] Erro no middleware", e);
 
-      return await Sendmedia({ctx,caption:"❌ Ocorreu um erro interno ao verificar suas permissões."});
+      return await Sendmedia({
+        ctx,
+        caption: "❌ Ocorreu um erro interno ao verificar suas permissões.",
+      });
     }
   };
 }

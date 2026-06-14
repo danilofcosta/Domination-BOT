@@ -20,13 +20,11 @@ export async function giftConfirmHandler(ctx: MyContext) {
       expected: senderId,
       actual: ctx.from?.id,
     });
-    await ctx.answerCallbackQuery(
-      ctx.t("error-action-not-authorized-by-id"),
-    );
+    await ctx.answerCallbackQuery(ctx.t("error-action-not-authorized-by-id"));
     return;
   }
 
-if (action === "no") {
+  if (action === "no") {
     const cq = ctx.callbackQuery;
 
     if (cq?.message) {
@@ -35,9 +33,11 @@ if (action === "no") {
     }
 
     if (cq?.inline_message_id) {
-      await ctx.editMessageReplyMarkup({
-        reply_markup: { inline_keyboard: [] },
-      }).catch(() => {});
+      await ctx
+        .editMessageReplyMarkup({
+          reply_markup: { inline_keyboard: [] },
+        })
+        .catch(() => {});
       return;
     }
 
@@ -126,7 +126,7 @@ if (action === "no") {
       giftid,
     });
 
-    const receiverUser = await prisma.user.findUnique({
+    const receiverUser = await prisma.telegramUser.findUnique({
       where: { telegramId: BigInt(receiverId) },
       select: { telegramData: true },
     });

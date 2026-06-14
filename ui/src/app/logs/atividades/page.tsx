@@ -23,11 +23,11 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
     }),
     prisma.husbandoCollection.findMany({
       orderBy: { updatedAt: "desc" },
-      include: { CharacterHusbando: true, User: true },
+      include: { CharacterHusbando: true, TelegramUser: true },
     }),
     prisma.waifuCollection.findMany({
       orderBy: { updatedAt: "desc" },
-      include: { CharacterWaifu: true, User: true },
+      include: { CharacterWaifu: true, TelegramUser: true },
     }),
   ]);
 
@@ -220,7 +220,7 @@ function ActivityRow({ activity }: { activity: { type: string; data: any; update
   if (type === "collection-h" || type === "collection-w") {
     const isH = type === "collection-h";
     const c = data as any;
-    const userData = c.User?.telegramData as Record<string, unknown> | null;
+    const userData = c.TelegramUser?.telegramData as Record<string, unknown> | null;
     const userName = (userData?.first_name as string) ?? `#${c.userId}`;
     const characterName = isH ? c.CharacterHusbando?.name : c.CharacterWaifu?.name ?? "?";
     return (

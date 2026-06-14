@@ -1,3 +1,5 @@
+import { SidebarGroupLabel } from "../ui/sidebar";
+
 export function SidebarHeaderLogo() {
   return (
     <div className="flex items-center gap-2 px-2 py-2 ">
@@ -8,8 +10,10 @@ export function SidebarHeaderLogo() {
           className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200"
         /> */}
       </div>
-      <span className="font-semibold ">𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝖘</span>
-      
+
+      <SidebarGroupLabel className="font-semibold text-lg">
+        <span>𝕯𝖔𝖒𝖎𝖓𝖆𝖙𝖎𝖔𝖓𝖘</span>
+      </SidebarGroupLabel>
     </div>
   );
 }

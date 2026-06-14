@@ -29,7 +29,7 @@ export function extrair_customid(ctx: MyContext): CustomEmojiResult | null {
     }
   }
 
-return null;
+  return null;
 }
 
 export async function emoji_id(ctx: MyContext) {
@@ -50,7 +50,7 @@ export async function emoji_id(ctx: MyContext) {
       const emoji = text.slice(entity.offset, entity.offset + entity.length);
       const id = (entity as any).custom_emoji_id;
 
-      result += `<code>${id}</code> ${emoji } <tg-emoji emoji-id="${id}">${emoji}</tg-emoji>`;
+      result += `<code>${id}</code> ${emoji} <tg-emoji emoji-id="${id}">${emoji}</tg-emoji>`;
     } else {
       // texto normal (ou outros tipos)
       result += text.slice(entity.offset, entity.offset + entity.length);
@@ -63,12 +63,9 @@ export async function emoji_id(ctx: MyContext) {
   result += text.slice(currentIndex);
 
   ctx.reply(result, {
-    parse_mode: "HTML"
+    parse_mode: "HTML",
   });
 }
-
-
-
 
 //  await Sendmedia(ctx, character_db as characters_husbando, capiton);
 
@@ -128,7 +125,7 @@ export async function createSecureServer(ctx: MyContext) {
   }
 
   try {
-    const user = await prisma.user.upsert({
+    const user = await prisma.telegramUser.upsert({
       where: { telegramId: Number(userId) },
       update: {}, // mantém vazio se não quiser atualizar nada
       create: {
@@ -160,9 +157,15 @@ export async function enviarLogs(ctx: MyContext) {
   let logPath: string;
 
   if (command.includes("erros")) {
-    logPath = path.join(logDir, "error-" + new Date().toISOString().split("T")[0] + ".log");
+    logPath = path.join(
+      logDir,
+      "error-" + new Date().toISOString().split("T")[0] + ".log",
+    );
   } else {
-    logPath = path.join(logDir, "combined-" + new Date().toISOString().split("T")[0] + ".log");
+    logPath = path.join(
+      logDir,
+      "combined-" + new Date().toISOString().split("T")[0] + ".log",
+    );
   }
 
   if (!fs.existsSync(logPath)) {

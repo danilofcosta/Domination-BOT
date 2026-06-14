@@ -21,7 +21,7 @@ export async function Myinfos(ctx: MyContext) {
 
   const isWaifu = ctx.botType === ChatType.WAIFU;
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.telegramUser.findUnique({
     where: {
       telegramId: ctx.from!.id,
     },

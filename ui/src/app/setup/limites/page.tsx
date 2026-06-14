@@ -9,7 +9,7 @@ async function unbanUser(formData: FormData) {
   "use server";
   const id = formData.get("id") as string;
   if (!id) throw new Error("ID não informado");
-  await prisma.user.update({
+  await prisma.telegramUser.update({
     where: { id: Number(id) },
     data: { profileType: "USER" },
   });
@@ -28,11 +28,14 @@ type LimitPageProps = {
 
 export default async function LimitesPage({ searchParams }: LimitPageProps) {
   const params = await searchParams;
-  const page = Math.max(1, typeof params.page === "string" ? Number(params.page) || 1 : 1);
+  const page = Math.max(
+    1,
+    typeof params.page === "string" ? Number(params.page) || 1 : 1,
+  );
   const perPage = 20;
 
   const [bannedUsers, total] = await Promise.all([
-    prisma.user.findMany({
+    prisma.telegramUser.findMany({
       where: { profileType: "BANNED" },
       orderBy: { id: "asc" },
       skip: (page - 1) * perPage,
@@ -44,7 +47,7 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
         profileType: true,
       },
     }),
-    prisma.user.count({ where: { profileType: "BANNED" } }),
+    prisma.telegramUser.count({ where: { profileType: "BANNED" } }),
   ]);
 
   let dailyLimits: DailyLimit[] = [];
@@ -53,7 +56,10 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
     const keys: string[] = [];
     let cursor = "0";
     do {
-      const result = await redis.scan(cursor, { MATCH: "daily_dominar:*", COUNT: 200 });
+      const result = await redis.scan(cursor, {
+        MATCH: "daily_dominar:*",
+        COUNT: 200,
+      });
       cursor = result.cursor;
       keys.push(...(result.keys || result[1] || []));
     } while (cursor !== "0");
@@ -67,7 +73,10 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
     } else if (keys.length > 0) {
       for (const k of keys) {
         const v = await redis.get(k);
-        dailyLimits.push({ userId: Number(k.split(":")[1]), count: Number(v ?? 0) });
+        dailyLimits.push({
+          userId: Number(k.split(":")[1]),
+          count: Number(v ?? 0),
+        });
       }
     }
   } catch (e) {
@@ -83,16 +92,22 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
           <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
             Bot Setup
           </p>
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Limites e Bloqueios</h1>
+          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            Limites e Bloqueios
+          </h1>
         </div>
         <UserInfoDialog />
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-border/70 bg-card/60 p-5 shadow-xs backdrop-blur-md">
-          <h2 className="mb-4 text-lg font-semibold">Usuários Banidos ({total})</h2>
+          <h2 className="mb-4 text-lg font-semibold">
+            Usuários Banidos ({total})
+          </h2>
           {bannedUsers.length === 0 ? (
-            <p className="text-muted-foreground py-8 text-center text-sm">Nenhum usuário banido.</p>
+            <p className="text-muted-foreground py-8 text-center text-sm">
+              Nenhum usuário banido.
+            </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -107,16 +122,37 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
                 </thead>
                 <tbody>
                   {bannedUsers.map((u) => {
-                    const data = u.telegramData as Record<string, unknown> | null;
-                    const name = [data?.first_name, data?.last_name].filter(Boolean).join(" ") || "—";
+                    const data = u.telegramData as Record<
+                      string,
+                      unknown
+                    > | null;
+                    const name =
+                      [data?.first_name, data?.last_name]
+                        .filter(Boolean)
+                        .join(" ") || "—";
                     const username = (data?.username as string) || "";
                     return (
-                      <tr key={u.id} className="border-b border-border/30 transition-colors hover:bg-border/20">
-                        <td className="px-2 py-2.5 text-xs text-muted-foreground">{u.id}</td>
-                        <td className="px-2 py-2.5 text-xs text-muted-foreground">{String(u.telegramId)}</td>
-                        <td className="max-w-[120px] truncate px-2 py-2.5">{name}</td>
+                      <tr
+                        key={u.id}
+                        className="border-b border-border/30 transition-colors hover:bg-border/20"
+                      >
+                        <td className="px-2 py-2.5 text-xs text-muted-foreground">
+                          {u.id}
+                        </td>
+                        <td className="px-2 py-2.5 text-xs text-muted-foreground">
+                          {String(u.telegramId)}
+                        </td>
+                        <td className="max-w-[120px] truncate px-2 py-2.5">
+                          {name}
+                        </td>
                         <td className="px-2 py-2.5 text-xs">
-                          {username ? <span className="text-muted-foreground">@{username}</span> : "—"}
+                          {username ? (
+                            <span className="text-muted-foreground">
+                              @{username}
+                            </span>
+                          ) : (
+                            "—"
+                          )}
                         </td>
                         <td className="px-2 py-2.5 text-center">
                           <form action={unbanUser}>
@@ -180,9 +216,14 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
                 </thead>
                 <tbody>
                   {dailyLimits.map((d) => (
-                    <tr key={d.userId} className="border-b border-border/30 transition-colors hover:bg-border/20">
+                    <tr
+                      key={d.userId}
+                      className="border-b border-border/30 transition-colors hover:bg-border/20"
+                    >
                       <td className="px-2 py-2.5">{d.userId}</td>
-                      <td className="px-2 py-2.5 text-right font-mono">{d.count}</td>
+                      <td className="px-2 py-2.5 text-right font-mono">
+                        {d.count}
+                      </td>
                       <td className="px-2 py-2.5 text-center">
                         <UserInfoDialog defaultTelegramId={String(d.userId)} />
                       </td>

@@ -14,23 +14,20 @@ export async function topHandler(ctx: MyContext) {
   });
 
   const cacheKey = `top:${isHusbando ? "husbando" : "waifu"}`;
-  const ranking = await getOrSet(
-    rankingCache,
-    cacheKey,
-    () =>
-      isHusbando
-        ? prisma.husbandoCollection.groupBy({
-            by: ["userId"],
-            _count: { characterId: true },
-            orderBy: { _count: { characterId: "desc" } },
-            take: 10,
-          })
-        : prisma.waifuCollection.groupBy({
-            by: ["userId"],
-            _count: { characterId: true },
-            orderBy: { _count: { characterId: "desc" } },
-            take: 10,
-          }),
+  const ranking = await getOrSet(rankingCache, cacheKey, () =>
+    isHusbando
+      ? prisma.husbandoCollection.groupBy({
+          by: ["userId"],
+          _count: { characterId: true },
+          orderBy: { _count: { characterId: "desc" } },
+          take: 10,
+        })
+      : prisma.waifuCollection.groupBy({
+          by: ["userId"],
+          _count: { characterId: true },
+          orderBy: { _count: { characterId: "desc" } },
+          take: 10,
+        }),
   );
 
   if (!ranking.length) {
@@ -42,7 +39,7 @@ export async function topHandler(ctx: MyContext) {
 
   const userIds = ranking.map((r: any) => r.userId);
   const [users, character] = await Promise.all([
-    prisma.user.findMany({
+    prisma.telegramUser.findMany({
       where: { telegramId: { in: userIds } },
       select: { telegramId: true, telegramData: true },
     }),

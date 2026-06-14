@@ -27,27 +27,42 @@ type UserSearchParams = {
 export default async function UsuariosPage({ searchParams }: UserSearchParams) {
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search.trim() : "";
-  const profileFilter = typeof params.profileType === "string" ? params.profileType : "";
-  const page = Math.max(1, typeof params.page === "string" ? Number(params.page) || 1 : 1);
+  const profileFilter =
+    typeof params.profileType === "string" ? params.profileType : "";
+  const page = Math.max(
+    1,
+    typeof params.page === "string" ? Number(params.page) || 1 : 1,
+  );
   const perPage = 20;
 
   let users: Array<{
-    id: number; telegramId: bigint; telegramData: unknown; coins: number;
-    profileType: string; language: string; favoriteWaifuId: number | null; favoriteHusbandoId: number | null;
+    id: number;
+    telegramId: bigint;
+    telegramData: unknown;
+    coins: number;
+    profileType: string;
+    language: string;
+    favoriteWaifuId: number | null;
+    favoriteHusbandoId: number | null;
   }>;
   let total: number;
 
   const userSelect = {
-    id: true as const, telegramId: true as const, telegramData: true as const,
-    coins: true as const, profileType: true as const, language: true as const,
-    favoriteWaifuId: true as const, favoriteHusbandoId: true as const,
+    id: true as const,
+    telegramId: true as const,
+    telegramData: true as const,
+    coins: true as const,
+    profileType: true as const,
+    language: true as const,
+    favoriteWaifuId: true as const,
+    favoriteHusbandoId: true as const,
   };
 
   const where: Record<string, unknown> = {};
   if (profileFilter) where.profileType = profileFilter;
 
   if (search) {
-    const all = await prisma.user.findMany({
+    const all = await prisma.telegramUser.findMany({
       where: where as any,
       orderBy: { id: "asc" },
       select: userSelect,
@@ -70,14 +85,14 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
     users = filtered.slice((page - 1) * perPage, page * perPage);
   } else {
     [users, total] = await Promise.all([
-      prisma.user.findMany({
+      prisma.telegramUser.findMany({
         where: where as any,
         orderBy: { id: "asc" },
         skip: (page - 1) * perPage,
         take: perPage,
         select: userSelect,
       }),
-      prisma.user.count({ where: where as any }),
+      prisma.telegramUser.count({ where: where as any }),
     ]);
   }
 
@@ -112,7 +127,7 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
       </header>
 
       <form className="flex flex-wrap items-end gap-3">
-        <div className="flex-1 min-w-[200px]">
+        <div className="flex-1 min-w-50">
           <label className="text-muted-foreground mb-1 block text-[11px] font-semibold tracking-[0.14em] uppercase">
             Buscar
           </label>
@@ -135,7 +150,9 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
           >
             <option value="">Todos</option>
             {Object.entries(PROFILE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <option key={key} value={key}>
+                {label}
+              </option>
             ))}
           </select>
         </div>
@@ -181,31 +198,48 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
                 const firstName = (data?.first_name as string) ?? "";
                 const lastName = (data?.last_name as string) ?? "";
                 const username = (data?.username as string) ?? "";
-                const name = [firstName, lastName].filter(Boolean).join(" ") || "—";
+                const name =
+                  [firstName, lastName].filter(Boolean).join(" ") || "—";
 
                 return (
                   <tr
                     key={u.id}
                     className="border-b border-border/30 transition-colors hover:bg-border/20"
                   >
-                    <td className="px-2 py-2.5 text-center text-xs text-muted-foreground">{u.id}</td>
+                    <td className="px-2 py-2.5 text-center text-xs text-muted-foreground">
+                      {u.id}
+                    </td>
                     <td className="px-2 py-2.5">
-                      <UserCollectionDialog telegramId={String(u.telegramId)} name={name} profileType={u.profileType} />
+                      <UserCollectionDialog
+                        telegramId={String(u.telegramId)}
+                        name={name}
+                        profileType={u.profileType}
+                      />
                     </td>
                     <td className="px-2 py-2.5 text-xs">
                       {username ? (
-                        <span className="text-muted-foreground">@{username}</span>
+                        <span className="text-muted-foreground">
+                          @{username}
+                        </span>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
-                    <td className={`px-2 py-2.5 text-center text-xs font-semibold ${PROFILE_COLORS[u.profileType]}`}>
+                    <td
+                      className={`px-2 py-2.5 text-center text-xs font-semibold ${PROFILE_COLORS[u.profileType]}`}
+                    >
                       {PROFILE_LABELS[u.profileType]}
                     </td>
                     <td className="px-2 py-2.5 text-center">{u.coins}</td>
-                    <td className="px-2 py-2.5 text-center text-xs">{u.language}</td>
-                    <td className="px-2 py-2.5 text-center text-xs">{u.favoriteWaifuId ?? "—"}</td>
-                    <td className="px-2 py-2.5 text-center text-xs">{u.favoriteHusbandoId ?? "—"}</td>
+                    <td className="px-2 py-2.5 text-center text-xs">
+                      {u.language}
+                    </td>
+                    <td className="px-2 py-2.5 text-center text-xs">
+                      {u.favoriteWaifuId ?? "—"}
+                    </td>
+                    <td className="px-2 py-2.5 text-center text-xs">
+                      {u.favoriteHusbandoId ?? "—"}
+                    </td>
                   </tr>
                 );
               })}
@@ -224,7 +258,9 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
               </Link>
             )}
             {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+              .filter(
+                (p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2,
+              )
               .map((p, idx, arr) => (
                 <span key={p} className="flex items-center gap-1">
                   {idx > 0 && arr[idx - 1] !== p - 1 && (

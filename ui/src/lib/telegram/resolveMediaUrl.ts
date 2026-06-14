@@ -1,18 +1,16 @@
 import { Bot } from "grammy";
 import { prisma } from "@/lib/prisma";
 
-function getTokens() {
-  return {
-    waifu: process.env.BOT_TOKEN_WAIFU || "",
-    husbando: process.env.BOT_TOKEN_HUSBANDO || "",
-  };
-}
+const botCache: Partial<Record<"waifu" | "husbando", Bot>> = {};
 
 function getBot(type: "waifu" | "husbando") {
-  const tokens = getTokens();
-  const token = tokens[type];
+  if (botCache[type]) return botCache[type]!;
+  const token = type === "waifu"
+    ? process.env.BOT_TOKEN_WAIFU || ""
+    : process.env.BOT_TOKEN_HUSBANDO || "";
   if (!token) throw new Error(`Token para ${type} não encontrado`);
-  return new Bot(token);
+  botCache[type] = new Bot(token);
+  return botCache[type]!;
 }
 
 export async function getTelegramImageUrl(
@@ -21,8 +19,9 @@ export async function getTelegramImageUrl(
 ): Promise<string> {
   if (!fileId) return "";
 
-  const tokens = getTokens();
-  const token = tokens[type];
+  const token = type === "waifu"
+    ? process.env.BOT_TOKEN_WAIFU || ""
+    : process.env.BOT_TOKEN_HUSBANDO || "";
   if (!token) return "";
 
   try {
@@ -49,8 +48,9 @@ async function updatelinkweb(
   filePath: string,
   type: "waifu" | "husbando",
 ) {
-  const tokens = getTokens();
-  const token = tokens[type];
+  const token = type === "waifu"
+    ? process.env.BOT_TOKEN_WAIFU || ""
+    : process.env.BOT_TOKEN_HUSBANDO || "";
   if (!token) return;
 
   const link = `https://api.telegram.org/file/bot${token}/${filePath}`;

@@ -24,13 +24,16 @@ export async function clearUserCollection(telegramId: string) {
 
 export async function deleteUser(telegramId: string) {
   const id = BigInt(telegramId);
-  await prisma.user.delete({ where: { telegramId: id } });
+  await prisma.telegramUser.delete({ where: { telegramId: id } });
   return { success: true, message: "Usuário deletado permanentemente!" };
 }
 
-export async function updateUserProfileType(telegramId: string, profileType: string) {
+export async function updateUserProfileType(
+  telegramId: string,
+  profileType: string,
+) {
   const id = BigInt(telegramId);
-  await prisma.user.update({
+  await prisma.telegramUser.update({
     where: { telegramId: id },
     data: { profileType: profileType as any },
   });
@@ -49,7 +52,7 @@ async function getDailyCapture(userId: number): Promise<number | null> {
 
 export async function lookupUser(telegramId: string) {
   const id = BigInt(telegramId);
-  const user = await prisma.user.findUnique({
+  const user = await prisma.telegramUser.findUnique({
     where: { telegramId: id },
     select: {
       id: true,
@@ -64,7 +67,8 @@ export async function lookupUser(telegramId: string) {
   if (!user) return { error: "Usuário não encontrado" };
 
   const data = user.telegramData as Record<string, unknown> | null;
-  const name = [data?.first_name, data?.last_name].filter(Boolean).join(" ") || "—";
+  const name =
+    [data?.first_name, data?.last_name].filter(Boolean).join(" ") || "—";
   const username = (data?.username as string) || "";
 
   const [waifuCount, husbandoCount, dailyCaptures] = await Promise.all([

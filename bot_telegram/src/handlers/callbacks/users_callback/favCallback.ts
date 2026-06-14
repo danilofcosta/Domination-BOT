@@ -72,7 +72,7 @@ export async function favConfirmHandler(ctx: MyContext) {
   // }
   // se waifu atualiza waifu caso n husbando
   if (isWaifu) {
-    await prisma.user.update({
+    await prisma.telegramUser.update({
       where: { telegramId: userId },
       data: {
         favoriteWaifuId: favId,
@@ -80,7 +80,7 @@ export async function favConfirmHandler(ctx: MyContext) {
     });
   }
   if (!isWaifu) {
-    await prisma.user.update({
+    await prisma.telegramUser.update({
       where: { telegramId: userId },
       data: {
         favoriteHusbandoId: favId,

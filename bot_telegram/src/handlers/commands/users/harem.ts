@@ -1,7 +1,10 @@
-﻿
-import { InlineKeyboard } from "grammy";
+﻿import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, ProfileType, type MyContext } from "../../../utils/customTypes.js";
+import {
+  ChatType,
+  ProfileType,
+  type MyContext,
+} from "../../../utils/customTypes.js";
 import { Sendmedia } from "../../../utils/sendmedia.js";
 import { setHarem } from "../../../cache/cache.js";
 import { mentionUser } from "../../../utils/mention_user.js";
@@ -26,8 +29,16 @@ function getCollectionInclude(isHusbando: boolean) {
           sourceType: true,
           media: true,
           mediaType: true,
-          HusbandoEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
-          HusbandoRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+          HusbandoEvent: {
+            select: {
+              Event: { select: { id: true, name: true, emoji: true } },
+            },
+          },
+          HusbandoRarity: {
+            select: {
+              Rarity: { select: { id: true, name: true, emoji: true } },
+            },
+          },
         },
       },
     };
@@ -41,8 +52,12 @@ function getCollectionInclude(isHusbando: boolean) {
         sourceType: true,
         media: true,
         mediaType: true,
-        WaifuEvent: { select: { Event: { select: { id: true, name: true, emoji: true } } } },
-        WaifuRarity: { select: { Rarity: { select: { id: true, name: true, emoji: true } } } },
+        WaifuEvent: {
+          select: { Event: { select: { id: true, name: true, emoji: true } } },
+        },
+        WaifuRarity: {
+          select: { Rarity: { select: { id: true, name: true, emoji: true } } },
+        },
       },
     },
   };
@@ -58,7 +73,7 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
   const isHusbando = ctx.botType === ChatType.HUSBANDO;
 
   const [user, collection] = await Promise.all([
-    prisma.user.findUnique({
+    prisma.telegramUser.findUnique({
       where: { telegramId },
       select: {
         husbandoConfig: true,
@@ -139,20 +154,21 @@ export async function HaremHandler(ctx: MyContext, userId?: number) {
   const harem_logo = ctx.t("harem_logo", {
     usermention:
       mentionUser(
-        `<b>${user?.telegramData?.first_name}</b>` || "user",
-        user?.telegramData?.id || 0,
+        `<b>${(user?.telegramData as any)?.first_name || "user"}</b>`,
+        (user?.telegramData as any)?.id || 0,
       ) || "User",
   });
 
   const callerRole = await getUserRole(ctx.from?.id ?? 0);
-  const canDelete = roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
+  const canDelete =
+    roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
 
   const reply_markup = Build_btn_harem({
     ctx: ctx,
     current_page: 0,
     total_page: pages.length,
-    userId: ctx.from?.id || 0 ,
-    isadmin: userId?true:false ,
+    userId: ctx.from?.id || 0,
+    isadmin: userId ? true : false,
     canDelete,
   });
 

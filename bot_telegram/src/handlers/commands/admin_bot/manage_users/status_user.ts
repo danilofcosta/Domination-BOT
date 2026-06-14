@@ -1,6 +1,6 @@
-import { prisma } from '../../../../lib/prisma.js';
-import { ProfileType, type MyContext } from '../../../../utils/customTypes.js';
-import { debug, error } from '../../../../utils/log.js';
+import { prisma } from "../../../../lib/prisma.js";
+import { ProfileType, type MyContext } from "../../../../utils/customTypes.js";
+import { debug, error } from "../../../../utils/log.js";
 
 async function extractUserId(ctx: MyContext): Promise<number | null> {
   const message = ctx.message;
@@ -10,14 +10,14 @@ async function extractUserId(ctx: MyContext): Promise<number | null> {
     return reply.from.id;
   }
 
-  if (reply?.forward_origin?.type === 'user') {
+  if (reply?.forward_origin?.type === "user") {
     const forwardUser = reply.forward_origin as any;
     return forwardUser.sender_user?.id || null;
   }
 
   const entities = (reply as any).entities || [];
   for (const entity of entities) {
-    if (entity.type === 'text_mention' && entity.user) {
+    if (entity.type === "text_mention" && entity.user) {
       return entity.user.id;
     }
   }
@@ -25,12 +25,12 @@ async function extractUserId(ctx: MyContext): Promise<number | null> {
   const args = ctx.match;
   if (!args) return null;
 
-  const arg = typeof args === 'string' ? args.trim() : args[1];
+  const arg = typeof args === "string" ? args.trim() : args[1];
   if (!arg) return null;
 
-  if (arg.startsWith('@')) {
+  if (arg.startsWith("@")) {
     try {
-      const chat = await ctx.api.getChat('@' + arg.slice(1));
+      const chat = await ctx.api.getChat("@" + arg.slice(1));
       return chat.id ? Number(chat.id) : null;
     } catch {
       return null;
@@ -57,49 +57,80 @@ interface UserStatusResult {
   WaifuCollection: { id: number }[];
 }
 
-async function getUserStatus(ctx: MyContext, userId: number, userData?: TelegramUserData) {
-  const user = await prisma.user.findUnique({
+async function getUserStatus(
+  ctx: MyContext,
+  userId: number,
+  userData?: TelegramUserData,
+) {
+  const user = (await prisma.telegramUser.findUnique({
     where: { telegramId: BigInt(userId) },
     include: {
       HusbandoCollection: { select: { id: true } },
       WaifuCollection: { select: { id: true } },
     },
-  }) as UserStatusResult | null;
+  })) as UserStatusResult | null;
 
   if (!user) return null;
 
-  const statusEmoji = {
-    [ProfileType.SUPREME]: '👑',
-    [ProfileType.SUPER_ADMIN]: '⭐',
-    [ProfileType.ADMIN]: '🛡️',
-    [ProfileType.MODERATOR]: '🔧',
-    [ProfileType.USER]: '👤',
-    [ProfileType.BANNED]: '🚫',
-  }[user.profileType] || '👤';
+  const statusEmoji =
+    {
+      [ProfileType.SUPREME]: "👑",
+      [ProfileType.SUPER_ADMIN]: "⭐",
+      [ProfileType.ADMIN]: "🛡️",
+      [ProfileType.MODERATOR]: "🔧",
+      [ProfileType.USER]: "👤",
+      [ProfileType.BANNED]: "🚫",
+    }[user.profileType] || "👤";
 
-  const statusText = {
-    [ProfileType.SUPREME]: 'statususer-profile-supremo',
-    [ProfileType.SUPER_ADMIN]: 'statususer-profile-super-admin',
-    [ProfileType.ADMIN]: 'statususer-profile-admin',
-    [ProfileType.MODERATOR]: 'statususer-profile-moderator',
-    [ProfileType.USER]: 'statususer-profile-user',
-    [ProfileType.BANNED]: 'statususer-profile-banned',
-  }[user.profileType] || 'statususer-profile-unknown';
+  const statusText =
+    {
+      [ProfileType.SUPREME]: "statususer-profile-supremo",
+      [ProfileType.SUPER_ADMIN]: "statususer-profile-super-admin",
+      [ProfileType.ADMIN]: "statususer-profile-admin",
+      [ProfileType.MODERATOR]: "statususer-profile-moderator",
+      [ProfileType.USER]: "statususer-profile-user",
+      [ProfileType.BANNED]: "statususer-profile-banned",
+    }[user.profileType] || "statususer-profile-unknown";
 
   const telegramData = user.telegramData as TelegramUserData | null;
-  const name = userData?.first_name || telegramData?.first_name || ctx.t("statususer-profile-unknown");
+  const name =
+    userData?.first_name ||
+    telegramData?.first_name ||
+    ctx.t("statususer-profile-unknown");
   const username = userData?.username || telegramData?.username || null;
   const createdAt = user.createdAt;
-  const memberCount = (user.HusbandoCollection?.length || 0) + (user.WaifuCollection?.length || 0);
+  const memberCount =
+    (user.HusbandoCollection?.length || 0) +
+    (user.WaifuCollection?.length || 0);
 
-  let entryDate = '';
+  let entryDate = "";
   if (createdAt) {
     const d = new Date(createdAt);
     const day = d.getDate();
-    const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-    entryDate = day + ' de ' + months[d.getMonth()] + '. de ' + d.getFullYear() + ', ' +
-      d.getHours().toString().padStart(2, '0') + ':' +
-      d.getMinutes().toString().padStart(2, '0');
+    const months = [
+      "jan",
+      "fev",
+      "mar",
+      "abr",
+      "mai",
+      "jun",
+      "jul",
+      "ago",
+      "set",
+      "out",
+      "nov",
+      "dez",
+    ];
+    entryDate =
+      day +
+      " de " +
+      months[d.getMonth()] +
+      ". de " +
+      d.getFullYear() +
+      ", " +
+      d.getHours().toString().padStart(2, "0") +
+      ":" +
+      d.getMinutes().toString().padStart(2, "0");
   }
 
   return {
@@ -123,7 +154,7 @@ export async function statusUserHandler(ctx: MyContext) {
   }
 
   try {
-    debug('statusUserHandler - buscando info do usuario', targetId);
+    debug("statusUserHandler - buscando info do usuario", targetId);
 
     const status = await getUserStatus(ctx, targetId);
 
@@ -132,25 +163,36 @@ export async function statusUserHandler(ctx: MyContext) {
       return;
     }
 
-    let message = '#id' + targetId + '\n\n';
-    message += ctx.t("statususer-label-id") + ' ' + targetId + ' #' + targetId + '\n';
-    message += ctx.t("statususer-label-name") + ' ' + status.name + '\n';
+    let message = "#id" + targetId + "\n\n";
+    message +=
+      ctx.t("statususer-label-id") + " " + targetId + " #" + targetId + "\n";
+    message += ctx.t("statususer-label-name") + " " + status.name + "\n";
 
     if (status.username) {
-      message += ctx.t("statususer-label-username") + ' @' + status.username + '\n';
+      message +=
+        ctx.t("statususer-label-username") + " @" + status.username + "\n";
     }
 
-    message += ctx.t("statususer-label-status") + ' ' + status.statusEmoji + ' ' + ctx.t(status.statusText) + '\n';
-    message += ctx.t("statususer-label-coins") + ' ' + status.coins + '\n';
-    message += ctx.t("statususer-label-collection", { count: status.memberCount }) + '\n';
+    message +=
+      ctx.t("statususer-label-status") +
+      " " +
+      status.statusEmoji +
+      " " +
+      ctx.t(status.statusText) +
+      "\n";
+    message += ctx.t("statususer-label-coins") + " " + status.coins + "\n";
+    message +=
+      ctx.t("statususer-label-collection", { count: status.memberCount }) +
+      "\n";
 
     if (status.entryDate) {
-      message += ctx.t("statususer-label-entry") + ' ' + status.entryDate + '\n';
+      message +=
+        ctx.t("statususer-label-entry") + " " + status.entryDate + "\n";
     }
 
     await ctx.reply(message);
   } catch (err) {
-    error('statusUserHandler - erro', err);
+    error("statusUserHandler - erro", err);
     await ctx.reply(ctx.t("statususer-error"));
   }
 }
