@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -12,11 +13,10 @@ model CharacterHusbando {
   origem             String               @db.VarChar(100)
   mediaType          MediaType
   media              String
-  mediaUniqueId      String?  @unique
   slug               String               @unique
   extras             Json?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  updatedAt          DateTime
   popularity         Int                  @default(0)
   sourceType         SourceType           @default(ANIME)
   linkweb            String?
@@ -24,6 +24,7 @@ model CharacterHusbando {
   dislikes           Int                  @default(0)
   likes              Int                  @default(0)
   addby              Json?
+  mediaUniqueId      String?              @unique
   HusbandoCollection HusbandoCollection[]
   HusbandoEvent      HusbandoEvent[]
   HusbandoRarity     HusbandoRarity[]
@@ -31,6 +32,7 @@ model CharacterHusbando {
 
   @@index([name, origem])
   @@index([origem])
+  @@index([mediaType])
 }
 
 model CharacterWaifu {
@@ -39,11 +41,10 @@ model CharacterWaifu {
   origem           String            @db.VarChar(100)
   mediaType        MediaType
   media            String
-  mediaUniqueId    String?
   extras           Json?
   slug             String            @unique
   createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  updatedAt        DateTime
   popularity       Int               @default(0)
   sourceType       SourceType        @default(ANIME)
   linkweb          String?
@@ -51,6 +52,7 @@ model CharacterWaifu {
   addby            Json?
   dislikes         Int               @default(0)
   likes            Int               @default(0)
+  mediaUniqueId    String?
   User             User[]
   WaifuCollection  WaifuCollection[]
   WaifuEvent       WaifuEvent[]
@@ -58,6 +60,7 @@ model CharacterWaifu {
 
   @@index([name, origem])
   @@index([origem])
+  @@index([mediaType])
 }
 
 model Event {
@@ -72,19 +75,19 @@ model Event {
 }
 
 model HusbandoCollection {
-  id          Int               @id @default(autoincrement())
-  userId      BigInt
-  characterId Int
-  count       Int               @default(1)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  Character   CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  User        User              @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+  id                Int               @id @default(autoincrement())
+  userId            BigInt
+  characterId       Int
+  count             Int               @default(1)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  User              User              @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([userId, characterId])
-  @@index([userId])
   @@index([characterId])
   @@index([createdAt])
+  @@index([userId])
 }
 
 model HusbandoEvent {
@@ -117,16 +120,30 @@ model Rarity {
   WaifuRarity    WaifuRarity[]
 }
 
-model BotSession {
+model Session {
   key   String @id
   value Json
+}
 
-  @@map("BotSession")
+model BotConfig {
+  key    String @id
+  value  String
+  label  String
+  type   String @default("number")
+}
+
+model TelegramGroup {
+  id            Int      @id @default(autoincrement())
+  groupId       BigInt   @unique
+  groupName     String
+  configuration Json?
+  addedBy       Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
 }
 
 model User {
   id                 Int                  @id @default(autoincrement())
-  backupHash         String?              @db.VarChar(64)
   favoriteWaifuId    Int?
   favoriteHusbandoId Int?
   waifuConfig        Json?
@@ -142,6 +159,7 @@ model User {
   waifuLikes         Int[]                @default([])
   waifuDislikes      Int[]                @default([])
   husbandoDislikes   Int[]                @default([])
+  backupHash         String?              @db.VarChar(64)
   HusbandoCollection HusbandoCollection[]
   CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id])
   CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id])
@@ -149,19 +167,19 @@ model User {
 }
 
 model WaifuCollection {
-  id          Int            @id @default(autoincrement())
-  userId      BigInt
-  characterId Int
-  count       Int            @default(1)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  Character   CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  User        User           @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+  id             Int            @id @default(autoincrement())
+  userId         BigInt
+  characterId    Int
+  count          Int            @default(1)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  User           User           @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([userId, characterId])
-  @@index([userId])
   @@index([characterId])
   @@index([createdAt])
+  @@index([userId])
 }
 
 model WaifuEvent {
@@ -180,23 +198,6 @@ model WaifuRarity {
   Rarity         Rarity         @relation(fields: [rarityId], references: [id], onDelete: Cascade)
 
   @@id([characterId, rarityId])
-}
-
-model BotConfig {
-  key   String @id
-  value String
-  label String
-  type  String @default("number")
-}
-
-model TelegramGroup {
-  id            Int      @id @default(autoincrement())
-  groupId       BigInt   @unique
-  groupName     String
-  configuration Json?
-  addedBy       Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 }
 
 enum Language {

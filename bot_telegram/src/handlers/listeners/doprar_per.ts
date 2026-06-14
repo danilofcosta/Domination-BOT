@@ -4,6 +4,7 @@ import { createSecretCaption } from "../../utils/manage_captures/form_caption.js
 import { RandomCharacter } from "../../utils/character/random_character.js";
 import { info, warn, error, debug } from "../../utils/log.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
+import { prisma } from "../../lib/prisma.js";
 
 export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
   info(`DropCharacter - drop iniciado`, {
@@ -11,7 +12,13 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
     genero: ctx.botType,
   });
 
-  const character = await RandomCharacter(ctx.botType);
+  // const character = await RandomCharacter(ctx.botType);
+  let character;
+  if (ctx.botType === "waifu") {
+    character = await sortearWaifu();
+  } else {
+    character = await sortearHusbando();
+  }
   if (!character) {
     warn(`DropCharacter - nenhum personagem disponível`, {
       chatId: ctx.chat?.id,
@@ -58,4 +65,112 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
     error(`DropCharacter - erro ao enviar mídia`, e);
     return null;
   }
+}
+
+
+async function sortearRaridade() {
+  const raridades = await prisma.rarity.findMany({
+    select: {
+      id: true,
+      code: true,
+      weight: true,
+    },
+  });
+
+  const pesoTotal = raridades.reduce(
+    (acc: any, r: { weight: any; }) => acc + r.weight,
+    0
+  );
+
+  let sorteio = Math.random() * pesoTotal;
+
+  for (const raridade of raridades) {
+    sorteio -= raridade.weight;
+
+    if (sorteio <= 0) {
+      return raridade;
+    }
+  }
+
+  return raridades[0];
+}
+
+async function sortearWaifu() {
+  const raridade = await sortearRaridade();
+
+  const total = await prisma.characterWaifu.count({
+    where: {
+      WaifuRarity: {
+        some: {
+          rarityId: raridade.id,
+        },
+      },
+    },
+  });
+
+  if (total === 0) {
+    return null;
+  }
+
+  const skip = Math.floor(Math.random() * total);
+
+  const waifu = await prisma.characterWaifu.findFirst({
+    where: {
+      WaifuRarity: {
+        some: {
+          rarityId: raridade.id,
+        },
+      },
+    },
+    skip,
+    include: {
+      WaifuRarity: {
+        include: {
+          Rarity: true,
+        },
+      },
+    },
+  });
+
+  return waifu;
+}
+
+async function sortearHusbando() {
+  const raridade = await sortearRaridade();
+
+  const total = await prisma.characterHusbando.count({
+    where: {
+      HusbandoRarity: {
+        some: {
+          rarityId: raridade.id,
+        },
+      },
+    },
+  });
+
+  if (total === 0) {
+    return null;
+  }
+
+  const skip = Math.floor(Math.random() * total);
+
+  const husbando = await prisma.characterHusbando.findFirst({
+    where: {
+      HusbandoRarity: {
+        some: {
+          rarityId: raridade.id,
+        },
+      },
+    },
+    skip,
+    include: {
+      HusbandoRarity: {
+        include: {
+          Rarity: true,
+        },
+      },
+    },
+  });
+
+  return husbando;
 }
