@@ -16,16 +16,17 @@ export async function RunWebHook(
     res.status(200).json({ message: "Bot Telegram Webhook on" });
   }); 
 
-  // 🔥 rota específica (ESSENCIAL)
+
   app.post("/webhook", webhookCallback(bot, "express"));
 
 
   app.get("/ping", (req, res) => {
     res.status(200).json({ message: "pong" });
   });
-  // app.get("/ping", (req, res) => {
-  //   res.status(200).json({ message: "pong" });
-  // });
+  app.get("/me", (req, res) => {
+
+    res.status(200).json({ info: bot.api.getMe() });
+  });
 
   // if (process.env.CHAT_ID_DEV && !init) {
   //   await bot.api.sendMessage(
