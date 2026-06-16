@@ -1,49 +1,94 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   UsersIcon,
   ImageIcon,
-  SparklesIcon,
   SettingsIcon,
-  BarChart3Icon,
+  LayoutGrid,
+  BotMessageSquare,
 } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
 
-const items = [
+type DockItem = {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  href?: string;
+  action?: "toggleSidebar";
+  size?: number;
+  border?: boolean;
+};
+
+const items: DockItem[] = [
   { label: "Início", icon: HomeIcon, href: "/" },
   { label: "Usuários", icon: UsersIcon, href: "/usuarios" },
+  { label: "Menu", icon: LayoutGrid, action: "toggleSidebar", size: 6, border: true },
   { label: "Galeria", icon: ImageIcon, href: "/gallery/recent" },
-  { label: "Personagens", icon: SparklesIcon, href: "/raridades" },
-  { label: "Eventos", icon: BarChart3Icon, href: "/eventos" },
-  { label: "Setup", icon: SettingsIcon, href: "/setup/info" },
+  { label: "Bot Setup", icon: BotMessageSquare, href: "/setup/info" },
 ];
 
 export function FloatingDock() {
   const pathname = usePathname();
+  const { toggleSidebar } = useSidebar();
+  const [hidden, setHidden] = useState(false);
 
-  if (pathname.startsWith("/login")) return null;
+  useEffect(() => {
+    const check = () => setHidden(document.body.classList.contains("lightbox-open"));
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  if (pathname.startsWith("/login") || hidden) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2">
-      <div className="flex items-center gap-1 rounded-2xl border border-border/50 bg-background/80 px-2 py-1.5 shadow-lg backdrop-blur-xl">
+    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 lg:bottom-6">
+      <div className="grid auto-cols-auto grid-flow-col gap-1 rounded-2xl border border-border/50 bg-background/80 px-2 py-1.5 shadow-lg backdrop-blur-xl lg:gap-2 lg:rounded-3xl lg:px-5 lg:py-3">
         {items.map((item) => {
-          const active = pathname === item.href;
+          const active = item.href ? pathname === item.href : false;
+          const content = (
+            <>
+              <item.icon className="size-5 lg:size-6" />
+              <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded-md border bg-popover px-2 py-1 text-xs text-popover-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100 whitespace-nowrap lg:text-sm lg:-top-10">
+                {item.label}
+              </span>
+            </>
+          );
+
+          const className = `group relative flex items-center justify-center rounded-xl transition-colors lg:h-12 lg:w-auto lg:px-3 lg:rounded-2xl ${
+            active
+              ? "bg-accent text-accent-foreground"
+              : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+          } ${item.border ? "border-r border-border/50 pr-2 lg:pr-4" : ""}`;
+
+          const itemStyle = item.size ? { width: item.size * 4, minWidth: item.size * 4 } : undefined;
+
+          if (item.action === "toggleSidebar") {
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={toggleSidebar}
+                className={className}
+                style={itemStyle}
+              >
+                {content}
+              </button>
+            );
+          }
+
           return (
             <Link
               key={item.href}
-              href={item.href}
-              className={`group relative flex size-10 items-center justify-center rounded-xl transition-colors ${
-                active
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-              }`}
+              href={item.href!}
+              className={className}
+              style={itemStyle}
             >
-              <item.icon className="size-4" />
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded-md border bg-popover px-2 py-1 text-xs text-popover-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100 whitespace-nowrap">
-                {item.label}
-              </span>
+              {content}
             </Link>
           );
         })}

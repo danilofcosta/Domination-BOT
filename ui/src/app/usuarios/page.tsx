@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { UserCollectionDialog } from "@/components/user-collection-dialog";
@@ -29,6 +30,32 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
   const search = typeof params.search === "string" ? params.search.trim() : "";
   const profileFilter =
     typeof params.profileType === "string" ? params.profileType : "";
+
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("better-auth.session_token")?.value;
+  let currentProfileType = "USER";
+  if (sessionToken) {
+    const session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      select: { userId: true },
+    });
+    if (session) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { telegramUserId: true },
+      });
+      if (user?.telegramUserId) {
+        const tu = await prisma.telegramUser.findUnique({
+          where: { id: user.telegramUserId },
+          select: { profileType: true },
+        });
+        if (tu) currentProfileType = tu.profileType;
+      }
+    }
+  }
+
+  const canManage = currentProfileType === "SUPREME" || currentProfileType === "SUPER_ADMIN";
+
   const page = Math.max(
     1,
     typeof params.page === "string" ? Number(params.page) || 1 : 1,
@@ -214,6 +241,7 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
                         telegramId={String(u.telegramId)}
                         name={name}
                         profileType={u.profileType}
+                        canManage={canManage}
                       />
                     </td>
                     <td className="px-2 py-2.5 text-xs">

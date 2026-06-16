@@ -5,6 +5,7 @@ import { MediaType, SourceType } from "../../../../generated/prisma/enums";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { GalleryGrid } from "@/components/gallery-grid";
 
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -38,8 +39,18 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
     return Object.values(MediaType);
   };
 
+  const searchWhere = search
+    ? {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { origem: { contains: search, mode: "insensitive" } },
+          ...(isNaN(Number(search)) ? [] : [{ id: Number(search) }]),
+        ],
+      }
+    : {};
+
   const mediaWhere = {
-    ...(search ? { name: { contains: search, mode: "insensitive" } } : {}),
+    ...searchWhere,
     ...(sourceType !== "all" ? { sourceType: sourceType as SourceType } : {}),
     ...(mediaType !== "all" ? { mediaType: { in: getMediaTypeFilter(mediaType) } } : {}),
   };
@@ -71,7 +82,7 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
                 id="search"
                 name="search"
                 defaultValue={search}
-                placeholder="Buscar por nome"
+                placeholder="Buscar por nome, anime ou ID"
               />
               <label htmlFor="type" className="sr-only">
                 Filtrar por tipo
@@ -246,42 +257,7 @@ const items = resolved
           </p>
         </div>
       ) : (
-        <div className="columns-2 gap-4 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6">
-          {items.map((item) => (
-          <div
-            key={`${item._type}-${item.id}`}
-            className="group relative mb-4 inline-block w-full overflow-hidden rounded-xl border border-border/70 bg-card/60 shadow-xs backdrop-blur-md"
-          >
-        {item.isVideo ? (
-  <video
-    src={item.resolvedUrl}
-    className="h-auto w-full object-cover"
-    autoPlay
-    muted
-    loop
-    playsInline
-  />
-) : (
-  <img
-    src={item.resolvedUrl}
-    alt={item.name}
-    className="h-auto w-full object-cover"
-  />
-)}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8">
-              <p className="truncate text-sm font-medium text-white drop-shadow-sm">{item.name}</p>
-              <p className="text-[10px] text-white/60">
-                {new Date(item.createdAt).toLocaleDateString("pt-BR")}
-              </p>
-            </div>
-            <span className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
-              item._type === "waifu" ? "bg-pink-500/70 text-white" : "bg-cyan-500/70 text-white"
-            }`}>
-              {item._type === "waifu" ? "Waifu" : "Husbando"} #{item.id}
-            </span>
-          </div>
-        ))}
-        </div>
+        <GalleryGrid items={items} />
       )}
 
       {(page > 1 || hasMore) && items.length > 0 && (

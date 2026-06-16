@@ -1,7 +1,36 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getRedis } from "@/lib/redis";
+
+async function requireSuperAdmin(): Promise<{ allowed: boolean; error?: string }> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("better-auth.session_token")?.value;
+  if (!token) return { allowed: false, error: "Não autenticado." };
+
+  const session = await prisma.session.findUnique({
+    where: { token },
+    select: { userId: true },
+  });
+  if (!session) return { allowed: false, error: "Sessão inválida." };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { telegramUserId: true },
+  });
+  if (!user?.telegramUserId) return { allowed: false, error: "Sem permissão." };
+
+  const tu = await prisma.telegramUser.findUnique({
+    where: { id: user.telegramUserId },
+    select: { profileType: true },
+  });
+  if (!tu || (tu.profileType !== "SUPREME" && tu.profileType !== "SUPER_ADMIN")) {
+    return { allowed: false, error: "Sem permissão." };
+  }
+
+  return { allowed: true };
+}
 
 export async function getUserCollection(telegramId: string) {
   const id = BigInt(telegramId);
@@ -14,6 +43,9 @@ export async function getUserCollection(telegramId: string) {
 }
 
 export async function clearUserCollection(telegramId: string) {
+  const auth = await requireSuperAdmin();
+  if (!auth.allowed) return { success: false, message: auth.error! };
+
   const id = BigInt(telegramId);
   await Promise.all([
     prisma.waifuCollection.deleteMany({ where: { userId: id } }),
@@ -23,6 +55,9 @@ export async function clearUserCollection(telegramId: string) {
 }
 
 export async function deleteUser(telegramId: string) {
+  const auth = await requireSuperAdmin();
+  if (!auth.allowed) return { success: false, message: auth.error! };
+
   const id = BigInt(telegramId);
   await prisma.telegramUser.delete({ where: { telegramId: id } });
   return { success: true, message: "Usuário deletado permanentemente!" };
@@ -32,6 +67,9 @@ export async function updateUserProfileType(
   telegramId: string,
   profileType: string,
 ) {
+  const auth = await requireSuperAdmin();
+  if (!auth.allowed) return { success: false, message: auth.error! };
+
   const id = BigInt(telegramId);
   await prisma.telegramUser.update({
     where: { telegramId: id },

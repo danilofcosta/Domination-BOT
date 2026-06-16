@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { CreateCharacterDialog } from "@/components/create-character-dialog";
 
 async function getStats() {
-  const [waifuAgg, husbandoAgg, topWaifu, topHusbando] = await Promise.all([
+  const [waifuAgg, husbandoAgg, topWaifu, topHusbando, allRarities, allEvents] = await Promise.all([
     prisma.characterWaifu.aggregate({
       _count: true,
       _sum: { likes: true, dislikes: true },
@@ -22,13 +23,15 @@ async function getStats() {
       take: 5,
       select: { id: true, name: true, origem: true, popularity: true, likes: true, dislikes: true },
     }),
+    prisma.rarity.findMany({ orderBy: { name: "asc" } }),
+    prisma.event.findMany({ orderBy: { name: "asc" } }),
   ]);
 
-  return { waifuAgg, husbandoAgg, topWaifu, topHusbando };
+  return { waifuAgg, husbandoAgg, topWaifu, topHusbando, allRarities, allEvents };
 }
 
 export default async function CharactersHome() {
-  const { waifuAgg, husbandoAgg, topWaifu, topHusbando } = await getStats();
+  const { waifuAgg, husbandoAgg, topWaifu, topHusbando, allRarities, allEvents } = await getStats();
 
   const totalWaifu = waifuAgg._count;
   const totalHusbando = husbandoAgg._count;
@@ -55,6 +58,10 @@ export default async function CharactersHome() {
             <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
               Estatísticas de Personagens
             </h1>
+          </div>
+          <div className="flex gap-2">
+            <CreateCharacterDialog type="waifu" allRarities={allRarities} allEvents={allEvents} />
+            <CreateCharacterDialog type="husbando" allRarities={allRarities} allEvents={allEvents} />
           </div>
         </div>
       </header>
