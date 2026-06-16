@@ -1,6 +1,5 @@
 ﻿import { InlineKeyboard } from "grammy";
-import { Language } from "@prisma/client";
-import { prisma } from "../../lib/prisma.js";
+import { Language, prisma } from "../../lib/prisma.js";
 import { mentionUser } from "../../utils/mention_user.js";
 import { info, warn, error, debug } from "../../utils/log.js";
 

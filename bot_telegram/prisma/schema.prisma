@@ -7,63 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Better Auth models ───────────────────────────────────────────────────────
-
-model user {
-  id             String    @id
-  name           String
-  email          String    @unique
-  emailVerified  Boolean
-  image          String?
-  username       String?   @unique
-  createdAt      DateTime
-  updatedAt      DateTime
-  telegramUserId Int?
-
-  sessions session[]
-  accounts account[]
-}
-
-model session {
-  id        String   @id
-  expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
-}
-
-model verification {
-  id         String    @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
-}
-
-// ─── Bot models ───────────────────────────────────────────────────────────────
-
 model BotConfig {
   key   String @id
   value String
@@ -257,7 +200,56 @@ model WaifuRarity {
   @@id([characterId, rarityId])
 }
 
-// ─── Enums ────────────────────────────────────────────────────────────────────
+model account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user {
+  id             String    @id
+  name           String
+  email          String    @unique
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  telegramUserId Int?
+  account        account[]
+  session        session[]
+}
+
+model verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+}
 
 enum Language {
   PT

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { RefreshButton } from "@/components/refresh-button";
 
 type Activity = {
   type: string;
@@ -131,6 +133,10 @@ export default async function Home() {
             <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
               {greeting()}, admin Domination
             </h1>
+          </div>
+          <div className="flex items-center gap-1">
+            <RefreshButton />
+            <ThemeToggle />
           </div>
         </div>
       </header>

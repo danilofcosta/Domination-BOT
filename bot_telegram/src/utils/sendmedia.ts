@@ -2,9 +2,7 @@ import type { Character, MyContext } from "./customTypes.js";
 
 import { InputFile, InlineKeyboard } from "grammy";
 import fs from "fs";
-import { prisma } from "../lib/prisma.js";
-
-import { MediaType } from "@prisma/client";
+import { MediaType, prisma } from "../lib/prisma.js";
 import { error, debug } from "./log.js";
 import { getCachedTopic, setCachedTopic } from "../cache/topicCache.js";
 

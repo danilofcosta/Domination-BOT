@@ -4,9 +4,7 @@ import type { I18nFlavor } from "@grammyjs/i18n";
 
 
 import type { User } from "grammy/types";
-import type { WaifuCollection } from "@prisma/client";
-import type { CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "@prisma/client";
-import type { prisma } from "../lib/prisma.js";
+import type { prisma, WaifuCollection, CharacterHusbando, CharacterWaifu, HusbandoCollection, HusbandoEvent, HusbandoRarity, WaifuEvent, WaifuRarity } from "../lib/prisma.js";
  // db types
 
 

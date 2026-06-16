@@ -5,7 +5,7 @@
   WaifuRarity,
   HusbandoRarity,
   Rarity,
-} from "@prisma/client";
+} from "../../lib/prisma.js";
 
 import { mentionUser } from "../mention_user.js";
 import type { Params } from "../../handlers/inline_query/create_inline_result.js";

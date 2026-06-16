@@ -15,6 +15,7 @@ import { debug } from "../utils/log.js";
 import { Ramdon_Character_Handler } from "../handlers/commands/globais/random_character.js";
 import { Backup_harem } from "../handlers/commands/users/backup.js";
 import { idHandler } from "../handlers/commands/users/id.js";
+import { LoginHandler } from "../handlers/commands/globais/login.js";
 
 const UserCommands = new CommandGroup<MyContext>();
 
@@ -118,6 +119,15 @@ export const ComandosUser = {
       en: "Show chat and user ID",
     },
     handler: idHandler,
+  },
+
+  login: {
+    command: "login",
+    description: {
+      pt: "Gera link de login para o site",
+      en: "Generate web login link",
+    },
+    handler: LoginHandler,
   },
 
 } as const;

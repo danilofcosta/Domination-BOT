@@ -1,128 +1,146 @@
+"use client";
 
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LoginLayout } from "@/components/login-layout";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const router = useRouter();
+  const [showTelegram, setShowTelegram] = useState(false);
+  const [token, setToken] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const telegramUrl = `https://t.me/${
     process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME
   }?start=myacontweb`;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
+  async function handleVerifyToken() {
+    if (!token.trim()) {
+      setError("Digite o token do Telegram");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
+      const res = await fetch("/api/verify-telegram-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: token.trim() }),
       });
 
-      if (response.ok) {
-        window.location.href = '/dashboard';
+      const data = await res.json();
+
+      if (data.valid) {
+        router.push(`/login/sign?token=${encodeURIComponent(token.trim())}`);
       } else {
-        const data = await response.json();
-        setError(data.error || 'Usuário ou senha inválidos');
+        setError(data.error || "Token inválido");
       }
     } catch {
-      setError('Erro de conexão');
+      setError("Erro ao verificar token");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
-      {/* Grid animado */}
-      <div className="absolute inset-0 grid-bg opacity-40" />
+    <LoginLayout title="Admin Panel" subtitle="Acesse o sistema de gerenciamento">
+      {error && (
+        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive mb-4">
+          {error}
+        </div>
+      )}
 
-      {/* Glow */}
-      <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/20 blur-3xl" />
+      <div className="space-y-3">
+        <Link href="/login/auth" className="block">
+          <Button className="w-full text-base py-5">Entrar</Button>
+        </Link>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md border-white/10 bg-white/5 backdrop-blur-xl">
-          <CardHeader className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold text-white">
-              Admin Panel
-            </h1>
+        <Link href="/login/sign" className="block">
+          <Button variant="outline" className="w-full text-base py-5">
+            Criar Conta
+          </Button>
+        </Link>
 
-            <p className="text-sm text-zinc-400">
-              Entre para acessar o sistema
-            </p>
-          </CardHeader>
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">ou</span>
+          </div>
+        </div>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-                  {error}
-                </div>
-              )}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setShowTelegram(!showTelegram);
+            setError("");
+          }}
+          className="w-full text-base py-5"
+        >
+          {showTelegram ? "— Fechar" : "Login com Telegram"}
+        </Button>
 
-              <div className="space-y-2">
-                <Label className="text-zinc-300">
-                  Usuário
-                </Label>
+        {showTelegram && (
+          <div className="space-y-3 pt-1 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground leading-relaxed">
+              <p className="mb-1">1. Abra o Telegram e inicie o bot</p>
+              <p className="mb-1">
+                2. Envie{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-foreground">
+                  /login
+                </code>
+              </p>
+              <p className="mb-1">
+                3. Copie o token, cole aqui e aperte no botão
+              </p>
+              <p>Será redirecionado para o Telegram</p>
+            </div>
 
-                <Input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Digite seu usuário"
-                  autoComplete="username"
-                  className="border-zinc-800 bg-zinc-900/50 text-white"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Token</Label>
+              <Input
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="Cole o token aqui"
+                autoComplete="off"
+                className="font-mono text-center tracking-wider"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label className="text-zinc-300">
-                  Senha
-                </Label>
-
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  className="border-zinc-800 bg-zinc-900/50 text-white"
-                />
-              </div>
-
+            <a
+              href={telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                type="button"
+                variant="outline"
+                className="w-full text-sm"
               >
-                Entrar
+                Abrir Telegram
               </Button>
+            </a>
 
-              <Link href={telegramUrl} target="_blank">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-sky-500/30 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20"
-                >
-                  Criar conta pelo Telegram
-                </Button>
-              </Link>
-            </form>
-          </CardContent>
-        </Card>
+            <Button
+              type="button"
+              onClick={handleVerifyToken}
+              disabled={loading || !token.trim()}
+              className="w-full text-sm"
+            >
+              {loading ? "Verificando..." : "Verificar Token"}
+            </Button>
+          </div>
+        )}
       </div>
-    </div>
+    </LoginLayout>
   );
 }
-

@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const PUBLIC_PATHS = ["/login", "/api/auth"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/api/auth",
+  "/auth",
+  "/api/verify-telegram-token",
+  "/api/create-account",
+  "/api/me",
+  "/api/logout",
+  "/api/login",
+];
 
 export default async function handler(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -28,7 +38,31 @@ export default async function handler(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  try {
+    const session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      select: { expiresAt: true },
+    });
+
+    if (!session || session.expiresAt < new Date()) {
+      await prisma.session.deleteMany({ where: { token: sessionToken } });
+      const response = pathname.startsWith("/api/")
+        ? NextResponse.json({ error: "Sessão expirada." }, { status: 401 })
+        : NextResponse.redirect(new URL("/login", request.url));
+      response.cookies.set("better-auth.session_token", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+      });
+      return response;
+    }
+
+    return NextResponse.next();
+  } catch {
+    return NextResponse.next();
+  }
 }
 
 export const config = {

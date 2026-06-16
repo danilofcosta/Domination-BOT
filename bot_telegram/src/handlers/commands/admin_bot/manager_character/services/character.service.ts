@@ -1,5 +1,4 @@
-import { prisma } from "../../../../../lib/prisma.js";
-import { Prisma } from "@prisma/client";
+import { Prisma, prisma } from "../../../../../lib/prisma.js";
 import { generateSlug } from "../utils/slug.js";
 import type { ChatType } from "../../../../../utils/customTypes.js";
 import { maxIdCache } from "../../../../../cache/cache.js";

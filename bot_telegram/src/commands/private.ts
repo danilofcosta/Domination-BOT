@@ -21,7 +21,11 @@ privateCommands
   .localize(LanguageCodes.Portuguese, "help", "Obtém ajuda e informações sobre o bot")
   .localize(LanguageCodes.English, "help", "Get help and information about the bot");
 
-
+privateCommands
+  .command("login", "Get help and information about the bot", options)
+  .addToScope({ type: "all_private_chats" }, (ctx) => helpCommand(ctx))
+  .localize(LanguageCodes.Portuguese, "login", "Obtém ajuda e informações sobre o bot")
+  .localize(LanguageCodes.English, "login", "Get help and information about the bot");
 
 for (const [key, value] of Object.entries(ComandosUser)) {
 

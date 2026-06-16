@@ -1,12 +1,3 @@
-import type { MyContext } from "../../../utils/customTypes.js";
+import { LoginHandler } from "./login.js";
 
-export function CreateLoginWeb(ctx: MyContext) {
-
-  ctx.api.sendRichMessageDraft(ctx.chat?.id, "Gerando link de login web...");
-
-
-
-
-
-
-}
+export const CreateLoginWeb = LoginHandler;
