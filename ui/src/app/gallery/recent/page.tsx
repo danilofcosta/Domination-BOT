@@ -1,23 +1,19 @@
 import { Suspense } from "react";
-import { prisma } from "@/lib/prisma";
-import { resolveMediaUrl } from "@/lib/telegram/resolveMediaUrl";
-import { MediaType, SourceType } from "../../../../generated/prisma/enums";
+import { getGalleryItems } from "@/lib/gallery";
+import { SourceType } from "../../../../generated/prisma/enums";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { GalleryGrid } from "@/components/gallery-grid";
+import { GalleryFilterBar } from "@/components/gallery-filter-bar";
 
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-const ITEMS_PER_PAGE = 30;
 const SOURCE_TYPES = ["all", ...Object.keys(SourceType)] as const;
 const MEDIA_TYPES_FILTER = ["all", "IMAGE", "VIDEO"] as const;
 
 export default async function GalleryRecentPage({ searchParams }: SearchParams) {
   const params = await searchParams;
-  const page = Math.max(1, typeof params.page === "string" ? Number(params.page) || 1 : 1);
   const search = typeof params.search === "string" ? params.search : "";
   const typeFilter =
     params.type === "waifu" || params.type === "husbando" ? params.type : "all";
@@ -30,30 +26,12 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
       ? (params.mediaType as typeof MEDIA_TYPES_FILTER[number])
       : "all";
 
-  const perPage = ITEMS_PER_PAGE;
-  const skip = (page - 1) * perPage;
-
-  const getMediaTypeFilter = (type: typeof mediaType): MediaType[] => {
-    if (type === "VIDEO") return ["VIDEO_URL", "VIDEO_FILEID", "VIDEO_LOCAL"] as MediaType[];
-    if (type === "IMAGE") return ["IMAGE_URL", "IMAGE_FILEID", "IMAGE_LOCAL"] as MediaType[];
-    return Object.values(MediaType);
-  };
-
-  const searchWhere = search
-    ? {
-        OR: [
-          { name: { contains: search, mode: "insensitive" } },
-          { origem: { contains: search, mode: "insensitive" } },
-          ...(isNaN(Number(search)) ? [] : [{ id: Number(search) }]),
-        ],
-      }
-    : {};
-
-  const mediaWhere = {
-    ...searchWhere,
-    ...(sourceType !== "all" ? { sourceType: sourceType as SourceType } : {}),
-    ...(mediaType !== "all" ? { mediaType: { in: getMediaTypeFilter(mediaType) } } : {}),
-  };
+  const result = await getGalleryItems({
+    search: search || undefined,
+    typeFilter: typeFilter as "all" | "waifu" | "husbando",
+    sourceType: sourceType !== "all" ? sourceType : undefined,
+    mediaType: mediaType !== "all" ? mediaType : undefined,
+  });
 
   return (
     <div className="flex min-h-screen flex-col gap-6 p-8">
@@ -63,7 +41,7 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
             <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
               Galeria
             </p>
-            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Recentes</h1>
+            
           </div>
           <Link
             href="/"
@@ -72,214 +50,35 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
             &larr; Voltar
           </Link>
         </div>
-        <form action="/gallery/recent" method="get" className="mt-4 grid gap-3">
-          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto]">
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[1fr_auto]">
-              <label htmlFor="search" className="sr-only">
-                Buscar
-              </label>
-              <Input
-                id="search"
-                name="search"
-                defaultValue={search}
-                placeholder="Buscar por nome, anime ou ID"
-              />
-              <label htmlFor="type" className="sr-only">
-                Filtrar por tipo
-              </label>
-              <select
-                id="type"
-                name="type"
-                defaultValue={typeFilter}
-                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                <option value="all">Todos</option>
-                <option value="waifu">Waifu</option>
-                <option value="husbando">Husbando</option>
-              </select>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2">
-              <label htmlFor="sourceType" className="sr-only">
-                Filtrar por SourceType
-              </label>
-              <select
-                id="sourceType"
-                name="sourceType"
-                defaultValue={sourceType}
-                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                <option value="all">Fonte</option>
-                {SOURCE_TYPES.filter((type) => type !== "all").map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-
-              <label htmlFor="mediaType" className="sr-only">
-                Filtrar por MediaType
-              </label>
-              <select
-                id="mediaType"
-                name="mediaType"
-                defaultValue={mediaType}
-                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                <option value="all">Tipo de mídia</option>
-                <option value="IMAGE">Fotos</option>
-                <option value="VIDEO">Vídeos</option>
-              </select>
-            </div>
-          </div>
-          <Button type="submit">
-            Buscar
-          </Button>
-        </form>
-      </header>
-
-      <Suspense fallback={<GallerySkeleton />}>
-        <GalleryContent
-          page={page}
-          perPage={perPage}
-          skip={skip}
-          mediaWhere={mediaWhere}
+        <GalleryFilterBar
           search={search}
           typeFilter={typeFilter}
           sourceType={sourceType}
           mediaType={mediaType}
         />
+      </header>
+
+      <Suspense fallback={<GallerySkeleton />}>
+        <GalleryGrid
+          initialItems={result.items.map((item) => ({
+            id: item.id,
+            _type: item._type,
+            name: item.name,
+            resolvedUrl: item.resolvedUrl,
+            isVideo: item.isVideo,
+            createdAt: item.createdAt,
+          }))}
+          initialCursor={result.nextCursor}
+          initialHasMore={result.hasMore}
+          filters={{
+            search: search || undefined,
+            type: typeFilter !== "all" ? typeFilter : undefined,
+            sourceType: sourceType !== "all" ? sourceType : undefined,
+            mediaType: mediaType !== "all" ? mediaType : undefined,
+          }}
+        />
       </Suspense>
     </div>
-  );
-}
-
-async function GalleryContent({
-  page,
-  perPage,
-  skip,
-  mediaWhere,
-  search,
-  typeFilter,
-  sourceType,
-  mediaType,
-}: {
-  page: number;
-  perPage: number;
-  skip: number;
-  mediaWhere: Record<string, unknown>;
-  search: string;
-  typeFilter: "all" | "waifu" | "husbando";
-  sourceType: typeof SOURCE_TYPES[number];
-  mediaType: typeof MEDIA_TYPES_FILTER[number];
-}) {
-  const take = perPage + 1;
-
-  const [waifus, husbandos] = await Promise.all([
-    typeFilter !== "husbando"
-      ? prisma.characterWaifu.findMany({
-          where: mediaWhere as any,
-          orderBy: { createdAt: "desc" },
-          skip,
-          take,
-        })
-      : Promise.resolve([] as any),
-    typeFilter !== "waifu"
-      ? prisma.characterHusbando.findMany({
-          where: mediaWhere as any,
-          orderBy: { createdAt: "desc" },
-          skip,
-          take,
-        })
-      : Promise.resolve([] as any),
-  ]);
-
-  const waifuHasMore = waifus.length > perPage;
-  const husbandoHasMore = husbandos.length > perPage;
-  const hasMore = waifuHasMore || husbandoHasMore;
-
-  const raw = [
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...waifus.slice(0, perPage).map((w: any) => ({ ...w, _type: "waifu" as const })),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...husbandos.slice(0, perPage).map((h: any) => ({ ...h, _type: "husbando" as const })),
-  ];
-const resolved = await Promise.all(
-  raw.map(async (item) => {
-    const { displayUrl, isVideo } = await resolveMediaUrl(
-      item,
-      item._type,
-    );
-
-    return {
-      ...item,
-      resolvedUrl: displayUrl,
-      isVideo,
-    };
-  }),
-);
-
-const items = resolved
-  .filter(
-    (
-      item,
-    ): item is typeof item & {
-      resolvedUrl: string;
-      isVideo: boolean;
-    } =>
-      !!item.resolvedUrl &&
-      item.resolvedUrl !== "/placeholder.png",
-  )
-  .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-  function buildHref(overrides: Record<string, string>) {
-    const sp = new URLSearchParams();
-    if (search) sp.set("search", search);
-    if (typeFilter !== "all") sp.set("type", typeFilter);
-    if (sourceType !== "all") sp.set("sourceType", sourceType);
-    if (mediaType !== "all") sp.set("mediaType", mediaType);
-    if (page > 1) sp.set("page", String(page));
-    for (const [k, v] of Object.entries(overrides)) {
-      if (v) sp.set(k, v);
-      else sp.delete(k);
-    }
-    const qs = sp.toString();
-    return `/gallery/recent${qs ? `?${qs}` : ""}`;
-  }
-
-  return (
-    <>
-      {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-border/70 bg-card/60 p-12 text-center backdrop-blur-md">
-          <p className="text-lg font-semibold text-foreground">Nenhum resultado encontrado</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Tente ajustar seus filtros de busca.
-          </p>
-        </div>
-      ) : (
-        <GalleryGrid items={items} />
-      )}
-
-      {(page > 1 || hasMore) && items.length > 0 && (
-        <div className="flex items-center justify-center gap-2">
-          {page > 1 && (
-            <Button asChild variant="outline" size="sm">
-              <Link href={buildHref({ page: String(page - 1) })}>
-                Anterior
-              </Link>
-            </Button>
-          )}
-          <span className="text-muted-foreground px-2 text-xs">Página {page}</span>
-          {hasMore && (
-            <Button asChild variant="outline" size="sm">
-              <Link href={buildHref({ page: String(page + 1) })}>
-                Próximo
-              </Link>
-            </Button>
-          )}
-        </div>
-      )}
-    </>
   );
 }
 

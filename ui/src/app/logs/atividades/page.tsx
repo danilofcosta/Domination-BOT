@@ -1,8 +1,22 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+type RawActivity = {
+  type: "group" | "waifu" | "husbando" | "collection-h" | "collection-w";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+  updatedAt: Date;
 };
 
 export default async function AtividadesPage({ searchParams }: SearchParams) {
@@ -11,38 +25,47 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
   const page = Math.max(1, typeof params.page === "string" ? Number(params.page) || 1 : 1);
   const perPage = 30;
 
-  const [allGroups, allWaifus, allHusbandos, allHusbandoCollections, allWaifuCollections] = await Promise.all([
-    prisma.telegramGroup.findMany({ orderBy: { updatedAt: "desc" } }),
-    prisma.characterWaifu.findMany({
-      orderBy: { updatedAt: "desc" },
-      include: { WaifuRarity: { include: { Rarity: true } }, WaifuEvent: { include: { Event: true } } },
-    }),
-    prisma.characterHusbando.findMany({
-      orderBy: { updatedAt: "desc" },
-      include: { HusbandoRarity: { include: { Rarity: true } }, HusbandoEvent: { include: { Event: true } } },
-    }),
-    prisma.husbandoCollection.findMany({
-      orderBy: { updatedAt: "desc" },
-      include: { CharacterHusbando: true, TelegramUser: true },
-    }),
-    prisma.waifuCollection.findMany({
-      orderBy: { updatedAt: "desc" },
-      include: { CharacterWaifu: true, TelegramUser: true },
-    }),
-  ]);
-
-  type RawActivity = {
-    type: "group" | "waifu" | "husbando" | "collection-h" | "collection-w";
-    data: typeof allGroups[0] | typeof allWaifus[0] | typeof allHusbandos[0] | typeof allHusbandoCollections[0] | typeof allWaifuCollections[0];
-    updatedAt: Date;
-  };
+  const [allGroups, allWaifus, allHusbandos, allHusbandoCollections, allWaifuCollections] =
+    await Promise.all([
+      prisma.telegramGroup.findMany({ orderBy: { updatedAt: "desc" } }),
+      prisma.characterWaifu.findMany({
+        orderBy: { updatedAt: "desc" },
+        include: {
+          WaifuRarity: { include: { Rarity: true } },
+          WaifuEvent: { include: { Event: true } },
+        },
+      }),
+      prisma.characterHusbando.findMany({
+        orderBy: { updatedAt: "desc" },
+        include: {
+          HusbandoRarity: { include: { Rarity: true } },
+          HusbandoEvent: { include: { Event: true } },
+        },
+      }),
+      prisma.husbandoCollection.findMany({
+        orderBy: { updatedAt: "desc" },
+        include: { CharacterHusbando: true, TelegramUser: true },
+      }),
+      prisma.waifuCollection.findMany({
+        orderBy: { updatedAt: "desc" },
+        include: { CharacterWaifu: true, TelegramUser: true },
+      }),
+    ]);
 
   const raw: RawActivity[] = [
     ...allGroups.map((g) => ({ type: "group" as const, data: g, updatedAt: g.updatedAt })),
     ...allWaifus.map((w) => ({ type: "waifu" as const, data: w, updatedAt: w.updatedAt })),
     ...allHusbandos.map((h) => ({ type: "husbando" as const, data: h, updatedAt: h.updatedAt })),
-    ...allHusbandoCollections.map((c) => ({ type: "collection-h" as const, data: c, updatedAt: c.updatedAt })),
-    ...allWaifuCollections.map((c) => ({ type: "collection-w" as const, data: c, updatedAt: c.updatedAt })),
+    ...allHusbandoCollections.map((c) => ({
+      type: "collection-h" as const,
+      data: c,
+      updatedAt: c.updatedAt,
+    })),
+    ...allWaifuCollections.map((c) => ({
+      type: "collection-w" as const,
+      data: c,
+      updatedAt: c.updatedAt,
+    })),
   ]
     .filter((a) => !type || a.type === type)
     .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
@@ -51,6 +74,32 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
   const totalPages = Math.ceil(total / perPage);
   const items = raw.slice((page - 1) * perPage, page * perPage);
 
+  return (
+    <Suspense>
+      <Content
+        type={type}
+        page={page}
+        total={total}
+        totalPages={totalPages}
+        items={items}
+      />
+    </Suspense>
+  );
+}
+
+function Content({
+  type,
+  page,
+  total,
+  totalPages,
+  items,
+}: {
+  type: string;
+  page: number;
+  total: number;
+  totalPages: number;
+  items: RawActivity[];
+}) {
   function buildHref(overrides: Record<string, string>) {
     const sp = new URLSearchParams();
     if (type) sp.set("type", type);
@@ -68,8 +117,8 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
     { value: "group", label: "Grupos" },
     { value: "waifu", label: "Waifus" },
     { value: "husbando", label: "Husbandos" },
-    { value: "collection-h", label: "Coleção H" },
-    { value: "collection-w", label: "Coleção W" },
+    { value: "collection-h", label: "Colecao H" },
+    { value: "collection-w", label: "Colecao W" },
   ];
 
   return (
@@ -81,7 +130,7 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
               Logs
             </p>
             <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-              Atividades ({total})
+              Atividades <span className="text-muted-foreground text-base font-normal">({total})</span>
             </h1>
           </div>
           <Link
@@ -93,41 +142,35 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
         </div>
       </header>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         {typeOptions.map((opt) => (
-          <Link
+          <Button
             key={opt.value}
-            href={buildHref({ type: opt.value, page: "" })}
-            className={`rounded-lg border px-3 py-1.5 text-xs font-medium shadow-xs transition-colors ${
-              type === opt.value
-                ? "border-border/70 bg-accent"
-                : "border-border/70 bg-card/60 backdrop-blur-md hover:bg-accent"
-            }`}
+            variant={type === opt.value ? "default" : "outline"}
+            size="sm"
+            asChild
           >
-            {opt.label}
-          </Link>
+            <Link href={buildHref({ type: opt.value, page: "" })}>
+              {opt.label}
+            </Link>
+          </Button>
         ))}
       </div>
 
-      <div className="flex-1 space-y-2">
+      <div className="flex-1 space-y-3">
         {items.length === 0 ? (
           <p className="text-muted-foreground text-sm">Nenhuma atividade encontrada.</p>
         ) : (
-          items.map((a, i) => (
-            <ActivityRow key={i} activity={a} />
-          ))
+          items.map((a, i) => <ActivityRow key={i} activity={a} />)
         )}
       </div>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           {page > 1 && (
-            <Link
-              href={buildHref({ page: String(page - 1) })}
-              className="rounded-lg border border-border/70 bg-card/60 px-3 py-1.5 text-xs font-medium shadow-xs backdrop-blur-md hover:bg-accent transition-colors"
-            >
-              Anterior
-            </Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={buildHref({ page: String(page - 1) })}>Anterior</Link>
+            </Button>
           )}
           {Array.from({ length: totalPages }, (_, i) => i + 1)
             .filter((p) => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
@@ -137,26 +180,20 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
                   <span className="text-muted-foreground px-1 text-xs">...</span>
                 )}
                 {p === page ? (
-                  <span className="rounded-lg border border-border/70 bg-accent px-3 py-1.5 text-xs font-medium shadow-xs">
+                  <Button variant="default" size="sm" className="pointer-events-none">
                     {p}
-                  </span>
+                  </Button>
                 ) : (
-                  <Link
-                    href={buildHref({ page: String(p) })}
-                    className="rounded-lg border border-border/70 bg-card/60 px-3 py-1.5 text-xs font-medium shadow-xs backdrop-blur-md hover:bg-accent transition-colors"
-                  >
-                    {p}
-                  </Link>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={buildHref({ page: String(p) })}>{p}</Link>
+                  </Button>
                 )}
               </span>
             ))}
           {page < totalPages && (
-            <Link
-              href={buildHref({ page: String(page + 1) })}
-              className="rounded-lg border border-border/70 bg-card/60 px-3 py-1.5 text-xs font-medium shadow-xs backdrop-blur-md hover:bg-accent transition-colors"
-            >
-              Próximo
-            </Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href={buildHref({ page: String(page + 1) })}>Proximo</Link>
+            </Button>
           )}
         </div>
       )}
@@ -164,56 +201,100 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
   );
 }
 
-function ActivityRow({ activity }: { activity: { type: string; data: any; updatedAt: Date } }) {
+function ActivityRow({
+  activity,
+}: {
+  activity: RawActivity;
+}) {
   const { type, data, updatedAt } = activity;
 
   if (type === "group") {
-    const g = data as { id: number; groupId: bigint; groupName: string; updatedAt: Date };
+    const g = data as { id: number; groupId: bigint; groupName: string };
     return (
-      <div className="rounded-lg border border-border/40 bg-card/40 px-4 py-3 text-sm">
-        <div className="flex items-center gap-3">
-          <span className="shrink-0 rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-400">
+      <Card size="sm">
+        <CardContent className="flex items-start gap-3 py-3">
+          <Badge variant="secondary" className="mt-0.5 shrink-0 text-[10px] uppercase tracking-wider">
             Grupo
-          </span>
-          <span className="flex-1 truncate font-medium">{g.groupName}</span>
+          </Badge>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium text-sm">{g.groupName}</p>
+            <p className="text-muted-foreground text-[11px]">
+              ID: {g.id} &middot; Group ID: {String(g.groupId)}
+            </p>
+          </div>
           <span className="text-muted-foreground shrink-0 text-[11px]">{timeAgo(updatedAt)}</span>
-        </div>
-        <div className="text-muted-foreground mt-1 flex gap-4 text-[11px]">
-          <span>ID: {g.id}</span>
-          <span>Group ID: {String(g.groupId)}</span>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
   if (type === "waifu") {
     const w = data as {
       id: number; name: string; origem: string; popularity: number; likes: number; dislikes: number;
-      sourceType: string; WaifuRarity: Array<{ Rarity: { name: string; emoji: string } }>;
-      WaifuEvent: Array<{ Event: { name: string; emoji: string } }>;
-      updatedAt: Date;
+      sourceType: string;
+      WaifuRarity: Array<{ Rarity: { name: string } }>;
+      WaifuEvent: Array<{ Event: { name: string } }>;
     };
-    const rarities = w.WaifuRarity.map((r) => `${r.Rarity.emoji} ${r.Rarity.name}`).join(" ");
-    const events = w.WaifuEvent.map((e) => `${e.Event.emoji} ${e.Event.name}`).join(" ");
     return (
-      <div className="rounded-lg border border-border/40 bg-card/40 px-4 py-3 text-sm">
-        <div className="flex items-center gap-3">
-          <span className="shrink-0 rounded-full bg-pink-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-pink-400">
+      <Card size="sm">
+        <CardContent className="flex items-start gap-3 py-3">
+          <Badge variant="secondary" className="mt-0.5 shrink-0 bg-pink-500/10 text-pink-500 text-[10px] uppercase tracking-wider">
             Waifu
-          </span>
-          <span className="flex-1 truncate font-medium">{w.name}</span>
+          </Badge>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium text-sm">{w.name}</p>
+            <div className="text-muted-foreground mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+              <span>#{w.id}</span>
+              <span>{w.origem}</span>
+              <span>{w.sourceType}</span>
+              <span>{w.likes} curtidas / {w.dislikes} nao curtidas</span>
+              <span>Popularidade: {w.popularity}</span>
+              {w.WaifuRarity.length > 0 && (
+                <span>{w.WaifuRarity.map((r) => r.Rarity.name).join(", ")}</span>
+              )}
+              {w.WaifuEvent.length > 0 && (
+                <span>{w.WaifuEvent.map((e) => e.Event.name).join(", ")}</span>
+              )}
+            </div>
+          </div>
           <span className="text-muted-foreground shrink-0 text-[11px]">{timeAgo(updatedAt)}</span>
-        </div>
-        <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px]">
-          <span>#{w.id}</span>
-          <span>{w.origem}</span>
-          <span>{w.sourceType}</span>
-          <span>👍 {w.likes} 👎 {w.dislikes}</span>
-          <span>🔥 {w.popularity}</span>
-          {rarities && <span>{rarities}</span>}
-          {events && <span>{events}</span>}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (type === "husbando") {
+    const h = data as {
+      id: number; name: string; origem: string; popularity: number; likes: number; dislikes: number;
+      sourceType: string;
+      HusbandoRarity: Array<{ Rarity: { name: string } }>;
+      HusbandoEvent: Array<{ Event: { name: string } }>;
+    };
+    return (
+      <Card size="sm">
+        <CardContent className="flex items-start gap-3 py-3">
+          <Badge variant="secondary" className="mt-0.5 shrink-0 bg-cyan-500/10 text-cyan-500 text-[10px] uppercase tracking-wider">
+            Husbando
+          </Badge>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium text-sm">{h.name}</p>
+            <div className="text-muted-foreground mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+              <span>#{h.id}</span>
+              <span>{h.origem}</span>
+              <span>{h.sourceType}</span>
+              <span>{h.likes} curtidas / {h.dislikes} nao curtidas</span>
+              <span>Popularidade: {h.popularity}</span>
+              {h.HusbandoRarity.length > 0 && (
+                <span>{h.HusbandoRarity.map((r) => r.Rarity.name).join(", ")}</span>
+              )}
+              {h.HusbandoEvent.length > 0 && (
+                <span>{h.HusbandoEvent.map((e) => e.Event.name).join(", ")}</span>
+              )}
+            </div>
+          </div>
+          <span className="text-muted-foreground shrink-0 text-[11px]">{timeAgo(updatedAt)}</span>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -224,52 +305,27 @@ function ActivityRow({ activity }: { activity: { type: string; data: any; update
     const userName = (userData?.first_name as string) ?? `#${c.userId}`;
     const characterName = isH ? c.CharacterHusbando?.name : c.CharacterWaifu?.name ?? "?";
     return (
-      <div className="rounded-lg border border-border/40 bg-card/40 px-4 py-3 text-sm">
-        <div className="flex items-center gap-3">
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-            isH ? "bg-emerald-500/10 text-emerald-400" : "bg-violet-500/10 text-violet-400"
-          }`}>
-            {isH ? "Coleção H" : "Coleção W"}
-          </span>
-          <span className="flex-1 truncate font-medium">{userName}</span>
+      <Card size="sm">
+        <CardContent className="flex items-start gap-3 py-3">
+          <Badge
+            variant="secondary"
+            className={`mt-0.5 shrink-0 text-[10px] uppercase tracking-wider ${
+              isH
+                ? "bg-emerald-500/10 text-emerald-500"
+                : "bg-violet-500/10 text-violet-500"
+            }`}
+          >
+            {isH ? "Colecao H" : "Colecao W"}
+          </Badge>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium text-sm">{userName}</p>
+            <p className="text-muted-foreground mt-0.5 text-[11px]">
+              Adicionou {characterName} &times;{c.count}
+            </p>
+          </div>
           <span className="text-muted-foreground shrink-0 text-[11px]">{timeAgo(updatedAt)}</span>
-        </div>
-        <div className="text-muted-foreground mt-1 flex gap-4 text-[11px]">
-          <span>Adicionou {characterName}</span>
-          <span>x{c.count}</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "husbando") {
-    const h = data as {
-      id: number; name: string; origem: string; popularity: number; likes: number; dislikes: number;
-      sourceType: string; HusbandoRarity: Array<{ Rarity: { name: string; emoji: string } }>;
-      HusbandoEvent: Array<{ Event: { name: string; emoji: string } }>;
-      updatedAt: Date;
-    };
-    const rarities = h.HusbandoRarity.map((r) => `${r.Rarity.emoji} ${r.Rarity.name}`).join(" ");
-    const events = h.HusbandoEvent.map((e) => `${e.Event.emoji} ${e.Event.name}`).join(" ");
-    return (
-      <div className="rounded-lg border border-border/40 bg-card/40 px-4 py-3 text-sm">
-        <div className="flex items-center gap-3">
-          <span className="shrink-0 rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-400">
-            Husbando
-          </span>
-          <span className="flex-1 truncate font-medium">{h.name}</span>
-          <span className="text-muted-foreground shrink-0 text-[11px]">{timeAgo(updatedAt)}</span>
-        </div>
-        <div className="text-muted-foreground mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[11px]">
-          <span>#{h.id}</span>
-          <span>{h.origem}</span>
-          <span>{h.sourceType}</span>
-          <span>👍 {h.likes} 👎 {h.dislikes}</span>
-          <span>🔥 {h.popularity}</span>
-          {rarities && <span>{rarities}</span>}
-          {events && <span>{events}</span>}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -280,10 +336,10 @@ function timeAgo(date: Date): string {
   const diff = Date.now() - date.getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "agora";
-  if (mins < 60) return `${mins}m atrás`;
+  if (mins < 60) return `${mins}m atras`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h atrás`;
+  if (hours < 24) return `${hours}h atras`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d atrás`;
+  if (days < 30) return `${days}d atras`;
   return date.toLocaleDateString("pt-BR");
 }

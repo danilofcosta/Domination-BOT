@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { GalleryLightbox } from "./gallery-lightbox";
+import { LoaderIcon } from "lucide-react";
 
 type GalleryItem = {
   id: number;
@@ -12,13 +13,114 @@ type GalleryItem = {
   createdAt: Date;
 };
 
+type GalleryFilters = {
+  search?: string;
+  type?: string;
+  sourceType?: string;
+  mediaType?: string;
+};
+
 interface GalleryGridProps {
-  items: GalleryItem[];
+  initialItems: GalleryItem[];
+  initialCursor: string | null;
+  initialHasMore: boolean;
+  filters: GalleryFilters;
 }
 
-export function GalleryGrid({ items }: GalleryGridProps) {
+export function GalleryGrid({
+  initialItems,
+  initialCursor,
+  initialHasMore,
+  filters,
+}: GalleryGridProps) {
+  const [items, setItems] = useState(initialItems);
+  const [cursor, setCursor] = useState(initialCursor);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [loading, setLoading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const loadingRef = useRef(false);
+  const filtersKey = JSON.stringify(filters);
+
+  useEffect(() => {
+    setItems(initialItems);
+    setCursor(initialCursor);
+    setHasMore(initialHasMore);
+    setLoading(false);
+    loadingRef.current = false;
+  }, [filtersKey]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingRef.current || !cursor) return;
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    loadingRef.current = true;
+    setLoading(true);
+
+    try {
+      const params = new URLSearchParams();
+      params.set("cursor", cursor);
+      if (filters.search) params.set("search", filters.search);
+      if (filters.type && filters.type !== "all") params.set("type", filters.type);
+      if (filters.sourceType && filters.sourceType !== "all")
+        params.set("sourceType", filters.sourceType);
+      if (filters.mediaType && filters.mediaType !== "all")
+        params.set("mediaType", filters.mediaType);
+
+      const res = await fetch(`/api/gallery?${params}`, {
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error("Falha ao carregar mais itens");
+
+      const data = await res.json();
+
+      setItems((prev) => {
+        const map = new Map<string, GalleryItem>();
+        for (const item of prev) {
+          map.set(`${item._type}-${item.id}`, item);
+        }
+        for (const item of data.items) {
+          map.set(`${item._type}-${item.id}`, item);
+        }
+        return [...map.values()];
+      });
+
+      setCursor(data.nextCursor);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      console.error(err);
+    } finally {
+      if (!controller.signal.aborted) {
+        loadingRef.current = false;
+        setLoading(false);
+      }
+    }
+  }, [cursor, filters]);
+
+  useEffect(() => {
+    if (!hasMore || loadingRef.current) return;
+
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
+          loadMore();
+        }
+      },
+      { rootMargin: "400px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
 
   const openLightbox = useCallback((index: number) => {
     setLightboxIndex(index);
@@ -75,6 +177,31 @@ export function GalleryGrid({ items }: GalleryGridProps) {
           </button>
         ))}
       </div>
+
+      {loading && (
+        <div className="flex items-center justify-center py-8">
+          <LoaderIcon className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      )}
+
+      {hasMore && !loading && <div ref={sentinelRef} className="h-4" />}
+
+      {!hasMore && items.length > 0 && (
+        <p className="py-8 text-center text-xs text-muted-foreground">
+          acabou :(
+        </p>
+      )}
+
+      {items.length === 0 && !loading && (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-border/70 bg-card/60 p-12 text-center backdrop-blur-md">
+          <p className="text-lg font-semibold text-foreground">
+            Nenhum resultado encontrado
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Tente ajustar seus filtros de busca.
+          </p>
+        </div>
+      )}
 
       <GalleryLightbox
         items={items}

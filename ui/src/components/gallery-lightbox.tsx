@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, startTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PencilIcon, XIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon, LinkIcon, UploadIcon, CheckCircleIcon, XCircleIcon, LoaderIcon } from "lucide-react";
+import { PencilIcon, XIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon, LinkIcon, UploadIcon, CheckCircleIcon, XCircleIcon, LoaderIcon, SearchIcon } from "lucide-react";
 import { toast } from "sonner";
 import { updateCharacter } from "@/actions/characters";
 import { validateMediaUrl } from "@/actions/validateMedia";
-import { startTransition } from "react";
 
 type GalleryItem = {
   id: number;
@@ -454,48 +453,22 @@ export function GalleryLightbox({ items, initialIndex, open, onClose }: GalleryL
               <>
                 <div className="space-y-2">
                   <Label>Raridades</Label>
-                  <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
-                    {editData.allRarities.map((r) => (
-                      <button
-                        key={r.id}
-                        type="button"
-                        onClick={() => toggleRarity(r.id)}
-                        className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
-                          selectedRarities.includes(r.id)
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
-                        }`}
-                      >
-                        {r.emoji} {r.name}
-                      </button>
-                    ))}
-                    {editData.allRarities.length === 0 && (
-                      <span className="text-muted-foreground text-xs">Nenhuma raridade disponível</span>
-                    )}
-                  </div>
+                  <SearchFilter
+                    placeholder="Buscar raridade..."
+                    items={editData.allRarities}
+                    selectedIds={selectedRarities}
+                    onToggle={toggleRarity}
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Eventos</Label>
-                  <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
-                    {editData.allEvents.map((e) => (
-                      <button
-                        key={e.id}
-                        type="button"
-                        onClick={() => toggleEvent(e.id)}
-                        className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
-                          selectedEvents.includes(e.id)
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
-                        }`}
-                      >
-                        {e.emoji} {e.name}
-                      </button>
-                    ))}
-                    {editData.allEvents.length === 0 && (
-                      <span className="text-muted-foreground text-xs">Nenhum evento disponível</span>
-                    )}
-                  </div>
+                  <SearchFilter
+                    placeholder="Buscar evento..."
+                    items={editData.allEvents}
+                    selectedIds={selectedEvents}
+                    onToggle={toggleEvent}
+                  />
                 </div>
               </>
             )}
@@ -512,5 +485,58 @@ export function GalleryLightbox({ items, initialIndex, open, onClose }: GalleryL
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function SearchFilter({
+  placeholder,
+  items,
+  selectedIds,
+  onToggle,
+}: {
+  placeholder: string;
+  items: { id: number; code: string; name: string; emoji: string }[];
+  selectedIds: number[];
+  onToggle: (id: number) => void;
+}) {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return items;
+    const lower = query.toLowerCase();
+    return items.filter((item) => item.name.toLowerCase().includes(lower));
+  }, [query, items]);
+
+  return (
+    <div className="space-y-2">
+      <div className="relative">
+        <SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={placeholder}
+          className="h-8 pl-8 text-xs"
+        />
+      </div>
+      <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
+        {filtered.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onToggle(item.id)}
+            className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
+              selectedIds.includes(item.id)
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
+            }`}
+          >
+            {item.emoji} {item.name}
+          </button>
+        ))}
+        {filtered.length === 0 && (
+          <span className="text-muted-foreground text-xs">Nenhum resultado</span>
+        )}
+      </div>
+    </div>
   );
 }

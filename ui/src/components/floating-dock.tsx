@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   UsersIcon,
-  ImageIcon,
+  SearchIcon,
   SettingsIcon,
   LayoutGrid,
   BotMessageSquare,
@@ -26,7 +26,7 @@ const items: DockItem[] = [
   { label: "Início", icon: HomeIcon, href: "/" },
   { label: "Usuários", icon: UsersIcon, href: "/usuarios" },
   { label: "Menu", icon: LayoutGrid, action: "toggleSidebar", size: 14, border: true },
-  { label: "Galeria", icon: ImageIcon, href: "/gallery/recent" },
+  { label: "Galeria", icon: SearchIcon, href: "/gallery/recent" },
   { label: "Bot Setup", icon: BotMessageSquare, href: "/setup/info" },
 ];
 

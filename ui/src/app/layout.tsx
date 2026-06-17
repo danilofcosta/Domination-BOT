@@ -32,6 +32,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var r='dark';if(t==='dark'||t==='light'){r=t;}else if(t==='system'||!t){r=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';}document.documentElement.classList.add(r);document.documentElement.style.colorScheme=r;}catch(e){}})();`,
+          }}
+        />
         <ThemeProvider>
           <SidebarLayout>
             {children}
