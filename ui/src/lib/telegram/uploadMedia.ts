@@ -28,18 +28,20 @@ export async function uploadMediaToTelegram(
 
   const inputFile = new InputFile(buffer, filename);
 
-  let msg;
+  let msg: { message_id: number };
+  let fileId: string;
+
   if (isVideo) {
-    msg = await bot.api.sendVideo(GROUP_ADM, inputFile);
+    const videoMsg = await bot.api.sendVideo(GROUP_ADM, inputFile);
+    fileId = videoMsg.video?.file_id ?? "";
+    msg = videoMsg;
   } else {
-    msg = await bot.api.sendPhoto(GROUP_ADM, inputFile);
+    const photoMsg = await bot.api.sendPhoto(GROUP_ADM, inputFile);
+    fileId = photoMsg.photo?.at(-1)?.file_id ?? "";
+    msg = photoMsg;
   }
 
   const mimeType = isVideo ? "video/mp4" : "image/jpeg";
-
-  const fileId = isVideo
-    ? (msg.video?.file_id ?? "")
-    : (msg.photo?.at(-1)?.file_id ?? "");
 
   if (!fileId) throw new Error("Não foi possível obter o file_id do Telegram");
 
