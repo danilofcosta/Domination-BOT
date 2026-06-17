@@ -126,15 +126,11 @@ function SignForm() {
 
           <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
             <p className="mb-2">
-              1. Abra o Telegram e inicie uma conversa com o bot
+              1. Clique no botão abaixo para abrir o Telegram e iniciar uma conversa com o bot. Ele irá gerar um token exclusivo para você.
             </p>
-            <p className="mb-2">
-              2. Envie o comando{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 text-foreground">
-                /login
-              </code>
-            </p>
-            <p>3. Copie o token recebido e cole abaixo</p>
+    
+            <p>2. Copie o token recebido e cole abaixo</p>
+            
           </div>
 
           <a href={telegramUrl} target="_blank" rel="noopener noreferrer">

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { createCharacter } from "@/actions/characters";
 import { validateMediaUrl } from "@/actions/validateMedia";
-import { LoaderIcon, UploadIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
+import { LoaderIcon, UploadIcon, CheckCircleIcon, XCircleIcon, PencilIcon, ArrowLeftIcon } from "lucide-react";
 
 interface RarityOrEvent {
   id: number;
@@ -29,6 +29,7 @@ const SOURCE_TYPES = ["ANIME", "GAME", "MANGA", "MOVIE"] as const;
 export function CreateCharacterDialog({ type, allRarities, allEvents }: CreateCharacterDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<"form" | "review">("form");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ name: "", origem: "", sourceType: "ANIME" });
   const [selectedRarities, setSelectedRarities] = useState<number[]>([]);
@@ -95,7 +96,7 @@ export function CreateCharacterDialog({ type, allRarities, allEvents }: CreateCh
     setValidationResult({ valid: true, mimeType: file.type, message: "Arquivo selecionado — salve para fazer upload" });
   }
 
-  async function handleSave() {
+  function handleReview() {
     if (!form.name.trim() || !form.origem.trim()) {
       toast.error("Nome e origem são obrigatórios");
       return;
@@ -108,7 +109,10 @@ export function CreateCharacterDialog({ type, allRarities, allEvents }: CreateCh
       toast.error("Selecione pelo menos uma raridade");
       return;
     }
+    setStep("review");
+  }
 
+  async function handleConfirm() {
     setSaving(true);
 
     let resolvedMedia = mediaValue;
@@ -167,7 +171,11 @@ export function CreateCharacterDialog({ type, allRarities, allEvents }: CreateCh
     setPreviewUrl(null);
     setValidationResult(null);
     pendingFileRef.current = null;
+    setStep("form");
   }
+
+  const selectedRarityData = allRarities.filter((r) => selectedRarities.includes(r.id));
+  const selectedEventData = allEvents.filter((e) => selectedEvents.includes(e.id));
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
@@ -179,176 +187,246 @@ export function CreateCharacterDialog({ type, allRarities, allEvents }: CreateCh
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            Criar {type === "waifu" ? "Waifu" : "Husbando"}
+            {step === "review" ? "Confirmar Criação" : `Criar ${type === "waifu" ? "Waifu" : "Husbando"}`}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 overflow-y-auto max-h-[65vh] pr-1">
-          {previewUrl && (
-            <div className="overflow-hidden rounded-lg border border-border/50">
-              {mediaMime.startsWith("video/") ? (
-                <video src={previewUrl} className="w-full max-h-48 object-contain" controls />
-              ) : (
-                <img src={previewUrl} alt="Preview" className="w-full max-h-48 object-contain" />
-              )}
-            </div>
-          )}
+        {step === "form" ? (
+          <div className="space-y-4 overflow-y-auto max-h-[65vh] pr-1">
+            {previewUrl && (
+              <div className="overflow-hidden rounded-lg border border-border/50">
+                {mediaMime.startsWith("video/") ? (
+                  <video src={previewUrl} className="w-full max-h-48 object-contain" controls />
+                ) : (
+                  <img src={previewUrl} alt="Preview" className="w-full max-h-48 object-contain" />
+                )}
+              </div>
+            )}
 
-          {validationResult && (
-            <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
-              validationResult.valid
-                ? "border-green-500/30 bg-green-500/10 text-green-600"
-                : "border-red-500/30 bg-red-500/10 text-red-600"
-            }`}>
-              {validationResult.valid ? <CheckCircleIcon className="size-4 shrink-0" /> : <XCircleIcon className="size-4 shrink-0" />}
-              <span>{validationResult.message}</span>
-            </div>
-          )}
+            {validationResult && (
+              <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                validationResult.valid
+                  ? "border-green-500/30 bg-green-500/10 text-green-600"
+                  : "border-red-500/30 bg-red-500/10 text-red-600"
+              }`}>
+                {validationResult.valid ? <CheckCircleIcon className="size-4 shrink-0" /> : <XCircleIcon className="size-4 shrink-0" />}
+                <span>{validationResult.message}</span>
+              </div>
+            )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome *</Label>
-              <Input id="name" name="name" value={form.name} onChange={handleChange} placeholder="Ex: Zero Two" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome *</Label>
+                <Input id="name" name="name" value={form.name} onChange={handleChange} placeholder="Ex: Zero Two" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="origem">Origem *</Label>
+                <Input id="origem" name="origem" value={form.origem} onChange={handleChange} placeholder="Ex: Darling in the Franxx" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="origem">Origem *</Label>
-              <Input id="origem" name="origem" value={form.origem} onChange={handleChange} placeholder="Ex: Darling in the Franxx" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="sourceType">Tipo de Fonte</Label>
-            <select
-              id="sourceType"
-              name="sourceType"
-              value={form.sourceType}
-              onChange={handleChange}
-              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              {SOURCE_TYPES.map((key) => (
-                <option key={key} value={key}>{key}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-3 rounded-lg border border-border/70 p-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Mídia *
-            </p>
 
             <div className="space-y-2">
-              <Label htmlFor="media-url">URL da mídia</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="media-url"
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                  placeholder="https://..."
+              <Label htmlFor="sourceType">Tipo de Fonte</Label>
+              <select
+                id="sourceType"
+                name="sourceType"
+                value={form.sourceType}
+                onChange={handleChange}
+                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                {SOURCE_TYPES.map((key) => (
+                  <option key={key} value={key}>{key}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-3 rounded-lg border border-border/70 p-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Mídia *
+              </p>
+
+              <div className="space-y-2">
+                <Label htmlFor="media-url">URL da mídia</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="media-url"
+                    value={mediaUrl}
+                    onChange={(e) => setMediaUrl(e.target.value)}
+                    placeholder="https://..."
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleValidateUrl}
+                    disabled={validating || !mediaUrl.trim()}
+                  >
+                    {validating ? <LoaderIcon className="size-3 animate-spin" /> : "Validar"}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border/50" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-popover px-2 text-xs text-muted-foreground">ou</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Upload de arquivo</Label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
                 />
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="sm"
-                  onClick={handleValidateUrl}
-                  disabled={validating || !mediaUrl.trim()}
+                  className="w-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
                 >
-                  {validating ? <LoaderIcon className="size-3 animate-spin" /> : "Validar"}
+                  {uploading ? (
+                    <LoaderIcon className="mr-1 size-3 animate-spin" />
+                  ) : (
+                    <UploadIcon className="mr-1 size-3" />
+                  )}
+                  {uploading ? "Enviando..." : "Selecionar arquivo"}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Máx 30MB. Formatos: imagem ou vídeo.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Raridades</Label>
+              <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
+                {allRarities.map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => toggleRarity(r.id)}
+                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
+                      selectedRarities.includes(r.id)
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
+                    }`}
+                  >
+                    {r.emoji} {r.name}
+                  </button>
+                ))}
+                {allRarities.length === 0 && (
+                  <span className="text-muted-foreground text-xs">Nenhuma raridade disponível</span>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Eventos</Label>
+              <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
+                {allEvents.map((e) => (
+                  <button
+                    key={e.id}
+                    type="button"
+                    onClick={() => toggleEvent(e.id)}
+                    className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
+                      selectedEvents.includes(e.id)
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
+                    }`}
+                  >
+                    {e.emoji} {e.name}
+                  </button>
+                ))}
+                {allEvents.length === 0 && (
+                  <span className="text-muted-foreground text-xs">Nenhum evento disponível</span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 sticky bottom-0 bg-popover pb-1">
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleReview}>
+                Revisar
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {previewUrl && (
+              <div className="overflow-hidden rounded-lg border border-border/50">
+                {mediaMime.startsWith("video/") ? (
+                  <video src={previewUrl} className="w-full max-h-48 object-contain" controls />
+                ) : (
+                  <img src={previewUrl} alt="Preview" className="w-full max-h-48 object-contain" />
+                )}
+              </div>
+            )}
+
+            <div className="rounded-lg border border-border/70 divide-y divide-border/50">
+              <div className="flex items-center justify-between px-4 py-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Nome</p>
+                  <p className="font-medium">{form.name}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Origem</p>
+                  <p className="font-medium">{form.origem}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Tipo de Fonte</p>
+                  <p className="font-medium">{form.sourceType}</p>
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <p className="text-xs text-muted-foreground mb-1">Raridades</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedRarityData.length > 0 ? selectedRarityData.map((r) => (
+                    <span key={r.id} className="inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                      {r.emoji} {r.name}
+                    </span>
+                  )) : <span className="text-xs text-muted-foreground">Nenhuma</span>}
+                </div>
+              </div>
+              <div className="px-4 py-3">
+                <p className="text-xs text-muted-foreground mb-1">Eventos</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedEventData.length > 0 ? selectedEventData.map((e) => (
+                    <span key={e.id} className="inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                      {e.emoji} {e.name}
+                    </span>
+                  )) : <span className="text-xs text-muted-foreground">Nenhum</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between gap-2 pt-2">
+              <Button variant="outline" onClick={() => setStep("form")}>
+                <ArrowLeftIcon className="mr-1 size-3" />
+                Editar
+              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleConfirm} disabled={saving}>
+                  {saving ? "Criando..." : "Confirmar"}
                 </Button>
               </div>
             </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border/50" />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-popover px-2 text-xs text-muted-foreground">ou</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Upload de arquivo</Label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*,video/*"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                {uploading ? (
-                  <LoaderIcon className="mr-1 size-3 animate-spin" />
-                ) : (
-                  <UploadIcon className="mr-1 size-3" />
-                )}
-                {uploading ? "Enviando..." : "Selecionar arquivo"}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Máx 30MB. Formatos: imagem ou vídeo.
-              </p>
-            </div>
           </div>
-
-          <div className="space-y-2">
-            <Label>Raridades</Label>
-            <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
-              {allRarities.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => toggleRarity(r.id)}
-                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
-                    selectedRarities.includes(r.id)
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
-                  }`}
-                >
-                  {r.emoji} {r.name}
-                </button>
-              ))}
-              {allRarities.length === 0 && (
-                <span className="text-muted-foreground text-xs">Nenhuma raridade disponível</span>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Eventos</Label>
-            <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-lg border border-border/70 p-3">
-              {allEvents.map((e) => (
-                <button
-                  key={e.id}
-                  type="button"
-                  onClick={() => toggleEvent(e.id)}
-                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
-                    selectedEvents.includes(e.id)
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 bg-border/20 text-muted-foreground hover:bg-border/30"
-                  }`}
-                >
-                  {e.emoji} {e.name}
-                </button>
-              ))}
-              {allEvents.length === 0 && (
-                <span className="text-muted-foreground text-xs">Nenhum evento disponível</span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-2 sticky bottom-0 bg-popover pb-1">
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Criando..." : "Criar"}
-            </Button>
-          </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );

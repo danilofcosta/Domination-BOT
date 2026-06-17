@@ -25,16 +25,16 @@ const start = async () => {
       ? process.env.BOT_TOKEN_WAIFU
       : process.env.BOT_TOKEN_HUSBANDO;
 
-  if (process.env.BOT_TOKEN_TESTE) {
-    console.log("bot teste",  process.env.NODE_ENV);
+  // if (process.env.BOT_TOKEN_TESTE) {
+  //   console.log("bot teste",  process.env.NODE_ENV);
   
-    BOT_TOKEN = process.env.BOT_TOKEN_TESTE;
-    const bot = await initializeBot(
-      process.env.TYPE_BOT as ChatType,
-      BOT_TOKEN,
-    );
-    return await RunPolling(bot, true);
-  }
+  //   BOT_TOKEN = process.env.BOT_TOKEN_TESTE;
+  //   const bot = await initializeBot(
+  //     process.env.TYPE_BOT as ChatType,
+  //     BOT_TOKEN,
+  //   );
+  //   return await RunPolling(bot, true);
+  // }
 
   if (!BOT_TOKEN) {
     fatal("BOT_TOKEN não definido nas variáveis de ambiente");

@@ -59,7 +59,7 @@ export async function favCharacter(ctx: MyContext) {
             userId: userid,
           },
           include: {
-            Character: {
+            CharacterWaifu: {
               include: {
                 WaifuEvent: { include: { Event: true } },
                 WaifuRarity: { include: { Rarity: true } },
@@ -73,7 +73,7 @@ export async function favCharacter(ctx: MyContext) {
             userId: userid,
           },
           include: {
-            Character: {
+            CharacterHusbando: {
               include: {
                 HusbandoEvent: { include: { Event: true } },
                 HusbandoRarity: { include: { Rarity: true } },
@@ -98,13 +98,14 @@ export async function favCharacter(ctx: MyContext) {
   debug(`favCharacter - personagem encontrado`, {
     userId: userid,
     favid,
-    charName: FavCharacter.Character.name,
+    charName: (FavCharacter as any).CharacterHusbando?.name || (FavCharacter as any).CharacterWaifu?.name,
   });
 
+  const favChar = (FavCharacter as any).CharacterHusbando || (FavCharacter as any).CharacterWaifu;
   const text = await ctx.t("fav-character", {
     id_personagem: favid || "",
-    character_name: FavCharacter.Character.name || "",
-    character_anime: FavCharacter.Character.origem || "",
+    character_name: favChar?.name || "",
+    character_anime: favChar?.origem || "",
     gender: ctx.botType,
   });
 
@@ -117,7 +118,7 @@ export async function favCharacter(ctx: MyContext) {
   try {
     await Sendmedia({
       ctx: ctx,
-      per: FavCharacter.Character,
+      per: favChar,
       caption: `<b>${text.trim()}</b>`,
       reply_markup,
     });

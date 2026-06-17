@@ -8,7 +8,7 @@ export function Harem_mode_latest(list_character: any[], ctx: MyContext) {
   const newlist_character = [...list_character].reverse();
 
   for (const char of newlist_character) {
-    const character = char.Character;
+    const character = char.CharacterHusbando ?? char.CharacterWaifu;
     const name = character.name;
     const id = character.id;
 
@@ -65,7 +65,7 @@ export function Harem_mode_latest(list_character: any[], ctx: MyContext) {
 export function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
-    const character = char.Character;
+    const character = char.CharacterHusbando ?? char.CharacterWaifu;
     const rarities = character?.WaifuRarity ?? character?.HusbandoRarity ?? [];
     const rarityName = rarities?.[0]?.Rarity?.name ?? "No Rarity";
     if (!grouped.has(rarityName)) grouped.set(rarityName, []);
@@ -79,7 +79,7 @@ export function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
   for (const [rarityName, chars] of Array.from(grouped.entries()).sort()) {
     perPage.push(`\n🔸 <b>${rarityName}</b>\n`);
     for (const char of chars) {
-      const character = char.Character;
+      const character = char.CharacterHusbando ?? char.CharacterWaifu;
       const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
         extractListEmojisCharacter(character, false);
 
@@ -108,7 +108,7 @@ export function Harem_mode_rarity(list_character: any[], ctx: MyContext) {
 export function Harem_mode_event(list_character: any[], ctx: MyContext) {
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
-    const character = char.Character;
+    const character = char.CharacterHusbando ?? char.CharacterWaifu;
     const events = character?.WaifuEvent ?? character?.HusbandoEvent ?? [];
     const eventName = events?.[0]?.Event?.name ?? "Sem Evento";
     if (!grouped.has(eventName)) grouped.set(eventName, []);
@@ -122,7 +122,7 @@ export function Harem_mode_event(list_character: any[], ctx: MyContext) {
   for (const [eventName, chars] of Array.from(grouped.entries()).sort()) {
     perPage.push(`\n🔹 <b>${eventName}</b>\n`);
     for (const char of chars) {
-      const character = char.Character;
+      const character = char.CharacterHusbando ?? char.CharacterWaifu;
       const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
         extractListEmojisCharacter(character, false);
 
@@ -156,7 +156,7 @@ export function Harem_mode_default(
   // Agrupar e garantir chaves limpas
   const grouped = new Map<string, any[]>();
   for (const char of list_character) {
-    const character = char.Character;
+    const character = char.CharacterHusbando ?? char.CharacterWaifu;
     const animeName = character?.origem ?? "Desconhecido";
     if (!grouped.has(animeName)) grouped.set(animeName, []);
     grouped.get(animeName)!.push(char);
@@ -179,7 +179,7 @@ export function Harem_mode_default(
     perPage.push(header);
 
     for (const char of chars) {
-      const character = char.Character;
+      const character = char.CharacterHusbando ?? char.CharacterWaifu;
       const repete = char.count; // quantidade (ex: 1x, 2x)
       const { emoji_event: eventEmojis, emoji_raridade: rarityEmojis } =
         extractListEmojisCharacter(character, false);

@@ -88,6 +88,17 @@ export async function favConfirmHandler(ctx: MyContext) {
     });
   }
 
+  const charExists = isWaifu
+    ? await prisma.characterWaifu.findUnique({ where: { id: favId }, select: { id: true } })
+    : await prisma.characterHusbando.findUnique({ where: { id: favId }, select: { id: true } });
+  if (!charExists) {
+    warn(`favConfirmHandler - personagem ${favId} não encontrado em ${isWaifu ? "Waifu" : "Husbando"}`, { favId });
+    return ctx.answerCallbackQuery({
+      text: ctx.t("error-fav-invalid-char"),
+      show_alert: true,
+    });
+  }
+
   debug(`favConfirmHandler - favorito atualizado no banco`, { userId, favId });
 
   await ctx.answerCallbackQuery({

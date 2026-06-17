@@ -135,8 +135,8 @@ const giftid = Number(_text.trim());
 
   const characterData =
     ctx.botType === ChatType.WAIFU
-      ? (GiftCharacter as any).Character
-      : (GiftCharacter as any).Character;
+      ? (GiftCharacter as any).CharacterWaifu
+      : (GiftCharacter as any).CharacterHusbando;
 
   const text = await ctx.t("gift_confirmation_message", {
     username: mention,

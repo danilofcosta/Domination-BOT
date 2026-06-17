@@ -11,6 +11,7 @@ import { DROP, UNDROP } from "../../bot/middleware/constants.js";
 
 
 export async function countMessages(ctx: MyContext) {
+  return
   if (!ctx.chat) return;
   const chatId = ctx.chat.id;
 

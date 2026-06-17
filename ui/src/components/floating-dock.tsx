@@ -25,7 +25,7 @@ type DockItem = {
 const items: DockItem[] = [
   { label: "Início", icon: HomeIcon, href: "/" },
   { label: "Usuários", icon: UsersIcon, href: "/usuarios" },
-  { label: "Menu", icon: LayoutGrid, action: "toggleSidebar", size: 6, border: true },
+  { label: "Menu", icon: LayoutGrid, action: "toggleSidebar", size: 14, border: true },
   { label: "Galeria", icon: ImageIcon, href: "/gallery/recent" },
   { label: "Bot Setup", icon: BotMessageSquare, href: "/setup/info" },
 ];
@@ -46,20 +46,20 @@ export function FloatingDock() {
   if (pathname.startsWith("/login") || hidden) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 lg:bottom-6">
-      <div className="grid auto-cols-auto grid-flow-col gap-1 rounded-2xl border border-border/50 bg-background/80 px-2 py-1.5 shadow-lg backdrop-blur-xl lg:gap-2 lg:rounded-3xl lg:px-5 lg:py-3">
+    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 lg:bottom-8">
+      <div className="grid auto-cols-auto grid-flow-col gap-2 rounded-2xl border border-border/50 bg-background/80 px-3 py-2 shadow-lg backdrop-blur-xl lg:gap-3 lg:rounded-3xl lg:px-6 lg:py-4">
         {items.map((item) => {
           const active = item.href ? pathname === item.href : false;
           const content = (
             <>
-              <item.icon className="size-5 lg:size-6" />
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded-md border bg-popover px-2 py-1 text-xs text-popover-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100 whitespace-nowrap lg:text-sm lg:-top-10">
+              <item.icon className="size-6 lg:size-7" />
+              <span className="absolute -top-10 left-1/2 -translate-x-1/2 rounded-md border bg-popover px-2 py-1 text-sm text-popover-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100 whitespace-nowrap lg:text-base lg:-top-12">
                 {item.label}
               </span>
             </>
           );
 
-          const className = `group relative flex items-center justify-center rounded-xl transition-colors lg:h-12 lg:w-auto lg:px-3 lg:rounded-2xl ${
+          const className = `group relative flex items-center justify-center rounded-xl transition-colors lg:h-14 lg:w-auto lg:px-4 lg:rounded-2xl ${
             active
               ? "bg-accent text-accent-foreground"
               : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"

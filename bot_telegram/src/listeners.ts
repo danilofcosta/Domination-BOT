@@ -147,12 +147,12 @@ listeners.on("message:text", async (ctx, next) => {
         }
 
         await prisma.$transaction(async (tx) => {
-          const currentUser = await tx.user.findUnique({
+          const currentUser = await tx.telegramUser.findUnique({
             where: { telegramId: currentTelegramId },
           });
 
           if (!currentUser) {
-            await tx.user.create({
+            await tx.telegramUser.create({
               data: {
                 telegramId: currentTelegramId,
                 telegramData: oldUser.telegramData as any,
@@ -192,7 +192,7 @@ listeners.on("message:text", async (ctx, next) => {
               ...new Set([...a, ...b]),
             ];
 
-            await tx.user.update({
+            await tx.telegramUser.update({
               where: { telegramId: currentTelegramId },
               data: {
                 coins: currentUser.coins + oldUser.coins,
@@ -274,7 +274,7 @@ listeners.on("message:text", async (ctx, next) => {
             }
           }
 
-          await tx.user.delete({
+          await tx.telegramUser.delete({
             where: { telegramId: oldUser.telegramId },
           });
         });
@@ -362,7 +362,7 @@ listeners.on("callback_query:data", async (ctx, next) => {
   return next();
 });
 
-listeners.chatType(["group", "supergroup"]).on("message", countMessages);
+//listeners.chatType(["group", "supergroup"]).on("message", countMessages);
 
 const userLatestQuery = new Map<number, string>();
 

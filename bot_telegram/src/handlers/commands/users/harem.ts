@@ -21,7 +21,7 @@ import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 function getCollectionInclude(isHusbando: boolean) {
   if (isHusbando) {
     return {
-      Character: {
+      CharacterHusbando: {
         select: {
           id: true,
           name: true,
@@ -44,7 +44,7 @@ function getCollectionInclude(isHusbando: boolean) {
     };
   }
   return {
-    Character: {
+    CharacterWaifu: {
       select: {
         id: true,
         name: true,

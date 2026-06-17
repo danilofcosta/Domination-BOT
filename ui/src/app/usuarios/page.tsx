@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { UserCollectionDialog } from "@/components/user-collection-dialog";
+import { UserTableRow } from "@/components/user-table-row";
 
 const PROFILE_LABELS: Record<string, string> = {
   SUPREME: "Supremo",
@@ -229,46 +229,19 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
                   [firstName, lastName].filter(Boolean).join(" ") || "—";
 
                 return (
-                  <tr
+                  <UserTableRow
                     key={u.id}
-                    className="border-b border-border/30 transition-colors hover:bg-border/20"
-                  >
-                    <td className="px-2 py-2.5 text-center text-xs text-muted-foreground">
-                      {u.id}
-                    </td>
-                    <td className="px-2 py-2.5">
-                      <UserCollectionDialog
-                        telegramId={String(u.telegramId)}
-                        name={name}
-                        profileType={u.profileType}
-                        canManage={canManage}
-                      />
-                    </td>
-                    <td className="px-2 py-2.5 text-xs">
-                      {username ? (
-                        <span className="text-muted-foreground">
-                          @{username}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td
-                      className={`px-2 py-2.5 text-center text-xs font-semibold ${PROFILE_COLORS[u.profileType]}`}
-                    >
-                      {PROFILE_LABELS[u.profileType]}
-                    </td>
-                    <td className="px-2 py-2.5 text-center">{u.coins}</td>
-                    <td className="px-2 py-2.5 text-center text-xs">
-                      {u.language}
-                    </td>
-                    <td className="px-2 py-2.5 text-center text-xs">
-                      {u.favoriteWaifuId ?? "—"}
-                    </td>
-                    <td className="px-2 py-2.5 text-center text-xs">
-                      {u.favoriteHusbandoId ?? "—"}
-                    </td>
-                  </tr>
+                    id={u.id}
+                    telegramId={String(u.telegramId)}
+                    name={name}
+                    username={username}
+                    profileType={u.profileType}
+                    coins={u.coins}
+                    language={u.language}
+                    favoriteWaifuId={u.favoriteWaifuId}
+                    favoriteHusbandoId={u.favoriteHusbandoId}
+                    canManage={canManage}
+                  />
                 );
               })}
             </tbody>

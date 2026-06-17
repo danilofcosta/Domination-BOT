@@ -38,8 +38,8 @@ export async function Gift_Inline_query(ctx: MyContext) {
       noformat: true,
       reply_markup: bts_yes_or_no(
         ctx,
-        `gift_yes_${item.id}_${telegramId_recipient}_${ctx.from?.id}`,
-        `gift_no_${item.id}_${telegramId_recipient}_${ctx.from?.id}`,
+        `gift_yes_${item.characterId}_${telegramId_recipient}_${ctx.from?.id}`,
+        `gift_no_${item.characterId}_${telegramId_recipient}_${ctx.from?.id}`,
       ),
     }),
   );

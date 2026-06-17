@@ -1,9 +1,10 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { notifyCharacterUpdate } from "@/lib/telegram/notifyCharacterUpdate";
+import { notifyCharacterCreation } from "@/lib/telegram/notifyCharacterCreation";
 import { generateSlug } from "@/lib/slug";
-import { cookies } from "next/headers";
 
 type NewMedia = {
   type: "url" | "file";
@@ -24,17 +25,56 @@ export async function createCharacter(
   },
 ) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("better-auth.session_token")?.value;
+
+    let addby: { name: string; id: number } | null = null;
+    if (token) {
+      const session = await prisma.session.findUnique({
+        where: { token },
+        select: { userId: true },
+      });
+      if (session) {
+        const user = await prisma.user.findUnique({
+          where: { id: session.userId },
+          select: { telegramUserId: true },
+        });
+        if (user?.telegramUserId) {
+          const tu = await prisma.telegramUser.findUnique({
+            where: { id: user.telegramUserId },
+            select: { id: true, telegramData: true },
+          });
+          if (tu) {
+            const td = tu.telegramData as { first_name?: string; last_name?: string } | null;
+            const name = td
+              ? td.last_name
+                ? `${td.first_name ?? ""} ${td.last_name}`
+                : (td.first_name ?? "Unknown")
+              : "Unknown";
+            addby = { name, id: tu.id };
+          }
+        }
+      }
+    }
+
     const slug = generateSlug(data.name, data.origem);
+
+    const [nextIdResult] = await prisma.$queryRawUnsafe<{ next_id: number }[]>(
+      `SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM "${type === "waifu" ? "CharacterWaifu" : "CharacterHusbando"}"`
+    );
+    const nextId = nextIdResult.next_id;
 
     if (type === "waifu") {
       const character = await prisma.characterWaifu.create({
         data: {
+          id: nextId,
           name: data.name,
           origem: data.origem,
           sourceType: data.sourceType as any,
           media: data.media,
           mediaType: data.mediaType as any,
           slug,
+          ...(addby && { addby: addby as any }),
         },
         select: { id: true, name: true },
       });
@@ -50,16 +90,38 @@ export async function createCharacter(
         });
       }
 
+      const [rarities, events] = await Promise.all([
+        data.rarityIds.length > 0
+          ? prisma.rarity.findMany({ where: { id: { in: data.rarityIds } }, select: { emoji: true, name: true } })
+          : Promise.resolve([]),
+        data.eventIds.length > 0
+          ? prisma.event.findMany({ where: { id: { in: data.eventIds } }, select: { emoji: true, name: true } })
+          : Promise.resolve([]),
+      ]);
+
+      notifyCharacterCreation(type, {
+        id: character.id,
+        name: character.name,
+        origem: data.origem,
+        media: data.media,
+        mediaType: data.mediaType,
+        rarities,
+        events,
+        addedBy: addby ?? undefined,
+      }).catch(() => {});
+
       return { success: true as const, message: "Waifu criada com sucesso!", id: character.id };
     } else {
       const character = await prisma.characterHusbando.create({
         data: {
+          id: nextId,
           name: data.name,
           origem: data.origem,
           sourceType: data.sourceType as any,
           media: data.media,
           mediaType: data.mediaType as any,
           slug,
+          ...(addby && { addby: addby as any }),
         },
         select: { id: true, name: true },
       });
@@ -74,6 +136,26 @@ export async function createCharacter(
           data: data.eventIds.map((eventId) => ({ characterId: character.id, eventId })),
         });
       }
+
+      const [rarities, events] = await Promise.all([
+        data.rarityIds.length > 0
+          ? prisma.rarity.findMany({ where: { id: { in: data.rarityIds } }, select: { emoji: true, name: true } })
+          : Promise.resolve([]),
+        data.eventIds.length > 0
+          ? prisma.event.findMany({ where: { id: { in: data.eventIds } }, select: { emoji: true, name: true } })
+          : Promise.resolve([]),
+      ]);
+
+      notifyCharacterCreation(type, {
+        id: character.id,
+        name: character.name,
+        origem: data.origem,
+        media: data.media,
+        mediaType: data.mediaType,
+        rarities,
+        events,
+        addedBy: addby ?? undefined,
+      }).catch(() => {});
 
       return { success: true as const, message: "Husbando criado com sucesso!", id: character.id };
     }

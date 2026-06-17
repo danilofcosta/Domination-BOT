@@ -38,7 +38,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
           data: { likes: { increment: 1 } },
         });
 
-        const user = await tx.user.findUnique({
+        const user = await tx.telegramUser.findUnique({
           where: { telegramId: BigInt(userId) },
           select: { waifuLikes: true, husbandoLikes: true },
         });
@@ -47,7 +47,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
           const likesField = isWaifu ? "waifuLikes" : "husbandoLikes";
           const currentLikes = (user as any)[likesField] as number[] || [];
           if (!currentLikes.includes(charId)) {
-            await tx.user.update({
+            await tx.telegramUser.update({
               where: { telegramId: BigInt(userId) },
               data: { [likesField]: { push: charId } },
             });
@@ -62,7 +62,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
           data: { dislikes: { increment: 1 } },
         });
 
-        const user = await tx.user.findUnique({
+        const user = await tx.telegramUser.findUnique({
           where: { telegramId: BigInt(userId) },
           select: { waifuDislikes: true, husbandoDislikes: true },
         });
@@ -71,7 +71,7 @@ export async function randomCharacterCallback(ctx: MyContext) {
           const dislikesField = isWaifu ? "waifuDislikes" : "husbandoDislikes";
           const currentDislikes = (user as any)[dislikesField] as number[] || [];
           if (!currentDislikes.includes(charId)) {
-            await tx.user.update({
+            await tx.telegramUser.update({
               where: { telegramId: BigInt(userId) },
               data: { [dislikesField]: { push: charId } },
             });

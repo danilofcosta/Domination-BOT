@@ -32,8 +32,8 @@ export async function getHaremCollection(
         take: LIMIT,
         skip: offset,
         include: {
-          User: true,
-          Character: {
+          TelegramUser: true,
+          CharacterHusbando: {
             include: {
               HusbandoEvent: {
                 include: { Event: true },
@@ -66,8 +66,8 @@ export async function getHaremCollection(
       take: LIMIT,
       skip: offset,
       include: {
-        User: true,
-        Character: {
+        TelegramUser: true,
+        CharacterWaifu: {
           include: {
             WaifuEvent: {
               include: { Event: true },

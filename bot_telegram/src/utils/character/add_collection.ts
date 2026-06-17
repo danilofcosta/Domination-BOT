@@ -82,7 +82,7 @@ export async function AddCharacterCollection({
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      await tx.user.upsert({
+      await tx.telegramUser.upsert({
         where: { telegramId },
         update: {
           ...(from && { telegramData: from }),
@@ -96,12 +96,12 @@ export async function AddCharacterCollection({
       });
 
       if (isWaifu) {
-        await tx.user.updateMany({
+        await tx.telegramUser.updateMany({
           where: { telegramId, favoriteWaifuId: null },
           data: { favoriteWaifuId: characterId },
         });
       } else {
-        await tx.user.updateMany({
+        await tx.telegramUser.updateMany({
           where: { telegramId, favoriteHusbandoId: null },
           data: { favoriteHusbandoId: characterId },
         });

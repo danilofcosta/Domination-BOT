@@ -92,17 +92,8 @@ export default function LoginPage() {
         {showTelegram && (
           <div className="space-y-3 pt-1 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground leading-relaxed">
-              <p className="mb-1">1. Abra o Telegram e inicie o bot</p>
-              <p className="mb-1">
-                2. Envie{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-foreground">
-                  /login
-                </code>
-              </p>
-              <p className="mb-1">
-                3. Copie o token, cole aqui e aperte no botão
-              </p>
-              <p>Será redirecionado para o Telegram</p>
+             <p> gere o token no telegram em abrir telegram e cole o token abaixo</p>
+              <p> se tiver duvidas ficara com elas :) </p>
             </div>
 
             <div className="space-y-2">

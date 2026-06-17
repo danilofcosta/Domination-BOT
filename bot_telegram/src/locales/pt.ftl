@@ -284,7 +284,7 @@ fav-character =
     
     <code>{$id_personagem} {$character_name} - {$character_anime}</code>
     
-fav-character-success= {$gender} foi definifo com success 
+fav-character-success= favorito atualizado 
 fav-not-found= Você não possui essa {$genero} no seu Harem 
 fav-check-harem = 
      confira seu Harem /{ $cmd }{ $genero }s

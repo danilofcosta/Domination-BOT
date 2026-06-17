@@ -51,9 +51,18 @@ export async function giftConfirmHandler(ctx: MyContext) {
     isWaifu,
   });
 
+  const charExists = isWaifu
+    ? await prisma.characterWaifu.findUnique({ where: { id: giftid }, select: { id: true } })
+    : await prisma.characterHusbando.findUnique({ where: { id: giftid }, select: { id: true } });
+  if (!charExists) {
+    warn(`giftConfirmHandler - personagem ${giftid} não encontrado em ${isWaifu ? "Waifu" : "Husbando"}`, { giftid });
+    await ctx.answerCallbackQuery(ctx.t("error-fav-invalid-char"));
+    return;
+  }
+
   try {
     await prisma.$transaction(async (tx) => {
-      await tx.user.upsert({
+      await tx.telegramUser.upsert({
         where: { telegramId: BigInt(receiverId) },
         update: {},
         create: {
@@ -67,6 +76,21 @@ export async function giftConfirmHandler(ctx: MyContext) {
       const collection = (
         isWaifu ? tx.waifuCollection : tx.husbandoCollection
       ) as any;
+
+      const senderItem = await collection.findUnique({
+        where: {
+          userId_characterId: {
+            userId: BigInt(senderId),
+            characterId: giftid,
+          },
+        },
+        select: { id: true, count: true },
+      });
+
+      if (!senderItem) {
+        warn(`giftConfirmHandler - sender não possui o personagem ${giftid}`, { senderId, giftid });
+        return;
+      }
 
       await collection.upsert({
         where: {
@@ -85,38 +109,13 @@ export async function giftConfirmHandler(ctx: MyContext) {
         },
       });
 
-      const senderItem = await collection.findUnique({
-        where: {
-          userId_characterId: {
-            userId: BigInt(senderId),
-            characterId: giftid,
-          },
-        },
-      });
-
-      if (!senderItem) return;
-
       if (senderItem.count > 1) {
         await collection.update({
-          where: {
-            userId_characterId: {
-              userId: BigInt(senderId),
-              characterId: giftid,
-            },
-          },
-          data: {
-            count: { decrement: 1 },
-          },
+          where: { id: senderItem.id },
+          data: { count: { decrement: 1 } },
         });
       } else {
-        await collection.delete({
-          where: {
-            userId_characterId: {
-              userId: BigInt(senderId),
-              characterId: giftid,
-            },
-          },
-        });
+        await collection.delete({ where: { id: senderItem.id } });
       }
     });
 

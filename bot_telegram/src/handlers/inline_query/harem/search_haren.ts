@@ -30,7 +30,7 @@ export async function searchHarem(ctx: MyContext) {
   const where: any = { userId: telegramId };
 
   if (isNaN(Number(searchTerm))) {
-    where.Character = {
+    where[genero === ChatType.HUSBANDO ? "CharacterHusbando" : "CharacterWaifu"] = {
       OR: [
         { name: { contains: searchTerm, mode: "insensitive" } },
         { origem: { contains: searchTerm, mode: "insensitive" } },

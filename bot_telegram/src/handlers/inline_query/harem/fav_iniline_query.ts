@@ -36,8 +36,8 @@ export async function Fav_Inline_query(ctx: MyContext) {
       noformat: true,
       reply_markup: bts_yes_or_no(
         ctx,
-        `fav_yes_${item.id}_${telegramId}`,
-        `fav_no_${item.id}_${telegramId}`,
+        `fav_yes_${item.characterId}_${telegramId}`,
+        `fav_no_${item.characterId}_${telegramId}`,
       ),
     }),
   );

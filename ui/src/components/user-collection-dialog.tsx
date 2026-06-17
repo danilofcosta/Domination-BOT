@@ -84,7 +84,7 @@ export function UserCollectionDialog({ telegramId, name, profileType: initialPro
   return (
     <Dialog onOpenChange={(open) => { if (open) load(); }}>
       <DialogTrigger asChild>
-        <button type="button" className="w-full text-left focus:outline-none">
+        <button type="button" className="w-full text-left focus:outline-none underline decoration-dotted underline-offset-2 decoration-muted-foreground/40 hover:decoration-foreground/60">
           {name || "—"}
         </button>
       </DialogTrigger>

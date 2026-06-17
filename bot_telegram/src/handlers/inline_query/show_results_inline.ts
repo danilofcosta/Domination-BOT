@@ -27,11 +27,13 @@ export async function showResults({
     // caso uso de cache o telegram n chama o webhook || polling
     await ctx.answerInlineQuery(results, {
       //cache compartilhado entre consulta caso isharem = true
-      is_personal:isharem? true:false,
+   //  is_personal:isharem? true:false,
       //cache 10 m caso  isharem  caso false 2 h
 
-      cache_time: isharem ? 600 : 7200,
-    //  cache_time:0,
+      cache_time: isharem ? 300 : 7200,
+    // 
+    
+   // cache_time:0,
       ...(next_offset !== undefined && { next_offset }),
       button: {
         text: btnText.slice(0, 64),

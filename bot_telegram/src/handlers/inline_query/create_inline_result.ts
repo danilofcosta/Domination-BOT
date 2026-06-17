@@ -37,7 +37,7 @@ export function createResult(params: Params) {
     typeof params.character === "object" &&
     "characterId" in params.character
   ) {
-    character = (params.character as any).Character as Character;
+    character = ((params.character as any).CharacterHusbando ?? (params.character as any).CharacterWaifu) as Character;
   }
 
   switch (character.mediaType) {

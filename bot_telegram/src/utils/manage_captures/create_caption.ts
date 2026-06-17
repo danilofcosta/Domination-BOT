@@ -41,15 +41,15 @@ export function create_caption({
 
     repetition = colItem.count || 0;
 
-    character_let = colItem.Character || character;
+    character_let = colItem.CharacterHusbando ?? colItem.CharacterWaifu ?? character;
 
     const name =
-      colItem.User.telegramData.first_name ||
-      colItem.User?.first_name ||
+      colItem.TelegramUser.telegramData.first_name ||
+      colItem.TelegramUser?.first_name ||
       "userprofile";
 
     const telegramId =
-      colItem.User?.telegramData?.id || colItem.User?.telegramId || 0;
+      colItem.TelegramUser?.telegramData?.id || colItem.TelegramUser?.telegramId || 0;
     usermention = mentionUser(name, Number(telegramId));
   } else {
     character_let = character;
