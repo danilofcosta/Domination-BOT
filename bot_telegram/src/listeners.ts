@@ -362,7 +362,7 @@ listeners.on("callback_query:data", async (ctx, next) => {
   return next();
 });
 
-//listeners.chatType(["group", "supergroup"]).on("message", countMessages);
+listeners.chatType(["group", "supergroup"]).on("message", countMessages);
 
 const userLatestQuery = new Map<number, string>();
 
