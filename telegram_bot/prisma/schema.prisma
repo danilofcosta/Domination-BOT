@@ -1,0 +1,309 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model BotConfig {
+  key   String @id
+  value String
+  label String
+  type  String @default("number")
+}
+
+model BotSession {
+  key  String @id
+  data String
+}
+
+model LocaleKey {
+  id           String             @id @default(cuid())
+  key          String             @unique
+  description  String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  translations LocaleTranslation?
+}
+
+model LocaleTranslation {
+  id        String    @id @default(cuid())
+  keyId     String    @unique
+  locale    Json
+  value     String
+  extrakey  String[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  key       LocaleKey @relation(fields: [keyId], references: [id], onDelete: Cascade)
+
+  @@unique([keyId, locale])
+}
+
+model CharacterHusbando {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(100)
+  origem             String               @db.VarChar(100)
+  mediaType          MediaType
+  media              String
+  slug               String               @unique
+  extras             Json?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  popularity         Int                  @default(0)
+  sourceType         SourceType           @default(ANIME)
+  linkweb            String?
+  linkwebExpiresAt   DateTime?
+  dislikes           Int                  @default(0)
+  likes              Int                  @default(0)
+  addby              Json?
+  mediaUniqueId      String?              @unique
+  HusbandoCollection HusbandoCollection[]
+  HusbandoEvent      HusbandoEvent[]
+  HusbandoRarity     HusbandoRarity[]
+  TelegramUser       TelegramUser[]
+
+  @@index([mediaType])
+  @@index([name, origem])
+  @@index([origem])
+}
+
+model CharacterWaifu {
+  id               Int               @id @default(autoincrement())
+  name             String            @db.VarChar(100)
+  origem           String            @db.VarChar(100)
+  mediaType        MediaType
+  media            String
+  extras           Json?
+  slug             String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  popularity       Int               @default(0)
+  sourceType       SourceType        @default(ANIME)
+  linkweb          String?
+  linkwebExpiresAt DateTime?
+  addby            Json?
+  dislikes         Int               @default(0)
+  likes            Int               @default(0)
+  mediaUniqueId    String?
+  TelegramUser     TelegramUser[]
+  WaifuCollection  WaifuCollection[]
+  WaifuEvent       WaifuEvent[]
+  WaifuRarity      WaifuRarity[]
+
+  @@index([mediaType])
+  @@index([name, origem])
+  @@index([origem])
+}
+
+model Event {
+  id            Int             @id @default(autoincrement())
+  code          String          @unique
+  name          String
+  emoji         String
+  description   String?
+  emoji_id      String?
+  HusbandoEvent HusbandoEvent[]
+  WaifuEvent    WaifuEvent[]
+}
+
+model HusbandoCollection {
+  id                Int               @id @default(autoincrement())
+  userId            BigInt
+  characterId       Int
+  count             Int 
+  fromIdChat        BigInt?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  TelegramUser      TelegramUser      @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([characterId])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model HusbandoEvent {
+  characterId       Int
+  eventId           Int
+  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Event             Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, eventId])
+}
+
+model HusbandoRarity {
+  characterId       Int
+  rarityId          Int
+  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Rarity            Rarity            @relation(fields: [rarityId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, rarityId])
+}
+
+model Rarity {
+  id             Int              @id @default(autoincrement())
+  code           String           @unique
+  name           String
+  emoji          String
+  description    String?
+  emoji_id       String?
+  weight         Int              @default(1)
+  HusbandoRarity HusbandoRarity[]
+  WaifuRarity    WaifuRarity[]
+}
+
+model TelegramGroup {
+  id            Int      @id @default(autoincrement())
+  groupId       BigInt   @unique
+  groupName     String
+  configuration Json?
+  addedBy       Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model TelegramUser {
+  id                 Int                  @id @default(autoincrement())
+  favoriteWaifuId    Int?
+  favoriteHusbandoId Int?
+  waifuConfig        Json?
+  husbandoConfig     Json?
+  telegramData       Json?
+  coins              Int                  @default(0)
+  profileType        ProfileType          @default(USER)
+  language           Language             @default(PT)
+  telegramId         BigInt               @unique
+  webLogin           String?              @unique
+  webPassword        String?
+  husbandoLikes      Int[]                @default([])
+  waifuLikes         Int[]                @default([])
+  waifuDislikes      Int[]                @default([])
+  husbandoDislikes   Int[]                @default([])
+  backupHash         String?              @db.VarChar(64)
+  HusbandoCollection HusbandoCollection[]
+  CharacterHusbando  CharacterHusbando?   @relation(fields: [favoriteHusbandoId], references: [id], map: "User_favoriteHusbandoId_fkey")
+  CharacterWaifu     CharacterWaifu?      @relation(fields: [favoriteWaifuId], references: [id], map: "User_favoriteWaifuId_fkey")
+  WaifuCollection    WaifuCollection[]
+}
+
+model WaifuCollection {
+  id             Int            @id @default(autoincrement())
+  userId         BigInt
+  characterId    Int
+  fromIdChat     BigInt?
+  count          Int            @default(1)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  TelegramUser   TelegramUser   @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+
+  @@unique([userId, characterId])
+  @@index([characterId])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model WaifuEvent {
+  characterId    Int
+  eventId        Int
+  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Event          Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, eventId])
+}
+
+model WaifuRarity {
+  characterId    Int
+  rarityId       Int
+  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Rarity         Rarity         @relation(fields: [rarityId], references: [id], onDelete: Cascade)
+
+  @@id([characterId, rarityId])
+}
+
+model account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime  @updatedAt
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user {
+  id             String    @id
+  name           String
+  email          String    @unique
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime  @updatedAt
+  telegramUserId Int?
+  username       String?   @unique
+  account        account[]
+  session        session[]
+}
+
+model verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime? @updatedAt
+}
+
+enum Language {
+  PT
+  EN
+  ES
+  JA
+}
+
+enum MediaType {
+  IMAGE_URL
+  IMAGE_FILEID
+  VIDEO_URL
+  VIDEO_FILEID
+  VIDEO_LOCAL
+  IMAGE_LOCAL
+}
+
+enum ProfileType {
+  SUPREME
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+  USER
+  BANNED
+}
+
+enum SourceType {
+  ANIME
+  GAME
+  MANGA
+  MOVIE
+}
