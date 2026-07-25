@@ -25,7 +25,7 @@ export async function RunWebHook(
   });
   app.get("/me", (req, res) => {
 
-    res.status(200).json({ info: bot.api.getMe() });
+    res.status(200).json({ info: bot.api.getMe() ,k: bot.api});
   });
 
   // if (process.env.CHAT_ID_DEV && !init) {
