@@ -14,34 +14,58 @@ const { combine, timestamp, printf, colorize, errors } = winston.format;
 // =====================
 // SAFE STRINGIFY
 // =====================
-function safeStringify(obj: any): string {
-  return JSON.stringify(obj, (_, value) => {
-    if (typeof value === "bigint") {
-      return value.toString();
-    }
-    return value;
-  });
+function safeStringify(value: unknown): string {
+  return JSON.stringify(value, (_, v) =>
+    typeof v === "bigint" ? v.toString() : v,
+  );
 }
 
 // =====================
-// FORMAT
+// ARG FORMAT
 // =====================
-const logFormat = printf(({ level, message, timestamp, stack, ...metadata }) => {
-  let msg = `${timestamp} [${level}]: ${message}`;
+function formatMessage(...args: unknown[]): string {
+  return args
+    .filter((arg) => arg !== undefined)
+    .map((arg) => {
+      if (arg === null) return "null";
+      if (typeof arg === "bigint") return arg.toString();
 
-  if (Object.keys(metadata).length > 0) {
+      if (arg instanceof Error) {
+        return arg.stack ?? `${arg.name}: ${arg.message}`;
+      }
+
+      if (typeof arg === "object") {
+        try {
+          return safeStringify(arg);
+        } catch {
+          return String(arg);
+        }
+      }
+
+      return String(arg);
+    })
+    .join(" ");
+}
+
+// =====================
+// LOGGER FORMAT
+// =====================
+const logFormat = printf(({ timestamp, level, message, stack, ...meta }) => {
+  let output = `${timestamp} [${level}]: ${message}`;
+
+  if (Object.keys(meta).length) {
     try {
-      msg += ` ${safeStringify(metadata)}`;
+      output += ` ${safeStringify(meta)}`;
     } catch {
-      msg += ` ${String(metadata)}`;
+      output += ` ${String(meta)}`;
     }
   }
 
   if (stack) {
-    msg += `\n${stack}`;
+    output += `\n${stack}`;
   }
 
-  return msg;
+  return output;
 });
 
 // =====================
@@ -52,7 +76,7 @@ const transports: winston.transport[] = [
     format: combine(
       colorize({ all: !isProduction }),
       timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-      logFormat
+      logFormat,
     ),
   }),
 ];
@@ -62,93 +86,77 @@ if (!isProduction) {
 
   transports.push(
     new DailyRotateFile({
+      filename: path.join(logDir, "combined-%DATE%.log"),
+      datePattern: "YYYY-MM-DD",
+      maxFiles: "14d",
+      maxSize: "20m",
+    }),
+  );
+
+  transports.push(
+    new DailyRotateFile({
       filename: path.join(logDir, "error-%DATE%.log"),
       datePattern: "YYYY-MM-DD",
       level: "error",
       maxFiles: "14d",
       maxSize: "20m",
-    })
-  );
-
-  transports.push(
-    new DailyRotateFile({
-      filename: path.join(logDir, "combined-%DATE%.log"),
-      datePattern: "YYYY-MM-DD",
-      maxFiles: "14d",
-      maxSize: "20m",
-    })
+    }),
   );
 }
 
-
+// =====================
+// LOGGER
+// =====================
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || "info",
+  level: process.env.LOG_LEVEL ?? "info",
+  defaultMeta: { service: botType },
   format: combine(
     errors({ stack: true }),
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    logFormat
+    logFormat,
   ),
-  defaultMeta: { service: botType },
   transports,
 });
 
-
-function formatMessage(...args: any[]): string {
-  return args
-    .map((arg) => {
-      if (arg === undefined) return "";
-      if (typeof arg === "bigint") return arg.toString();
-      if (typeof arg === "object") {
-        try {
-          return safeStringify(arg);
-        } catch {
-          return String(arg);
-        }
-      }
-      return String(arg);
-    })
-    .join(" ");
+// =====================
+// HELPERS
+// =====================
+function write(
+  level: "error" | "warn" | "info" | "debug" | "verbose",
+  ...args: unknown[]
+) {
+  logger.log(level, formatMessage(...args));
 }
 
-
-export function log(...messages: any[]) {
-  logger.info(formatMessage(...messages));
+// =====================
+// API
+// =====================
+export function log(...args: unknown[]) {
+  write("info", ...args);
 }
 
-export function error(message: string, err?: unknown) {
-  if (err instanceof Error) {
-    logger.error(message, {
-      stack: err.stack,
-      errorName: err.name,
-      errorMessage: err.message,
-    });
-  } else {
-    logger.error(message, { extra: err });
-  }
+export function info(...args: unknown[]) {
+  write("info", ...args);
 }
 
-export function warn(message: string, ...meta: any[]) {
-  logger.warn(formatMessage(message, ...meta));
+export function warn(...args: unknown[]) {
+  write("warn", ...args);
 }
 
-export function info(message: string, ...meta: any[]) {
-  logger.info(formatMessage(message, ...meta));
+export function debug(...args: unknown[]) {
+  write("debug", ...args);
 }
 
-export function debug(message: string, ...meta: any[]) {
-  logger.debug(formatMessage(message, ...meta));
+export function trace(...args: unknown[]) {
+  write("verbose", ...args);
 }
 
-export function trace(message: string, ...meta: any[]) {
-  logger.verbose(formatMessage(message, ...meta));
+export function error(...args: unknown[]) {
+  write("error", ...args);
 }
 
-export function fatal(message: string, ...args: any[]) {
-  logger.error(message, {
-    args: args.map((a) =>
-      typeof a === "object" ? safeStringify(a) : String(a)
-    ),
-  });
+export function fatal(...args: unknown[]): never {
+  write("error", ...args);
   process.exit(1);
 }
 

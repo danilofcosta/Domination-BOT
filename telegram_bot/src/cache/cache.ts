@@ -73,6 +73,8 @@ export function getCharList(userId: number, genero: string): CharListData | unde
 }
 
 export interface LeaveGroupCacheState {
+  groupId: number;
+  groupName: string;
   membrers_clean_colletion: boolean;
   membrers_ban: boolean;
   send_message_to_group: boolean;

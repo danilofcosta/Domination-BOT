@@ -2,7 +2,7 @@ import type { MyContext } from "../../../uteis/CustomTypes.js";
 import { extractListEmojisCharacter } from "../../../uteis/buildCapion/extract_emojis.js";
 
 function getCharacter(entry: any) {
-  return entry.CharacterHusbando ?? entry.CharacterWaifu;
+  return entry.Character;
 }
 
 export function Harem_mode_latest(

@@ -80,11 +80,25 @@ class TranslationService {
       update: {},
     });
 
-    await prisma.localeTranslation.upsert({
-      where: { keyId_locale: { keyId: existing.id, locale } },
-      create: { keyId: existing.id, locale, value },
-      update: { value },
+    const translation = await prisma.localeTranslation.findFirst({
+      where: { keyId: existing.id },
     });
+
+    if (translation) {
+      await prisma.localeTranslation.update({
+        where: { id: translation.id },
+        data: { value },
+      });
+    } else {
+      await prisma.localeTranslation.create({
+        data: {
+          keyId: existing.id,
+          locale: { lang: locale, icon: "🇧🇷" },
+          value,
+          extrakey: [],
+        },
+      });
+    }
 
     await this.reload();
   }

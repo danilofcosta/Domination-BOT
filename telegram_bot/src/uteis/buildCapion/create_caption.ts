@@ -10,6 +10,7 @@ export interface Params {
   username?: string | null;
   user_id?: string | number | null;
   reply_markup?: any;
+  input_message_content?:any
 }
 
 function fmtEmojis(list: string[]): string {
@@ -37,7 +38,7 @@ export function create_caption({
 
   if (character && "characterId" in character) {
     repetition = character.count || 0;
-    char = character.CharacterHusbando ?? character.CharacterWaifu ?? character;
+    char = character.Character ?? character;
 
     const name =
       character.TelegramUser?.telegramData?.first_name ||

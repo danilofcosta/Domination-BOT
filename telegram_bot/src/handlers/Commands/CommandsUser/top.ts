@@ -7,6 +7,7 @@ import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUs
 import { getLatestCharacter } from "../../../uteis/extras/getLatestCharacter.js";
 import { InlineKeyboard } from "grammy";
 import type { title } from "node:process";
+import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
 
 export type RankingItem = {
   userId: bigint;
@@ -158,7 +159,7 @@ export async function topHandlerChat(ctx: MyContext) {
 
   if (!ranking.length) {
     warn(`topHandlerChat - ranking vazio`, { userId: ctx.from?.id, chatId });
-    return SendMensageCustom({ ctx, caption: ctx.t("top-empty") });
+    return EditOrSendText({ ctx, caption: ctx.t("top-empty") });
   }
 
   debug(`topHandlerChat - usuários no ranking`, { count: ranking.length, chatId });

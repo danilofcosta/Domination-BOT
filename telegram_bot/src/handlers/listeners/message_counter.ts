@@ -7,7 +7,7 @@ import { debug, error, info, log } from "../../uteis/log.js";
 import { SendMensageCustom } from "../../uteis/sendMensageCustom.js";
 import {
   CreateOneBtn,
-  BTN_TYPE,
+  
 } from "../../uteis/buildButtons/createOneButton.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../uteis/extras/GetCharacterById.js";
@@ -55,7 +55,7 @@ export async function CountMessages(ctx: MyContext) {
 
   /* ── DROP ── */
   const { dropMsg, undropMsg } = await getDropConfig();
-  console.log(dropMsg,runtime.cont)
+  console.log(dropMsg,runtime.cont,ctx.chat.title)
 
   if (runtime.cont >= dropMsg && !runtime.dropId && !runtime.characterId) {
     const result = await DropCharacter(ctx);

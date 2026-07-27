@@ -103,7 +103,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
   },
   Random: {
     command: typeBot ? typeBot.toLowerCase() : "random",
-    commandPrivate: typeBot ? typeBot.toLowerCase() : "random",
+    commandPrivate: typeBot ? typeBot.toLowerCase() : "random", commandPrivateInChat: true,
 
     description: {
       pt: "Traz um personagem aleatório do DB",
@@ -136,7 +136,13 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
 
 function registerCommand(cfg: CommandConfig) {
   const handlerWrapper = async (ctx: MyContext) => {
-    debug("Comando", cfg.command, "executado por", ctx.from?.username);
+    debug("Comando", cfg.command, ctx.chat?.type, "executado por", ctx.from?.username);
+    if
+        (ctx.chat?.type !== 'private' && ctx.commandMatch?.command === cfg.commandPrivate && cfg.commandPrivateInChat === false)
+       {
+      return debug("Comando privado em", ctx.chat?.type, 'ignorado', cfg.commandPrivate, ctx.chat?.type, "executado por", ctx.from?.username);
+
+    }
     return cfg.handler(ctx);
   };
 

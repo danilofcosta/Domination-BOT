@@ -14,9 +14,9 @@ async function loadConfig(): Promise<{ dropMsg: number; undropMsg: number; daily
 
   return {
     // dropMsg: get("DROP_MSG", 100),
-     dropMsg:2,
+     dropMsg:100,
 
-    undropMsg: get("UNDROP_MSG", 140),
+    undropMsg: get("UNDROP_MSG", 50),
     dailyLimit: get("DAILY_LIMIT", 50),
   };
 }

@@ -1,3 +1,4 @@
+import { fatal } from "./uteis/log.js";
 
 export async function RunPolling({
   bot,
@@ -29,9 +30,9 @@ export async function RunPolling({
     if (process.env.CHAT_ID_DEV) {
       await bot.api.sendMessage(process.env.CHAT_ID_DEV, "Bot parado");
     }
-
-   /// fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
     await bot.stop();
+
+   fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
     
   }
 }

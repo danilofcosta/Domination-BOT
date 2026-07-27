@@ -89,7 +89,6 @@ export async function GiftHandler(ctx: MyContext) {
     const giftid = numbers[0];
 
     const GiftCharacter: any = await findCollectionWithIncludes({
-      isWaifu: ctx.botType === ChatType.WAIFU,
       telegramId: ctx.from!.id,
       characterId: giftid!,
     });
@@ -109,10 +108,7 @@ export async function GiftHandler(ctx: MyContext) {
       return;
     }
 
-    const characterData =
-      ctx.botType === ChatType.WAIFU
-        ? GiftCharacter.CharacterWaifu
-        : GiftCharacter.CharacterHusbando;
+    const characterData = GiftCharacter.Character;
 
     const characterCaption = create_caption({
       t: ctx.t,
@@ -150,7 +146,7 @@ export async function GiftHandler(ctx: MyContext) {
   giftCache.set(cacheKey, numbers);
 
   const result: any = await findCollectionWithIncludes({
-    isWaifu: ctx.botType === ChatType.WAIFU,
+   
     telegramId: ctx.from!.id,
     multicharacterId: numbers,
   });
@@ -167,10 +163,7 @@ export async function GiftHandler(ctx: MyContext) {
 
   const names = result.collection
     .map((item: any) => {
-      const c =
-        ctx.botType === ChatType.WAIFU
-          ? item.CharacterWaifu
-          : item.CharacterHusbando;
+      const c = item.Character;
       return c?.name;
     })
     .filter(Boolean)

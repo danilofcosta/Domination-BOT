@@ -17,6 +17,7 @@ import { ChatType } from "./uteis/CustomTypes.js";
 
 import { getListener, clearListener } from "./cache/listenerStore.js";
 import { debug, error, info } from "./uteis/log.js";
+import { TradeInlineQuery } from "./handlers/InlineQuerys/harem/tradeInlineQuery.js";
 
 const listeners = new Composer<MyContext>();
 
@@ -82,6 +83,10 @@ listeners.on("inline_query", async (ctx) => {
   };
 
   const processQuery = async () => {
+      if (query.startsWith("trade_")) {
+      return await TradeInlineQuery(ctx);
+    }
+
     if (query.startsWith("anime_")) {
       return await animeInlineQuery(ctx);
     }

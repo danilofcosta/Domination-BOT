@@ -1630,6 +1630,145 @@ export const _base: localekey[] = [
       extrakey: null,
     },
   },
+  {
+    key: "trade_expired",
+    description: "Sessão de trade expirada",
+    localeTraslation: {
+      value: "Sessão de trade expirada.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_accept_only_receiver",
+    description: "Apenas o destinatário pode aceitar",
+    localeTraslation: {
+      value: "Somente o destinatário pode aceitar.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_incomplete",
+    description: "Trade incompleto - personagens não selecionados",
+    localeTraslation: {
+      value: "Trade incompleto - selecione os personagens.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_not_authorized",
+    description: "Usuário não autorizado a realizar a ação",
+    localeTraslation: {
+      value: "Não autorizado.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_counter_not_implemented",
+    description: "Contra proposta ainda não implementada",
+    localeTraslation: {
+      value: "🔄 Contra proposta ainda não implementada",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_declined",
+    description: "Negociação cancelada",
+    localeTraslation: {
+      value: "❌ Negociação cancelada.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_expired_or_incomplete",
+    description: "Trade expirado ou incompleto",
+    localeTraslation: {
+      value: "Trade expirado ou incompleto.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_receiver_not_found",
+    description: "Destinatário não possui o personagem",
+    localeTraslation: {
+      value: "${mention} não tem esse ${typeBot} de id: ${characterId}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "mention", description: null },
+        { key: "typeBot", description: null },
+        { key: "characterId", description: null },
+      ],
+    },
+  },
+  {
+    key: "trade_transmitter_not_found",
+    description: "Remetente não possui o personagem",
+    localeTraslation: {
+      value: "Você não possui esse ${typeBot} de id: ${characterId}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "typeBot", description: null },
+        { key: "characterId", description: null },
+      ],
+    },
+  },
+  {
+    key: "trade_btn_accept",
+    description: "Botão de aceitar trade",
+    localeTraslation: {
+      value: "✅ Aceitar",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_btn_counter",
+    description: "Botão de contra proposta",
+    localeTraslation: {
+      value: "🔄 Contra proposta",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_btn_decline",
+    description: "Botão de recusar trade",
+    localeTraslation: {
+      value: "❌ Recusar",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
 
   // ==================== BOT NEW GROUP ====================
   {
@@ -1671,7 +1810,7 @@ export const _base: localekey[] = [
     },
 
   }, {
-    key: "bot_leave_send_message_to_group",
+    key: "bot_leave_send_message_to_group_flood",
     description: null,
     localeTraslation: {
       value: ` Parabéns, campeãos. 👏

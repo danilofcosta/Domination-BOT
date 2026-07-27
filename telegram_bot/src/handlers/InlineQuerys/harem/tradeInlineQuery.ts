@@ -1,0 +1,192 @@
+import { InlineKeyboard } from "grammy";
+import type { MyContext } from "../../../uteis/CustomTypes.js";
+import { createResult } from "../uteis/create_inline_result.js";
+import { showResults } from "../uteis/show_results_inline.js";
+import { getHaremCollection, LIMIT } from "./harem_inline_query.js";
+import { debug, error } from "../../../uteis/log.js";
+import { getTradeSession, updateTradeSession } from "../../../cache/tradeCache.js";
+
+
+async function deleteInitMenu(ctx: MyContext, session: ReturnType<typeof getTradeSession>) {
+    if (!session?.menuInitMessageId || !session?.menuChatId) return;
+    try {
+        await ctx.api.deleteMessage(session.menuChatId, session.menuInitMessageId);
+    } catch (e) {
+        error("tradeInlineQuery - erro ao deletar menu inicial", e);
+    }
+    updateTradeSession(`${session.chatId}:${session.transmitterId}`, { menuInitMessageId: undefined, menuChatId: undefined });
+}
+
+
+export async function TradeInlineQuery(ctx: MyContext) {
+    if (!ctx.inlineQuery) return;
+    const parts = ctx.inlineQuery.query.split("_");
+    const [, action, tradeKey, alreadySelectedCharacterId] = parts;
+    const offset = Number(ctx.inlineQuery.offset || "0");
+
+    if (!tradeKey) return debug('sem tradeKey');
+
+    const session = getTradeSession(tradeKey);
+
+
+    if (!session) {
+        debug('Not session')
+        await ctx.answerInlineQuery([], { cache_time: 0 });
+        return;
+    }
+
+    if (ctx.from?.id !== session.transmitterId && ctx.from?.id !== session.receiverId) {
+        debug('user nao autorizado')
+        await ctx.answerInlineQuery([], { cache_time: 0 });
+        return;
+    }
+
+    const genero = ctx.botType;
+
+    if (action === "set.character.id.transmitter") {
+
+        if (alreadySelectedCharacterId) {
+            await deleteInitMenu(ctx, session);
+            const receiverCharacterId = Number(alreadySelectedCharacterId);
+            if (!receiverCharacterId) return;
+
+            updateTradeSession(tradeKey, { receiverCharacterId });
+
+            const { collection, total } = await getHaremCollection({
+                telegramId: session.transmitterId,
+                offset,
+                genero,
+            });
+
+            const results = collection.map((item: any) => {
+                const btn = new InlineKeyboard();
+                btn.text('trade_btn_confirm_trade', `trade_execute_${tradeKey}`);
+
+                return createResult({
+                    t: ctx.t,
+                    character: item,
+                    chatType: genero,
+                    rawEmoji: true,
+                    reply_markup: btn,
+                });
+            });
+
+            await showResults({
+                ctx,
+                results,
+                next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
+                text: ctx.t("select-inline-trade_confirm_transmitter"),
+                is_personal: true,
+                notCacheTelegram: true,
+            });
+            return;
+        }
+
+        const { collection, total } = await getHaremCollection({
+            telegramId: session.transmitterId,
+            offset,
+            genero,
+        });
+
+        const results = collection.map((item: any) => {
+            const btn = new InlineKeyboard();
+            btn.switchInlineCurrent(
+                'trade_btn_my_label_receiver',
+                `trade_set.character.id.receiver_${tradeKey}_${item.characterId}`
+            ).row();
+            btn.text('trade_btn_my_label_cancel', 'trade_btn_cancel');
+
+            return createResult({
+                t: ctx.t,
+                character: item,
+                chatType: genero,
+                rawEmoji: true,
+                reply_markup: btn,
+            });
+        });
+
+        await showResults({
+            ctx,
+            results,
+            next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
+            text: ctx.t("select-inline-trade_transmitter"),
+            is_personal: true,
+            notCacheTelegram: true,
+        });
+        return;
+    }
+
+    if (action === "set.character.id.receiver") {
+
+        if (alreadySelectedCharacterId) {
+            await deleteInitMenu(ctx, session);
+            const transmitterCharacterId = Number(alreadySelectedCharacterId);
+            if (!transmitterCharacterId) return;
+
+            updateTradeSession(tradeKey, { transmitterCharacterId });
+
+            const { collection, total } = await getHaremCollection({
+                telegramId: session.receiverId,
+                offset,
+                genero,
+            });
+
+            const results = collection.map((item: any) => {
+                const btn = new InlineKeyboard();
+                btn.text('trade_btn_confirm_trade', `trade_execute_${tradeKey}`);
+                btn.text('trade_btn_my_label_cancel', `trade_cancel_${tradeKey}`);
+
+                return createResult({
+                    t: ctx.t,
+                    character: item,
+                    chatType: genero,
+                    rawEmoji: true,
+                    reply_markup: btn,
+                });
+            });
+
+            await showResults({
+                ctx,
+                results,
+                next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
+                text: ctx.t("select-inline-trade_confirm_receiver"),
+                is_personal: true,
+                notCacheTelegram: true,
+            });
+            return;
+        }
+
+        const { collection, total } = await getHaremCollection({
+            telegramId: session.receiverId,
+            offset,
+            genero,
+        });
+
+        const results = collection.map((item: any) => {
+            const btn = new InlineKeyboard();
+            btn.switchInlineCurrent(
+                'trade_btn_my_label_my',
+                `trade_set.character.id.transmitter_${tradeKey}_${item.characterId}`
+            ).row();
+            btn.text('trade_btn_my_label_cancel', 'trade_btn_cancel');
+
+            return createResult({
+                t: ctx.t,
+                character: item,
+                chatType: genero,
+                rawEmoji: true,
+                reply_markup: btn,
+            });
+        });
+
+        await showResults({
+            ctx,
+            results,
+            next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
+            text: ctx.t("select-inline-trade_receiver"),
+            is_personal: true,
+            notCacheTelegram: true,
+        });
+        return;
+    }
+}

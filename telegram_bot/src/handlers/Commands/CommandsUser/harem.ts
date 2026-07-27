@@ -26,30 +26,20 @@ function getInclude(isHusbando: boolean) {
     mediaType: true,
   } as const;
 
-  if (isHusbando) {
-    return {
-      CharacterHusbando: {
-        select: {
-          ...select,
-          HusbandoEvent: {
-            select: {
-              Event: { select: { id: true, name: true, emoji: true } },
-            },
-          },
-          HusbandoRarity: {
-            select: {
-              Rarity: { select: { id: true, name: true, emoji: true } },
-            },
-          },
-        },
-      },
-    };
-  }
-
   return {
-    CharacterWaifu: {
+    Character: {
       select: {
         ...select,
+        HusbandoEvent: {
+          select: {
+            Event: { select: { id: true, name: true, emoji: true } },
+          },
+        },
+        HusbandoRarity: {
+          select: {
+            Rarity: { select: { id: true, name: true, emoji: true } },
+          },
+        },
         WaifuEvent: {
           select: { Event: { select: { id: true, name: true, emoji: true } } },
         },

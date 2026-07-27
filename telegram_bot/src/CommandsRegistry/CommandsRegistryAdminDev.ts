@@ -2,7 +2,7 @@ import { CommandGroup } from "@grammyjs/commands";
 import { DropCharacter } from "../handlers/listeners/doprar_per.js";
 import { options } from "./botConfigCommands.js";
 import type { MyContext } from "../uteis/CustomTypes.js";
-import { leaveGroupHandler } from "../handlers/CallBackQuerys/CallBacksAdminBot/leave_group.js";
+import { leaveGroupHandler } from "../handlers/CallBackQuerys/CallBacksAdminBot/leave_group/leave_group.js";
 
 const devCommands = new CommandGroup<MyContext>();
 

@@ -12,101 +12,102 @@ export async function TopCallbackQuery(ctx: MyContext) {
   const [, action] = parts;
   const chatId = ctx.chat?.id;
   if (action === "chat") {
+        const reply_markup = new InlineKeyboard()
+      .text(ctx.t("top_user_btn_my_position"), "topuser_position_chat")
+      .row()
+      .text(ctx.t("top_user_btn_global"), "topuser_global")
+      .row()
+      .text(ctx.t("top_btn_close"), "topuser_close");
     if (!chatId) return ctx.answerCallbackQuery({ text: ctx.t("top-empty"), show_alert: true });
 
-      const chatIdBig = BigInt(chatId);
-      const isHusbando = ctx.botType === ChatType.HUSBANDO;
-      info(`topHandlerChat - carregando ranking do chat`, {
-        userId: ctx.from?.id,
-        chatId,
-        genero: ctx.botType,
-      });
-    
-      const cacheKey = `topchat:${isHusbando ? "husbando" : "waifu"}:${chatId}`;
-    
-      const ranking = (await getOrSet<any>(rankingCache, cacheKey, () =>
-        isHusbando
-          ? prisma.husbandoCollection.groupBy({
-              by: ["userId"],
-              _count: { characterId: true },
-              where: { fromIdChat: chatIdBig },
-              orderBy: { _count: { characterId: "desc" } },
-              take: 10,
-            })
-          : prisma.waifuCollection.groupBy({
-              by: ["userId"],
-              _count: { characterId: true },
-              where: { fromIdChat: chatIdBig },
-              orderBy: { _count: { characterId: "desc" } },
-              take: 10,
-            }),
-      )) as RankingItem[];
-    
-      if (!ranking.length) {
-        warn(`topHandlerChat - ranking vazio`, { userId: ctx.from?.id, chatId });
-        return SendMensageCustom({ ctx, caption: ctx.t("top-empty") });
-      }
-    
-      debug(`topHandlerChat - usuários no ranking`, { count: ranking.length, chatId });
-    
-      const text = await buildTopMessage(ctx, ranking, "top_header_chat");
-    
-      const reply_markup = new InlineKeyboard()
-        .text(ctx.t("top_user_btn_my_position"), "topuser_position_chat")
-        .row()
-        .text(ctx.t("top_user_btn_global"), "topuser_global")
-        .row()
-        .text(ctx.t("top_btn_close"), "topuser_close");
-    
-  await EditOrSendText({
-    ctx,caption:text,reply_markup:reply_markup
-  })
+    const chatIdBig = BigInt(chatId);
+    const isHusbando = ctx.botType === ChatType.HUSBANDO;
+    info(`topHandlerChat - carregando ranking do chat`, {
+      userId: ctx.from?.id,
+      chatId,
+      genero: ctx.botType,
+    });
+
+    const cacheKey = `topchat:${isHusbando ? "husbando" : "waifu"}:${chatId}`;
+
+    const ranking = (await getOrSet<any>(rankingCache, cacheKey, () =>
+      isHusbando
+        ? prisma.husbandoCollection.groupBy({
+          by: ["userId"],
+          _count: { characterId: true },
+          where: { fromIdChat: chatIdBig },
+          orderBy: { _count: { characterId: "desc" } },
+          take: 10,
+        })
+        : prisma.waifuCollection.groupBy({
+          by: ["userId"],
+          _count: { characterId: true },
+          where: { fromIdChat: chatIdBig },
+          orderBy: { _count: { characterId: "desc" } },
+          take: 10,
+        }),
+    )) as RankingItem[];
+
+    if (!ranking.length) {
+      warn(`topHandlerChat - ranking vazio`, { userId: ctx.from?.id, chatId });
+      return EditOrSendText({ ctx, caption: ctx.t("top-empty"), reply_markup: reply_markup });
+    }
+
+    debug(`topHandlerChat - usuários no ranking`, { count: ranking.length, chatId });
+
+    const text = await buildTopMessage(ctx, ranking, "top_header_chat");
+
+
+
+    await EditOrSendText({
+      ctx, caption: text, reply_markup: reply_markup
+    })
   }
 
 
-    if (action === "global") {
- const isHusbando = ctx.botType === ChatType.HUSBANDO;
- const cacheKey = `top:${isHusbando ? "husbando" : "waifu"}`;
+  if (action === "global") {
+    const isHusbando = ctx.botType === ChatType.HUSBANDO;
+    const cacheKey = `top:${isHusbando ? "husbando" : "waifu"}`;
 
-  const ranking = (await getOrSet<any>(rankingCache, cacheKey, () =>
-    isHusbando
-      ? prisma.husbandoCollection.groupBy({
+    const ranking = (await getOrSet<any>(rankingCache, cacheKey, () =>
+      isHusbando
+        ? prisma.husbandoCollection.groupBy({
           by: ["userId"],
           _count: { characterId: true },
           orderBy: { _count: { characterId: "desc" } },
           take: 10,
         })
-      : prisma.waifuCollection.groupBy({
+        : prisma.waifuCollection.groupBy({
           by: ["userId"],
           _count: { characterId: true },
           orderBy: { _count: { characterId: "desc" } },
           take: 10,
         }),
-  )) as RankingItem[];
+    )) as RankingItem[];
 
-  if (!ranking.length) {
-    warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
-    return SendMensageCustom({ ctx, caption: ctx.t("top-empty") });
-  }
-
-  debug(`topHandler - usuários no ranking`, { count: ranking.length });
-
-  const text = await buildTopMessage(ctx, ranking, "top_header_global");
-
-  const reply_markup = new InlineKeyboard()
-    .text(ctx.t("top_user_btn_my_position"), "topuser_position_global")
-    .row()
-    .text(ctx.t("top_user_btn_chat"), "topuser_chat")
-    .row()
-    .text(ctx.t("top_btn_close"), "topuser_close");
-
-  await EditOrSendText(
-    {ctx,caption:text,reply_markup:reply_markup}
-  )
-
-
-
+    if (!ranking.length) {
+      warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
+      return SendMensageCustom({ ctx, caption: ctx.t("top-empty") });
     }
+
+    debug(`topHandler - usuários no ranking`, { count: ranking.length });
+
+    const text = await buildTopMessage(ctx, ranking, "top_header_global");
+
+    const reply_markup = new InlineKeyboard()
+      .text(ctx.t("top_user_btn_my_position"), "topuser_position_global")
+      .row()
+      .text(ctx.t("top_user_btn_chat"), "topuser_chat")
+      .row()
+      .text(ctx.t("top_btn_close"), "topuser_close");
+
+    await EditOrSendText(
+      { ctx, caption: text, reply_markup: reply_markup }
+    )
+
+
+
+  }
 
   if (action === "position") {
     const userId = ctx.from?.id;
@@ -132,19 +133,19 @@ export async function TopCallbackQuery(ctx: MyContext) {
       ranking = (await getOrSet<any>(rankingCache, cacheKey, () =>
         isHusbando
           ? prisma.husbandoCollection.groupBy({
-              by: ["userId"],
-              _count: { characterId: true },
-              where: { fromIdChat: chatIdBig },
-              orderBy: { _count: { characterId: "desc" } },
-              take: 10,
-            })
+            by: ["userId"],
+            _count: { characterId: true },
+            where: { fromIdChat: chatIdBig },
+            orderBy: { _count: { characterId: "desc" } },
+            take: 10,
+          })
           : prisma.waifuCollection.groupBy({
-              by: ["userId"],
-              _count: { characterId: true },
-              where: { fromIdChat: chatIdBig },
-              orderBy: { _count: { characterId: "desc" } },
-              take: 10,
-            }),
+            by: ["userId"],
+            _count: { characterId: true },
+            where: { fromIdChat: chatIdBig },
+            orderBy: { _count: { characterId: "desc" } },
+            take: 10,
+          }),
       )) as RankingItem[];
     } else {
       const cacheKey = `top:${isHusbando ? "husbando" : "waifu"}`;
@@ -152,17 +153,17 @@ export async function TopCallbackQuery(ctx: MyContext) {
       ranking = (await getOrSet<any>(rankingCache, cacheKey, () =>
         isHusbando
           ? prisma.husbandoCollection.groupBy({
-              by: ["userId"],
-              _count: { characterId: true },
-              orderBy: { _count: { characterId: "desc" } },
-              take: 10,
-            })
+            by: ["userId"],
+            _count: { characterId: true },
+            orderBy: { _count: { characterId: "desc" } },
+            take: 10,
+          })
           : prisma.waifuCollection.groupBy({
-              by: ["userId"],
-              _count: { characterId: true },
-              orderBy: { _count: { characterId: "desc" } },
-              take: 10,
-            }),
+            by: ["userId"],
+            _count: { characterId: true },
+            orderBy: { _count: { characterId: "desc" } },
+            take: 10,
+          }),
       )) as RankingItem[];
     }
 

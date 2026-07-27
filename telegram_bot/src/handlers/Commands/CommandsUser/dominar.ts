@@ -323,7 +323,7 @@ export async function CapturarCharacter(ctx: MyContext) {
     try {
       await SendMensageCustom({
         ctx,
-        caption: successDominarMessageResult,
+        caption: successDominarMessageResult ,
         reply_markup: CreateOneBtn({
           text: ctx.t("success_dominar_btn"),
           callback: "harem_user_" + ctx.from?.id,

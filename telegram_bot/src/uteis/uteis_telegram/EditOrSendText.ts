@@ -6,29 +6,46 @@ type Options = {
   ctx: MyContext;
   reply_markup?: InlineKeyboardMarkup;
   caption?: string;
-  removeButtons?:boolean
+  removeButtons?: boolean;
 };
 
-export async function EditOrSendText({ ctx, reply_markup, caption,removeButtons }: Options) {
+export async function EditOrSendText({
+  ctx,
+  reply_markup,
+  caption,
+  removeButtons = true,
+}: Options) {
   if (!caption) {
     return ctx.editMessageReplyMarkup(
       reply_markup ? { reply_markup } : undefined,
     );
   }
-  
 
   if (!ctx.callbackQuery) {
     return SendMensageCustom({ ctx, caption, reply_markup });
   }
 
-  const opts = { parse_mode: "HTML" as const, ...(reply_markup ? { reply_markup } : {}) };
   const hasText = !!ctx.callbackQuery.message?.text;
 
+const currentReplyMarkup =
+  ctx.callbackQuery.message?.reply_markup;
+
+const opts = {
+  parse_mode: "HTML" as const,
+  ...(removeButtons
+    ? { reply_markup }
+    : currentReplyMarkup
+      ? { reply_markup: currentReplyMarkup }
+      : {}),
+};
   const edit = hasText
     ? ctx.editMessageText(caption, opts)
-    : ctx.editMessageCaption({ caption, ...opts });
+    : ctx.editMessageCaption({
+        caption,
+        ...opts,
+      });
 
-  await edit.catch(() =>
+    await edit.catch(() =>
     SendMensageCustom({ ctx, caption, reply_markup }),
   );
 

@@ -116,7 +116,7 @@ model HusbandoCollection {
   fromIdChat        BigInt?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Character  CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
   TelegramUser      TelegramUser      @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([userId, characterId])
@@ -197,7 +197,7 @@ model WaifuCollection {
   count          Int            @default(1)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Character CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
   TelegramUser   TelegramUser   @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([userId, characterId])

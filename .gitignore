@@ -12,3 +12,4 @@ ui\node_modules
 ui/dev.db
 fix_sequences.mjs
 telegram_bot/prisma/seed.ts
+telegram_bot.zip

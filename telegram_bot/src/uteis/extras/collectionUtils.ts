@@ -1,12 +1,14 @@
+import { isWaifuBotCheck } from "../../CommandsRegistry/botConfigCommands.js";
 import { prisma } from "../../lib/prisma.js";
 // busca na coleção do usuário, incluindo informações relacionadas ao personagem, eventos e raridade.
 export async function findCollectionWithIncludes(params: {
-  isWaifu: boolean;
+ 
   telegramId: number;
   characterId?: number;
   multicharacterId?: number[];
 }) {
-  const { isWaifu, telegramId, characterId, multicharacterId } = params;
+   const isWaifu: boolean = isWaifuBotCheck();
+  const { telegramId, characterId, multicharacterId } = params;
 
   // Modo múltiplos IDs
   if (multicharacterId?.length) {
@@ -49,7 +51,7 @@ export async function findCollectionWithIncludes(params: {
     return prisma.waifuCollection.findFirst({
       where,
       include: {
-        CharacterWaifu: {
+        Character: {
           include: {
             WaifuEvent: {
               include: { Event: true },
@@ -66,7 +68,7 @@ export async function findCollectionWithIncludes(params: {
   return prisma.husbandoCollection.findFirst({
     where,
     include: {
-      CharacterHusbando: {
+      Character: {
         include: {
           HusbandoEvent: {
             include: { Event: true },

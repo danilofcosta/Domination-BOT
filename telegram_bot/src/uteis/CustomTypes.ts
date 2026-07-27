@@ -1,4 +1,5 @@
 import type { Context, SessionFlavor } from "grammy";
+import type { CommandsFlavor } from "@grammyjs/commands";
 import type {
   CharacterWaifu,
   CharacterHusbando,
@@ -25,10 +26,10 @@ export interface SessionData {
   chatType: "private" | "group" | "supergroup" | "channel";
   chatTypeBot: ChatType;
 }
-export type MyContext = Context & SessionFlavor<SessionData> & I18nFlavor & { botType: ChatType };
+export type MyContext = Context & SessionFlavor<SessionData> & I18nFlavor & CommandsFlavor & { botType: ChatType };
 
 export type Character = CharacterWaifu | CharacterHusbando;
-export type Collection = WaifuCollection | HusbandoCollection;
+export type Collection = WaifuCollection | HusbandoCollection ;
 export type EventType = WaifuEvent | HusbandoEvent;
 export type RarityType = WaifuRarity | HusbandoRarity;
 

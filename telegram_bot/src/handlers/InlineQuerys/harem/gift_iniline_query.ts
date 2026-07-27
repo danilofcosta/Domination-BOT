@@ -48,6 +48,6 @@ export async function Gift_Inline_query(ctx: MyContext) {
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
     text: ctx.t("select-inline-gift"),
-    maxCacheTelegram: true,
+    
   });
 }

@@ -4,35 +4,32 @@ import { InputFile, InlineKeyboard } from "grammy";
 import fs from "fs";
 
 import { error, debug } from "./log.js";
-import { getCachedTopic, setCachedTopic } from "../cache/topicCache.js";
 import type { Character, MyContext } from "./CustomTypes.js";
 import { MediaType } from "../../generated/prisma/client.js";
 
- 
+
 export interface MediaParamsMini {
-media:string,
-mediaType:MediaType
+  media: string,
+  mediaType: MediaType
 }
 interface ParamsSendMedia {
   chat_id?: string | number | undefined;
   message_thread_id?: number | undefined;
   ctx: MyContext | null | undefined;
-  character?:Character|MediaParamsMini |null;
+  character?: Character | MediaParamsMini | null;
   caption?: string;
-  reply_markup?: InlineKeyboard  | any ;
-}
-
-const midia_temporaria:MediaParamsMini = {
-media:'https://i.pinimg.com/1200x/ce/b0/80/ceb0809908773339e21b16172e1ae2d4.jpg',mediaType:"IMAGE_URL"
+  reply_markup?: InlineKeyboard | any;
 }
 
 export async function SendMensageCustom(params: ParamsSendMedia) {
-  const { chat_id, message_thread_id, ctx, character, caption, reply_markup } = params;
+  let { chat_id, message_thread_id, ctx, character, caption, reply_markup } = params;
 
   if (!ctx) {
     throw new Error("ctx é obrigatório");
   }
-
+  if (caption) {
+  caption += "\n\nBanco de dados Oficial indisponível, infos atuais da versão de junho :D";
+}
   const api = ctx.api;
   const targetChatId = chat_id ?? ctx.chat?.id;
 
@@ -59,7 +56,7 @@ export async function SendMensageCustom(params: ParamsSendMedia) {
   //   setCachedTopic(chatId, 0);
   //   return undefined;
   // })();
- const  directTopicId = undefined
+  const directTopicId = undefined
   const topicId = message_thread_id ?? directTopicId ?? undefined;
   const messageId = ctx.message?.message_id;
 
@@ -69,7 +66,7 @@ export async function SendMensageCustom(params: ParamsSendMedia) {
     ...(reply_markup && { reply_markup }),
     ...(topicId && { message_thread_id: topicId }),
     ...(messageId && {
-      reply_parameters: { message_id: messageId , allow_sending_without_reply: true, },
+      reply_parameters: { message_id: messageId, allow_sending_without_reply: true, },
     }),
   };
 
@@ -113,8 +110,8 @@ export async function SendMensageCustom(params: ParamsSendMedia) {
 
   if (!character) return sendText(caption ?? "");
 
- const { mediaType: type, media } = character;
- // const { mediaType: type, media } = character.mediaType ===MediaType.IMAGE_URL ?character:midia_temporaria;
+  const { mediaType: type, media } = character;
+  // const { mediaType: type, media } = character.mediaType ===MediaType.IMAGE_URL ?character:midia_temporaria;
 
   try {
     if (!media) return sendText(caption ?? "");
@@ -155,7 +152,7 @@ export async function SendMensageCustom(params: ParamsSendMedia) {
     if (!isAvailable) return sendText(caption ?? "");
 
 
-if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID)
+    if (type === MediaType.IMAGE_URL || type === MediaType.IMAGE_FILEID)
       return await sendPhoto(media);
 
     if (type === MediaType.VIDEO_URL || type === MediaType.VIDEO_FILEID)

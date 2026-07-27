@@ -53,7 +53,6 @@ export async function favHandler(ctx: MyContext) {
   info("favHandler - buscando personagem", { userId, favid });
 
   const character = await findCollectionWithIncludes({
-    isWaifu: ctx.botType === ChatType.WAIFU,
     telegramId: userId,
     characterId: favid,
   });
@@ -72,10 +71,7 @@ export async function favHandler(ctx: MyContext) {
     });
   }
 
-  const charData: any =
-    ctx.botType === ChatType.WAIFU
-      ? (character as any).CharacterWaifu
-      : (character as any).CharacterHusbando;
+  const charData: any = (character as any).Character;
 
   const characterCaption = create_caption({
     t: ctx.t,
