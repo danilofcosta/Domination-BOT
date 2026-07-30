@@ -103,9 +103,9 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       warn("tradeHandler - IDs não informados", { userId: ctx.from?.id });
 
       const btn = new InlineKeyboard();
-      btn.switchInlineCurrent('trade_btn_my_label_my', `trade_set.character.id.transmitter_${tradeKey}`);
-      btn.switchInlineCurrent('trade_btn_my_label_receiver', `trade_set.character.id.receiver_${tradeKey}`).row();
-      btn.text('trade_btn_my_label_cancel', `trade_cancel_${tradeKey}`);
+      btn.switchInlineCurrent(ctx.t("trade_btn_my_label_my"), `trade_set.character.id.transmitter_${tradeKey}`);
+      btn.switchInlineCurrent(ctx.t("trade_btn_my_label_receiver"), `trade_set.character.id.receiver_${tradeKey}`).row();
+      btn.text(ctx.t("trade_btn_my_label_cancel"), `trade_cancel_${tradeKey}`);
 
       const _menu_init_id = await SendMensageCustom({
         ctx,

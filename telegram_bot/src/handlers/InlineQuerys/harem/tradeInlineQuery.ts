@@ -10,7 +10,8 @@ import { getTradeSession, updateTradeSession } from "../../../cache/tradeCache.j
 async function deleteInitMenu(ctx: MyContext, session: ReturnType<typeof getTradeSession>) {
     if (!session?.menuInitMessageId || !session?.menuChatId) return;
     try {
-        await ctx.api.deleteMessage(session.menuChatId, session.menuInitMessageId);
+      await ctx.api.deleteMessage(session.menuChatId, session.menuInitMessageId);
+      debug('tradeInlineQuery - menu inicial deletado', { chatId: session.menuChatId, messageId: session.menuInitMessageId });
     } catch (e) {
         error("tradeInlineQuery - erro ao deletar menu inicial", e);
     }
@@ -24,19 +25,19 @@ export async function TradeInlineQuery(ctx: MyContext) {
     const [, action, tradeKey, alreadySelectedCharacterId] = parts;
     const offset = Number(ctx.inlineQuery.offset || "0");
 
-    if (!tradeKey) return debug('sem tradeKey');
+    if (!tradeKey) return debug('tradeInlineQuery - tradeKey não fornecido na query', { query: ctx.inlineQuery.query });
 
     const session = getTradeSession(tradeKey);
 
 
     if (!session) {
-        debug('Not session')
+        debug('tradeInlineQuery - sessão não encontrada', { tradeKey, userId: ctx.from?.id });
         await ctx.answerInlineQuery([], { cache_time: 0 });
         return;
     }
 
     if (ctx.from?.id !== session.transmitterId && ctx.from?.id !== session.receiverId) {
-        debug('user nao autorizado')
+        debug('tradeInlineQuery - usuário não autorizado', { tradeKey, userId: ctx.from?.id, transmitterId: session.transmitterId, receiverId: session.receiverId });
         await ctx.answerInlineQuery([], { cache_time: 0 });
         return;
     }
@@ -47,10 +48,10 @@ export async function TradeInlineQuery(ctx: MyContext) {
 
         if (alreadySelectedCharacterId) {
             await deleteInitMenu(ctx, session);
-            const receiverCharacterId = Number(alreadySelectedCharacterId);
-            if (!receiverCharacterId) return;
+            const transmitterCharacterId = Number(alreadySelectedCharacterId);
+            if (!transmitterCharacterId) return debug('tradeInlineQuery - transmitterCharacterId inválido', { tradeKey, raw: alreadySelectedCharacterId });
 
-            updateTradeSession(tradeKey, { receiverCharacterId });
+            updateTradeSession(tradeKey, { transmitterCharacterId });
 
             const { collection, total } = await getHaremCollection({
                 telegramId: session.transmitterId,
@@ -60,7 +61,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
 
             const results = collection.map((item: any) => {
                 const btn = new InlineKeyboard();
-                btn.text('trade_btn_confirm_trade', `trade_execute_${tradeKey}`);
+                btn.text(ctx.t("trade_btn_confirm_trade"), `trade_execute_${tradeKey}`);
 
                 return createResult({
                     t: ctx.t,
@@ -75,7 +76,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
                 ctx,
                 results,
                 next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-                text: ctx.t("select-inline-trade_confirm_transmitter"),
+                text: ctx.t("trade_inline_confirm_transmitter"),
                 is_personal: true,
                 notCacheTelegram: true,
             });
@@ -91,10 +92,10 @@ export async function TradeInlineQuery(ctx: MyContext) {
         const results = collection.map((item: any) => {
             const btn = new InlineKeyboard();
             btn.switchInlineCurrent(
-                'trade_btn_my_label_receiver',
+                ctx.t("trade_btn_my_label_receiver"),
                 `trade_set.character.id.receiver_${tradeKey}_${item.characterId}`
             ).row();
-            btn.text('trade_btn_my_label_cancel', 'trade_btn_cancel');
+            btn.text(ctx.t("trade_btn_my_label_cancel"), 'trade_btn_cancel');
 
             return createResult({
                 t: ctx.t,
@@ -109,7 +110,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
             ctx,
             results,
             next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-            text: ctx.t("select-inline-trade_transmitter"),
+            text: ctx.t("trade_inline_transmitter"),
             is_personal: true,
             notCacheTelegram: true,
         });
@@ -120,10 +121,10 @@ export async function TradeInlineQuery(ctx: MyContext) {
 
         if (alreadySelectedCharacterId) {
             await deleteInitMenu(ctx, session);
-            const transmitterCharacterId = Number(alreadySelectedCharacterId);
-            if (!transmitterCharacterId) return;
+            const receiverCharacterId = Number(alreadySelectedCharacterId);
+            if (!receiverCharacterId) return debug('tradeInlineQuery - receiverCharacterId inválido', { tradeKey, raw: alreadySelectedCharacterId });
 
-            updateTradeSession(tradeKey, { transmitterCharacterId });
+            updateTradeSession(tradeKey, { receiverCharacterId });
 
             const { collection, total } = await getHaremCollection({
                 telegramId: session.receiverId,
@@ -133,8 +134,8 @@ export async function TradeInlineQuery(ctx: MyContext) {
 
             const results = collection.map((item: any) => {
                 const btn = new InlineKeyboard();
-                btn.text('trade_btn_confirm_trade', `trade_execute_${tradeKey}`);
-                btn.text('trade_btn_my_label_cancel', `trade_cancel_${tradeKey}`);
+                btn.text(ctx.t("trade_btn_confirm_trade"), `trade_execute_${tradeKey}`);
+                btn.text(ctx.t("trade_btn_my_label_cancel"), `trade_cancel_${tradeKey}`);
 
                 return createResult({
                     t: ctx.t,
@@ -149,7 +150,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
                 ctx,
                 results,
                 next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-                text: ctx.t("select-inline-trade_confirm_receiver"),
+                text: ctx.t("trade_inline_confirm_receiver"),
                 is_personal: true,
                 notCacheTelegram: true,
             });
@@ -165,10 +166,10 @@ export async function TradeInlineQuery(ctx: MyContext) {
         const results = collection.map((item: any) => {
             const btn = new InlineKeyboard();
             btn.switchInlineCurrent(
-                'trade_btn_my_label_my',
+                ctx.t("trade_btn_my_label_my"),
                 `trade_set.character.id.transmitter_${tradeKey}_${item.characterId}`
             ).row();
-            btn.text('trade_btn_my_label_cancel', 'trade_btn_cancel');
+            btn.text(ctx.t("trade_btn_my_label_cancel"), 'trade_btn_cancel');
 
             return createResult({
                 t: ctx.t,
@@ -183,7 +184,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
             ctx,
             results,
             next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-            text: ctx.t("select-inline-trade_receiver"),
+            text: ctx.t("trade_inline_receiver"),
             is_personal: true,
             notCacheTelegram: true,
         });

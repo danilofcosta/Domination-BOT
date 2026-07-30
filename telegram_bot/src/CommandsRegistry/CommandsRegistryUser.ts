@@ -3,9 +3,9 @@ import type { MyContext } from "../uteis/CustomTypes.js";
 import { debug } from "../uteis/log.js";
 import {
   botPrefix,
-  options,
   typeBot,
   type CommandConfig,
+  registerCommand,
 } from "./botConfigCommands.js";
 import {
   topHandler,
@@ -82,7 +82,8 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Harem: {
-    command: "harem" + botPrefix,
+  command: `my${typeBot}s`,
+
     commandPrivate: "harem",
     description: {
       pt: "Mostra o seu harém de personagens",
@@ -134,7 +135,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
   },
 };
 
-function registerCommand(cfg: CommandConfig) {
+for (const cfg of Object.values(userCommandsRegistryDict)) {
   const handlerWrapper = async (ctx: MyContext) => {
     debug("Comando", cfg.command, ctx.chat?.type, "executado por", ctx.from?.username);
     if
@@ -145,30 +146,7 @@ function registerCommand(cfg: CommandConfig) {
     }
     return cfg.handler(ctx);
   };
-
-  const groupCmd = userCommandsRegistry.command(
-    cfg.command,
-    cfg.description.pt,
-    handlerWrapper,
-    options,
-  );
-
-  groupCmd.addToScope({ type: "all_group_chats" }, handlerWrapper);
-
-  if (cfg.commandPrivate) {
-    const privateCmd = userCommandsRegistry.command(
-      cfg.commandPrivate,
-      cfg.description.pt,
-      handlerWrapper,
-      options,
-    );
-
-    privateCmd.addToScope({ type: "all_private_chats" }, handlerWrapper);
-  }
-}
-
-for (const cfg of Object.values(userCommandsRegistryDict)) {
-  registerCommand(cfg);
+  registerCommand(userCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
 }
 
 export { userCommandsRegistry };

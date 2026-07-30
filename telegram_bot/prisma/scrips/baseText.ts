@@ -1620,17 +1620,6 @@ export const _base: localekey[] = [
 
   // ==================== TRADE ====================
   {
-    key: "trade.error.user_not_found",
-    description: null,
-    localeTraslation: {
-      value: "Usuário não encontrado.",
-      isButton: null,
-      ButtonSetting: null,
-      locale: { lang: "pt", icon: "🇧🇷" },
-      extrakey: null,
-    },
-  },
-  {
     key: "trade_expired",
     description: "Sessão de trade expirada",
     localeTraslation: {
@@ -1708,6 +1697,72 @@ export const _base: localekey[] = [
     },
   },
   {
+    key: "trade_reply_instruction",
+    description: "Instrução de reply para trade",
+    localeTraslation: {
+      value: "${command} 55 , 55 (em Resposta) \n ou ${command}  @Wadomination_bot 55 , 55",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "command", description: null }],
+    },
+  },
+  {
+    key: "trade_error_user",
+    description: "Erro ao tentar negociar consigo mesmo",
+    localeTraslation: {
+      value: "Você não pode negociar consigo mesmo.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_error_bot",
+    description: "Erro ao tentar negociar com o bot",
+    localeTraslation: {
+      value: "Não posso receber presentes.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_error_donate_harem",
+    description: "Doação de harem indisponível",
+    localeTraslation: {
+      value: "Doação de harem está indisponível.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_error_not_id",
+    description: "Usuário não encontrado",
+    localeTraslation: {
+      value: "Usuário não encontrado.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_error_all_id_not_info",
+    description: "Faltou informar os IDs",
+    localeTraslation: {
+      value: "Manda o Id Também ou selecione abaixo",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "command", description: null }],
+    },
+  },
+  {
     key: "trade_receiver_not_found",
     description: "Destinatário não possui o personagem",
     localeTraslation: {
@@ -1764,6 +1819,94 @@ export const _base: localekey[] = [
     localeTraslation: {
       value: "❌ Recusar",
       isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_btn_confirm_trade",
+    description: "Botão de confirmar trade",
+    localeTraslation: {
+      value: "Confirmar Trade",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_btn_my_label_my",
+    description: "Label do botão para selecionar meu personagem",
+    localeTraslation: {
+      value: "Meu Personagem",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_btn_my_label_receiver",
+    description: "Label do botão para selecionar personagem do receptor",
+    localeTraslation: {
+      value: "Personagem do Receptor",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_btn_my_label_cancel",
+    description: "Label do botão de cancelar",
+    localeTraslation: {
+      value: "Cancelar",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_inline_confirm_transmitter",
+    description: "Texto ao confirmar personagem do transmissor",
+    localeTraslation: {
+      value: "Confirme seu personagem",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_inline_transmitter",
+    description: "Texto ao selecionar personagem do transmissor",
+    localeTraslation: {
+      value: "Selecione seu personagem para trade",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_inline_confirm_receiver",
+    description: "Texto ao confirmar personagem do receptor",
+    localeTraslation: {
+      value: "Confirme seu personagem",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "trade_inline_receiver",
+    description: "Texto ao selecionar personagem do receptor",
+    localeTraslation: {
+      value: "Selecione o personagem do receptor",
+      isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
       extrakey: null,

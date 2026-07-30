@@ -4,10 +4,11 @@ import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../uteis/CustomTypes.js";
 import { debug } from "../uteis/log.js";
 import { ProfileType } from "../../generated/prisma/client.js";
-import { botPrefix, options } from "./botConfigCommands.js";
+import { botPrefix, registerCommand } from "./botConfigCommands.js";
 import { onlyRoleBotAdmin } from "../uteis/permissions.js";
 import { AddCharacterHandler } from "../handlers/Commands/CommandsAdminBot/addcharacter/AddCharacterHandler.js";
 import { EditCharacterHandler } from "../handlers/Commands/CommandsAdminBot/EditCharacterHandler.js";
+
 type AdminCommand = {
   minPermission: ProfileType;
   command: string;
@@ -18,6 +19,7 @@ type AdminCommand = {
   };
   handler: (ctx: MyContext) => Promise<any>;
 };
+
 const AdminCommandsRegistry = new CommandGroup<MyContext>();
 
 const userCommandsRegistryDict: Record<string, AdminCommand> = {
@@ -41,37 +43,14 @@ const userCommandsRegistryDict: Record<string, AdminCommand> = {
   },
 };
 
-function registerCommand(cfg: AdminCommand) {
+for (const cfg of Object.values(userCommandsRegistryDict)) {
   const handlerWrapper = async (ctx: MyContext) => {
     debug("AdminCommand", cfg.command, "executado por", ctx.from?.username);
     await onlyRoleBotAdmin(cfg.minPermission)(ctx, async () => {
       await cfg.handler(ctx);
     });
   };
-
-  const groupCmd = AdminCommandsRegistry.command(
-    cfg.command,
-    cfg.description.pt,
-    handlerWrapper,
-    options,
-  );
-
-  groupCmd.addToScope({ type: "all_group_chats" }, handlerWrapper);
-
-  if (cfg.commandPrivate) {
-    const privateCmd = AdminCommandsRegistry.command(
-      cfg.commandPrivate,
-      cfg.description.pt,
-      handlerWrapper,
-      options,
-    );
-
-    privateCmd.addToScope({ type: "all_private_chats" }, handlerWrapper);
-  }
-}
-
-for (const cfg of Object.values(userCommandsRegistryDict)) {
-  registerCommand(cfg);
+  registerCommand(AdminCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
 }
 
 export { AdminCommandsRegistry };

@@ -9,8 +9,10 @@ import { userCommandsRegistry } from "./CommandsRegistry/CommandsRegistryUser.js
 import { HiddenCommandsRegistry } from "./CommandsRegistry/CommandsRegistryHidden.js";
 import { AdminCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminBot.js";
 import { devCommands } from "./CommandsRegistry/CommandsRegistryAdminDev.js";
+import { GlobaisCommandsRegistry } from "./CommandsRegistry/CommandsRegistryGlobais.js";
+import { info } from "./uteis/log.js";
 
-function initialSessionData( ): SessionData {
+function initialSessionData(): SessionData {
   return {
     chatType: 'private',
     chatTypeBot: process.env.CHAT_TYPE_BOT as ChatType,
@@ -32,7 +34,7 @@ export default async function initializeBot(
       initial: initialSessionData,
       getSessionKey: (ctx) => `${ctx.chat?.type}_${ctx.chat?.id}`,
       prefix: "user-",
-      type:"single"
+      type: "single"
     }),
   );
 
@@ -51,18 +53,21 @@ export default async function initializeBot(
   // bot.api.deleteMyCommands()
   // userCommandsRegistry.setCommands(bot)
 
-  console.log('registrando comandos')
+  info('registrando comandos')
   bot.use(userCommandsRegistry)
   bot.use(HiddenCommandsRegistry)
   bot.use(AdminCommandsRegistry)
+  bot.use(
+    GlobaisCommandsRegistry
+  )
   bot.use(devCommands)
 
-  console.log('registrando listeners')
+  info('registrando listeners')
 
   bot.use(listeners);
   bot.use(callbacks);
   bot.catch((err) => {
     console.error("BOT ERROR:", err);
-});
+  });
   return bot;
 }

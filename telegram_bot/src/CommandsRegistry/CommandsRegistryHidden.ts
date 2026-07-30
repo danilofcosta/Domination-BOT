@@ -1,7 +1,7 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../uteis/CustomTypes.js";
 import { debug } from "../uteis/log.js";
-import { options, type CommandConfig } from "./botConfigCommands.js";
+import { type CommandConfig, registerCommand } from "./botConfigCommands.js";
 import { idHandler } from "../handlers/Commands/CommandsUser/id.js";
 
 const HiddenCommandsRegistry = new CommandGroup<MyContext>();
@@ -19,35 +19,12 @@ const userCommandsRegistryDict: Record<string, CommandConfig> = {
   },
 };
 
-function registerCommand(cfg: CommandConfig) {
+for (const cfg of Object.values(userCommandsRegistryDict)) {
   const handlerWrapper = async (ctx: MyContext) => {
     debug("Comando", cfg.command, "executado por", ctx.from?.username);
     return cfg.handler(ctx);
   };
-
-  const groupCmd = HiddenCommandsRegistry.command(
-    cfg.command,
-    cfg.description.pt,
-    handlerWrapper,
-    options,
-  );
-
-  groupCmd.addToScope({ type: "all_group_chats" }, handlerWrapper);
-
-  if (cfg.commandPrivate) {
-    const privateCmd = HiddenCommandsRegistry.command(
-      cfg.commandPrivate,
-      cfg.description.pt,
-      handlerWrapper,
-      options,
-    );
-
-    privateCmd.addToScope({ type: "all_private_chats" }, handlerWrapper);
-  }
-}
-
-for (const cfg of Object.values(userCommandsRegistryDict)) {
-  registerCommand(cfg);
+  registerCommand(HiddenCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
 }
 
 export { HiddenCommandsRegistry };
