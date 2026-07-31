@@ -13,3 +13,4 @@ ui/dev.db
 fix_sequences.mjs
 telegram_bot/prisma/seed.ts
 telegram_bot.zip
+telegram_bot/src/lembretes.txt

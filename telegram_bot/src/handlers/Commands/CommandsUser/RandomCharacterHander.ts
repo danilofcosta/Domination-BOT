@@ -2,10 +2,29 @@ import type { MyContext } from "../../../uteis/CustomTypes.js";
 import { RandomCharacter } from "../../../uteis/extras/randomCharacter.js";
 import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
 import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import { error, warn } from "../../../uteis/log.js";
+import { error, info, warn } from "../../../uteis/log.js";
+import { GetCharacterById } from "../../../uteis/extras/GetCharacterById.js";
 
 export async function RandomCharacterHandler(ctx: MyContext) {
   try {
+    if (ctx.match) {
+      const id = Number(ctx.match);
+      if (!isNaN(id)) {
+        info("RandomCharacterHandler - buscando personagem por id", { id });
+        const character = await GetCharacterById(ctx.botType, id);
+        if (character) {
+          const caption = create_caption({
+            t: ctx.t,
+            character,
+            chatType: ctx.botType,
+          });
+          return SendMensageCustom({ ctx, character, caption });
+        }
+        warn("RandomCharacterHandler - personagem não encontrado", { id });
+        return SendMensageCustom({ ctx, caption: ctx.t("error-character-not-found") });
+      }
+    }
+
     const character = await RandomCharacter(ctx);
     if (!character) {
       warn("RandomCharacterHandler - nenhum personagem encontrado");

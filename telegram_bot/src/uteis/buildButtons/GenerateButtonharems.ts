@@ -7,8 +7,8 @@ interface BuildHaremButtonsParams {
   current_page: number;
   total_page: number;
   nextJump?: number;
-  isadmin?: boolean;
-  canDelete?: boolean;
+  btn_delete?: boolean;
+
 }
 
 export function Build_btn_harem({
@@ -17,7 +17,7 @@ export function Build_btn_harem({
   current_page,
   total_page,
   nextJump,
-  isadmin = false
+  btn_delete = false
 }: BuildHaremButtonsParams) {
   const totalPages = total_page || 1;
   const btn_prev = `harem_user_${userId}_prev_${current_page}`;
@@ -49,12 +49,12 @@ export function Build_btn_harem({
       },
     ],
     [
-      { text: ctx.t("harem_btn_setup"), callback_data: `harem_btn_${userId}_opensetup` },
+   //   { text: ctx.t("harem_btn_setup"), callback_data: `harem_btn_${userId}_opensetup` },
       { text: ctx.t("harem_btn_close"), callback_data: `harem_user_${userId}_close` },
     ],
   ]);
 
-  if ( isadmin) {
+  if ( btn_delete) {
     keyboard.inline_keyboard.push([
       { text: ctx.t("harem_btn_delete"), callback_data: `harem_user_${userId}_delete` },
     ]);

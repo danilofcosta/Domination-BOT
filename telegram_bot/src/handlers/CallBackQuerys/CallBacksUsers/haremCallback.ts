@@ -156,14 +156,15 @@ export async function haremCallback(ctx: MyContext) {
     return;
   }
 
-  const harem = getHarem(userId);
-  if (!harem) {
+  const cached = getHarem(userId);
+  if (!cached) {
     warn("haremCallback - harém não encontrado no cache", { userId });
     await ctx.answerCallbackQuery();
     return;
   }
 
-  const total = harem.length;
+  const { pages, forceopen } = cached;
+  const total = pages.length;
   let page = action.page;
 
   if (action.type === "prev") page--;
@@ -184,7 +185,7 @@ export async function haremCallback(ctx: MyContext) {
 
   info("haremCallback - navegando", { userId, page, action: action.type });
 
-  const pageContent = harem[page];
+  const pageContent = pages[page];
   if (!pageContent) {
     warn("haremCallback - página inválida", { userId, page, total });
     await ctx.answerCallbackQuery();
@@ -197,8 +198,7 @@ export async function haremCallback(ctx: MyContext) {
     total_page: total,
     userId,
     nextJump,
-    isadmin: true,
-    canDelete: isSuperAdmin,
+    btn_delete: !!forceopen,
   });
 
   try {

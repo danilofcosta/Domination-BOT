@@ -93,16 +93,21 @@ export function setLeaveGroupCache(chatId: number, state: LeaveGroupCacheState):
   leaveGroupStore.set(String(chatId), state);
 }
 
-const haremStore = new Map<number, string[]>();
+export interface HaremCacheData {
+  pages: string[];
+  forceopen?: boolean;
+}
 
-export function setHarem(userId: number, pages: string[] | null) {
-  if (pages === null) {
+const haremStore = new Map<number, HaremCacheData>();
+
+export function setHarem(userId: number, data: HaremCacheData | null) {
+  if (data === null) {
     haremStore.delete(userId);
   } else {
-    haremStore.set(userId, pages);
+    haremStore.set(userId, data);
   }
 }
 
-export function getHarem(userId: number): string[] | undefined {
+export function getHarem(userId: number): HaremCacheData | undefined {
   return haremStore.get(userId);
 }

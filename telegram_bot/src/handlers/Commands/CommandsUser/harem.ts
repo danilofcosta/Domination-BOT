@@ -12,7 +12,6 @@ import {
   Harem_mode_latest,
   Harem_mode_default,
 } from "./harem_mode_build.js";
-import { ProfileType } from "../../../../generated/prisma/client.js";
 
 const MAX_CAPTION_LEN = 1024;
 
@@ -26,20 +25,30 @@ function getInclude(isHusbando: boolean) {
     mediaType: true,
   } as const;
 
+  if (isHusbando) {
+    return {
+      Character: {
+        select: {
+          ...select,
+          HusbandoEvent: {
+            select: {
+              Event: { select: { id: true, name: true, emoji: true } },
+            },
+          },
+          HusbandoRarity: {
+            select: {
+              Rarity: { select: { id: true, name: true, emoji: true } },
+            },
+          },
+        },
+      },
+    };
+  }
+
   return {
     Character: {
       select: {
         ...select,
-        HusbandoEvent: {
-          select: {
-            Event: { select: { id: true, name: true, emoji: true } },
-          },
-        },
-        HusbandoRarity: {
-          select: {
-            Rarity: { select: { id: true, name: true, emoji: true } },
-          },
-        },
         WaifuEvent: {
           select: { Event: { select: { id: true, name: true, emoji: true } } },
         },
@@ -136,14 +145,14 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
     pageCount: pages.length,
   });
 
-  setHarem(ctx.from?.id ?? 0, pages);
+  setHarem(ctx.from?.id ?? 0, { pages, forceopen: !!force_open });
 
   const reply_markup = Build_btn_harem({
     ctx,
     current_page: 0,
     total_page: pages.length,
     userId: ctx.from?.id || 0,
-    isadmin: !!force_open,
+    btn_delete: !!force_open,
   });
 
   const caption = `${harem_logo}\n\n${pages[0]}`;
