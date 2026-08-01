@@ -1,5 +1,5 @@
-import { prisma } from "../../../../lib/prisma.js";
-import { eventCache, getOrSet } from "../../../../cache/cache.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import { eventCache, getOrSet } from "../../../../../cache/cache.js";
 
 export type CachedEvent = {
   id: number;

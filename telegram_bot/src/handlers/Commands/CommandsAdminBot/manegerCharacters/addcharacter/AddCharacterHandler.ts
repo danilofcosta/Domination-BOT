@@ -1,12 +1,12 @@
-import type { MyContext, PreCharacter } from "../../../../uteis/CustomTypes.js";
-import { ChatType } from "../../../../uteis/CustomTypes.js";
-import { extractMediaData } from "../../../../uteis/uteis_telegram/extractMediaData.js";
-import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
-import { create_caption } from "../../../../uteis/buildCapion/create_caption.js";
+import type { MyContext, PreCharacter } from "../../../../../uteis/CustomTypes.js";
+import { ChatType } from "../../../../../uteis/CustomTypes.js";
+import { extractMediaData } from "../../../../../uteis/uteis_telegram/extractMediaData.js";
+import { SendMensageCustom } from "../../../../../uteis/sendMensageCustom.js";
+import { create_caption } from "../../../../../uteis/buildCapion/create_caption.js";
 import { createCharacter } from "./character.service.js";
 import { EditUI } from "./edit.ui.js";
-import { setCharacter } from "../../../../cache/cache.js";
-import { info, error } from "../../../../uteis/log.js";
+import { setCharacter } from "../../../../../cache/cache.js";
+import { info, error } from "../../../../../uteis/log.js";
 
 function parseTokens(rest: string[]) {
   const tokens = rest.join(" ").toLowerCase().split(/\s+/);

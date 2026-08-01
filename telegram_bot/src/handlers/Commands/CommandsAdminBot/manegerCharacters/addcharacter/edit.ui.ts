@@ -1,7 +1,7 @@
-import { userCommandsRegistry, userCommandsRegistryDict } from "../../../../CommandsRegistry/CommandsRegistryUser.js";
-import { createButtonEditCharacter } from "../../../../uteis/buildButtons/createButtonEditCharacter.js";
-import type { MyContext, PreCharacter } from "../../../../uteis/CustomTypes.js";
-import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
+import { userCommandsRegistry, userCommandsRegistryDict } from "../../../../../CommandsRegistry/CommandsRegistryUser.js";
+import { createButtonEditCharacter } from "../../../../../uteis/buildButtons/createButtonEditCharacter.js";
+import type { MyContext, PreCharacter } from "../../../../../uteis/CustomTypes.js";
+import { SendMensageCustom } from "../../../../../uteis/sendMensageCustom.js";
 
 
 export async function EditUI(ctx: MyContext, CharacterCache: PreCharacter, cacheid: number | string, actionType: "edit" | "add" = "add") {

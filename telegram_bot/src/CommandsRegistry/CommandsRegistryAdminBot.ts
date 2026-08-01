@@ -6,8 +6,12 @@ import { debug } from "../uteis/log.js";
 import { ProfileType } from "../../generated/prisma/client.js";
 import { botPrefix, registerCommand } from "./botConfigCommands.js";
 import { onlyRoleBotAdmin } from "../uteis/permissions.js";
-import { AddCharacterHandler } from "../handlers/Commands/CommandsAdminBot/addcharacter/AddCharacterHandler.js";
+import { AddCharacterHandler } from "../handlers/Commands/CommandsAdminBot/manegerCharacters/addcharacter/AddCharacterHandler.js";
 import { EditCharacterHandler } from "../handlers/Commands/CommandsAdminBot/manegerCharacters/EditCharacterHandler.js";
+import { reload } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/reload.js";
+import { ban } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/ban.js";
+import { cleancolletion } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/cleancolletion.js";
+import { openharem } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/openharem.js";
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -50,7 +54,37 @@ const userCommandsRegistryDict: Record<string, AdminCommand> = {
       en: "altualizar lista de adms do bot",
 
     },
-    handler: EditCharacterHandler,
+    handler: reload,
+  },
+
+  ban: {
+    minPermission: ProfileType.ADMIN,
+    command: "ban" + botPrefix,
+    description: {
+      en: "Ban a user from the bot (admin)",
+      pt: "Banir um usuário do bot (admin)",
+    },
+    handler: ban,
+  },
+
+  cleancolletion: {
+    minPermission: ProfileType.ADMIN,
+    command: "cleancolletion" + botPrefix,
+    description: {
+      en: "Clean a user's collection (admin)",
+      pt: "Limpar a coleção de um usuário (admin)",
+    },
+    handler: cleancolletion,
+  },
+
+  openharem: {
+    minPermission: ProfileType.ADMIN,
+    command: "openharem" + botPrefix,
+    description: {
+      en: "Open any user's harem (admin)",
+      pt: "Abrir a coleção de qualquer usuário (admin)",
+    },
+    handler: openharem,
   },
 
 };

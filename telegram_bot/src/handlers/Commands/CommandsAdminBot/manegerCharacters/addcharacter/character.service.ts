@@ -1,5 +1,5 @@
-import { prisma } from "../../../../lib/prisma.js";
-import { ChatType } from "../../../../uteis/CustomTypes.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import { ChatType } from "../../../../../uteis/CustomTypes.js";
 
 export type UpdateCharacterData = {
   id: number;

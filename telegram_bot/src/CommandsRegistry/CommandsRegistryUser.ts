@@ -12,6 +12,7 @@ import {
   topHandlerChat,
 } from "../handlers/Commands/CommandsUser/top.js";
 import { Myinfos } from "../handlers/Commands/CommandsUser/myinfos.js";
+import { InfoHandler } from "../handlers/Commands/CommandsUser/info.js";
 import { GiftHandler } from "../handlers/Commands/CommandsUser/gift.js";
 import { favHandler } from "../handlers/Commands/CommandsUser/fav.js";
 import { HaremHandler } from "../handlers/Commands/CommandsUser/harem.js";
@@ -60,6 +61,16 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: Myinfos,
+    scopes: ["all_group_chats", "all_chat_administrators"],
+  },
+  Info: {
+    command: "info" + botPrefix,
+    commandPrivate: "info",
+    description: {
+      pt: "Mostra as informações de um usuário",
+      en: "Show user info",
+    },
+    handler: InfoHandler,
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Gift: {

@@ -11,6 +11,8 @@ import { addCharacterCallbackHandler } from "./handlers/CallBackQuerys/CallBacks
 import { ShowCharacterCallback } from "./handlers/CallBackQuerys/CallBacksUsers/showchararterCallback.js";
 import { leaveGroupCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/leave_group/leave_groupCallback.js";
 import { leaveGroupFromBotHandler } from "./handlers/CallBackQuerys/CallBacksAdminBot/leave_group/leave_group.js";
+import { banUserCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/ban_user/banUserCallback.js";
+import { cleanCollectionCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/clean_collection/cleanCollectionCallback.js";
 import { TradeCallbackQuery } from "./handlers/CallBackQuerys/CallBacksUsers/tradeCallback.js";
 
 const callbacks = new Composer<MyContext>();
@@ -46,6 +48,8 @@ callbacks.callbackQuery(/^al_/, animelistCallback);
 callbacks.callbackQuery(/^add-/, addCharacterCallbackHandler);
 callbacks.callbackQuery(/^ShowCharacterCallback_/, ShowCharacterCallback);
 callbacks.callbackQuery(/^bot_leave_/, leaveGroupCallback);
+callbacks.callbackQuery(/^ban_/, banUserCallback);
+callbacks.callbackQuery(/^clean_/, cleanCollectionCallback);
 callbacks.callbackQuery(/^leave_group_/, leaveGroupFromBotHandler);
 callbacks.callbackQuery(/^trade_/, TradeCallbackQuery);
 

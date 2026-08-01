@@ -5,12 +5,12 @@ import { info, warn, error } from "../../../uteis/log.js";
 import { getHarem, setHarem, permissionCache } from "../../../cache/cache.js";
 import { getUserRole, roleWeights } from "../../../uteis/permissions.js";
 import { Build_btn_harem } from "../../../uteis/buildButtons/GenerateButtonharems.js";
-import { CreateButtunConfirmation } from "../../../uteis/buildButtons/createButtonConfirmation.js";
+import { InlineKeyboard } from "grammy";
 
 type HaremAction =
   | { type: "close" }
   | { type: "delete" }
-  | { type: "del"; decision: "yes" | "no" }
+  | { type: "del"; decision: "yes" | "no" | "ban" | "only" }
   | { type: "opensetup" }
   | { type: "prev" | "next" | "page" | "jump"; page: number; jump: number };
 
@@ -41,12 +41,12 @@ function parseCallbackData(
     };
   }
 
-  const del = data.match(/^harem_user_(\d+)_del_(yes|no)$/);
+  const del = data.match(/^harem_user_(\d+)_del_(yes|no|ban|only)$/);
   if (del) {
     const [, uid, decision] = del;
     return {
       userId: Number(uid),
-      action: { type: "del", decision: decision as "yes" | "no" },
+      action: { type: "del", decision: decision as "yes" | "no" | "ban" | "only" },
     };
   }
 
@@ -93,58 +93,89 @@ export async function haremCallback(ctx: MyContext) {
       return;
     }
 
-    const confirm = CreateButtunConfirmation(
-      ctx,
-      `harem_user_${userId}_del_yes`,
-      `harem_user_${userId}_del_no`,
-    );
+    const keyboard = InlineKeyboard.from([
+      [
+        {
+          text: ctx.t("harem_delete_ban"),
+          callback_data: `harem_user_${userId}_del_ban`,
+        },
+        {
+          text: ctx.t("harem_delete_only"),
+          callback_data: `harem_user_${userId}_del_only`,
+        },
+      ],
+      [
+        {
+          text: ctx.t("harem_delete_cancel"),
+          callback_data: `harem_user_${userId}_del_no`,
+        },
+      ],
+    ]);
 
-    await ctx.reply(ctx.t("harem_delete_confirm"), { reply_markup: confirm });
+    await ctx.reply(ctx.t("harem_delete_choice"), {
+      reply_markup: keyboard,
+    });
     await ctx.answerCallbackQuery();
     return;
   }
 
   if (action.type === "del") {
-    if (action.decision === "yes") {
-      const targetRole = await getUserRole(userId);
-      if (roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
-        await ctx.deleteMessage().catch(() => {});
-        await ctx.reply(ctx.t("harem_delete_cannot_admin"));
-        await ctx.answerCallbackQuery();
-        return;
-      }
+    if (action.decision === "no") {
+      await ctx.deleteMessage().catch(() => {});
+      await ctx.answerCallbackQuery();
+      return;
+    }
 
-      try {
-        await prisma.$transaction([
-          prisma.husbandoCollection.deleteMany({
-            where: { userId: BigInt(userId) },
-          }),
-          prisma.waifuCollection.deleteMany({
-            where: { userId: BigInt(userId) },
-          }),
-          prisma.telegramUser.upsert({
-            where: { telegramId: BigInt(userId) },
-            update: { profileType: ProfileType.BANNED },
-            create: {
-              telegramId: BigInt(userId),
-              profileType: ProfileType.BANNED,
-              telegramData: {},
-              waifuConfig: {},
-              husbandoConfig: {},
-            },
-          }),
-        ]);
+    const shouldBan = action.decision === "ban" || action.decision === "yes";
 
+    const targetRole = await getUserRole(userId);
+    if (roleWeights[targetRole] >= roleWeights[ProfileType.ADMIN]) {
+      await ctx.deleteMessage().catch(() => {});
+      await ctx.reply(ctx.t("harem_delete_cannot_admin"));
+      await ctx.answerCallbackQuery();
+      return;
+    }
+
+    try {
+      await prisma.$transaction([
+        prisma.husbandoCollection.deleteMany({
+          where: { userId: BigInt(userId) },
+        }),
+        prisma.waifuCollection.deleteMany({
+          where: { userId: BigInt(userId) },
+        }),
+        ...(shouldBan
+          ? [
+              prisma.telegramUser.upsert({
+                where: { telegramId: BigInt(userId) },
+                update: { profileType: ProfileType.BANNED },
+                create: {
+                  telegramId: BigInt(userId),
+                  profileType: ProfileType.BANNED,
+                  telegramData: {},
+                  waifuConfig: {},
+                  husbandoConfig: {},
+                },
+              }),
+            ]
+          : []),
+      ]);
+
+      if (shouldBan) {
         permissionCache.delete(String(userId));
-        setHarem(userId, null);
-
-        await ctx.deleteMessage().catch(() => {});
-        await ctx.reply(ctx.t("harem_delete_success"));
-      } catch (e) {
-        error("haremCallback - erro ao deletar harem", e);
-        await ctx.answerCallbackQuery(ctx.t("error-generic"));
-        return;
       }
+      setHarem(userId, null);
+
+      await ctx.deleteMessage().catch(() => {});
+      await ctx.reply(
+        ctx.t(
+          shouldBan ? "harem_delete_success" : "harem_delete_only_success",
+        ),
+      );
+    } catch (e) {
+      error("haremCallback - erro ao deletar harem", e);
+      await ctx.answerCallbackQuery(ctx.t("error-generic"));
+      return;
     }
 
     await ctx.answerCallbackQuery();

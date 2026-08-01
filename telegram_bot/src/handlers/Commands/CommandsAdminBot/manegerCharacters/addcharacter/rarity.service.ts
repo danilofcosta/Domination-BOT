@@ -1,5 +1,5 @@
-import { prisma } from "../../../../lib/prisma.js";
-import { rarityCache, getOrSet } from "../../../../cache/cache.js";
+import { prisma } from "../../../../../lib/prisma.js";
+import { rarityCache, getOrSet } from "../../../../../cache/cache.js";
 
 export type CachedRarity = { id: number; name: string; emoji: string,  emoji_id: string | number | null; };
 

@@ -7,15 +7,15 @@ import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
 import {
   createCharacter,
   updateCharacter,
-} from "../../Commands/CommandsAdminBot/addcharacter/character.service.js";
+} from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/character.service.js";
 import { onlyRoleBotAdmin } from "../../../uteis/permissions.js";
 import { ProfileType } from "../../../../generated/prisma/client.js";
 import { InlineKeyboard } from "grammy";
 import { CreateOneBtn } from "../../../uteis/buildButtons/createOneButton.js";
 import { createButtonEditCharacter } from "../../../uteis/buildButtons/createButtonEditCharacter.js";
-import { EditUI } from "../../Commands/CommandsAdminBot/addcharacter/edit.ui.js";
-import { getRaritiesAll } from "../../Commands/CommandsAdminBot/addcharacter/rarity.service.js";
-import { getEventsAll } from "../../Commands/CommandsAdminBot/addcharacter/event.service.js";
+import { EditUI } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/edit.ui.js";
+import { getRaritiesAll } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/rarity.service.js";
+import { getEventsAll } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/event.service.js";
 import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
 import { setListener } from "../../../cache/listenerStore.js";
 
