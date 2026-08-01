@@ -11,6 +11,7 @@ import {
 import {
   topHandler,
   topHandlerChat,
+  topGruposHandler,
 } from "../handlers/Commands/CommandsUser/top.js";
 import { Myinfos } from "../handlers/Commands/CommandsUser/myinfos.js";
 import { InfoHandler } from "../handlers/Commands/CommandsUser/info.js";
@@ -47,6 +48,17 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     },
     handler: topHandlerChat,
     scopes: ["all_group_chats", "all_chat_administrators"],
+  },
+  topgrupo: {
+    category: category.Info_Personalization,
+    command: "topgrupo" + botPrefix,
+    commandPrivate: "topgrupo",
+    description: {
+      pt: "Mostra o top de grupos",
+      en: "Show the top groups",
+    },
+    handler: topGruposHandler,
+    scopes: ["all_group_chats", "all_private_chats"],
   },
   Trade: {
     category: category.Economy_Trade,
@@ -102,7 +114,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Harem: {
-    category: category.Collection,
+    category: category.main,
     command: `my${typeBot}s`,
 
     commandPrivate: "harem",
@@ -158,7 +170,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Detect: {
-    category: category.Info_Personalization,
+    category: category.main,
     command: "detect" + botPrefix,
     commandPrivate: "detect",
     description: {

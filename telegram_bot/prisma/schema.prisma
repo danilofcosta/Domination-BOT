@@ -109,11 +109,13 @@ model Event {
 }
 
 model HusbandoCollection {
-  id           Int               @id @default(autoincrement())
-  userId       BigInt
-  characterId  Int
-  count        Int
-  fromIdChat   BigInt?
+  id          Int            @id @default(autoincrement())
+  userId      BigInt
+  characterId Int
+  count       Int
+  fromIdChat  BigInt?
+  group       TelegramGroup? @relation(fields: [fromIdChat], references: [groupId], onDelete: SetNull)
+
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   Character    CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
@@ -156,13 +158,15 @@ model Rarity {
 }
 
 model TelegramGroup {
-  id            Int      @id @default(autoincrement())
-  groupId       BigInt   @unique
-  groupName     String
-  configuration Json?
-  addedBy       Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  Int                  @id @default(autoincrement())
+  groupId             BigInt               @unique
+  groupName           String
+  configuration       Json?
+  addedBy             Json?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  husbandoCollections HusbandoCollection[]
+  waifuCollections    WaifuCollection[]
 }
 
 model TelegramUser {
@@ -190,10 +194,13 @@ model TelegramUser {
 }
 
 model WaifuCollection {
-  id           Int            @id @default(autoincrement())
-  userId       BigInt
-  characterId  Int
-  fromIdChat   BigInt?
+  id          Int     @id @default(autoincrement())
+  userId      BigInt
+  characterId Int
+  fromIdChat  BigInt?
+
+  group TelegramGroup? @relation(fields: [fromIdChat], references: [groupId], onDelete: SetNull)
+
   count        Int            @default(1)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

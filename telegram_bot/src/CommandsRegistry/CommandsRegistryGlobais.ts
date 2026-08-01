@@ -3,6 +3,7 @@ import type { MyContext } from "../uteis/CustomTypes.js";
 import { debug } from "../uteis/log.js";
 import {
   botPrefix,
+  category,
   type CommandConfig,
   registerCommand,
 } from "./botConfigCommands.js";
@@ -14,6 +15,7 @@ const GlobaisCommandsRegistry = new CommandGroup<MyContext>();
 export const GlobaisCommandsRegistryDict: Record<string, CommandConfig> = {
   start: {
     command: "start",
+    category:category.main,
     commandPrivate: "start",
     description: {
       pt: "Mostra o top de jogadores",

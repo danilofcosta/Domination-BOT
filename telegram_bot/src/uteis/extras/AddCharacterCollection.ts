@@ -10,6 +10,7 @@ interface AddCharacterCollectionForm {
   from?: any;
   characterId: number;
   fromIdChat: number | bigint
+  chat:any
 }
 
 async function upsertCollectionAtomic(
@@ -17,7 +18,8 @@ async function upsertCollectionAtomic(
   isWaifu: boolean,
   telegramId: bigint,
   characterId: number,
-  fromIdChat: number | bigint
+  fromIdChat: number | bigint,
+ 
 ) {
   const table = isWaifu ? "WaifuCollection" : "HusbandoCollection";
   const seq = `"${table}_id_seq"`;
@@ -67,7 +69,7 @@ export async function AddCharacterCollection({
   userId,
   from,
   characterId,
-  fromIdChat
+  fromIdChat,chat
 }: AddCharacterCollectionForm): Promise<Collection | null> {
   if (type !== ChatType.WAIFU && type !== ChatType.HUSBANDO) {
     throw new Error(`Invalid collection type: ${type}`);
@@ -95,6 +97,18 @@ export async function AddCharacterCollection({
           husbandoConfig: {},
         },
       });
+
+      if (
+        chat &&
+        (chat.type === "group" || chat.type === "supergroup") &&
+        chat.title
+      ) {
+        await tx.telegramGroup.upsert({
+          where: { groupId: BigInt(chat.id) },
+          update: { groupName: chat.title },
+          create: { groupId: BigInt(chat.id), groupName: chat.title },
+        });
+      }
 
       if (isWaifu) {
         await tx.telegramUser.updateMany({

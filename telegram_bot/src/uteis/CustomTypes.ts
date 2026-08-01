@@ -25,6 +25,7 @@ export enum ChatType {
 export interface SessionData {
   chatType: "private" | "group" | "supergroup" | "channel";
   chatTypeBot: ChatType;
+  chatTitle: string;
 }
 export type MyContext = Context & SessionFlavor<SessionData> & I18nFlavor & CommandsFlavor & { botType: ChatType };
 

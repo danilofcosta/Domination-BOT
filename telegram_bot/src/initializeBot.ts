@@ -17,8 +17,9 @@ import { banCheck } from "./bot/middleware/banCheck.js";
 
 function initialSessionData(): SessionData {
   return {
-    chatType: 'private',
+    chatType: "private",
     chatTypeBot: process.env.CHAT_TYPE_BOT as ChatType,
+    chatTitle: "",
   };
 }
 
@@ -37,12 +38,20 @@ export default async function initializeBot(
       initial: initialSessionData,
       getSessionKey: (ctx) => `${ctx.chat?.type}_${ctx.chat?.id}`,
       prefix: "user-",
-      type: "single"
+      type: "single",
     }),
   );
 
   bot.use(async (ctx, next) => {
-    ctx.session.chatType = ctx.chat?.type ?? 'private';
+    const chat = ctx.chat;
+    const chatType = (chat?.type ?? "private") as SessionData["chatType"];
+    ctx.session.chatType = chatType;
+    ctx.session.chatTitle =
+      chatType === "private"
+        ? (ctx.from?.first_name ?? ctx.from?.username ?? "")
+        : chat && "title" in chat
+          ? ((chat as { title?: string }).title ?? "")
+          : "";
     await next();
   });
 

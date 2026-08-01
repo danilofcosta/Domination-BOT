@@ -2,6 +2,7 @@ import type { MyContext } from "../../../uteis/CustomTypes.js";
 import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
 import { getLatestCharacter } from "../../../uteis/extras/getLatestCharacter.js";
 import { info, warn, error } from "../../../uteis/log.js";
+import { guiaHandler } from "./guiaHandler.js";
 
 export async function startCallback(ctx: MyContext) {
   const data = ctx.callbackQuery?.data;
@@ -10,11 +11,7 @@ export async function startCallback(ctx: MyContext) {
   try {
     if (data.startsWith("start_guia_")) {
       info("start - guia solicitado", { fromId: ctx.from?.id });
-      await SendMensageCustom({
-        ctx,
-        caption: ctx.t("start_guia_text"),
-      });
-      await ctx.answerCallbackQuery();
+      await guiaHandler(ctx);
       return;
     }
 

@@ -5,14 +5,54 @@ import { rankingCache, getOrSet } from "../../../cache/cache.js";
 import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
 import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
 import { getLatestCharacter } from "../../../uteis/extras/getLatestCharacter.js";
-import { InlineKeyboard } from "grammy";
-import type { title } from "node:process";
+
 import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
+import {
+  createButtonsTopGlobal,
+  createButtonsTopChat,
+  createButtonsTopGrupos,
+} from "../../../uteis/buildButtons/createButtonsTop.js";
 
 export type RankingItem = {
   userId: bigint;
   _count: { characterId: number };
 };
+
+export type GruposRankingItem = {
+  fromIdChat: bigint;
+  _sum: { count: number } | null;
+};
+
+export async function getGruposRanking(
+  isHusbando: boolean,
+): Promise<GruposRankingItem[]> {
+  const cacheKey = `topgrupos:${isHusbando ? "husbando" : "waifu"}`;
+  return (await getOrSet<any>(rankingCache, cacheKey, () =>
+    isHusbando
+      ? prisma.husbandoCollection.groupBy({
+          by: ["fromIdChat"],
+          _sum: { count: true },
+          where: { fromIdChat: { not: null } },
+          orderBy: { _sum: { count: "desc" } },
+          take: 10,
+        })
+      : prisma.waifuCollection.groupBy({
+          by: ["fromIdChat"],
+          _sum: { count: true },
+          where: { fromIdChat: { not: null } },
+          orderBy: { _sum: { count: "desc" } },
+          take: 10,
+        }),
+  )) as GruposRankingItem[];
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
  export async function buildTopMessage(ctx: MyContext, ranking: RankingItem[], headerKey: string) {
   const userIds = ranking.map((r) => r.userId);
@@ -47,6 +87,34 @@ export type RankingItem = {
 : ctx.t(headerKey, { Logo_bt: ctx.t("Logo_bt") }),
     ctx.t("top_init_list"),
     ...topUsers,
+    ctx.t("top_end_list"),
+  ].join("\n");
+}
+
+export async function buildTopGruposMessage(
+  ctx: MyContext,
+  ranking: GruposRankingItem[],
+) {
+  const groupIds = ranking.map((r) => r.fromIdChat);
+  const groups = await prisma.telegramGroup.findMany({
+    where: { groupId: { in: groupIds } },
+    select: { groupId: true, groupName: true },
+  });
+
+  const groupMap = new Map<number, string>(
+    groups.map((g) => [Number(g.groupId), escapeHtml(g.groupName)]),
+  );
+
+  const top_separator = ctx.t("top_separator");
+  const topGroups: string[] = ranking.map((item, index: number) => {
+    const name = groupMap.get(Number(item.fromIdChat)) ?? "grupo";
+    return ` ${index + 1}. <b>${name}</b> ${top_separator} <code> ${item._sum?.count ?? 0}</code>`;
+  });
+
+  return [
+    ctx.t("top_header_grupos"),
+    ctx.t("top_init_list"),
+    ...topGroups,
     ctx.t("top_end_list"),
   ].join("\n");
 }
@@ -86,12 +154,7 @@ export async function topHandler(ctx: MyContext) {
 
   const text = await buildTopMessage(ctx, ranking, "top_header_global");
 
-  const reply_markup = new InlineKeyboard()
-    .text(ctx.t("top_user_btn_my_position"), "topuser_position_global")
-    .row()
-    .text(ctx.t("top_user_btn_chat"), "topuser_chat")
-    .row()
-    .text(ctx.t("top_btn_close"), "topuser_close");
+  const reply_markup = createButtonsTopGlobal(ctx);
 
   const character = await getLatestCharacter(ctx.botType);
 
@@ -115,6 +178,48 @@ export async function topHandler(ctx: MyContext) {
   return SendMensageCustom({
     ctx,
     caption: text,
+  });
+}
+
+export async function topGruposHandler(ctx: MyContext) {
+  const isHusbando = ctx.botType === ChatType.HUSBANDO;
+  info(`topGrupos - carregando ranking de grupos`, {
+    userId: ctx.from?.id,
+    genero: ctx.botType,
+  });
+
+  const ranking = await getGruposRanking(isHusbando);
+
+  if (!ranking.length) {
+    warn(`topGrupos - ranking vazio`, { userId: ctx.from?.id });
+    return SendMensageCustom({ ctx, caption: ctx.t("top_grupos_empty") });
+  }
+
+  debug(`topGrupos - grupos no ranking`, { count: ranking.length });
+
+  const text = await buildTopGruposMessage(ctx, ranking);
+
+  const reply_markup = createButtonsTopGrupos(ctx);
+
+  const character = await getLatestCharacter(ctx.botType);
+
+  if (character) {
+    try {
+      return SendMensageCustom({
+        ctx,
+        character: character,
+        caption: text,
+        reply_markup: reply_markup,
+      });
+    } catch (e) {
+      error(`topGrupos - erro ao enviar mídia`, e);
+    }
+  }
+
+  return SendMensageCustom({
+    ctx,
+    caption: text,
+    reply_markup: reply_markup,
   });
 }
 
@@ -166,12 +271,7 @@ export async function topHandlerChat(ctx: MyContext) {
 
   const text = await buildTopMessage(ctx, ranking, "top_header_chat");
 
-  const reply_markup = new InlineKeyboard()
-    .text(ctx.t("top_user_btn_my_position"), "topuser_position_chat")
-    .row()
-    .text(ctx.t("top_user_btn_global"), "topuser_global")
-    .row()
-    .text(ctx.t("top_btn_close"), "topuser_close");
+  const reply_markup = createButtonsTopChat(ctx);
 
   const character = await getLatestCharacter(ctx.botType);
 

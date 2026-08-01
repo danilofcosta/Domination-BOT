@@ -3,21 +3,26 @@ import { prisma } from "../../../lib/prisma.js";
 import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
 import { debug, info, warn } from "../../../uteis/log.js";
 import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { buildTopMessage, type RankingItem } from "../../Commands/CommandsUser/top.js";
+import {
+  buildTopMessage,
+  buildTopGruposMessage,
+  getGruposRanking,
+  type RankingItem,
+} from "../../Commands/CommandsUser/top.js";
 import { getOrSet, rankingCache } from "../../../cache/cache.js";
 import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
+import {
+  createButtonsTopGlobal,
+  createButtonsTopChat,
+  createButtonsTopGrupos,
+} from "../../../uteis/buildButtons/createButtonsTop.js";
 
 export async function TopCallbackQuery(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
   const [, action] = parts;
   const chatId = ctx.chat?.id;
   if (action === "chat") {
-        const reply_markup = new InlineKeyboard()
-      .text(ctx.t("top_user_btn_my_position"), "topuser_position_chat")
-      .row()
-      .text(ctx.t("top_user_btn_global"), "topuser_global")
-      .row()
-      .text(ctx.t("top_btn_close"), "topuser_close");
+        const reply_markup = createButtonsTopChat(ctx);
     if (!chatId) return ctx.answerCallbackQuery({ text: ctx.t("top-empty"), show_alert: true });
 
     const chatIdBig = BigInt(chatId);
@@ -94,12 +99,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     const text = await buildTopMessage(ctx, ranking, "top_header_global");
 
-    const reply_markup = new InlineKeyboard()
-      .text(ctx.t("top_user_btn_my_position"), "topuser_position_global")
-      .row()
-      .text(ctx.t("top_user_btn_chat"), "topuser_chat")
-      .row()
-      .text(ctx.t("top_btn_close"), "topuser_close");
+    const reply_markup = createButtonsTopGlobal(ctx);
 
     await EditOrSendText(
       { ctx, caption: text, reply_markup: reply_markup }
@@ -109,10 +109,81 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
   }
 
+  if (action === "grupos") {
+    const isHusbando = ctx.botType === ChatType.HUSBANDO;
+    info(`topGrupos - carregando ranking de grupos`, {
+      userId: ctx.from?.id,
+      genero: ctx.botType,
+    });
+
+    const ranking = await getGruposRanking(isHusbando);
+
+    if (!ranking.length) {
+      warn(`topGrupos - ranking vazio`, { userId: ctx.from?.id });
+      return EditOrSendText({
+        ctx,
+        caption: ctx.t("top_grupos_empty"),
+        reply_markup: createButtonsTopGrupos(ctx),
+      });
+    }
+
+    debug(`topGrupos - grupos no ranking`, { count: ranking.length });
+
+    const text = await buildTopGruposMessage(ctx, ranking);
+
+    await EditOrSendText({
+      ctx,
+      caption: text,
+      reply_markup: createButtonsTopGrupos(ctx),
+    });
+  }
+
   if (action === "position") {
     const userId = ctx.from?.id;
     const isHusbando = ctx.botType === ChatType.HUSBANDO;
     const isChat = parts[2] === "chat";
+    const isGrupos = parts[2] === "grupos";
+
+    if (isGrupos) {
+      if (ctx.chat?.type === "private") {
+        return ctx.answerCallbackQuery({
+          text: ctx.t("top-chat-group-only"),
+          show_alert: true,
+        });
+      }
+
+      const chatIdGrupos = ctx.chat?.id;
+      if (!chatIdGrupos) {
+        return ctx.answerCallbackQuery({
+          text: ctx.t("top_grupos_empty"),
+          show_alert: true,
+        });
+      }
+
+      const rankingGrupos = await getGruposRanking(isHusbando);
+
+      const position = rankingGrupos.findIndex(
+        (r) => Number(r.fromIdChat) === chatIdGrupos,
+      );
+
+      if (position === -1) {
+        return ctx.answerCallbackQuery({
+          text: ctx.t("top_user_not_ranked_grupos", {
+            chat_title: ctx.chat?.title ?? "",
+          }),
+          show_alert: true,
+        });
+      }
+
+      return ctx.answerCallbackQuery({
+        text: ctx.t("top_user_position_grupos", {
+          chat_title: ctx.chat?.title ?? "",
+          position: String(position + 1),
+          total: String(rankingGrupos.length),
+        }),
+        show_alert: true,
+      });
+    }
 
     let ranking: RankingItem[];
 

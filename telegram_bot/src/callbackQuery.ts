@@ -17,6 +17,10 @@ import { upadminCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/upa
 import { unbanCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/unban/unbanCallback.js";
 import { unadminCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/unadmin/unadminCallback.js";
 import { startCallback } from "./handlers/CallBackQuerys/CallBacksGlobais/startCallback.js";
+import {
+  guiaCategoryCallback,
+  guiaBackStart,
+} from "./handlers/CallBackQuerys/CallBacksGlobais/guiaHandler.js";
 import { TradeCallbackQuery } from "./handlers/CallBackQuerys/CallBacksUsers/tradeCallback.js";
 
 const callbacks = new Composer<MyContext>();
@@ -58,6 +62,8 @@ callbacks.callbackQuery(/^upadmin_/, upadminCallback);
 callbacks.callbackQuery(/^unban_/, unbanCallback);
 callbacks.callbackQuery(/^unadmin_/, unadminCallback);
 callbacks.callbackQuery(/^start_/, startCallback);
+callbacks.callbackQuery(/^guia_cat_/, guiaCategoryCallback);
+callbacks.callbackQuery(/^guia_back_start/, guiaBackStart);
 callbacks.callbackQuery(/^leave_group_/, leaveGroupFromBotHandler);
 callbacks.callbackQuery(/^trade_/, TradeCallbackQuery);
 

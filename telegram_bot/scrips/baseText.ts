@@ -128,6 +128,39 @@ export const _base: localekey[] = [
     },
   },
   {
+    key: "top_user_btn_grupos",
+    description: null,
+    localeTraslation: {
+      value: "top grupos",
+      isButton: true,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "top_header_grupos",
+    description: null,
+    localeTraslation: {
+      value: "TOP GRUPOS",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "top_grupos_empty",
+    description: null,
+    localeTraslation: {
+      value: "Nenhum grupo no ranking ainda.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
     key: "top_btn_close",
     description: null,
     localeTraslation: {
@@ -196,7 +229,36 @@ export const _base: localekey[] = [
       locale: { lang: "pt", icon: "🇧🇷" },
        extrakey: [
         { key: "chat_title", description: 'nome do grupo' },
- 
+  
+      ],
+    },
+  },
+
+  {
+    key: "top_user_position_grupos",
+    description: null,
+    localeTraslation: {
+      value: "Posição do grupo ${chat_title} :${position} \n Total :${total}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "chat_title", description: 'nome do grupo' },
+        { key: "position", description: null },
+        { key: "total", description: null },
+      ],
+    },
+  },
+  {
+    key: "top_user_not_ranked_grupos",
+    description: null,
+    localeTraslation: {
+      value: "Este grupo (${chat_title}) ainda não está no ranking.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "chat_title", description: 'nome do grupo' },
       ],
     },
   },

@@ -30,7 +30,7 @@ services:
 
 
   waifu_bot:
-    build: ./bot_telegram
+    build: ./telegram_bot
     container_name: waifu_bot
     restart: unless-stopped
     env_file:

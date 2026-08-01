@@ -14,10 +14,12 @@ function formatUptime(seconds: number): string {
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
 }
-let lastRefreshTime = Date.now();export async function StartHandler(ctx: MyContext) {
+let lastRefreshTime = Date.now(); 
+
+export async function StartHandler(ctx: MyContext) {
   if (ctx.match) {
     info("start - comando com argumento", { match: ctx.match });
-    return await ProcessStartArgument(ctx);
+     await ProcessStartArgument(ctx);
   }
 
   if (ctx.chat?.type !== "private") {

@@ -292,7 +292,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       userId,
       from: ctx.from || {},
       characterId: character.id,
-      fromIdChat:ctx.chat.id
+      fromIdChat: ctx.chat.id, chat: ctx.chat
     });
 
     if (!character_collection) {
@@ -332,7 +332,7 @@ export async function CapturarCharacter(ctx: MyContext) {
     try {
       await SendMensageCustom({
         ctx,
-        caption: successDominarMessageResult ,
+        caption: successDominarMessageResult,
         reply_markup: CreateOneBtn({
           text: ctx.t("success_dominar_btn"),
           callback: "harem_user_" + ctx.from?.id,
