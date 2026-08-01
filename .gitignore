@@ -6,8 +6,8 @@ telegram_bot/node_modules
 telegram_bot/dist 
 telegram_bot/data
 
-web
-!telegram_bot/src/handlers/Commands/CommandsGlobais/web/
+
+telegram_bot/src/handlers/Commands/CommandsGlobais/web/
 
 ui\node_modules
 ui/dev.db
