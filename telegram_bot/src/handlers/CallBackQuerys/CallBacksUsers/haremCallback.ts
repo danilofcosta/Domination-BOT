@@ -69,10 +69,10 @@ export async function haremCallback(ctx: MyContext) {
   const action = parsed.action;
 
   const callerRole = await getUserRole(ctx.from?.id ?? 0);
-  const isSuperAdmin =
-    roleWeights[callerRole] >= roleWeights[ProfileType.SUPER_ADMIN];
+  const isAdmin =
+    roleWeights[callerRole] >= roleWeights[ProfileType.ADMIN];
 
-  if (ctx.from?.id !== userId && !isSuperAdmin) {
+  if (ctx.from?.id !== userId && !isAdmin) {
     warn("haremCallback - usuário não autorizado", {
       expected: userId,
       actual: ctx.from?.id,
@@ -88,7 +88,7 @@ export async function haremCallback(ctx: MyContext) {
   }
 
   if (action.type === "delete") {
-    if (roleWeights[callerRole] < roleWeights[ProfileType.SUPER_ADMIN]) {
+    if (roleWeights[callerRole] < roleWeights[ProfileType.ADMIN]) {
       await ctx.answerCallbackQuery(ctx.t("harem_delete_no_permission"));
       return;
     }

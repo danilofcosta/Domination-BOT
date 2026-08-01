@@ -11,6 +11,9 @@ import { AdminCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminB
 import { devCommands } from "./CommandsRegistry/CommandsRegistryAdminDev.js";
 import { GlobaisCommandsRegistry } from "./CommandsRegistry/CommandsRegistryGlobais.js";
 import { info } from "./uteis/log.js";
+import { blockDetection } from "./bot/middleware/blockDetection.js";
+import { rateLimiter } from "./bot/middleware/rateLimiter.js";
+import { banCheck } from "./bot/middleware/banCheck.js";
 
 function initialSessionData(): SessionData {
   return {
@@ -49,6 +52,9 @@ export default async function initializeBot(
   });
 
   bot.use(i18nMiddleware);
+  bot.use(blockDetection);
+  bot.use(rateLimiter);
+  bot.use(banCheck);
 
   // bot.api.deleteMyCommands()
   // userCommandsRegistry.setCommands(bot)

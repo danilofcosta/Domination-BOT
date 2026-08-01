@@ -39,3 +39,8 @@ export function onlyRoleBotAdmin(minPermission: ProfileType) {
     }
   };
 }
+
+export async function isUserBanned(userId: number): Promise<boolean> {
+  const role = await getUserRole(userId);
+  return roleWeights[role] === roleWeights[ProfileType.BANNED];
+}

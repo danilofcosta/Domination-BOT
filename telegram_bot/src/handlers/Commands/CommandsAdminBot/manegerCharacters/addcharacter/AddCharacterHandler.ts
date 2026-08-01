@@ -7,6 +7,7 @@ import { createCharacter } from "./character.service.js";
 import { EditUI } from "./edit.ui.js";
 import { setCharacter } from "../../../../../cache/cache.js";
 import { info, error } from "../../../../../uteis/log.js";
+import { CreateMentionUser } from "../../../../../uteis/uteis_telegram/CreateMentionUser.js";
 
 function parseTokens(rest: string[]) {
   const tokens = rest.join(" ").toLowerCase().split(/\s+/);
@@ -55,7 +56,7 @@ async function sendAddedNotification(
 
   const fullCaption = isNoautor
     ? caption
-    : caption + "\n\n" + ctx.t("add_character_confirm");
+    : caption + "\n\n" + ctx.t("add_character_confirm", { usermention: CreateMentionUser({ Nome: ctx.from?.first_name ??'', telegramiduser: ctx.from?.id ?? 0 }) });
 
   await SendMensageCustom({
     ctx,

@@ -145,13 +145,13 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
     pageCount: pages.length,
   });
 
-  setHarem(ctx.from?.id ?? 0, { pages, forceopen: !!force_open });
+  setHarem(force_open ?? ctx.from?.id ?? 0, { pages, forceopen: !!force_open });
 
   const reply_markup = Build_btn_harem({
     ctx,
     current_page: 0,
     total_page: pages.length,
-    userId: ctx.from?.id || 0,
+    userId:force_open ||  ctx.from?.id || 0,
     btn_delete: !!force_open,
   });
 

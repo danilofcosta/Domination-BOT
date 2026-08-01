@@ -21,6 +21,7 @@ import { CapturarCharacter } from "../handlers/Commands/CommandsUser/dominar.js"
 import { TradeHandler } from "../handlers/Commands/CommandsUser/trade.js";
 import { RandomCharacterHandler } from "../handlers/Commands/CommandsUser/RandomCharacterHander.js";
 import { animelistCommand } from "../handlers/Commands/CommandsUser/animelist.js";
+import { DetectHandler } from "../handlers/Commands/CommandsUser/detect.js";
 
 const userCommandsRegistry = new CommandGroup<MyContext>();
 
@@ -142,6 +143,16 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Try to capture a character that appeared in chat",
     },
     handler: CapturarCharacter,
+    scopes: ["all_group_chats", "all_chat_administrators"],
+  },
+  Detect: {
+    command: "detect" + botPrefix,
+    commandPrivate: "detect",
+    description: {
+      pt: "Busca um personagem e mostra quem o possui na coleção",
+      en: "Search a character and show who owns it",
+    },
+    handler: DetectHandler,
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
 };

@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { DAILY_LIMIT, DROP, UNDROP } from "../bot/middleware/constants.js";
 
 let cachedConfig: { dropMsg: number; undropMsg: number; dailyLimit: number } | null = null;
 
@@ -13,11 +14,9 @@ async function loadConfig(): Promise<{ dropMsg: number; undropMsg: number; daily
   };
 
   return {
-    // dropMsg: get("DROP_MSG", 100),
-     dropMsg:100,
-
-    undropMsg: get("UNDROP_MSG", 50),
-    dailyLimit: get("DAILY_LIMIT", 50),
+    dropMsg: get("DROP_MSG", DROP),
+    undropMsg: get("UNDROP_MSG", UNDROP),
+    dailyLimit: get("DAILY_LIMIT", DAILY_LIMIT),
   };
 }
 

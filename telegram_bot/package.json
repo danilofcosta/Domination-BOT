@@ -15,6 +15,7 @@
     "grammy": "^1.45.1",
     "lru-cache": "^11.5.1",
     "pg": "^8.22.0",
+    "redis": "^6.2.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
@@ -23,13 +24,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "delmigrations":"tsx scrips/remover_migrations.ts",
+    "delmigrations": "tsx scrips/remover_migrations.ts",
     "dev": "tsx src/index.ts",
     "seed": "tsx prisma/seed.ts",
-     "settext": "tsx scrips/uplocalate.ts",
+    "settext": "tsx scrips/uplocalate.ts",
     "t": "tsx prisma/scrips/t.ts",
     "test": "tsc &&node dist/index.js ",
-      "webhook": "tsx prisma/scrips/set_web_hook.ts"
+    "webhook": "tsx prisma/scrips/set_web_hook.ts"
   },
   "keywords": [],
   "author": "",

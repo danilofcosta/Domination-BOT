@@ -2,15 +2,17 @@
 import { CreateMentionUser } from "../uteis_telegram/CreateMentionUser.js";
 import { extractListEmojisCharacter } from "./extract_emojis.js";
 
-export interface Params {
+export interface create_caption_Params {
   t: (key: string, params?: Record<string, string>) => string;
   chatType: ChatType;
   character: any;
   rawEmoji?: boolean;
   username?: string | null;
+  addby?: string
   user_id?: string | number | null;
   reply_markup?: any;
-  input_message_content?:any
+  input_message_content?: any
+
 }
 
 function fmtEmojis(list: string[]): string {
@@ -24,8 +26,8 @@ export function create_caption({
   character,
   username,
   user_id,
-  rawEmoji,
-}: Params) {
+  rawEmoji, addby
+}: create_caption_Params) {
   const genero = t(
     chatType === ChatType.WAIFU
       ? "create-caption-gender-waifu"
@@ -97,6 +99,9 @@ export function create_caption({
     emoji_event: fmtEmojis(eventEmojis),
     event_name: eventName,
   });
+  if (addby) { return `${title}\n\n${name}\n${info}\n${rarity}\n\n${event} \n\n${addby}`.trim(); }
+
+
 
   return `${title}\n\n${name}\n${info}\n${rarity}\n\n${event}`.trim();
 }

@@ -14,7 +14,7 @@ import { GetCharacterById } from "../../uteis/extras/GetCharacterById.js";
 import { getDropConfig } from "../../cache/dropConfig.js";
 
 export async function CountMessages(ctx: MyContext) {
-  debug('mensagem recibida ',ctx.message?.text)
+  debug('mensagem recibida ',ctx.message?.text ,{ group:ctx.chat?.title?? ctx.from?.first_name,user:ctx.from?.first_name,id:ctx.from?.id})
   if (!ctx.chat) return;
 
   const chatId = ctx.chat.id;

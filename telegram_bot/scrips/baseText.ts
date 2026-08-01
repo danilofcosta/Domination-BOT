@@ -236,6 +236,17 @@ export const _base: localekey[] = [
     },
   },
   {
+    key: "use-onLimitExceeded",
+    description: null,
+    localeTraslation: {
+      value: "{ $mentionUser } está inundando o chat. não poderá usar o bot por 15 minutos.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
     key: "error-character-not-found",
     description: null,
     localeTraslation: {
@@ -790,7 +801,7 @@ export const _base: localekey[] = [
     key: "harem_delete_no_permission",
     description: null,
     localeTraslation: {
-      value: "Apenas SUPER_ADMIN ou superior pode excluir harens.",
+      value: "Apenas ADMIN ou superior pode excluir harens.",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },

@@ -18,6 +18,7 @@ import { getRaritiesAll } from "../../Commands/CommandsAdminBot/manegerCharacter
 import { getEventsAll } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/event.service.js";
 import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
 import { setListener } from "../../../cache/listenerStore.js";
+import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
 
 const ITEMS_PER_PAGE = 10;
 const SOURCE_TYPES = ["ANIME", "GAME", "MANGA", "MOVIE"] as const;
@@ -443,7 +444,7 @@ async function handleCallback(ctx: MyContext) {
   if (action === "save") {
     try {
       let character_db: any;
-
+        //caso for uma edição de personagem
       if (actionType === "edit" && characterData.editId) {
         character_db = await updateCharacter({
           id: characterData.editId,
@@ -502,6 +503,7 @@ async function handleCallback(ctx: MyContext) {
         const caption = create_caption({
           character: character_db,
           chatType: characterData.genero,
+          addby:ctx.t("add_character_confirm", { usermention: CreateMentionUser({ Nome: ctx.from?.first_name ??'', telegramiduser: ctx.from?.id ?? 0 }) }),
           t: ctx.t,
         });
         await SendMensageCustom({
