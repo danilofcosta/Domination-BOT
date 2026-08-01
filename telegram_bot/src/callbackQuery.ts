@@ -13,6 +13,10 @@ import { leaveGroupCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/
 import { leaveGroupFromBotHandler } from "./handlers/CallBackQuerys/CallBacksAdminBot/leave_group/leave_group.js";
 import { banUserCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/ban_user/banUserCallback.js";
 import { cleanCollectionCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/clean_collection/cleanCollectionCallback.js";
+import { upadminCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/upadmin/upadminCallback.js";
+import { unbanCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/unban/unbanCallback.js";
+import { unadminCallback } from "./handlers/CallBackQuerys/CallBacksAdminBot/unadmin/unadminCallback.js";
+import { startCallback } from "./handlers/CallBackQuerys/CallBacksGlobais/startCallback.js";
 import { TradeCallbackQuery } from "./handlers/CallBackQuerys/CallBacksUsers/tradeCallback.js";
 
 const callbacks = new Composer<MyContext>();
@@ -50,6 +54,10 @@ callbacks.callbackQuery(/^ShowCharacterCallback_/, ShowCharacterCallback);
 callbacks.callbackQuery(/^bot_leave_/, leaveGroupCallback);
 callbacks.callbackQuery(/^ban_/, banUserCallback);
 callbacks.callbackQuery(/^clean_/, cleanCollectionCallback);
+callbacks.callbackQuery(/^upadmin_/, upadminCallback);
+callbacks.callbackQuery(/^unban_/, unbanCallback);
+callbacks.callbackQuery(/^unadmin_/, unadminCallback);
+callbacks.callbackQuery(/^start_/, startCallback);
 callbacks.callbackQuery(/^leave_group_/, leaveGroupFromBotHandler);
 callbacks.callbackQuery(/^trade_/, TradeCallbackQuery);
 

@@ -6,6 +6,7 @@ import {
   typeBot,
   type CommandConfig,
   registerCommand,
+  category,
 } from "./botConfigCommands.js";
 import {
   topHandler,
@@ -27,6 +28,7 @@ const userCommandsRegistry = new CommandGroup<MyContext>();
 
 export const userCommandsRegistryDict: Record<string, CommandConfig> = {
   top: {
+    category: category.Info_Personalization,
     command: "top" + botPrefix,
     commandPrivate: "top",
     description: {
@@ -37,6 +39,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_private_chats"],
   },
   topchat: {
+    category: category.Info_Personalization,
     command: "topchat" + botPrefix,
     description: {
       pt: "Mostra o top de jogadores",
@@ -46,6 +49,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Trade: {
+    category: category.Economy_Trade,
     command: "trade" + botPrefix,
     description: {
       pt: "negocia a troca de personagens com outro usuario",
@@ -55,6 +59,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Myinfos: {
+    category: category.Info_Personalization,
     command: "myinfo" + botPrefix,
     commandPrivate: "myinfo",
     description: {
@@ -65,6 +70,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Info: {
+    category: category.Info_Personalization,
     command: "info" + botPrefix,
     commandPrivate: "info",
     description: {
@@ -75,6 +81,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Gift: {
+    category: category.Economy_Trade,
     command: "gift" + botPrefix,
     description: {
       pt: "Presenteia um personagem para outro usuario",
@@ -84,6 +91,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Fav: {
+    category: category.Info_Personalization,
     command: "fav" + botPrefix,
     commandPrivate: "fav",
     description: {
@@ -94,7 +102,8 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Harem: {
-  command: `my${typeBot}s`,
+    category: category.Collection,
+    command: `my${typeBot}s`,
 
     commandPrivate: "harem",
     description: {
@@ -105,6 +114,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   HaremMode: {
+    category: category.Collection,
     command: "haremmode" + botPrefix,
     commandPrivate: "haremmode",
     description: {
@@ -115,6 +125,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Random: {
+    category: category.Info_Personalization,
     command: typeBot ? typeBot.toLowerCase() : "random",
     commandPrivate: typeBot ? typeBot.toLowerCase() : "random", commandPrivateInChat: true,
 
@@ -126,6 +137,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Animelist: {
+    category: category.Info_Personalization,
     command: "animelist" + botPrefix,
     commandPrivate: "animelist" + botPrefix,
     description: {
@@ -137,7 +149,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
   },
   Dominar: {
     command: "dominar",
-
+    category: category.main,
     description: {
       pt: "Tenta capturar um personagem que apareceu no chat",
       en: "Try to capture a character that appeared in chat",
@@ -146,6 +158,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_chat_administrators"],
   },
   Detect: {
+    category: category.Info_Personalization,
     command: "detect" + botPrefix,
     commandPrivate: "detect",
     description: {
@@ -161,8 +174,7 @@ for (const cfg of Object.values(userCommandsRegistryDict)) {
   const handlerWrapper = async (ctx: MyContext) => {
     debug("Comando", cfg.command, ctx.chat?.type, "executado por", ctx.from?.username);
     if
-        (ctx.chat?.type !== 'private' && ctx.commandMatch?.command === cfg.commandPrivate && cfg.commandPrivateInChat === false)
-       {
+      (ctx.chat?.type !== 'private' && ctx.commandMatch?.command === cfg.commandPrivate && cfg.commandPrivateInChat === false) {
       return debug("Comando privado em", ctx.chat?.type, 'ignorado', cfg.commandPrivate, ctx.chat?.type, "executado por", ctx.from?.username);
 
     }

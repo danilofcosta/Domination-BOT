@@ -9,11 +9,18 @@ const prefixs = "./!";
 const options = { ignoreCase: true, prefixs };
 type ScopeType = "all_group_chats" | "all_private_chats" | "all_chat_administrators";
 
+export enum category {
+  main,
+  Collection
+  , Economy_Trade ,
+  Info_Personalization
+}
 export type CommandConfig = {
   command: string;
   commandPrivate?: string;
   commandPrivateInChat?: boolean
   other_commands?: [string]
+  category:category
 
   description: {
     pt: string;

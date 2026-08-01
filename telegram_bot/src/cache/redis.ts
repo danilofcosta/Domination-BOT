@@ -65,6 +65,17 @@ export const redis = {
     if (redisUrl) await (await getClient()).pExpire(key, ms);
   },
 
+  async getCount(key: string): Promise<number> {
+    if (redisUrl) {
+      const raw = await (await getClient()).get(key);
+      return raw ? Number(raw) : 0;
+    }
+    const now = Date.now();
+    const entry = dailyCounts.get(key);
+    if (!entry || now >= entry.resetAt) return 0;
+    return entry.count;
+  },
+
   async rateLimitExceeded(
     key: string,
     timeFrameMs: number,
@@ -97,6 +108,10 @@ export async function checkDailyLimit(
     await redis.pexpire(key, getEndOfDayMs());
   }
   return count <= maxLimit;
+}
+
+export async function getDailyCount(userId: number): Promise<number> {
+  return redis.getCount(`daily_dominar:${userId}`);
 }
 
 export default redis;

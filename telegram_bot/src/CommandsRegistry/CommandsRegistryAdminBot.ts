@@ -12,6 +12,9 @@ import { reload } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/r
 import { ban } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/ban.js";
 import { cleancolletion } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/cleancolletion.js";
 import { openharem } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/openharem.js";
+import { upadmin } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/upadmin.js";
+import { unban } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/unban.js";
+import { unadmin } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/unadmin.js";
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -85,6 +88,36 @@ const userCommandsRegistryDict: Record<string, AdminCommand> = {
       pt: "Abrir a coleção de qualquer usuário (admin)",
     },
     handler: openharem,
+  },
+
+  upadmin: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: "upadmin" + botPrefix,
+    description: {
+      en: "Promote a user to ADMIN (super admin)",
+      pt: "Promover um usuário a ADMIN (super admin)",
+    },
+    handler: upadmin,
+  },
+
+  unban: {
+    minPermission: ProfileType.ADMIN,
+    command: "unban" + botPrefix,
+    description: {
+      en: "Unban a user from the bot (admin)",
+      pt: "Desbanir um usuário do bot (admin)",
+    },
+    handler: unban,
+  },
+
+  unadmin: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: "unadmin" + botPrefix,
+    description: {
+      en: "Demote a user from ADMIN (super admin)",
+      pt: "Rebaixar um usuário de ADMIN (super admin)",
+    },
+    handler: unadmin,
   },
 
 };

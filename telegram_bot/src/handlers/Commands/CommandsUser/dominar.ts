@@ -15,8 +15,9 @@ import {
 } from "../../../uteis/buildButtons/createOneButton.js";
 import { getRuntime } from "../../../runtime/groupRuntime.js";
 import { GetCharacterById } from "../../../uteis/extras/GetCharacterById.js";
-import { checkDailyLimit } from "../../../cache/redis.js";
+import { checkDailyLimit, getDailyCount } from "../../../cache/redis.js";
 import { getDropConfig } from "../../../cache/dropConfig.js";
+import { DAILY_LIMIT } from "../../../bot/middleware/constants.js";
 import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
 
 function verificarNome(personagem: string, tentativa: string) {
@@ -80,6 +81,7 @@ function successDominarMessage(
   character: Character,
   collection: any,
   data: number | null,
+  dailyCount: number,
 ) {
   if (!collection || !character) return ctx.t("success-dominar-fallback");
   const success_dominar_title = ctx.t("success_dominar_title", {
@@ -140,7 +142,12 @@ function successDominarMessage(
     time: `<code>${time}</code>`,
   });
 
-  const success_dominar = `${success_dominar_title}\n\n${success_dominar_name}\n${success_dominar_anime}\n${success_dominar_rarity}\n${success_dominar_time} \n\n Quando?: ${lasttime}`;
+  const success_dominar_daily = ctx.t("success_dominar_daily", {
+    count: String(dailyCount),
+    limit: String(DAILY_LIMIT),
+  });
+
+  const success_dominar = `${success_dominar_title}\n\n${success_dominar_name}\n${success_dominar_anime}\n${success_dominar_rarity}\n${success_dominar_time}\n${success_dominar_daily} \n\n Quando?: ${lasttime}`;
 
   return success_dominar;
 }
@@ -298,11 +305,13 @@ export async function CapturarCharacter(ctx: MyContext) {
         caption: ctx.t("error_adding_character"),
       });
     }
+    const dailyCount = await getDailyCount(userId);
     const successDominarMessageResult = successDominarMessage(
       ctx,
       character,
       character_collection,
       runtime.data,
+      dailyCount,
     );
     info(`Personagem adicionado com sucesso`, {
       userId,

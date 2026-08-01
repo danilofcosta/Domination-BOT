@@ -443,6 +443,20 @@ export const _base: localekey[] = [
     },
   },
   {
+    key: "success_dominar_daily",
+    description: null,
+    localeTraslation: {
+      value: "📊 <b>Capturas diárias:</b> <code>${count}/${limit}</code>",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "count", description: null },
+        { key: "limit", description: null },
+      ],
+    },
+  },
+  {
     key: "success_dominar_btn",
     description: null,
     localeTraslation: {
@@ -2341,6 +2355,378 @@ Agora resta apenas olhar para o vazio e lembrar: o verdadeiro farm foram os amig
     },
   },
   {
+    key: "upadmin_reply_instruction",
+    description: null,
+    localeTraslation: {
+      value: "Responda a mensagem de um usuário ou mencione-o para promover a ADMIN.\nEx: /upadmin @usuario",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_error_self",
+    description: null,
+    localeTraslation: {
+      value: "❌ Você não pode promover a si mesmo.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_error_bot",
+    description: null,
+    localeTraslation: {
+      value: "❌ Você não pode promover um bot.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_error_already_admin",
+    description: null,
+    localeTraslation: {
+      value: "❌ Este usuário já é ADMIN ou superior.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_error_not_requester",
+    description: null,
+    localeTraslation: {
+      value: "❌ Apenas quem solicitou a promoção pode confirmar.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_confirm",
+    description: null,
+    localeTraslation: {
+      value: "⬆️ Tem certeza que deseja promover ${user} a ADMIN?\n\nCargo atual: ${role}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "user", description: null },
+        { key: "role", description: null },
+      ],
+    },
+  },
+  {
+    key: "upadmin_btn_confirm",
+    description: null,
+    localeTraslation: {
+      value: "Promover",
+      isButton: true,
+      ButtonSetting: { color: "danger", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_btn_cancel",
+    description: null,
+    localeTraslation: {
+      value: "Cancelar",
+      isButton: true,
+      ButtonSetting: { color: "secondary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_success",
+    description: null,
+    localeTraslation: {
+      value: "✅ Usuário promovido a ADMIN com sucesso.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_cancelled",
+    description: null,
+    localeTraslation: {
+      value: "Promoção cancelada.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "upadmin_error",
+    description: null,
+    localeTraslation: {
+      value: "❌ Erro ao promover usuário: ${error}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "error", description: null }],
+    },
+  },
+  {
+    key: "unban_reply_instruction",
+    description: null,
+    localeTraslation: {
+      value: "Responda a mensagem de um usuário ou mencione-o para desbanir.\nEx: /unban @usuario",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_error_self",
+    description: null,
+    localeTraslation: {
+      value: "❌ Você não pode desbanir a si mesmo.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_error_bot",
+    description: null,
+    localeTraslation: {
+      value: "❌ Você não pode desbanir um bot.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_error_not_banned",
+    description: null,
+    localeTraslation: {
+      value: "ℹ️ Este usuário não está banido.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_error_not_requester",
+    description: null,
+    localeTraslation: {
+      value: "❌ Apenas quem solicitou o desbanimento pode confirmar.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_confirm",
+    description: null,
+    localeTraslation: {
+      value: "🚫 Tem certeza que deseja desbanir ${user}?\n\nCargo atual: ${role}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "user", description: null },
+        { key: "role", description: null },
+      ],
+    },
+  },
+  {
+    key: "unban_btn_confirm",
+    description: null,
+    localeTraslation: {
+      value: "Desbanir",
+      isButton: true,
+      ButtonSetting: { color: "danger", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_btn_cancel",
+    description: null,
+    localeTraslation: {
+      value: "Cancelar",
+      isButton: true,
+      ButtonSetting: { color: "secondary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_success",
+    description: null,
+    localeTraslation: {
+      value: "✅ Usuário desbanido com sucesso.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_cancelled",
+    description: null,
+    localeTraslation: {
+      value: "Desbanimento cancelado.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unban_error",
+    description: null,
+    localeTraslation: {
+      value: "❌ Erro ao desbanir usuário: ${error}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "error", description: null }],
+    },
+  },
+  {
+    key: "unadmin_reply_instruction",
+    description: null,
+    localeTraslation: {
+      value: "Responda a mensagem de um usuário ou mencione-o para rebaixar de ADMIN.\nEx: /unadmin @usuario",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_error_self",
+    description: null,
+    localeTraslation: {
+      value: "❌ Você não pode rebaixar a si mesmo.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_error_bot",
+    description: null,
+    localeTraslation: {
+      value: "❌ Você não pode rebaixar um bot.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_error_not_admin",
+    description: null,
+    localeTraslation: {
+      value: "ℹ️ Este usuário não é ADMIN ou superior.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_error_not_requester",
+    description: null,
+    localeTraslation: {
+      value: "❌ Apenas quem solicitou o rebaixamento pode confirmar.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_confirm",
+    description: null,
+    localeTraslation: {
+      value: "⬇️ Tem certeza que deseja rebaixar ${user} de ADMIN?\n\nCargo atual: ${role}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "user", description: null },
+        { key: "role", description: null },
+      ],
+    },
+  },
+  {
+    key: "unadmin_btn_confirm",
+    description: null,
+    localeTraslation: {
+      value: "Rebaixar",
+      isButton: true,
+      ButtonSetting: { color: "danger", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_btn_cancel",
+    description: null,
+    localeTraslation: {
+      value: "Cancelar",
+      isButton: true,
+      ButtonSetting: { color: "secondary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_success",
+    description: null,
+    localeTraslation: {
+      value: "✅ Usuário rebaixado de ADMIN com sucesso.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_cancelled",
+    description: null,
+    localeTraslation: {
+      value: "Rebaixamento cancelado.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "unadmin_error",
+    description: null,
+    localeTraslation: {
+      value: "❌ Erro ao rebaixar usuário: ${error}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "error", description: null }],
+    },
+  },
+  {
     key: "openharem_reply_instruction",
     description: null,
     localeTraslation: {
@@ -2453,5 +2839,111 @@ Agora resta apenas olhar para o vazio e lembrar: o verdadeiro farm foram os amig
       locale: { lang: "pt", icon: "🇧🇷" },
       extrakey: [{ key: "error", description: null }],
     },
-  }
+  },
+  {
+    key: "start_welcome_private",
+    description: null,
+    localeTraslation: {
+     
+value: "🌌 Bem-vindo ao ${bot}!\n\nA experiência definitiva de coleção de personagens de anime no Telegram!\n\n✨ Colecione milhares de waifus e husbandos únicos.\n⚔️ Faça personagens aparecerem conversando em grupos.\n\nToque nos botões abaixo para explorar!\n\n⦾ ᴏ Qᴜᴇ Eᴜ FᴀÇᴏ: FᴀÇᴏ ᴀᴘᴀʀᴇᴄᴇʀ\n     ${gener} ɴᴏ sᴇᴜ ᴄʜᴀᴛ ᴘᴀʀᴀ\n     ᴏs ᴜsᴜÁʀɪᴏs ᴄᴀᴘᴛᴜʀᴀʀᴇᴍ.\n⦾ ᴄᴏᴍᴏ Mᴇ Usᴀʀ: Aᴅɪᴄɪᴏɴᴇ-Mᴇ ᴀᴏ\n     sᴇᴜ ɢʀᴜᴘᴏ ᴇ ᴛᴏǫᴜᴇ ɴᴏ ʙᴏᴛÃᴏ\n     ᴅᴇ Aᴊᴜᴅᴀ ᴘᴀʀᴀ Mᴀɪs Dᴇᴛᴀʟʜᴇs.\n\n➺ ᴘɪɴɢ: ${ping} ms\n➺ ᴛᴇᴍᴘᴏ ᴏɴʟɪɴᴇ: ${uptime}"
+
+      ,isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "gener", description: null },
+        { key: "bot", description: null },
+        { key: "ping", description: null },
+        { key: "uptime", description: null },
+      ],
+    },
+  },
+  {
+    key: "start_guia_text",
+    description: null,
+    localeTraslation: {
+      value: "<b>📖 Guia de uso</b>\n\n1️⃣ Adicione o bot ao seu grupo: toque em \"➕ Add me\".\n2️⃣ Converse normalmente no grupo — personagens aparecem para serem capturados.\n3️⃣ Use /dominar ou toque na imagem do personagem para capturá-lo.\n4️⃣ Consulte sua coleção com /harem e troque com outros jogadores via /trade.\n\nUse /help para ver todos os comandos!",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_redirect_caption",
+    description: null,
+    localeTraslation: {
+      value: "🌌 Este é o personagem mais recente adicionado ao banco!",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_redirect_empty",
+    description: null,
+    localeTraslation: {
+      value: "ℹ️ Nenhum personagem cadastrado ainda.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_btn_addme",
+    description: null,
+    localeTraslation: {
+      value: "➕ Add me",
+      isButton: true,
+      ButtonSetting: { color: "success", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_btn_canal",
+    description: null,
+    localeTraslation: {
+      value: "📢 Canal",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_btn_creditos",
+    description: null,
+    localeTraslation: {
+      value: "💠 Créditos",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_btn_guia",
+    description: null,
+    localeTraslation: {
+      value: "📖 Guia",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "start_btn_redirect",
+    description: null,
+    localeTraslation: {
+      value: "🔄 Redirecionar",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
 ];
