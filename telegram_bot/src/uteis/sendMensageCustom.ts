@@ -27,9 +27,9 @@ export async function SendMensageCustom(params: ParamsSendMedia) {
   if (!ctx) {
     throw new Error("ctx é obrigatório");
   }
-  if (caption) {
-  caption += "\n\nBanco de dados Oficial indisponível ate 01/08, infos atuais da versão de junho :D";
-}
+//   if (caption) {
+//   caption += "\n\nBanco de dados Oficial indisponível ate 01/08, infos atuais da versão de junho :D";
+// }
   const api = ctx.api;
   const targetChatId = chat_id ?? ctx.chat?.id;
 

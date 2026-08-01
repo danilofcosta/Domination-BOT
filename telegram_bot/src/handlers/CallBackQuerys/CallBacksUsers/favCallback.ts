@@ -66,7 +66,7 @@ export async function favCallbackHandler(ctx: MyContext) {
 
     await EditOrSendText({
       ctx,
-      caption: ctx.t("fav-character-success"),
+     // caption: ctx.t("fav-character-success"),
       reply_markup: { inline_keyboard: [] },
     });
   } catch (e) {

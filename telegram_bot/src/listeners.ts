@@ -1,23 +1,23 @@
 import { Composer } from "grammy";
 import type { MyContext } from "./uteis/CustomTypes.js";
 import { CountMessages } from "./handlers/listeners/message_counter.js";
-import { haremInlineQuery } from "./handlers/InlineQuerys/harem/harem_inline_query.js";
+import { haremInlineQuery } from "./handlers/InlineQuerys/inlines/harem_inline_query.js";
 import {
   getCharacters,
   getCharactersall,
   QueryCharacet,
 } from "./handlers/InlineQuerys/global/inline_query.js";
 import { animeInlineQuery } from "./handlers/InlineQuerys/global/anime_inline_query.js";
-import { Gift_Inline_query } from "./handlers/InlineQuerys/harem/gift_iniline_query.js";
-import { Fav_Inline_query } from "./handlers/InlineQuerys/harem/fav_iniline_query.js";
-import { searchHarem } from "./handlers/InlineQuerys/harem/search_haren.js";
+import { Gift_Inline_query } from "./handlers/InlineQuerys/inlines/gift_iniline_query.js";
+import { Fav_Inline_query } from "./handlers/InlineQuerys/inlines/fav_iniline_query.js";
+import { searchHarem } from "./handlers/InlineQuerys/inlines/search_haren.js";
 import { inline_per } from "./handlers/InlineQuerys/global/inline_by_id.js";
 import { getCharList } from "./cache/cache.js";
 import { ChatType } from "./uteis/CustomTypes.js";
 
 import { getListener, clearListener } from "./cache/listenerStore.js";
 import { debug, error, info } from "./uteis/log.js";
-import { TradeInlineQuery } from "./handlers/InlineQuerys/harem/tradeInlineQuery.js";
+import { TradeInlineQuery } from "./handlers/InlineQuerys/inlines/tradeInlineQuery.js";
 
 const listeners = new Composer<MyContext>();
 

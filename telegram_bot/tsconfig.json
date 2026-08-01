@@ -1,5 +1,5 @@
 {
-	"include": ["src", "generated/prisma"],
+	"include": ["src", "generated/prisma", "scrips/remover_migrations.ts"],
 
 	"compilerOptions": {
 		"rootDir": ".",

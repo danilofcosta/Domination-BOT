@@ -1,10 +1,12 @@
-import type { MyContext, PreCharacter } from "../../../uteis/CustomTypes.js";
-import { ChatType } from "../../../uteis/CustomTypes.js";
-import { prisma } from "../../../lib/prisma.js";
-import { setCharacter } from "../../../cache/cache.js";
+import type { MyContext, PreCharacter } from "../../../../uteis/CustomTypes.js";
+import { ChatType } from "../../../../uteis/CustomTypes.js";
+import { prisma } from "../../../../lib/prisma.js";
+import { setCharacter } from "../../../../cache/cache.js";
 import { EditUI } from "./addcharacter/edit.ui.js";
-import { error } from "../../../uteis/log.js";
-import { botPrefix } from "../../../CommandsRegistry/botConfigCommands.js";
+import { error } from "../../../../uteis/log.js";
+import { botPrefix } from "../../../../CommandsRegistry/botConfigCommands.js";
+import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
+import { CreateOneBtn } from "../../../../uteis/buildButtons/createOneButton.js";
 
 function dbCharacterToPreCharacter(
   dbChar: any,
@@ -51,7 +53,10 @@ export async function EditCharacterHandler(ctx: MyContext) {
   }
 
   if (!idcharactertoedit || isNaN(idcharactertoedit)) {
-    await ctx.reply(ctx.t("edit-id-not-informed", { botPrefix: botPrefix }));
+    await ctx.reply(ctx.t("edit-id-not-informed", { botPrefix: botPrefix }),);
+    await SendMensageCustom({
+      ctx, caption: ctx.t("edit-id-not-informed", { botPrefix: botPrefix })
+    })
     return;
   }
 
@@ -61,19 +66,19 @@ export async function EditCharacterHandler(ctx: MyContext) {
 
     const dbChar = isHusbando
       ? await (prisma as any).characterHusbando.findUnique({
-          where: { id: idcharactertoedit },
-          include: {
-            HusbandoRarity: { include: { Rarity: true } },
-            HusbandoEvent: { include: { Event: true } },
-          },
-        })
+        where: { id: idcharactertoedit },
+        include: {
+          HusbandoRarity: { include: { Rarity: true } },
+          HusbandoEvent: { include: { Event: true } },
+        },
+      })
       : await (prisma as any).characterWaifu.findUnique({
-          where: { id: idcharactertoedit },
-          include: {
-            WaifuRarity: { include: { Rarity: true } },
-            WaifuEvent: { include: { Event: true } },
-          },
-        });
+        where: { id: idcharactertoedit },
+        include: {
+          WaifuRarity: { include: { Rarity: true } },
+          WaifuEvent: { include: { Event: true } },
+        },
+      });
 
     if (!dbChar) {
       await ctx.reply(ctx.t("error-character-not-found"));

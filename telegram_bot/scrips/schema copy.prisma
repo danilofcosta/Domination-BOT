@@ -109,15 +109,15 @@ model Event {
 }
 
 model HusbandoCollection {
-  id           Int               @id @default(autoincrement())
-  userId       BigInt
-  characterId  Int
-  count        Int
-  fromIdChat   BigInt?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  Character    CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  TelegramUser TelegramUser      @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+  id                Int               @id @default(autoincrement())
+  userId            BigInt
+  characterId       Int
+  count             Int 
+  fromIdChat        BigInt?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  Character  CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  TelegramUser      TelegramUser      @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([userId, characterId])
   @@index([characterId])
@@ -190,15 +190,15 @@ model TelegramUser {
 }
 
 model WaifuCollection {
-  id           Int            @id @default(autoincrement())
-  userId       BigInt
-  characterId  Int
-  fromIdChat   BigInt?
-  count        Int            @default(1)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Character    CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  TelegramUser TelegramUser   @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+  id             Int            @id @default(autoincrement())
+  userId         BigInt
+  characterId    Int
+  fromIdChat     BigInt?
+  count          Int            @default(1)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  Character CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  TelegramUser   TelegramUser   @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
   @@unique([userId, characterId])
   @@index([characterId])

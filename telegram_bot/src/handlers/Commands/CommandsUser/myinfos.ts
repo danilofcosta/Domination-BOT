@@ -1,5 +1,6 @@
 import { MediaType } from "../../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
+import { CreateOneBtn } from "../../../uteis/buildButtons/createOneButton.js";
 import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
 import { error, info } from "../../../uteis/log.js";
 import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
@@ -66,10 +67,12 @@ export async function Myinfos(ctx: MyContext) {
 
   const msg = await SendMensageCustom({
     ctx,
+    reply_markup:CreateOneBtn({text:ctx.t("harem_btn_close"),callback:`harem_user_${ctx.from!.id}_close`}),
     caption: text,
     ...(bestPhoto && {
       character: { media: bestPhoto, mediaType: MediaType.IMAGE_FILEID },
     }),
+
   });
 
   if (percent === "100.00") {

@@ -7,7 +7,7 @@ import { ProfileType } from "../../generated/prisma/client.js";
 import { botPrefix, registerCommand } from "./botConfigCommands.js";
 import { onlyRoleBotAdmin } from "../uteis/permissions.js";
 import { AddCharacterHandler } from "../handlers/Commands/CommandsAdminBot/addcharacter/AddCharacterHandler.js";
-import { EditCharacterHandler } from "../handlers/Commands/CommandsAdminBot/EditCharacterHandler.js";
+import { EditCharacterHandler } from "../handlers/Commands/CommandsAdminBot/manegerCharacters/EditCharacterHandler.js";
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -41,6 +41,18 @@ const userCommandsRegistryDict: Record<string, AdminCommand> = {
     },
     handler: EditCharacterHandler,
   },
+
+  reloadadms: {
+    minPermission: ProfileType.SUPER_ADMIN,
+    command: "reloadadms" + botPrefix,
+    description: {
+      pt: "altualizar lista de adms do bot",
+      en: "altualizar lista de adms do bot",
+
+    },
+    handler: EditCharacterHandler,
+  },
+
 };
 
 for (const cfg of Object.values(userCommandsRegistryDict)) {

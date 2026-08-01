@@ -186,6 +186,21 @@ export const _base: localekey[] = [
     },
   },
 
+  {
+    key: "top_user_not_ranked_chat",
+    description: null,
+    localeTraslation: {
+      value: "Você ainda não está no ranking de ${chat_title}.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+       extrakey: [
+        { key: "chat_title", description: 'nome do grupo' },
+ 
+      ],
+    },
+  },
+
   // ==================== ERRORS ====================
   {
     key: "error-not-registered",

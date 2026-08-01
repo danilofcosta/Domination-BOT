@@ -1,6 +1,6 @@
 import { Composer } from "grammy";
 import type { MyContext } from "./uteis/CustomTypes.js";
-import { error, info } from "./uteis/log.js";
+import { debug, error, info } from "./uteis/log.js";
 import { TopCallbackQuery } from "./handlers/CallBackQuerys/CallBacksUsers/topCallbackQuery.js";
 import { giftCallbackHandler } from "./handlers/CallBackQuerys/CallBacksUsers/giftCallback.js";
 import { favCallbackHandler } from "./handlers/CallBackQuerys/CallBacksUsers/favCallback.js";
@@ -17,12 +17,12 @@ const callbacks = new Composer<MyContext>();
 
 callbacks.callbackQuery(/.*/, async (ctx, next) => {
   const msg = ctx.callbackQuery?.message;
-  info("Callback recebido", {
+  debug("Callback recebido", {
     data: ctx.callbackQuery?.data,
-    // fromId: ctx.from?.id,
-    // fromName: ctx.from?.first_name || ctx.from?.username,
-    // chatId: ctx.chat?.id,
-    // chatType: ctx.chat?.type,
+    fromId: ctx.from?.id,
+     fromName: ctx.from?.first_name || ctx.from?.username,
+     chatId: ctx.chat?.id,
+    hatType: ctx.chat?.type,
     // msgText: msg && ("text" in msg ? msg.text : "caption" in msg ? msg.caption : null),
   });
   await next();

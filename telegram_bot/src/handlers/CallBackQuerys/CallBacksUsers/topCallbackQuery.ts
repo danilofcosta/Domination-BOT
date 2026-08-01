@@ -171,7 +171,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     if (position === -1) {
       return ctx.answerCallbackQuery({
-        text: ctx.t("top_user_not_ranked"),
+        text:!isChat? ctx.t("top_user_not_ranked"):ctx.t("top_user_not_ranked_chat",{chat_title:ctx.chat?.title ??''}),
         show_alert: true,
       });
     }

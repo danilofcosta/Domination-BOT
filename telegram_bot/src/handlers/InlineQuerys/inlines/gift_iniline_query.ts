@@ -11,6 +11,8 @@ export async function Gift_Inline_query(ctx: MyContext) {
   //   error("Gift_Inline_query - deleteAllMessageReactions", { error: err });
   // });
 
+
+
   const genero = ctx.botType;
 
   const query = ctx.inlineQuery.query;
@@ -20,7 +22,7 @@ export async function Gift_Inline_query(ctx: MyContext) {
   );
   const telegramId = ctx.from?.id;
   if (!telegramId) return;
-
+''
   const offset = Number(ctx.inlineQuery.offset || "0");
 
   const { collection, total } = await getHaremCollection({
@@ -47,7 +49,9 @@ export async function Gift_Inline_query(ctx: MyContext) {
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
-    text: ctx.t("select-inline-gift"),
+    text: ctx.t("select-inline-gift"),is_personal:true,
+
+    notCacheTelegram:true
     
   });
 }
