@@ -42,7 +42,7 @@ services:
     #   - postgres
 
   husbando_bot:
-    build: ./bot_telegram
+    build: ./telegram_bot
     container_name: husbando_bot
     restart: unless-stopped
     volumes:
