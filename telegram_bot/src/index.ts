@@ -3,6 +3,8 @@ import "dotenv/config";
 import { ChatType } from "./uteis/CustomTypes.js";
 import initializeBot from "./initializeBot.js";
 import { RunPolling } from "./index_Polling.js";
+import { checkBotToken } from "./uteis/checkBot.js";
+import { fatal } from "./uteis/log.js";
 
 const start = async () => {
   const type =
@@ -16,15 +18,16 @@ const start = async () => {
       : process.env.BOT_TOKEN_HUSBANDO;
 
   if (!BOT_TOKEN) {
-    console.error(
+    fatal(
       "BOT_TOKEN não encontrado. Defina BOT_TOKEN_WAIFU ou BOT_TOKEN_HUSBANDO no .env",
     );
-    process.exit(1);
   }
 
   console.log(`Iniciando o bot... (tipo: ${type})`);
   const bot = await initializeBot(type, BOT_TOKEN);
-  RunPolling({ bot: bot, dbtest: true });
+
+  const me = await checkBotToken(BOT_TOKEN, () => bot.api.getMe());
+  RunPolling({ bot: bot, dbtest: true, botInfo: me });
 
 };
 

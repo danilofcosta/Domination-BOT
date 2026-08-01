@@ -1,14 +1,21 @@
-import { fatal } from "./uteis/log.js";
+import { fatal, info } from "./uteis/log.js";
+import type { User } from "grammy/types";
 
 export async function RunPolling({
   bot,
-  dbtest
+  dbtest,
+  botInfo,
 }: {
   bot: any;
   dbtest: boolean;
-})  {
-
-  console.log('RODANDO BOT Polling')
+  botInfo?: User;
+}) {
+  if (botInfo) {
+    info(
+      "RODANDO BOT Polling",
+      `rodando em @${botInfo.username ?? ""} com nome ${botInfo.first_name} com id ${botInfo.id}`,
+    );
+  }
   await bot.start({
     drop_pending_updates: true,
     onStart: async () => {
