@@ -68,7 +68,7 @@ services:
     # depends_on:
     #   - postgres
 
-# volumes:
-#   postgres_data:
-#   redis_data:
-#   botdata:
+volumes:
+  botdata:
+  # postgres_data:
+  # redis_data:
