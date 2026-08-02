@@ -5,8 +5,10 @@ import initializeBot from "./initializeBot.js";
 import { RunPolling } from "./index_Polling.js";
 import { checkBotToken } from "./uteis/checkBot.js";
 import { fatal } from "./uteis/log.js";
+import { Environment_validation } from "./bot/testes/environment_validation.js";
 
 const start = async () => {
+  await Environment_validation()
   const type =
     process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU
       ? ChatType.WAIFU
@@ -27,6 +29,9 @@ const start = async () => {
   const bot = await initializeBot(type, BOT_TOKEN);
 
   const me = await checkBotToken(BOT_TOKEN, () => bot.api.getMe());
+ 
+ 
+ 
   RunPolling({ bot: bot, dbtest: true, botInfo: me });
 
 };

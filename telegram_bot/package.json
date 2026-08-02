@@ -30,7 +30,7 @@
     "settext": "tsx scrips/uplocalate.ts",
     "t": "tsx prisma/scrips/t.ts",
     "test": "tsc &&node dist/index.js ",
-    "webhook": "tsx prisma/scrips/set_web_hook.ts"
+    "webhook": "tsx prisma/scrips/set_web_hook.ts",  "start": "tsc && prisma generate && node dist/src/index.js "
   },
   "keywords": [],
   "author": "",

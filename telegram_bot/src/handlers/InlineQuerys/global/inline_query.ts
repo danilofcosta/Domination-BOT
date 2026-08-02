@@ -99,7 +99,7 @@ export async function QueryCharacet(ctx: MyContext) {
   await showResults({
     ctx,
     results,
-    next_offset: offset + LIMIT < total ? String(offset + LIMIT) : undefined,
+    ...(offset + LIMIT < total ? { next_offset: String(offset + LIMIT) } : {}),
     text: results.length === 0
       ? ctx.t('query_not_fould')
       : `${ctx.t('Logo_bt')} : ${total}`,
@@ -153,12 +153,10 @@ export async function getCharactersall(ctx: MyContext) {
     }),
   );
 
-  const next_offset = offset + LIMIT < total ? String(offset + LIMIT) : undefined;
-
   await showResults({
     ctx,
     results,
-    next_offset,
+    ...(offset + LIMIT < total ? { next_offset: String(offset + LIMIT) } : {}),
     text: `${ctx.t('Logo_bt')} : ${total}`,
   });
 }

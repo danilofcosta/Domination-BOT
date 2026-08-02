@@ -1,3 +1,5 @@
+import type { Bot } from "grammy";
+import type { MyContext } from "./uteis/CustomTypes.js";
 import { fatal, info } from "./uteis/log.js";
 import type { User } from "grammy/types";
 
@@ -6,7 +8,7 @@ export async function RunPolling({
   dbtest,
   botInfo,
 }: {
-  bot: any;
+  bot: Bot<MyContext>;
   dbtest: boolean;
   botInfo?: User;
 }) {
@@ -16,20 +18,19 @@ export async function RunPolling({
       `rodando em @${botInfo.username ?? ""} com nome ${botInfo.first_name} com id ${botInfo.id}`,
     );
   }
-  await bot.start({
+
+  await bot.start({ 
     drop_pending_updates: true,
     onStart: async () => {
       if (process.env.CHAT_ID_DEV) {
         await bot.api.sendMessage(
-          process.env.CHAT_ID_DEV as string,
-          `Bot Iniciado ${process.env.TYPE_BOT}\nModo : ${process.env.NODE_ENV}\nConectado ao banco: ${dbtest}`,
+          process.env.CHAT_ID_DEV,
+          `Bot Iniciado ${process.env.TYPE_BOT}\nModo: ${process.env.NODE_ENV}\nConectado ao banco: ${dbtest}`,
         );
-        //info("Bot iniciado", process.env.NODE_ENV, process.env.TYPE_BOT);
       }
     },
   });
 
-  // parar o bot
   process.once("SIGINT", shutdown);
   process.once("SIGTERM", shutdown);
 
@@ -37,9 +38,9 @@ export async function RunPolling({
     if (process.env.CHAT_ID_DEV) {
       await bot.api.sendMessage(process.env.CHAT_ID_DEV, "Bot parado");
     }
+
     await bot.stop();
 
-   fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
-    
+    fatal("Bot parado", process.env.NODE_ENV, process.env.TYPE_BOT);
   }
 }

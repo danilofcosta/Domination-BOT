@@ -10,10 +10,11 @@ import { HiddenCommandsRegistry } from "./CommandsRegistry/CommandsRegistryHidde
 import { AdminCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminBot.js";
 import { devCommands } from "./CommandsRegistry/CommandsRegistryAdminDev.js";
 import { GlobaisCommandsRegistry } from "./CommandsRegistry/CommandsRegistryGlobais.js";
-import { info } from "./uteis/log.js";
+import { error, info } from "./uteis/log.js";
 import { blockDetection } from "./bot/middleware/blockDetection.js";
 import { rateLimiter } from "./bot/middleware/rateLimiter.js";
 import { banCheck } from "./bot/middleware/banCheck.js";
+import { testDBConnection } from "./bot/testes/test_db_Connection.js";
 
 function initialSessionData(): SessionData {
   return {
@@ -26,10 +27,9 @@ function initialSessionData(): SessionData {
 export default async function initializeBot(
   ChatTypeBot: ChatType,
   BOT_TOKEN: string,
-) {
+): Promise<Bot<MyContext>> {
   const bot = new Bot<MyContext>(BOT_TOKEN);
-
-  await translationService.init();
+  const   _testDBConnection :boolean = await testDBConnection()
 
   bot.api.config.use(autoRetry());
 
@@ -59,7 +59,7 @@ export default async function initializeBot(
     ctx.botType = ChatTypeBot;
     await next();
   });
-
+  await translationService.init();  
   bot.use(i18nMiddleware);
   bot.use(blockDetection);
   bot.use(rateLimiter);
@@ -82,7 +82,7 @@ export default async function initializeBot(
   bot.use(listeners);
   bot.use(callbacks);
   bot.catch((err) => {
-    console.error("BOT ERROR:", err);
+    error("BOT ERROR:", err);
   });
   return bot;
 }

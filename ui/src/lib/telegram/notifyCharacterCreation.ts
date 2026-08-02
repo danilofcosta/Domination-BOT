@@ -13,7 +13,7 @@ function getBot(type: "waifu" | "husbando") {
   return botCache[type]!;
 }
 
-const GROUP_ADM = process.env.DATABASE_TELEGREM_ID ? Number(process.env.DATABASE_TELEGREM_ID) : 0;
+const GROUP_ADM = process.env.DATABASE_TELEGRAM_ID ? Number(process.env.DATABASE_TELEGRAM_ID) : 0;
 
 type NotificationData = {
   id: number;

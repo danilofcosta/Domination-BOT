@@ -18,4 +18,4 @@ RUN mkdir -p /app/data
 
 ENV NODE_ENV=production
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
