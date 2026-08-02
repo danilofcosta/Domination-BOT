@@ -2,7 +2,7 @@ import type { InlineQueryResultCachedPhoto, InlineQueryResultCachedVideo, Inline
 import { MediaType } from "../../../../generated/prisma/enums.js";
 import type { Character, ChatType, Collection } from "../../../uteis/CustomTypes.js";
 import { error, warn } from "../../../uteis/log.js";
-import { create_caption, type create_caption_Params } from "../../../uteis/buildCapion/create_caption.js";
+import { create_caption, type Params } from "../../../uteis/buildCapion/create_caption.js";
 
 
 
