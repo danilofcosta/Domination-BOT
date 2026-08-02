@@ -31,7 +31,7 @@
     "t": "tsx prisma/scripts/t.ts",
     "test": "tsc && node dist/src/index.js ",
     "webhook": "tsx prisma/scripts/set_web_hook.ts",
-    "start": "tsc && node dist/src/index.js "
+    "start": "tsc && prisma generate && node dist/src/index.js "
   },
   "keywords": [],
   "author": "",
