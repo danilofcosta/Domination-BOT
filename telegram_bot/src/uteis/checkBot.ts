@@ -1,4 +1,4 @@
-import { fatal, info } from "./log.js";
+import { fatal, info, trace } from "./log.js";
 import type { User } from "grammy/types";
 
 export interface CheckBotTokenResult {
@@ -25,8 +25,8 @@ export async function checkBotToken(
     );
   }
 
-  info(
-    "RODANDO BOT Polling",
+  trace(
+    "checkBotToken: Bot token validado com sucesso. Identidade do bot:",
     `rodando em @${me.username ?? ""} com nome ${me.first_name} com id ${me.id}`,
   );
   return me;

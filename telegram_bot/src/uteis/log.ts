@@ -152,11 +152,10 @@ export function trace(...args: unknown[]) {
 }
 
 export function error(...args: unknown[]) {
-  write("error", ...args);
-}
+  write("error", ...args);}
 
 export function fatal(...args: unknown[]): never {
-  write("error", ...args);
+  write("error",'[fatal]', ...args);
   process.exit(1);
 }
 
