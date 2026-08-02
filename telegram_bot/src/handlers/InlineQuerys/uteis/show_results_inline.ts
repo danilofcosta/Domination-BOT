@@ -5,7 +5,7 @@ interface ShowResultsParams {
   ctx: MyContext;
   results: any[];
 
-  next_offset?: string;
+  next_offset?: string | undefined;
   text?: string;
 
   /**

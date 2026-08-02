@@ -24,13 +24,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "delmigrations": "tsx scrips/remover_migrations.ts",
+    "delmigrations": "tsx scripts/remover_migrations.ts",
     "dev": "tsx src/index.ts",
     "seed": "tsx prisma/seed.ts",
-    "settext": "tsx scrips/uplocalate.ts",
-    "t": "tsx prisma/scrips/t.ts",
-    "test": "tsc &&node dist/index.js ",
-    "webhook": "tsx prisma/scrips/set_web_hook.ts"
+    "settext": "tsx scripts/uplocalate.ts",
+    "t": "tsx prisma/scripts/t.ts",
+    "test": "tsc && node dist/src/index.js ",
+    "webhook": "tsx prisma/scripts/set_web_hook.ts",
+    "start": "tsc && node dist/src/index.js "
   },
   "keywords": [],
   "author": "",
