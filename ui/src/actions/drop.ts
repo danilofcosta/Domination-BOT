@@ -154,15 +154,7 @@ export async function dropCharacter(
     const bot = getBot(type);
     const chatId = Number(group.groupId);
 
-    let fileIdOrUrl = character.media;
-
-    if (
-      character.linkweb &&
-      character.linkwebExpiresAt &&
-      new Date(character.linkwebExpiresAt) > new Date()
-    ) {
-      fileIdOrUrl = character.linkweb;
-    }
+    const fileIdOrUrl = character.media;
 
     const caption = `<b>${character.name}</b>\n\nPersonagem enviado pelo painel admin.`;
 

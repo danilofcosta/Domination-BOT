@@ -46,7 +46,7 @@ export default async function BotInfoPage() {
         ]);
         const photo = userPhotos.photos?.[0]?.[0];
         const photoUrl = photo
-          ? `https://api.telegram.org/file/bot${process.env[`BOT_TOKEN_${type.toUpperCase()}`] || ""}/${(await bot.api.getFile(photo.file_id)).file_path}`
+          ? `/api/media/${type}/${encodeURIComponent(photo.file_id)}`
           : null;
         return {
           type,

@@ -12,6 +12,11 @@ type NewMedia = {
   mimeType: string;
 };
 
+const CHARACTER_TABLE = {
+  waifu: "CharacterWaifu",
+  husbando: "CharacterHusbando",
+} as const;
+
 export async function createCharacter(
   type: "waifu" | "husbando",
   data: {
@@ -59,8 +64,13 @@ export async function createCharacter(
 
     const slug = generateSlug(data.name, data.origem);
 
+    const characterTable = CHARACTER_TABLE[type];
+    if (!characterTable) {
+      throw new Error(`Tipo de personagem inválido: ${type}`);
+    }
+
     const [nextIdResult] = await prisma.$queryRawUnsafe<{ next_id: number }[]>(
-      `SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM "${type === "waifu" ? "CharacterWaifu" : "CharacterHusbando"}"`
+      `SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM "${characterTable}"`
     );
     const nextId = nextIdResult.next_id;
 

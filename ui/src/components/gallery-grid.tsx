@@ -147,11 +147,13 @@ export function GalleryGrid({
                 className="h-auto w-full object-cover"
                 autoPlay
                 muted
-                loop
+                poster="https://i.pinimg.com/736x/24/c3/13/24c31340bf81884382cf87c3eea9ac9c.jpg"
+                //loop
                 playsInline
               />
             ) : (
               <img
+                loading="lazy"
                 src={item.resolvedUrl}
                 alt={item.name}
                 className="h-auto w-full object-cover"
