@@ -1,6 +1,8 @@
 "use client";
 
 import { UserCollectionDialog } from "@/components/user-collection-dialog";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const LABELS: Record<string, string> = {
   SUPREME: "Supremo",
@@ -65,10 +67,20 @@ export function UserTableRow({
           <span className="text-muted-foreground">—</span>
         )}
       </td>
-      <td className={`px-2 py-2.5 text-center text-xs font-semibold ${COLORS[profileType] ?? "text-muted-foreground"}`}>
-        {LABELS[profileType] ?? profileType}
+      <td className="px-2 py-2.5 text-center">
+        <Badge
+          variant="outline"
+          className={cn(
+            "border-transparent bg-accent/50",
+            COLORS[profileType] ?? "text-muted-foreground",
+          )}
+        >
+          {LABELS[profileType] ?? profileType}
+        </Badge>
       </td>
-      <td className="px-2 py-2.5 text-center">{coins}</td>
+      <td className="px-2 py-2.5 text-center text-sm font-medium tabular-nums">
+        {coins}
+      </td>
       <td className="px-2 py-2.5 text-center text-xs">{language}</td>
       <td className="px-2 py-2.5 text-center text-xs">
         {favoriteWaifuId ?? "—"}

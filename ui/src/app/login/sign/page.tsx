@@ -98,7 +98,7 @@ function SignForm() {
       const data = await res.json();
 
       if (data.success) {
-        router.push("/");
+        router.push("/home");
         return;
       }
       setMessage({ text: data.error || "Erro ao criar conta.", error: true });
@@ -110,8 +110,8 @@ function SignForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 py-10 font-sans dark:bg-black">
-      <Card className="w-full max-w-sm overflow-hidden pt-0">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10 font-sans nordic-grain">
+      <Card className="w-full max-w-sm overflow-hidden pt-0 animate-rise">
         <CardImage />
         <CardHeader>
           <CardTitle>
@@ -141,10 +141,10 @@ function SignForm() {
               </Button>
             </a>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 p-2">
               <label
                 htmlFor="token"
-                className="text-sm font-medium text-foreground"
+                className="text-sm font-medium text-foreground p-1"
               >
                 Token do Telegram
               </label>

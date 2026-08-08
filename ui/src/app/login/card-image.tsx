@@ -2,11 +2,17 @@ export function CardImage() {
   return (
     <div className="relative overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="https://i.pinimg.com/736x/10/0c/49/100c49274a481b136bbd3aa8ea0f2989.jpg"
-        alt=""
-        className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-      />
+ <video
+ src="./login/video.mp4"
+ autoPlay
+ loop
+ muted
+ poster="https://i.pinimg.com/736x/24/c3/13/24c31340bf81884382cf87c3eea9ac9c.jpg"
+ playsInline
+        className="relative z-20 aspect-video w-full object-cover brightness-50 grayscale dark:brightness-35"
+
+ ></video>
+      <div className="absolute inset-0 z-30 bg-linear-to-t from-card via-card/40 to-transparent" />
     </div>
   );
 }

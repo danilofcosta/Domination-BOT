@@ -7,8 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Better Auth models ───────────────────────────────────────────────────────
-
 model user {
   id             String    @id
   name           String
@@ -17,11 +15,10 @@ model user {
   image          String?
   username       String?   @unique
   createdAt      DateTime
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime  @updatedAt
   telegramUserId Int?
-
-  sessions session[]
-  accounts account[]
+  accounts       account[]
+  sessions       session[]
 }
 
 model session {
@@ -41,7 +38,6 @@ model account {
   accountId             String
   providerId            String
   userId                String
-  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -50,7 +46,8 @@ model account {
   scope                 String?
   password              String?
   createdAt             DateTime
-  updatedAt             DateTime @updatedAt
+  updatedAt             DateTime  @updatedAt
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model verification {
@@ -62,8 +59,6 @@ model verification {
   updatedAt  DateTime? @updatedAt
 }
 
-// ─── Bot models ───────────────────────────────────────────────────────────────
-
 model BotConfig {
   key   String @id
   value String
@@ -72,8 +67,30 @@ model BotConfig {
 }
 
 model BotSession {
-  key   String @id
-  value Json
+  key  String @id
+  data String
+}
+
+model LocaleKey {
+  id                String             @id @default(cuid())
+  key               String             @unique
+  description       String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  LocaleTranslation LocaleTranslation?
+}
+
+model LocaleTranslation {
+  id        String    @id @default(cuid())
+  keyId     String    @unique
+  locale    Json
+  value     String
+  extrakey  String[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  LocaleKey LocaleKey @relation(fields: [keyId], references: [id], onDelete: Cascade)
+
+  @@unique([keyId, locale])
 }
 
 model CharacterHusbando {
@@ -147,9 +164,10 @@ model HusbandoCollection {
   id                Int               @id @default(autoincrement())
   userId            BigInt
   characterId       Int
-  count             Int               @default(1)
+  count             Int
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+  fromIdChat        BigInt?
   CharacterHusbando CharacterHusbando @relation(fields: [characterId], references: [id], onDelete: Cascade)
   TelegramUser      TelegramUser      @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
@@ -230,6 +248,7 @@ model WaifuCollection {
   count          Int            @default(1)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  fromIdChat     BigInt?
   CharacterWaifu CharacterWaifu @relation(fields: [characterId], references: [id], onDelete: Cascade)
   TelegramUser   TelegramUser   @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
 
@@ -256,8 +275,6 @@ model WaifuRarity {
 
   @@id([characterId, rarityId])
 }
-
-// ─── Enums ────────────────────────────────────────────────────────────────────
 
 enum Language {
   PT
@@ -289,4 +306,11 @@ enum SourceType {
   GAME
   MANGA
   MOVIE
+}
+
+model RolePermission {
+  role       String
+  permission String
+
+  @@id([role, permission])
 }

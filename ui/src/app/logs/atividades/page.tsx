@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
+import { getTelegramName } from "@/lib/telegram";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -134,7 +135,7 @@ function Content({
             </h1>
           </div>
           <Link
-            href="/"
+            href="/home"
             className="text-muted-foreground hover:text-foreground text-xs transition-colors"
           >
             &larr; Voltar
@@ -301,8 +302,8 @@ function ActivityRow({
   if (type === "collection-h" || type === "collection-w") {
     const isH = type === "collection-h";
     const c = data as any;
-    const userData = c.TelegramUser?.telegramData as Record<string, unknown> | null;
-    const userName = (userData?.first_name as string) ?? `#${c.userId}`;
+    const name = getTelegramName(c.TelegramUser?.telegramData);
+    const userName = name === "—" ? `#${c.userId}` : name;
     const characterName = isH ? c.CharacterHusbando?.name : c.CharacterWaifu?.name ?? "?";
     return (
       <Card size="sm">

@@ -2,7 +2,21 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronRightIcon, UserIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  ChevronRightIcon,
+  CrownIcon,
+  GemIcon,
+  HeartIcon,
+  ImageIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
+  ShieldIcon,
+  SwordsIcon,
+  UserIcon,
+  UsersIcon,
+  type LucideIcon,
+} from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -36,98 +50,67 @@ interface UserData {
   telegramUser?: {
     profileType: string;
   } | null;
+  permissions?: string[];
 }
 
 type SidebarItem = {
   href: string;
   label: string;
   permission?: string;
+  icon: LucideIcon;
 };
 
 const sidebarSections: {
   label: string;
   items: SidebarItem[];
-  collapsible?: { href: string; label: string; children: SidebarItem[] };
+  collapsible?: { href: string; label: string; icon: LucideIcon; children: SidebarItem[] };
 }[] = [
   {
     label: "Manutenção de Personagem",
     collapsible: {
       href: "/characters",
       label: "Personagems",
+      icon: SwordsIcon,
       children: [
-        { href: "/characters/waifu", label: "Waifu" },
-        { href: "/characters/husbando", label: "Husbando" },
+        { href: "/characters/waifu", label: "Waifu", icon: HeartIcon },
+        { href: "/characters/husbando", label: "Husbando", icon: CrownIcon },
       ],
     },
     items: [
-      { href: "/raridades", label: "Raridades", permission: "manage_rarities" },
-      { href: "/eventos", label: "Eventos", permission: "manage_events" },
+      { href: "/characters/raridades", label: "Raridades", permission: "manage_rarities", icon: GemIcon },
+      { href: "/characters/eventos", label: "Eventos", permission: "manage_events", icon: CalendarDaysIcon },
     ],
   },
   {
     label: "Gerenciamento de Usuários",
     items: [
-      { href: "/usuarios", label: "Usuários", permission: "manage_users" },
+      { href: "/usuarios", label: "Usuários", permission: "manage_users", icon: UsersIcon },
     ],
   },
   {
     label: "Galeria",
     items: [
-      { href: "/gallery/recent", label: "Recentes" },
+      { href: "/gallery/recent", label: "Recentes", icon: ImageIcon },
     ],
   },
   {
     label: "Bot setup",
     items: [
-      { href: "/setup/grupos", label: "Grupos Cadastrados", permission: "manage_groups" },
-      { href: "/setup/info", label: "Info", permission: "manage_config" },
-      { href: "/setup/config", label: "Constantes", permission: "manage_config" },
-      { href: "/setup/limites", label: "Limites e Bloqueios", permission: "manage_limits" },
-      { href: "/setup/drop", label: "Dropar Personagem", permission: "manage_drop" },
+      { href: "/setup", label: "Configurações", permission: "manage_config", icon: SettingsIcon },
+      { href: "/setup/admins", label: "Permissões", permission: "manage_admins", icon: ShieldCheckIcon },
+      { href: "/setup/limites", label: "Limites e Bloqueios", permission: "manage_limits", icon: ShieldIcon },
     ],
   },
 ];
 
 function hasSidebarPermission(
-  profileType: string | null | undefined,
+  permissions: string[] | undefined,
+  isSupreme: boolean,
   permission?: string,
 ): boolean {
   if (!permission) return true;
-
-  const hierarchy: Record<string, number> = {
-    SUPREME: 0,
-    SUPER_ADMIN: 1,
-    ADMIN: 2,
-    MODERATOR: 3,
-    USER: 4,
-    BANNED: 5,
-  };
-
-  const permissionsMap: Record<string, string[]> = {
-    SUPREME: [
-      "manage_admins", "manage_users", "manage_characters",
-      "manage_events", "manage_rarities", "manage_groups",
-      "manage_config", "manage_limits", "manage_drop",
-      "view_users", "view_logs",
-    ],
-    SUPER_ADMIN: [
-      "manage_users", "manage_characters",
-      "manage_events", "manage_rarities", "manage_groups",
-      "manage_config", "manage_limits", "manage_drop",
-      "view_users", "view_logs",
-    ],
-    ADMIN: [
-      "manage_characters", "manage_events", "manage_rarities",
-      "manage_groups", "manage_config", "manage_limits", "manage_drop",
-      "view_users", "view_logs",
-    ],
-    MODERATOR: ["view_users", "view_logs"],
-    USER: [],
-    BANNED: [],
-  };
-
-  const pt = profileType ?? "USER";
-  return permissionsMap[pt]?.includes(permission) ?? false;
+  if (isSupreme) return true;
+  return permissions?.includes(permission) ?? false;
 }
 
 export function AppSidebar() {
@@ -135,6 +118,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const profileType = user?.telegramUser?.profileType ?? null;
+  const isSupreme = profileType === "SUPREME";
 
   useEffect(() => {
     fetch("/api/me")
@@ -156,11 +140,11 @@ export function AppSidebar() {
   const visibleSections = sidebarSections
     .map((section) => {
       const visibleItems = section.items.filter((item) =>
-        hasSidebarPermission(profileType, item.permission),
+        hasSidebarPermission(user?.permissions, isSupreme, item.permission),
       );
       const collapsibleVisible =
         !section.collapsible ||
-        hasSidebarPermission(profileType, "manage_characters");
+        hasSidebarPermission(user?.permissions, isSupreme, "manage_characters");
 
       return {
         ...section,
@@ -190,6 +174,7 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild tooltip={section.collapsible.label}>
                         <Link href={section.collapsible.href}>
+                          <section.collapsible.icon />
                           <span>{section.collapsible.label}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -218,6 +203,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild tooltip={item.label}>
                       <Link href={item.href}>
+                        <item.icon />
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>

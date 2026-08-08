@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { SourceType } from "../../../../generated/prisma/enums";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PencilIcon } from "lucide-react";
+import { CharacterEditDialog } from "@/components/character-edit-dialog";
 
 type HusbandoPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -272,6 +275,7 @@ export default async function HusbandoPage({ searchParams }: HusbandoPageProps) 
                   <th className="px-2 py-2 text-left">Evento</th>
                   <th className="w-12 px-2 py-2 text-center">Tipo</th>
                   <th className="w-12 px-2 py-2 text-center">Pop.</th>
+                  <th className="px-2 py-2 text-center">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -315,6 +319,18 @@ export default async function HusbandoPage({ searchParams }: HusbandoPageProps) 
                     </td>
                     <td className="px-2 py-2.5 text-center text-xs">{h.sourceType}</td>
                     <td className="px-2 py-2.5 text-center">{h.popularity}</td>
+                    <td className="px-2 py-2.5 text-center">
+                      <CharacterEditDialog
+                        type="husbando"
+                        id={h.id}
+                        trigger={
+                          <Button variant="outline" size="sm">
+                            <PencilIcon className="size-3" />
+                            Editar
+                          </Button>
+                        }
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

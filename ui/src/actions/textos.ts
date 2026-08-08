@@ -2,6 +2,21 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getRedis } from "@/lib/redis";
+
+const INVALIDATION_CHANNEL = "bot:cache:invalidate";
+
+async function publishInvalidation(type: string) {
+  try {
+    const redis = await getRedis();
+    await redis.publish(
+      INVALIDATION_CHANNEL,
+      JSON.stringify({ type }),
+    );
+  } catch (e) {
+    console.error("Falha ao publicar invalidação no Redis:", e);
+  }
+}
 
 export type TextoEntry = {
   key: string;
@@ -89,6 +104,7 @@ export async function saveTextos(changes: { key: string; value: string }[]) {
     }
 
     revalidatePath("/setup/textos");
+    await publishInvalidation("translations");
     return { success: true, count: pairs.length };
   } catch (e) {
     return { success: false, count: 0, error: String(e) };

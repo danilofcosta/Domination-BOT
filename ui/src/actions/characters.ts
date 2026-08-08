@@ -1,10 +1,30 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { notifyCharacterUpdate } from "@/lib/telegram/notifyCharacterUpdate";
 import { notifyCharacterCreation } from "@/lib/telegram/notifyCharacterCreation";
 import { generateSlug } from "@/lib/slug";
+import { getTelegramInfo } from "@/lib/telegram";
+import { getProfileType, hasPermission } from "@/lib/permissions";
+
+async function getSessionUserId(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("better-auth.session_token")?.value;
+  if (!token) return null;
+  const session = await prisma.session.findUnique({
+    where: { token },
+    select: { userId: true },
+  });
+  return session?.userId ?? null;
+}
+
+async function canManageCharacters(): Promise<boolean> {
+  const userId = await getSessionUserId();
+  const profileType = userId ? await getProfileType(userId) : null;
+  return hasPermission(profileType, "manage_characters");
+}
 
 type NewMedia = {
   type: "url" | "file";
@@ -30,6 +50,13 @@ export async function createCharacter(
   },
 ) {
   try {
+    if (!(await canManageCharacters())) {
+      return {
+        success: false as const,
+        message: "Sem permissão para criar personagens.",
+      };
+    }
+
     const cookieStore = await cookies();
     const token = cookieStore.get("better-auth.session_token")?.value;
 
@@ -50,12 +77,8 @@ export async function createCharacter(
             select: { id: true, telegramData: true },
           });
           if (tu) {
-            const td = tu.telegramData as { first_name?: string; last_name?: string } | null;
-            const name = td
-              ? td.last_name
-                ? `${td.first_name ?? ""} ${td.last_name}`
-                : (td.first_name ?? "Unknown")
-              : "Unknown";
+            const { firstName, lastName } = getTelegramInfo(tu.telegramData);
+            const name = [firstName, lastName].filter(Boolean).join(" ") || "Unknown";
             addby = { name, id: tu.id };
           }
         }
@@ -192,6 +215,13 @@ export async function updateCharacter(
   },
 ) {
   try {
+    if (!(await canManageCharacters())) {
+      return {
+        success: false as const,
+        message: "Sem permissão para editar personagens.",
+      };
+    }
+
     const old = type === "waifu"
       ? await prisma.characterWaifu.findUnique({
           where: { id },
@@ -362,6 +392,105 @@ export async function updateCharacter(
     return {
       success: false,
       message: `Erro ao atualizar: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+    };
+  }
+}
+
+export async function deleteCharacter(type: "waifu" | "husbando", id: number) {
+  try {
+    if (!(await canManageCharacters())) {
+      return {
+        success: false as const,
+        message: "Sem permissão para excluir personagens.",
+      };
+    }
+
+    const exists =
+      type === "waifu"
+        ? await prisma.characterWaifu.findUnique({
+            where: { id },
+            select: { id: true, name: true },
+          })
+        : await prisma.characterHusbando.findUnique({
+            where: { id },
+            select: { id: true, name: true },
+          });
+
+    if (!exists) {
+      return { success: false as const, message: "Personagem não encontrado." };
+    }
+
+    if (type === "waifu") {
+      await prisma.characterWaifu.delete({ where: { id } });
+    } else {
+      await prisma.characterHusbando.delete({ where: { id } });
+    }
+
+    revalidatePath("/gallery/recent");
+    revalidatePath("/characters");
+    revalidatePath("/home");
+
+    return {
+      success: true as const,
+      message: `"${exists.name}" excluído com sucesso!`,
+    };
+  } catch (error) {
+    return {
+      success: false as const,
+      message: `Erro ao excluir: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+    };
+  }
+}
+
+export async function getRandomCharacter() {
+  try {
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return { success: false as const, message: "Faça login para continuar." };
+    }
+
+    const [waifuCount, husbandoCount] = await Promise.all([
+      prisma.characterWaifu.count(),
+      prisma.characterHusbando.count(),
+    ]);
+    const total = waifuCount + husbandoCount;
+
+    if (total === 0) {
+      return {
+        success: false as const,
+        message: "Nenhum personagem cadastrado ainda.",
+      };
+    }
+
+    const pick = Math.floor(Math.random() * total);
+
+    if (pick < waifuCount) {
+      const rows = await prisma.characterWaifu.findMany({
+        select: { id: true },
+        skip: pick,
+        take: 1,
+      });
+      const row = rows[0];
+      if (!row) {
+        return { success: false as const, message: "Nenhum personagem encontrado." };
+      }
+      return { success: true as const, type: "waifu" as const, id: row.id };
+    }
+
+    const rows = await prisma.characterHusbando.findMany({
+      select: { id: true },
+      skip: pick - waifuCount,
+      take: 1,
+    });
+    const row = rows[0];
+    if (!row) {
+      return { success: false as const, message: "Nenhum personagem encontrado." };
+    }
+    return { success: true as const, type: "husbando" as const, id: row.id };
+  } catch (error) {
+    return {
+      success: false as const,
+      message: `Erro ao buscar personagem: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
     };
   }
 }

@@ -21,12 +21,17 @@ interface GalleryFilterBarProps {
   typeFilter: string;
   sourceType: string;
   mediaType: string;
+  rarityId: string;
+  eventId: string;
+  sort: string;
+  rarities: { id: number; code: string; name: string; emoji: string }[];
+  events: { id: number; code: string; name: string; emoji: string }[];
 }
 
 type Option = { value: string; label: string };
 
 const typeOptions: Option[] = [
-  { value: "all", label: "Todos" },
+  { value: "all", label: "Tipo" },
   { value: "waifu", label: "Waifu" },
   { value: "husbando", label: "Husbando" },
 ];
@@ -42,16 +47,21 @@ const mediaOptions: Option[] = [
   { value: "VIDEO", label: "Videos" },
 ];
 
+const sortOptions: Option[] = [
+  { value: "recent", label: "Recentes" },
+  { value: "name_asc", label: "Nome A-Z" },
+  { value: "name_desc", label: "Nome Z-A" },
+  { value: "popularity", label: "Popularidade" },
+];
+
 function FilterSelect({
   name,
   options,
   defaultValue,
-  placeholder,
 }: {
   name: string;
   options: Option[];
   defaultValue: string;
-  placeholder: string;
 }) {
   const [value, setValue] = useState(defaultValue);
   const hiddenRef = useRef<HTMLInputElement>(null);
@@ -69,7 +79,7 @@ function FilterSelect({
       <input type="hidden" name={name} ref={hiddenRef} defaultValue={defaultValue} />
       <Select value={value} onValueChange={handleChange}>
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={placeholder} />
+          <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {options.map((opt) => (
@@ -88,8 +98,29 @@ export function GalleryFilterBar({
   typeFilter,
   sourceType,
   mediaType,
+  rarityId,
+  eventId,
+  sort,
+  rarities,
+  events,
 }: GalleryFilterBarProps) {
   const [showFilters, setShowFilters] = useState(false);
+
+  const rarityOptions: Option[] = [
+    { value: "all", label: "Raridade" },
+    ...rarities.map((r) => ({
+      value: String(r.id),
+      label: `${r.emoji} ${r.name}`,
+    })),
+  ];
+
+  const eventOptions: Option[] = [
+    { value: "all", label: "Evento" },
+    ...events.map((e) => ({
+      value: String(e.id),
+      label: `${e.emoji} ${e.name}`,
+    })),
+  ];
 
   return (
     <form action="/gallery/recent" method="get" className="mt-4">
@@ -115,34 +146,46 @@ export function GalleryFilterBar({
         >
           {showFilters ? <XIcon className="size-4" /> : <FilterIcon className="size-4" />}
         </Button>
+        <Button type="submit" className="shrink-0">
+          Buscar
+        </Button>
       </div>
 
       <div
-        className={`mt-3 grid gap-2 sm:grid-cols-2 lg:grid lg:grid-cols-[1fr_auto_auto_auto] lg:items-end ${
-          showFilters ? "" : "hidden lg:grid"
+        className={`mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 ${
+          showFilters ? "" : "hidden sm:grid"
         }`}
       >
         <FilterSelect
           name="type"
           options={typeOptions}
           defaultValue={typeFilter}
-          placeholder="Tipo"
         />
         <FilterSelect
           name="sourceType"
           options={sourceOptions}
           defaultValue={sourceType}
-          placeholder="Fonte"
         />
         <FilterSelect
           name="mediaType"
           options={mediaOptions}
           defaultValue={mediaType}
-          placeholder="Tipo de midia"
         />
-        <Button type="submit" className="w-full sm:w-auto">
-          Buscar
-        </Button>
+        <FilterSelect
+          name="rarityId"
+          options={rarityOptions}
+          defaultValue={rarityId}
+        />
+        <FilterSelect
+          name="eventId"
+          options={eventOptions}
+          defaultValue={eventId}
+        />
+        <FilterSelect
+          name="sort"
+          options={sortOptions}
+          defaultValue={sort}
+        />
       </div>
     </form>
   );

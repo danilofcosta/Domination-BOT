@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getTelegramInfo } from "@/lib/telegram";
 import { getRedis } from "@/lib/redis";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -122,15 +123,11 @@ export default async function LimitesPage({ searchParams }: LimitPageProps) {
                 </thead>
                 <tbody>
                   {bannedUsers.map((u) => {
-                    const data = u.telegramData as Record<
-                      string,
-                      unknown
-                    > | null;
+                    const { firstName, lastName, username } = getTelegramInfo(
+                      u.telegramData,
+                    );
                     const name =
-                      [data?.first_name, data?.last_name]
-                        .filter(Boolean)
-                        .join(" ") || "—";
-                    const username = (data?.username as string) || "";
+                      [firstName, lastName].filter(Boolean).join(" ") || "—";
                     return (
                       <tr
                         key={u.id}

@@ -11,7 +11,7 @@ function isValidRedisUrl(url: string | undefined): url is string {
   }
 }
 
-const redisUrl = isValidRedisUrl(process.env.REDIS_URL)
+export const redisUrl = isValidRedisUrl(process.env.REDIS_URL)
   ? process.env.REDIS_URL
   : null;
 

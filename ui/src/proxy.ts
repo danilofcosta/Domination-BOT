@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { hasPermission, type ProfileType } from "@/lib/permissions";
 
 const PUBLIC_PATHS = [
   "/login",
@@ -27,49 +28,17 @@ type Permission =
   | "view_users"
   | "view_logs";
 
-const hierarchy: Record<string, number> = {
-  SUPREME: 0,
-  SUPER_ADMIN: 1,
-  ADMIN: 2,
-  MODERATOR: 3,
-  USER: 4,
-  BANNED: 5,
-};
-
-const permissionsMap: Record<string, Permission[]> = {
-  SUPREME: [
-    "manage_admins", "manage_users", "manage_characters",
-    "manage_events", "manage_rarities", "manage_groups",
-    "manage_config", "manage_limits", "manage_drop",
-    "view_users", "view_logs",
-  ],
-  SUPER_ADMIN: [
-    "manage_users", "manage_characters",
-    "manage_events", "manage_rarities", "manage_groups",
-    "manage_config", "manage_limits", "manage_drop",
-    "view_users", "view_logs",
-  ],
-  ADMIN: [
-    "manage_characters", "manage_events", "manage_rarities",
-    "manage_groups", "manage_config", "manage_drop",
-    "view_users", "view_logs",
-  ],
-  MODERATOR: ["view_users", "view_logs"],
-  USER: [],
-  BANNED: [],
-};
-
 const ROUTE_PERMISSIONS: { prefix: string; permission: Permission }[] = [
   { prefix: "/setup/admins", permission: "manage_admins" },
   { prefix: "/usuarios", permission: "manage_users" },
   { prefix: "/setup/limites", permission: "manage_limits" },
   { prefix: "/setup/grupos", permission: "manage_groups" },
-  { prefix: "/setup/config", permission: "manage_config" },
   { prefix: "/setup/info", permission: "manage_config" },
   { prefix: "/setup/drop", permission: "manage_drop" },
+  { prefix: "/setup", permission: "manage_config" },
+  { prefix: "/characters/raridades", permission: "manage_rarities" },
+  { prefix: "/characters/eventos", permission: "manage_events" },
   { prefix: "/characters", permission: "manage_characters" },
-  { prefix: "/raridades", permission: "manage_rarities" },
-  { prefix: "/eventos", permission: "manage_events" },
   { prefix: "/logs", permission: "view_logs" },
 ];
 
@@ -153,15 +122,18 @@ export default async function handler(request: NextRequest) {
     );
 
     if (routeCheck) {
-      const userPermissions = permissionsMap[profileType ?? "USER"] ?? [];
-      if (!userPermissions.includes(routeCheck.permission)) {
+      const allowed = await hasPermission(
+        profileType as ProfileType,
+        routeCheck.permission,
+      );
+      if (!allowed) {
         if (pathname.startsWith("/api/")) {
           return NextResponse.json(
             { error: "Sem permissão." },
             { status: 403 }
           );
         }
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.redirect(new URL("/home", request.url));
       }
     }
 

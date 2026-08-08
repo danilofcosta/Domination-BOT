@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { getTelegramInfo } from "@/lib/telegram";
 import { UserTableRow } from "@/components/user-table-row";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ProfileFilterSelect } from "@/components/profile-filter-select";
 
 const PROFILE_LABELS: Record<string, string> = {
   SUPREME: "Supremo",
@@ -11,6 +16,11 @@ const PROFILE_LABELS: Record<string, string> = {
   USER: "Usuário",
   BANNED: "Banido",
 };
+
+const PROFILE_OPTIONS = [
+  { value: "__all__", label: "Todos" },
+  ...Object.entries(PROFILE_LABELS).map(([value, label]) => ({ value, label })),
+];
 
 const PROFILE_COLORS: Record<string, string> = {
   SUPREME: "text-yellow-400",
@@ -95,16 +105,15 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
       select: userSelect,
     });
     const filtered = all.filter((u) => {
-      const data = u.telegramData as Record<string, unknown> | null;
-      const firstName = (data?.first_name as string) ?? "";
-      const userName = (data?.username as string) ?? "";
-      const fullName = `${firstName} ${(data?.last_name as string) ?? ""}`;
+      const { firstName, username } = getTelegramInfo(u.telegramData);
+      const lastName = getTelegramInfo(u.telegramData).lastName;
+      const fullName = `${firstName} ${lastName}`;
       const searchLower = search.toLowerCase();
       return (
         String(u.id) === search ||
         String(u.telegramId) === search ||
         firstName.toLowerCase().includes(searchLower) ||
-        userName.toLowerCase().includes(searchLower) ||
+        username.toLowerCase().includes(searchLower) ||
         fullName.toLowerCase().includes(searchLower)
       );
     });
@@ -154,49 +163,32 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
       </header>
 
       <form className="flex flex-wrap items-end gap-3">
-        <div className="flex-1 min-w-50">
-          <label className="text-muted-foreground mb-1 block text-[11px] font-semibold tracking-[0.14em] uppercase">
-            Buscar
-          </label>
-          <input
+        <div className="min-w-50 flex-1">
+          <Label htmlFor="search">Buscar</Label>
+          <Input
+            id="search"
             name="search"
             defaultValue={search}
             placeholder="ID, nome ou username do Telegram..."
-            className="w-full rounded-lg border border-border/70 bg-card/60 px-3 py-2 text-sm backdrop-blur-md placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-border"
+            className="mt-1.5"
           />
         </div>
 
         <div>
-          <label className="text-muted-foreground mb-1 block text-[11px] font-semibold tracking-[0.14em] uppercase">
-            Tipo
-          </label>
-          <select
-            name="profileType"
-            defaultValue={profileFilter}
-            className="w-32 rounded-lg border border-border/70 bg-card/60 px-3 py-2 text-sm backdrop-blur-md focus:outline-none focus:ring-1 focus:ring-border"
-          >
-            <option value="">Todos</option>
-            {Object.entries(PROFILE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Label htmlFor="profileType">Tipo</Label>
+          <div className="mt-1.5">
+            <ProfileFilterSelect
+              defaultValue={profileFilter}
+              options={PROFILE_OPTIONS}
+            />
+          </div>
         </div>
 
-        <button
-          type="submit"
-          className="rounded-lg border border-border/70 bg-card/60 px-4 py-2 text-sm backdrop-blur-md transition-colors hover:bg-card"
-        >
-          Filtrar
-        </button>
+        <Button type="submit">Filtrar</Button>
         {(search || profileFilter) && (
-          <Link
-            href="/usuarios"
-            className="text-muted-foreground hover:text-foreground text-xs transition-colors"
-          >
-            Limpar
-          </Link>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/usuarios">Limpar</Link>
+          </Button>
         )}
       </form>
 
@@ -221,10 +213,9 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
             </thead>
             <tbody>
               {users.map((u) => {
-                const data = u.telegramData as Record<string, unknown> | null;
-                const firstName = (data?.first_name as string) ?? "";
-                const lastName = (data?.last_name as string) ?? "";
-                const username = (data?.username as string) ?? "";
+                const { firstName, lastName, username } = getTelegramInfo(
+                  u.telegramData,
+                );
                 const name =
                   [firstName, lastName].filter(Boolean).join(" ") || "—";
 
@@ -251,12 +242,11 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
         {totalPages > 1 && (
           <div className="mt-6 flex items-center justify-center gap-2">
             {page > 1 && (
-              <Link
-                href={buildHref({ page: String(page - 1) })}
-                className="rounded-lg border border-border/70 bg-card/60 px-3 py-1.5 text-sm backdrop-blur-md transition-colors hover:bg-card"
-              >
-                Anterior
-              </Link>
+              <Button asChild variant="outline" size="sm">
+                <Link href={buildHref({ page: String(page - 1) })}>
+                  Anterior
+                </Link>
+              </Button>
             )}
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter(
@@ -268,26 +258,27 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
                     <span className="text-muted-foreground px-1">...</span>
                   )}
                   {p === page ? (
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card/80 text-sm font-semibold">
+                    <Button variant="secondary" disabled className="h-8 w-8 p-0">
                       {p}
-                    </span>
+                    </Button>
                   ) : (
-                    <Link
-                      href={buildHref({ page: String(p) })}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 bg-card/60 text-sm backdrop-blur-md transition-colors hover:bg-card"
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0"
                     >
-                      {p}
-                    </Link>
+                      <Link href={buildHref({ page: String(p) })}>{p}</Link>
+                    </Button>
                   )}
                 </span>
               ))}
             {page < totalPages && (
-              <Link
-                href={buildHref({ page: String(page + 1) })}
-                className="rounded-lg border border-border/70 bg-card/60 px-3 py-1.5 text-sm backdrop-blur-md transition-colors hover:bg-card"
-              >
-                Próximo
-              </Link>
+              <Button asChild variant="outline" size="sm">
+                <Link href={buildHref({ page: String(page + 1) })}>
+                  Próximo
+                </Link>
+              </Button>
             )}
           </div>
         )}

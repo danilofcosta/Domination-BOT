@@ -90,7 +90,7 @@ export default async function GruposPage({ searchParams }: SearchParams) {
             </h1>
           </div>
           <Link
-            href="/"
+            href="/home"
             className="text-muted-foreground hover:text-foreground text-xs transition-colors"
           >
             &larr; Voltar

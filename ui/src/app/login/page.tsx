@@ -50,7 +50,7 @@ export default function Login() {
       });
 
       if (response.ok) {
-        window.location.href = "/";
+        window.location.href = "/home";
         return;
       }
 
@@ -67,8 +67,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 py-10 font-sans dark:bg-black">
-      <Card className="w-full max-w-sm overflow-hidden pt-0">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10 font-sans nordic-grain">
+      <Card className="w-full max-w-sm overflow-hidden pt-0 animate-rise">
         <CardImage />
         <CardHeader>
           <CardTitle>Bem-vindo de volta</CardTitle>

@@ -6,6 +6,7 @@ import { RunPolling } from "./index_Polling.js";
 import { checkBotToken } from "./uteis/checkBot.js";
 import { fatal } from "./uteis/log.js";
 import { Environment_validation } from "./bot/testes/environment_validation.js";
+import { startInvalidationSubscriber } from "./cache/invalidationSubscriber.js";
 
 const start = async () => {
   await Environment_validation()
@@ -30,6 +31,7 @@ const start = async () => {
 
   const me = await checkBotToken(BOT_TOKEN, () => bot.api.getMe());
  
+  await startInvalidationSubscriber();
  
  
   RunPolling({ bot: bot, dbtest: true, botInfo: me });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserPermissions } from "@/lib/permissions";
 
 export async function GET(request: NextRequest) {
   const sessionToken =
@@ -17,6 +18,8 @@ export async function GET(request: NextRequest) {
   if (!session || session.expiresAt < new Date()) {
     return NextResponse.json({ user: null });
   }
+
+  const permissions = await getUserPermissions(session.user.id);
 
   let telegramUser = null;
 
@@ -42,6 +45,7 @@ export async function GET(request: NextRequest) {
       username: session.user.username,
       image: session.user.image,
       telegramUser,
+      permissions,
     },
   });
 }

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { saveTextos, type TextoEntry } from "@/actions/textos";
+import { TelegramPreview } from "@/components/textos-preview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -312,31 +313,42 @@ export function TextosEditor({ groups }: Props) {
                   >
                     Reverter
                   </Button>
-                  {unknownRefs.length > 0 && (
-                    <span className="text-muted-foreground text-xs">
-                      Referências não encontradas:{" "}
-                      <span className="font-mono text-amber-400">
-                        {unknownRefs.join(", ")}
-                      </span>
-                    </span>
-                  )}
                 </div>
               </div>
 
               <div className="rounded-xl border border-border/70 bg-card/60 p-4 shadow-xs backdrop-blur-md">
-                <p className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-[0.14em] uppercase">
+                <p className="text-muted-foreground mb-3 text-[10px] font-semibold tracking-[0.14em] uppercase">
                   Preview
                 </p>
-                <div className="flex items-start justify-start">
-                  <div className="bg-muted/70 text-foreground relative max-w-full rounded-2xl rounded-tl-sm px-3.5 py-2.5">
-                    <pre className="font-sans text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {previewResolved || " "}
-                    </pre>
+                <div className="mx-auto max-w-md">
+                  <div className="mb-1.5 flex items-center gap-2">
+                    <span className="flex size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground text-xs font-bold">
+                      B
+                    </span>
+                    <div className="leading-tight">
+                      <p className="text-sm font-semibold">Domination Bot</p>
+                      <p className="text-muted-foreground text-[10px]">bot</p>
+                    </div>
                   </div>
+                  <div className="flex items-start justify-start">
+                    <TelegramPreview
+                      html={previewResolved}
+                      isButton={selectedEntry.isButton}
+                      unknownRefs={new Set(unknownRefs)}
+                    />
+                  </div>
+                  {unknownRefs.length > 0 && (
+                    <p className="text-muted-foreground mt-2 text-[11px]">
+                      Variáveis de runtime (não editáveis aqui):{" "}
+                      <span className="font-mono text-amber-400">
+                        {unknownRefs.join(", ")}
+                      </span>
+                    </p>
+                  )}
                 </div>
-                <p className="text-muted-foreground mt-2 text-[11px]">
-                  Placeholders (${"{exemplo}"}) são resolvidos com o valor de
-                  outros textos.
+                <p className="text-muted-foreground mt-3 text-[11px]">
+                  Placeholders (${"{exemplo}"}) de outros textos são resolvidos
+                  automaticamente. Mensagens usam formatação HTML.
                 </p>
               </div>
             </>

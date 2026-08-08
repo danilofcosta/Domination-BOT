@@ -17,3 +17,5 @@ telegram_bot.zip
 telegram_bot/src/lembretes.txt
 stack.env
 newui/
+tmp_get_session.cjs
+tmp_get_session.ts

@@ -1,9 +1,12 @@
 import { Suspense } from "react";
-import { getGalleryItems } from "@/lib/gallery";
+import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { getUserPermissions } from "@/lib/permissions";
+import { getGalleryItems, type GallerySort } from "@/lib/gallery";
 import { SourceType } from "../../../../generated/prisma/enums";
-import Link from "next/link";
 import { GalleryGrid } from "@/components/gallery-grid";
 import { GalleryFilterBar } from "@/components/gallery-filter-bar";
+import { GalleryHeaderActions } from "@/components/gallery-header-actions";
 
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -11,6 +14,7 @@ type SearchParams = {
 
 const SOURCE_TYPES = ["all", ...Object.keys(SourceType)] as const;
 const MEDIA_TYPES_FILTER = ["all", "IMAGE", "VIDEO"] as const;
+const SORTS: GallerySort[] = ["recent", "name_asc", "name_desc", "popularity"];
 
 export default async function GalleryRecentPage({ searchParams }: SearchParams) {
   const params = await searchParams;
@@ -25,13 +29,58 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
     params.mediaType && MEDIA_TYPES_FILTER.includes(params.mediaType as any)
       ? (params.mediaType as typeof MEDIA_TYPES_FILTER[number])
       : "all";
+  const sortParam = typeof params.sort === "string" ? params.sort : "recent";
+  const sort: GallerySort = SORTS.includes(sortParam as GallerySort)
+    ? (sortParam as GallerySort)
+    : "recent";
+  const rarityId =
+    typeof params.rarityId === "string" &&
+    !isNaN(Number(params.rarityId)) &&
+    Number(params.rarityId) > 0
+      ? params.rarityId
+      : "all";
+  const eventId =
+    typeof params.eventId === "string" &&
+    !isNaN(Number(params.eventId)) &&
+    Number(params.eventId) > 0
+      ? params.eventId
+      : "all";
 
-  const result = await getGalleryItems({
-    search: search || undefined,
-    typeFilter: typeFilter as "all" | "waifu" | "husbando",
-    sourceType: sourceType !== "all" ? sourceType : undefined,
-    mediaType: mediaType !== "all" ? mediaType : undefined,
-  });
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("better-auth.session_token")?.value;
+  let sessionUserId: string | null = null;
+  if (sessionToken) {
+    const session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      select: { userId: true },
+    });
+    sessionUserId = session?.userId ?? null;
+  }
+
+  const permissions = sessionUserId ? await getUserPermissions(sessionUserId) : [];
+  const canAdd = permissions.includes("manage_characters");
+  const canManageRarities = permissions.includes("manage_rarities");
+  const canManageEvents = permissions.includes("manage_events");
+
+  const [result, allRarities, allEvents] = await Promise.all([
+    getGalleryItems({
+      search: search || undefined,
+      typeFilter: typeFilter as "all" | "waifu" | "husbando",
+      sourceType: sourceType !== "all" ? sourceType : undefined,
+      mediaType: mediaType !== "all" ? mediaType : undefined,
+      rarityId: rarityId !== "all" ? Number(rarityId) : undefined,
+      eventId: eventId !== "all" ? Number(eventId) : undefined,
+      sort,
+    }),
+    prisma.rarity.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, code: true, name: true, emoji: true },
+    }),
+    prisma.event.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, code: true, name: true, emoji: true },
+    }),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col gap-6 p-8">
@@ -41,20 +90,25 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
             <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.14em] uppercase">
               Galeria
             </p>
-            
           </div>
-          <Link
-            href="/"
-            className="text-muted-foreground hover:text-foreground text-xs transition-colors"
-          >
-            &larr; Voltar
-          </Link>
+          <GalleryHeaderActions
+            canAdd={canAdd}
+            canManageRarities={canManageRarities}
+            canManageEvents={canManageEvents}
+            allRarities={allRarities}
+            allEvents={allEvents}
+          />
         </div>
         <GalleryFilterBar
           search={search}
           typeFilter={typeFilter}
           sourceType={sourceType}
           mediaType={mediaType}
+          rarityId={rarityId}
+          eventId={eventId}
+          sort={sort}
+          rarities={allRarities}
+          events={allEvents}
         />
       </header>
 
@@ -75,7 +129,11 @@ export default async function GalleryRecentPage({ searchParams }: SearchParams) 
             type: typeFilter !== "all" ? typeFilter : undefined,
             sourceType: sourceType !== "all" ? sourceType : undefined,
             mediaType: mediaType !== "all" ? mediaType : undefined,
+            rarityId,
+            eventId,
+            sort,
           }}
+          canManageCharacters={canAdd}
         />
       </Suspense>
     </div>

@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getRedis } from "@/lib/redis";
+import { getTelegramInfo } from "@/lib/telegram";
 
 async function requireSuperAdmin(): Promise<{ allowed: boolean; error?: string }> {
   const cookieStore = await cookies();
@@ -104,10 +105,8 @@ export async function lookupUser(telegramId: string) {
 
   if (!user) return { error: "Usuário não encontrado" };
 
-  const data = user.telegramData as Record<string, unknown> | null;
-  const name =
-    [data?.first_name, data?.last_name].filter(Boolean).join(" ") || "—";
-  const username = (data?.username as string) || "";
+  const { firstName, lastName, username } = getTelegramInfo(user.telegramData);
+  const name = [firstName, lastName].filter(Boolean).join(" ") || "—";
 
   const [waifuCount, husbandoCount, dailyCaptures] = await Promise.all([
     prisma.waifuCollection.count({ where: { userId: id } }),

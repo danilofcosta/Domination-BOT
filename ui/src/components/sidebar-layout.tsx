@@ -27,7 +27,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         </Sidebar>
         {/* <SidebarTrigger /> */}
         <SidebarInset>
-          <main>{children}</main>
+          <main className="pb-24 lg:pb-28">{children}</main>
           <FloatingDock />
         </SidebarInset>
       </TooltipProvider>

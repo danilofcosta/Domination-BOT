@@ -14,6 +14,7 @@ export type GalleryItemRaw = {
   linkwebExpiresAt?: Date | string | null;
   createdAt: Date;
   sourceType: string;
+  popularity: number;
 };
 
 export type GalleryItem = GalleryItemRaw & {
@@ -21,12 +22,17 @@ export type GalleryItem = GalleryItemRaw & {
   isVideo: boolean;
 };
 
+export type GallerySort = "recent" | "name_asc" | "name_desc" | "popularity";
+
 export type GalleryParams = {
   cursor?: string | null;
   search?: string;
   typeFilter?: "all" | "waifu" | "husbando";
   sourceType?: string;
   mediaType?: string;
+  rarityId?: number;
+  eventId?: number;
+  sort?: GallerySort;
   perPage?: number;
 };
 
@@ -38,6 +44,40 @@ export type GalleryResponse = {
 
 const DEFAULT_PER_PAGE = 30;
 
+type SortConfig = {
+  field: "createdAt" | "name" | "popularity";
+  dir: "asc" | "desc";
+  keyOf: (item: GalleryItemRaw) => string | number;
+  keyToValue: (key: string) => string | number | Date;
+};
+
+const SORT_CONFIG: Record<GallerySort, SortConfig> = {
+  recent: {
+    field: "createdAt",
+    dir: "desc",
+    keyOf: (item) => item.createdAt.getTime(),
+    keyToValue: (key) => new Date(Number(key)),
+  },
+  name_asc: {
+    field: "name",
+    dir: "asc",
+    keyOf: (item) => item.name,
+    keyToValue: (key) => key,
+  },
+  name_desc: {
+    field: "name",
+    dir: "desc",
+    keyOf: (item) => item.name,
+    keyToValue: (key) => key,
+  },
+  popularity: {
+    field: "popularity",
+    dir: "desc",
+    keyOf: (item) => item.popularity,
+    keyToValue: (key) => Number(key),
+  },
+};
+
 function getMediaTypes(mediaType?: string): MediaType[] | undefined {
   if (mediaType === "VIDEO")
     return ["VIDEO_URL", "VIDEO_FILEID", "VIDEO_LOCAL"] as MediaType[];
@@ -46,30 +86,60 @@ function getMediaTypes(mediaType?: string): MediaType[] | undefined {
   return undefined;
 }
 
-export function encodeCursor(
-  createdAt: Date,
-  type: "waifu" | "husbando",
-  id: number,
-): string {
-  return `${createdAt.getTime()}_${type}_${id}`;
-}
-
-export function decodeCursor(cursor: string): {
-  createdAt: Date;
+export type DecodedCursor = {
+  sort: GallerySort;
+  key: string;
   type: "waifu" | "husbando";
   id: number;
-} {
-  const [ts, type, idStr] = cursor.split("_");
-  return {
-    createdAt: new Date(Number(ts)),
-    type: type as "waifu" | "husbando",
-    id: Number(idStr),
-  };
+};
+
+export function encodeCursor(
+  sort: GallerySort,
+  item: { createdAt: Date; name: string; popularity: number; _type: "waifu" | "husbando"; id: number },
+): string {
+  const cfg = SORT_CONFIG[sort];
+  const key = cfg.keyOf(item as GalleryItemRaw);
+  return `${sort}|${key}|${item._type}|${item.id}`;
+}
+
+export function decodeCursor(cursor: string): DecodedCursor | null {
+  const parts = cursor.split("|");
+  if (parts.length !== 4) return null;
+  const [sort, key, type, idStr] = parts;
+  if (!(sort in SORT_CONFIG)) return null;
+  if (type !== "waifu" && type !== "husbando") return null;
+  const id = Number(idStr);
+  if (!Number.isFinite(id)) return null;
+  return { sort: sort as GallerySort, key, type, id };
+}
+
+function typeRank(type: "waifu" | "husbando"): number {
+  return type === "waifu" ? 0 : 1;
+}
+
+function compareRows(
+  a: GalleryItemRaw,
+  b: GalleryItemRaw,
+  sort: GallerySort,
+): number {
+  const cfg = SORT_CONFIG[sort];
+  const ka = cfg.keyOf(a);
+  const kb = cfg.keyOf(b);
+  let c = ka < kb ? -1 : ka > kb ? 1 : 0;
+  if (cfg.dir === "desc") c = -c;
+  if (c !== 0) return c;
+
+  const ra = typeRank(a._type);
+  const rb = typeRank(b._type);
+  if (ra !== rb) return ra - rb;
+
+  return cfg.dir === "asc" ? a.id - b.id : b.id - a.id;
 }
 
 function buildConditions(
   params: GalleryParams,
-  cursor?: string | null,
+  cursor: string | null | undefined,
+  table: "waifu" | "husbando",
 ): Record<string, unknown>[] {
   const conditions: Record<string, unknown>[] = [];
 
@@ -96,14 +166,41 @@ function buildConditions(
     conditions.push({ mediaType: { in: mediaTypes as any } });
   }
 
-  if (cursor) {
-    const decoded = decodeCursor(cursor);
-    conditions.push({
-      OR: [
-        { createdAt: { lt: decoded.createdAt } },
-        { createdAt: decoded.createdAt, id: { lt: decoded.id } },
-      ],
-    });
+  if (params.rarityId) {
+    const rel = table === "waifu" ? "WaifuRarity" : "HusbandoRarity";
+    conditions.push({ [rel]: { some: { rarityId: params.rarityId } } });
+  }
+
+  if (params.eventId) {
+    const rel = table === "waifu" ? "WaifuEvent" : "HusbandoEvent";
+    conditions.push({ [rel]: { some: { eventId: params.eventId } } });
+  }
+
+  const sort = params.sort ?? "recent";
+  const decoded = cursor ? decodeCursor(cursor) : null;
+
+  if (decoded) {
+    const cfg = SORT_CONFIG[decoded.sort];
+    const keyVal = cfg.keyToValue(decoded.key);
+    const cmpOp = cfg.dir === "asc" ? "gt" : "lt";
+    const eqOp = cfg.dir === "asc" ? "gt" : "lt";
+
+    const fieldCmp = { [cfg.field]: { [cmpOp]: keyVal } };
+    const fieldEq = { [cfg.field]: keyVal };
+
+    const rankT = typeRank(table);
+    const rankC = typeRank(decoded.type);
+
+    let eqBranch: Record<string, unknown> | null;
+    if (rankT > rankC) {
+      eqBranch = fieldEq;
+    } else if (rankT === rankC) {
+      eqBranch = { ...fieldEq, id: { [eqOp]: decoded.id } };
+    } else {
+      eqBranch = null;
+    }
+
+    conditions.push(eqBranch ? { OR: [fieldCmp, eqBranch] } : fieldCmp);
   }
 
   return conditions;
@@ -111,12 +208,18 @@ function buildConditions(
 
 function buildWhere(
   params: GalleryParams,
-  cursor?: string | null,
+  cursor: string | null | undefined,
+  table: "waifu" | "husbando",
 ): Record<string, unknown> {
-  const conditions = buildConditions(params, cursor);
+  const conditions = buildConditions(params, cursor, table);
   if (conditions.length === 0) return {};
   if (conditions.length === 1) return conditions[0];
   return { AND: conditions };
+}
+
+function orderByFor(sort: GallerySort): Record<string, "asc" | "desc">[] {
+  const cfg = SORT_CONFIG[sort];
+  return [{ [cfg.field]: cfg.dir }, { id: cfg.dir }];
 }
 
 export async function getGalleryItems(
@@ -124,6 +227,7 @@ export async function getGalleryItems(
 ): Promise<GalleryResponse> {
   const perPage = params.perPage ?? DEFAULT_PER_PAGE;
   const take = perPage + 1;
+  const sort = params.sort ?? "recent";
 
   type CharRow = {
     id: number;
@@ -136,20 +240,21 @@ export async function getGalleryItems(
     linkwebExpiresAt: Date | null;
     createdAt: Date;
     sourceType: string;
+    popularity: number;
   };
 
   const [waifus, husbandos] = (await Promise.all([
     params.typeFilter !== "husbando"
       ? prisma.characterWaifu.findMany({
-          where: buildWhere(params, params.cursor),
-          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          where: buildWhere(params, params.cursor, "waifu"),
+          orderBy: orderByFor(sort) as any,
           take,
         })
       : Promise.resolve([]),
     params.typeFilter !== "waifu"
       ? prisma.characterHusbando.findMany({
-          where: buildWhere(params, params.cursor),
-          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          where: buildWhere(params, params.cursor, "husbando"),
+          orderBy: orderByFor(sort) as any,
           take,
         })
       : Promise.resolve([]),
@@ -167,11 +272,7 @@ export async function getGalleryItems(
     })),
   ];
 
-  raw.sort((a, b) => {
-    const d = b.createdAt.getTime() - a.createdAt.getTime();
-    if (d !== 0) return d;
-    return b.id - a.id;
-  });
+  raw.sort((a, b) => compareRows(a, b, sort));
 
   const resolved = await Promise.all(
     raw.map(async (item) => {
@@ -188,9 +289,7 @@ export async function getGalleryItems(
   const items = valid.slice(0, perPage);
   const lastItem = items[items.length - 1];
   const nextCursor =
-    rawHasMore && lastItem
-      ? encodeCursor(lastItem.createdAt, lastItem._type, lastItem.id)
-      : null;
+    rawHasMore && lastItem ? encodeCursor(sort, lastItem) : null;
 
   return { items, nextCursor, hasMore: rawHasMore };
 }

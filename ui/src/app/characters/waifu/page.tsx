@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { SourceType } from "../../../../generated/prisma/enums";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { PencilIcon } from "lucide-react";
+import { CharacterEditDialog } from "@/components/character-edit-dialog";
 
 type WaifuPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -273,6 +276,7 @@ export default async function WaifuPage({ searchParams }: WaifuPageProps) {
                   <th className="px-2 py-2 text-left">Evento</th>
                   <th className="w-12 px-2 py-2 text-center">Tipo</th>
                   <th className="w-12 px-2 py-2 text-center">Pop.</th>
+                  <th className="px-2 py-2 text-center">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -316,6 +320,18 @@ export default async function WaifuPage({ searchParams }: WaifuPageProps) {
                     </td>
                     <td className="px-2 py-2.5 text-center text-xs">{w.sourceType}</td>
                     <td className="px-2 py-2.5 text-center">{w.popularity}</td>
+                    <td className="px-2 py-2.5 text-center">
+                      <CharacterEditDialog
+                        type="waifu"
+                        id={w.id}
+                        trigger={
+                          <Button variant="outline" size="sm">
+                            <PencilIcon className="size-3" />
+                            Editar
+                          </Button>
+                        }
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

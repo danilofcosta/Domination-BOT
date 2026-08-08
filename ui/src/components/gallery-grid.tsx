@@ -18,6 +18,9 @@ type GalleryFilters = {
   type?: string;
   sourceType?: string;
   mediaType?: string;
+  rarityId?: string;
+  eventId?: string;
+  sort?: string;
 };
 
 interface GalleryGridProps {
@@ -25,6 +28,7 @@ interface GalleryGridProps {
   initialCursor: string | null;
   initialHasMore: boolean;
   filters: GalleryFilters;
+  canManageCharacters: boolean;
 }
 
 export function GalleryGrid({
@@ -32,6 +36,7 @@ export function GalleryGrid({
   initialCursor,
   initialHasMore,
   filters,
+  canManageCharacters,
 }: GalleryGridProps) {
   const [items, setItems] = useState(initialItems);
   const [cursor, setCursor] = useState(initialCursor);
@@ -71,6 +76,11 @@ export function GalleryGrid({
         params.set("sourceType", filters.sourceType);
       if (filters.mediaType && filters.mediaType !== "all")
         params.set("mediaType", filters.mediaType);
+      if (filters.rarityId && filters.rarityId !== "all")
+        params.set("rarityId", filters.rarityId);
+      if (filters.eventId && filters.eventId !== "all")
+        params.set("eventId", filters.eventId);
+      if (filters.sort) params.set("sort", filters.sort);
 
       const res = await fetch(`/api/gallery?${params}`, {
         signal: controller.signal,
@@ -131,8 +141,24 @@ export function GalleryGrid({
     setLightboxOpen(false);
   }, []);
 
+  const handleItemDeleted = useCallback(
+    (type: "waifu" | "husbando", id: number) => {
+      setItems((prev) => prev.filter((x) => !(x._type === type && x.id === id)));
+      setLightboxOpen(false);
+    },
+    [],
+  );
+
   return (
     <>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-muted-foreground text-xs">
+          {items.length === 1
+            ? "1 personagem"
+            : `${items.length} personagens`}
+        </p>
+      </div>
+
       <div className="columns-2 gap-4 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6">
         {items.map((item, index) => (
           <button
@@ -210,6 +236,8 @@ export function GalleryGrid({
         initialIndex={lightboxIndex}
         open={lightboxOpen}
         onClose={closeLightbox}
+        canManageCharacters={canManageCharacters}
+        onItemDeleted={handleItemDeleted}
       />
     </>
   );
