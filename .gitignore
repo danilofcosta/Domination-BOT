@@ -7,7 +7,6 @@ telegram_bot/dist
 telegram_bot/data
 
 
-telegram_bot/src/handlers/Commands/CommandsGlobais/web/
 
 ui\node_modules
 ui/dev.db
