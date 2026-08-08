@@ -1,12 +1,11 @@
 import type { MyContext, PreCharacter } from "../../../../uteis/CustomTypes.js";
 import { ChatType } from "../../../../uteis/CustomTypes.js";
-import { prisma } from "../../../../lib/prisma.js";
 import { setCharacter } from "../../../../cache/cache.js";
 import { EditUI } from "./addcharacter/edit.ui.js";
-import { error } from "../../../../uteis/log.js";
+import { error, info } from "../../../../uteis/log.js";
 import { botPrefix } from "../../../../CommandsRegistry/botConfigCommands.js";
 import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
-import { CreateOneBtn } from "../../../../uteis/buildButtons/createOneButton.js";
+import { GetCharacterById } from "../../../../uteis/extras/GetCharacterById.js";
 
 function dbCharacterToPreCharacter(
   dbChar: any,
@@ -35,9 +34,15 @@ function dbCharacterToPreCharacter(
 
 export async function EditCharacterHandler(ctx: MyContext) {
   let idcharactertoedit: number | undefined;
+  let noCache = false;
 
   if (ctx.match) {
-    idcharactertoedit = Number(ctx.match);
+    const raw = String(ctx.match);
+    noCache = /(?:^|\s)nocache(?:\s|$)/i.test(raw);
+    const idStr = raw.replace(/nocache/gi, "").trim();
+    if (idStr !== "") {
+      idcharactertoedit = Number(idStr);
+    }
   }
 
   if (!idcharactertoedit && ctx.message?.reply_to_message) {
@@ -53,32 +58,22 @@ export async function EditCharacterHandler(ctx: MyContext) {
   }
 
   if (!idcharactertoedit || isNaN(idcharactertoedit)) {
-    await ctx.reply(ctx.t("edit-id-not-informed", { botPrefix: botPrefix }),);
-    await SendMensageCustom({
-      ctx, caption: ctx.t("edit-id-not-informed", { botPrefix: botPrefix })
-    })
+    const usage = ctx.t("edit-id-not-informed", { botPrefix: botPrefix });
+    const caption = `${usage}\n\n💡 Para buscar direto do banco (sem cache), use: <code>/editchar${botPrefix} &lt;id&gt; nocache</code>`;
+    await ctx.reply(caption, { parse_mode: "HTML" });
+    await SendMensageCustom({ ctx, caption });
     return;
   }
 
   try {
     const genero = ctx.botType;
-    const isHusbando = genero === ChatType.HUSBANDO;
 
-    const dbChar = isHusbando
-      ? await (prisma as any).characterHusbando.findUnique({
-        where: { id: idcharactertoedit },
-        include: {
-          HusbandoRarity: { include: { Rarity: true } },
-          HusbandoEvent: { include: { Event: true } },
-        },
-      })
-      : await (prisma as any).characterWaifu.findUnique({
-        where: { id: idcharactertoedit },
-        include: {
-          WaifuRarity: { include: { Rarity: true } },
-          WaifuEvent: { include: { Event: true } },
-        },
-      });
+    info("EditCharacterHandler - buscando personagem para edição", {
+      id: idcharactertoedit,
+      noCache,
+    });
+
+    const dbChar = await GetCharacterById(genero, idcharactertoedit, !noCache);
 
     if (!dbChar) {
       await ctx.reply(ctx.t("error-character-not-found"));

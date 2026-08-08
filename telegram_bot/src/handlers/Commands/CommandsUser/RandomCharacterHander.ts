@@ -8,10 +8,16 @@ import { GetCharacterById } from "../../../uteis/extras/GetCharacterById.js";
 export async function RandomCharacterHandler(ctx: MyContext) {
   try {
     if (ctx.match) {
-      const id = Number(ctx.match);
-      if (!isNaN(id)) {
-        info("RandomCharacterHandler - buscando personagem por id", { id });
-        const character = await GetCharacterById(ctx.botType, id);
+      const raw = String(ctx.match);
+      const noCache = /(?:^|\s)nocache(?:\s|$)/i.test(raw);
+      const idStr = raw.replace(/nocache/gi, "").trim();
+      if (idStr !== "" && !isNaN(Number(idStr))) {
+        const id = Number(idStr);
+        info("RandomCharacterHandler - buscando personagem por id", {
+          id,
+          noCache,
+        });
+        const character = await GetCharacterById(ctx.botType, id, !noCache);
         if (character) {
           const caption = create_caption({
             t: ctx.t,

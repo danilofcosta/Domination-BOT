@@ -127,12 +127,21 @@
   }
   body {
     @apply bg-background text-foreground;
+    position: relative;
+    isolation: isolate;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20px;
+    z-index: -1;
     background-image:
-      linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.45)),
       url("/bg.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    filter: blur(10px);
   }
   html {
     @apply font-sans;

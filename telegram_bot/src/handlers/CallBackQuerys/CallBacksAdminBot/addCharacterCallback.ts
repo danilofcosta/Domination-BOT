@@ -261,7 +261,9 @@ async function handleCallback(ctx: MyContext) {
         const current = getCharacter(cacheId!);
         if (!current) return;
 
-        const mediaData = extractMediaData(msgCtx as any);
+        const mediaData = extractMediaData(msgCtx as any, {
+          ignoreReplyToMessage: true,
+        });
         if (mediaData) {
           setCharacter(cacheId!, {
             ...current,

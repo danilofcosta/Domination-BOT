@@ -2,6 +2,7 @@ import { ProfileType } from "../../../../generated/prisma/client.js";
 import type { MyContext } from "../../../uteis/CustomTypes.js";
 import { onlyRoleBotAdmin } from "../../../uteis/permissions.js";
 import { createAccountWeb } from "./web/createAccountWeb.js";
+import { changePasswordWeb } from "./web/changePasswordWeb.js";
 
 export async function ProcessStartArgument(ctx: MyContext): Promise<void> {
   if (ctx.match) {
@@ -24,6 +25,11 @@ export async function ProcessStartArgument(ctx: MyContext): Promise<void> {
       case "createaccountweb": {
         return await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
           await createAccountWeb(ctx);
+        });
+      }
+      case "changepassword": {
+        return await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
+          await changePasswordWeb(ctx);
         });
       }
       default:

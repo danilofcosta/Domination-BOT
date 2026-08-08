@@ -57,26 +57,90 @@ export default async function Home() {
     prisma.telegramGroup.count(),
   ]);
 
-  const [bySourceW, bySourceH, rarityRows, waifuCreated, husbandoCreated] =
-    await Promise.all([
-      prisma.characterWaifu.groupBy({ by: ["sourceType"], _count: { _all: true } }),
-      prisma.characterHusbando.groupBy({ by: ["sourceType"], _count: { _all: true } }),
-      prisma.rarity.findMany({
-        select: {
-          name: true,
-          emoji: true,
-          _count: { select: { WaifuRarity: true, HusbandoRarity: true } },
-        },
-      }),
-      prisma.characterWaifu.findMany({
-        where: { createdAt: { gte: startOfLast14Days() } },
-        select: { createdAt: true },
-      }),
-      prisma.characterHusbando.findMany({
-        where: { createdAt: { gte: startOfLast14Days() } },
-        select: { createdAt: true },
-      }),
-    ]);
+  const [
+    bySourceW,
+    bySourceH,
+    rarityRows,
+    waifuCreated,
+    husbandoCreated,
+    profileTypeRows,
+    languageRows,
+    mediaTypeW,
+    mediaTypeH,
+    topUsersW,
+    topUsersH,
+    topPopularityW,
+    topPopularityH,
+    eventRows,
+    likeRowsW,
+    likeRowsH,
+  ] = await Promise.all([
+    prisma.characterWaifu.groupBy({ by: ["sourceType"], _count: { _all: true } }),
+    prisma.characterHusbando.groupBy({ by: ["sourceType"], _count: { _all: true } }),
+    prisma.rarity.findMany({
+      select: {
+        name: true,
+        emoji: true,
+        _count: { select: { WaifuRarity: true, HusbandoRarity: true } },
+      },
+    }),
+    prisma.characterWaifu.findMany({
+      where: { createdAt: { gte: startOfLast14Days() } },
+      select: { createdAt: true },
+    }),
+    prisma.characterHusbando.findMany({
+      where: { createdAt: { gte: startOfLast14Days() } },
+      select: { createdAt: true },
+    }),
+    prisma.telegramUser.groupBy({
+      by: ["profileType"],
+      _count: { _all: true },
+    }),
+    prisma.telegramUser.groupBy({ by: ["language"], _count: { _all: true } }),
+    prisma.characterWaifu.groupBy({
+      by: ["mediaType"],
+      _count: { _all: true },
+    }),
+    prisma.characterHusbando.groupBy({
+      by: ["mediaType"],
+      _count: { _all: true },
+    }),
+    prisma.waifuCollection.groupBy({
+      by: ["userId"],
+      _sum: { count: true },
+    }),
+    prisma.husbandoCollection.groupBy({
+      by: ["userId"],
+      _sum: { count: true },
+    }),
+    prisma.characterWaifu.findMany({
+      orderBy: { popularity: "desc" },
+      take: 8,
+      select: { name: true, popularity: true },
+    }),
+    prisma.characterHusbando.findMany({
+      orderBy: { popularity: "desc" },
+      take: 8,
+      select: { name: true, popularity: true },
+    }),
+    prisma.event.findMany({
+      select: {
+        name: true,
+        emoji: true,
+        _count: { select: { WaifuEvent: true, HusbandoEvent: true } },
+      },
+    }),
+    prisma.characterWaifu.findMany({
+      orderBy: { likes: "desc" },
+      take: 8,
+      select: { name: true, likes: true },
+    }),
+    prisma.characterHusbando.findMany({
+      orderBy: { likes: "desc" },
+      take: 8,
+      select: { name: true, likes: true },
+    }),
+  ]);
 
   const SOURCE_COLORS: Record<string, string> = {
     ANIME: "#8b5cf6",
@@ -112,6 +176,89 @@ export default async function Home() {
     .slice(0, 8);
 
   const dailyData = buildDailyData(waifuCreated, husbandoCreated);
+
+  const PROFILE_COLORS: Record<string, string> = {
+    SUPREME: "#f59e0b",
+    SUPER_ADMIN: "#ef4444",
+    ADMIN: "#8b5cf6",
+    MODERATOR: "#06b6d4",
+    USER: "#22c55e",
+    BANNED: "#64748b",
+  };
+
+  const profileTypeData = profileTypeRows
+    .map((r) => ({
+      name: r.profileType,
+      value: r._count._all ?? 0,
+      color: PROFILE_COLORS[r.profileType] ?? "#8b5cf6",
+    }))
+    .filter((d) => d.value > 0);
+
+  const LANGUAGE_COLORS: Record<string, string> = {
+    PT: "#22c55e",
+    EN: "#3b82f6",
+    ES: "#f59e0b",
+    JA: "#ec4899",
+  };
+
+  const languageData = languageRows
+    .map((r) => ({
+      name: r.language,
+      value: r._count._all ?? 0,
+      color: LANGUAGE_COLORS[r.language] ?? "#8b5cf6",
+    }))
+    .filter((d) => d.value > 0);
+
+  const MEDIA_COLORS: Record<string, string> = {
+    IMAGE_URL: "#8b5cf6",
+    IMAGE_FILEID: "#ec4899",
+    VIDEO_URL: "#06b6d4",
+    VIDEO_FILEID: "#f59e0b",
+    VIDEO_LOCAL: "#ef4444",
+    IMAGE_LOCAL: "#22c55e",
+  };
+
+  const mediaCounts: Record<string, number> = {};
+  for (const row of [...mediaTypeW, ...mediaTypeH]) {
+    mediaCounts[row.mediaType] =
+      (mediaCounts[row.mediaType] ?? 0) + (row._count._all ?? 0);
+  }
+
+  const mediaTypeData = Object.entries(mediaCounts).map(([name, value]) => ({
+    name,
+    value,
+    color: MEDIA_COLORS[name] ?? "#8b5cf6",
+  }));
+
+  const userCols = new Map<string, number>();
+  for (const row of [...topUsersW, ...topUsersH]) {
+    const key = String(row.userId);
+    userCols.set(key, (userCols.get(key) ?? 0) + (row._sum.count ?? 0));
+  }
+
+  const topUsersData = [...userCols.entries()]
+    .map(([id, value]) => ({ label: `#${id}`, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8);
+
+  const topPopularityData = [...topPopularityW, ...topPopularityH]
+    .map((c) => ({ label: c.name, value: c.popularity }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8);
+
+  const eventData = eventRows
+    .map((e) => ({
+      label: `${e.emoji} ${e.name}`,
+      value: e._count.WaifuEvent + e._count.HusbandoEvent,
+    }))
+    .filter((e) => e.value > 0)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8);
+
+  const topLikesData = [...likeRowsW, ...likeRowsH]
+    .map((c) => ({ label: c.name, value: c.likes }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8);
 
   const recentCollections = [...recentHusbandoCols, ...recentWaifuCols];
 
@@ -211,6 +358,13 @@ export default async function Home() {
         sourceTypeData={sourceTypeData}
         rarityData={rarityData}
         dailyData={dailyData}
+        profileTypeData={profileTypeData}
+        languageData={languageData}
+        mediaTypeData={mediaTypeData}
+        topUsersData={topUsersData}
+        topPopularityData={topPopularityData}
+        eventData={eventData}
+        topLikesData={topLikesData}
       />
 
       <div className="flex-1 rounded-xl border border-border/70 bg-card/60 p-4 shadow-xs backdrop-blur-md">

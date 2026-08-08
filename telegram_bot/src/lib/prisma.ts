@@ -19,8 +19,8 @@ export const prisma =
     adapter,
     errorFormat: "minimal",
     log: [
-      //"warn", "error",
-    "info","query",
+      //"warn", "error","query",
+    "info"
       ],
     transactionOptions: {
       maxWait: 5000,

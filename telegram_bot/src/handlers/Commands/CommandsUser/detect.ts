@@ -14,14 +14,18 @@ const SOURCE_TYPE_EMOJI: Record<string, string> = {
 
 export async function DetectHandler(ctx: MyContext) {
   try {
-    const detectId = Number(String(ctx.match ?? "").trim());
+    const raw = String(ctx.match ?? "").trim();
+    const noCache = /(?:^|\s)nocache(?:\s|$)/i.test(raw);
+    const idStr = raw.replace(/nocache/gi, "").trim();
+    const detectId = Number(idStr);
 
-    if (!ctx.match || isNaN(detectId)) {
+    if (!ctx.match || idStr === "" || isNaN(detectId)) {
       return SendMensageCustom({
         ctx,
         caption: [
           "Por favor, forneça um ID de personagem.",
-          "Uso: /detect &lt;id_do_personagem&gt;",
+          "Uso: /detect &lt;id_do_personagem&gt; [nocache]",
+          "💡 <code>nocache</code> busca direto no banco, sem cache.",
         ].join("\n"),
       });
     }
@@ -29,9 +33,10 @@ export async function DetectHandler(ctx: MyContext) {
     info("DetectHandler - buscando personagem", {
       id: detectId,
       genero: ctx.botType,
+      noCache,
     });
 
-    const character = await GetCharacterById(ctx.botType, detectId);
+    const character = await GetCharacterById(ctx.botType, detectId, !noCache);
     if (!character) {
       warn("DetectHandler - personagem não encontrado", { id: detectId });
       return SendMensageCustom({

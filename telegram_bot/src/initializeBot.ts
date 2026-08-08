@@ -65,8 +65,8 @@ export default async function initializeBot(
   bot.use(rateLimiter);
   bot.use(banCheck);
 
-  // bot.api.deleteMyCommands()
-  // userCommandsRegistry.setCommands(bot)
+  bot.api.deleteMyCommands()
+  userCommandsRegistry.setCommands(bot)
 
   info('registrando comandos')
   bot.use(userCommandsRegistry)

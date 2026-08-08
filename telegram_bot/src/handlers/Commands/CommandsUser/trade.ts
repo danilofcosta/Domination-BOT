@@ -56,7 +56,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       await SendMensageCustom({
         ctx,
         caption: ctx.t("trade_reply_instruction", {
-          command: userCommandsRegistryDict.Gift!.command,
+          command: userCommandsRegistryDict.Trade!.command,
         }),
       });
       return;
@@ -128,7 +128,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       return await SendMensageCustom({
         ctx,
         caption: ctx.t("trade_error_all_id_not_info", {
-          command: userCommandsRegistryDict.Gift!.command,
+          command: userCommandsRegistryDict.Trade!.command,
         }),
       });
     }

@@ -9,9 +9,12 @@ interface MediaData {
   height?: number | undefined;
 }
 
-export function extractMediaData(ctx: Context): MediaData | null {
+export function extractMediaData(
+  ctx: Context,
+  options?: { ignoreReplyToMessage?: boolean },
+): MediaData | null {
   let msg = ctx.msg;
-  if (ctx.message?.reply_to_message) {
+  if (!options?.ignoreReplyToMessage && ctx.message?.reply_to_message) {
     msg = ctx.message.reply_to_message;
   }
 

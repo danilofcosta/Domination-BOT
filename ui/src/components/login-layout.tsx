@@ -8,7 +8,7 @@ interface LoginLayoutProps {
 
 export function LoginLayout({ title, subtitle, children }: LoginLayoutProps) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 grid-bg opacity-[0.03]" />
       <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl" />
 
