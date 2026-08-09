@@ -175,7 +175,7 @@ export const _base: localekey[] = [
     key: "top_user_position_user",
     description: null,
     localeTraslation: {
-      value: "Sua posição :${position} \n Total :${total}",
+      value: "Sua posição :${position}\n Total :${total}",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -238,7 +238,7 @@ export const _base: localekey[] = [
     key: "top_user_position_grupos",
     description: null,
     localeTraslation: {
-      value: "Posição do grupo ${chat_title} :${position} \n Total :${total}",
+      value: "Posição do grupo ${chat_title} :${position}\n Total :${total}",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -579,12 +579,13 @@ export const _base: localekey[] = [
     key: "new_character_secret_caption",
     description: null,
     localeTraslation: {
-      value: "${emoji_raridade} <b> ${charater_genero}  Apareceu!</b>\n   <b>capture enviando</b>\n    /dominar <code>Nome</code>",
+      value: "${emoji_raridade} <b> ${charater_genero}  Apareceu ${emoji_event}!</b>\n<b>capture enviando</b>\n /dominar <code>[Nome]</code>",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
       extrakey: [
         { key: "emoji_raridade", description: null },
+        { key: "emoji_event", description: null },
         { key: "charater_genero", description: null },
       ],
     },
@@ -1857,7 +1858,7 @@ export const _base: localekey[] = [
     key: "trade_reply_instruction",
     description: "Instrução de reply para trade",
     localeTraslation: {
-      value: "${command} 55 , 55 (em Resposta) \n ou ${command}  @Wadomination_bot 55 , 55",
+      value: "${command} 55 , 55 (em Resposta)\n ou ${command}  @Wadomination_bot 55 , 55",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -2097,7 +2098,7 @@ export const _base: localekey[] = [
     key: "bot_leave_group_text",
     description: null,
     localeTraslation: {
-      value: "Tem certeza que deseja remover o bot do grupo? \n\nmenbros devem ter a coleção apagada : ${membrers_clean_colletion} \n menbros devem ser blockeados  : ${membrers_ban} \n mandar mensagem antes de sair ? ${send_message_to_group}",
+      value: "Tem certeza que deseja remover o bot do grupo?\n\nmenbros devem ter a coleção apagada : ${membrers_clean_colletion}\n menbros devem ser blockeados  : ${membrers_ban}\n mandar mensagem antes de sair ? ${send_message_to_group}",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
