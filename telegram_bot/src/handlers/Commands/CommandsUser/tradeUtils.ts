@@ -1,6 +1,6 @@
 import { MediaType } from "../../../../generated/prisma/client.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import type { MyContext } from "../../../uteis/CustomTypes.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
+import type { MyContext } from "../../../utils/customTypes.js";
 
 function getMediaType(mediaType: MediaType): "photo" | "video" {
   switch (mediaType) {
@@ -51,7 +51,7 @@ export function buildCharacterMedia(ctx: MyContext, data: any) {
   const isImage = type === "photo";
 
   const link = `<${isImage ? "img" : "video"} src="tg://photo?id=personagem${characterData.id}"/> `;
-  const caption = create_caption({
+  const caption = createCaption({
     t: ctx.t,
     chatType: ctx.botType,
     character: characterData,

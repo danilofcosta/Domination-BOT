@@ -1,13 +1,13 @@
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, info, warn } from "../../../uteis/log.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, info, warn } from "../../../utils/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import {
   BTN_TYPE,
   CreateOneBtn,
-} from "../../../uteis/buildButtons/createOneButton.js";
-import { CreateButtunConfirmation } from "../../../uteis/buildButtons/createButtonConfirmation.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import { findCollectionWithIncludes } from "../../../uteis/extras/collectionUtils.js";
+} from "../../../utils/buildButtons/createOneButton.js";
+import { CreateButtunConfirmation } from "../../../utils/buildButtons/createButtonConfirmation.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
+import { findCollectionWithIncludes } from "../../../utils/extras/collectionUtils.js";
 
 export async function favHandler(ctx: MyContext) {
   let favid: number | undefined;
@@ -34,7 +34,7 @@ export async function favHandler(ctx: MyContext) {
       typeBtn: BTN_TYPE.switch_inline_query_current_chat,
     });
 
-    return SendMensageCustom({
+    return sendMessageCustom({
       ctx,
       caption: ctx.t("error-fav-not-id"),
       reply_markup: btn,
@@ -44,7 +44,7 @@ export async function favHandler(ctx: MyContext) {
   const userId = ctx.from?.id;
   if (!userId) {
     warn("favHandler - usuário não identificado");
-    return SendMensageCustom({
+    return sendMessageCustom({
       ctx,
       caption: ctx.t("error-user-not-found"),
     });
@@ -63,7 +63,7 @@ export async function favHandler(ctx: MyContext) {
       favid,
     });
 
-    return SendMensageCustom({
+    return sendMessageCustom({
       ctx,
       caption: ctx.t("fav-not-found", {
         genero: ctx.botType.toLowerCase(),
@@ -73,7 +73,7 @@ export async function favHandler(ctx: MyContext) {
 
   const charData: any = (character as any).Character;
 
-  const characterCaption = create_caption({
+  const characterCaption = createCaption({
     t: ctx.t,
     chatType: ctx.botType,
     character: charData,
@@ -89,7 +89,7 @@ export async function favHandler(ctx: MyContext) {
   );
 
   try {
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       character: charData,
       caption: `<b>${ctx.t("fav-character-confirm")}</b>\n\n${characterCaption}`,

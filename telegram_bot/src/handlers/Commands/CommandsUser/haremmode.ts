@@ -1,8 +1,8 @@
 import { InlineKeyboard } from "grammy";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 import { prisma } from "../../../lib/prisma.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { info, warn } from "../../../uteis/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { info, warn } from "../../../utils/log.js";
 import { haremModes, getDefaultHaremMode } from "./haremModes.js";
 
 export async function HaremmodeHandler(ctx: MyContext) {
@@ -43,7 +43,7 @@ export async function HaremmodeHandler(ctx: MyContext) {
     currentMode,
   });
 
-  await SendMensageCustom({
+  await sendMessageCustom({
     ctx,
     caption: ctx.t("haremmode-caption"),
     reply_markup: keyboard,

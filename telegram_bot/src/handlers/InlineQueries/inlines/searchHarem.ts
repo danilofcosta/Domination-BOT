@@ -1,7 +1,7 @@
-import { getHaremCollection, LIMIT } from "./harem_inline_query.js";
-import { createResult } from "../uteis/create_inline_result.js";
-import { showResults } from "../uteis/show_results_inline.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
+import { getHaremCollection, LIMIT } from "./haremInlineQuery.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
+import { showResultsInline } from "../utils/showResultsInline.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
 
 export async function searchHarem(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
@@ -16,7 +16,7 @@ export async function searchHarem(ctx: MyContext) {
   if (!telegramId) return;
 
   if (!searchTerm) {
-    await showResults({
+    await showResultsInline({
       ctx,
       results: [],
       text: ctx.t("search-harem-title"),
@@ -47,7 +47,7 @@ export async function searchHarem(ctx: MyContext) {
   });
 
   if (!collection.length) {
-    await showResults({
+    await showResultsInline({
       ctx,
       results: [],
       text: ctx.t("search-harem-not-found"),
@@ -57,7 +57,7 @@ export async function searchHarem(ctx: MyContext) {
   }
 
   const results = collection.map((item: any) =>
-    createResult({
+    createInlineResult({
       t: ctx.t,
       character: item,
       chatType: genero,
@@ -65,7 +65,7 @@ export async function searchHarem(ctx: MyContext) {
     }),
   );
 
-  await showResults({
+  await showResultsInline({
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",

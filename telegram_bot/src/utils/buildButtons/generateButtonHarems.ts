@@ -1,5 +1,5 @@
 import { InlineKeyboard } from "grammy";
-import type { MyContext } from "../CustomTypes.js";
+import type { MyContext } from "../customTypes.js";
 
 interface BuildHaremButtonsParams {
   ctx: MyContext;
@@ -11,7 +11,7 @@ interface BuildHaremButtonsParams {
 
 }
 
-export function Build_btn_harem({
+export function buildButtonHarems({
   ctx,
   userId,
   current_page,

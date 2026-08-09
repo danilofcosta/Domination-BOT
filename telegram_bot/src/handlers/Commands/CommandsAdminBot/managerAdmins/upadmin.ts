@@ -1,20 +1,20 @@
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
 import {
   getUserRole,
   roleWeights,
-} from "../../../../uteis/permissions.js";
-import { Extract_id_user } from "../../../../uteis/uteis_telegram/extract_id_user.js";
-import { CreateMentionUser } from "../../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { CreateButtunConfirmation } from "../../../../uteis/buildButtons/createButtonConfirmation.js";
-import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
-import { info, warn, error } from "../../../../uteis/log.js";
+} from "../../../../utils/permissions.js";
+import { extractUserId } from "../../../../utils/telegram/extractUserId.js";
+import { createMentionUser } from "../../../../utils/telegram/createMentionUser.js";
+import { CreateButtunConfirmation } from "../../../../utils/buildButtons/createButtonConfirmation.js";
+import { sendMessageCustom } from "../../../../utils/sendMessageCustom.js";
+import { info, warn, error } from "../../../../utils/log.js";
 
 export async function upadmin(ctx: MyContext) {
   try {
-    const mentionedUser = await Extract_id_user(ctx);
+    const mentionedUser = await extractUserId(ctx);
     if (!mentionedUser) {
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("upadmin_reply_instruction"),
       });
@@ -25,7 +25,7 @@ export async function upadmin(ctx: MyContext) {
       warn("upadmin - tentativa de promover a si mesmo", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("upadmin_error_self") });
+      await sendMessageCustom({ ctx, caption: ctx.t("upadmin_error_self") });
       return;
     }
 
@@ -33,7 +33,7 @@ export async function upadmin(ctx: MyContext) {
       warn("upadmin - tentativa de promover um bot", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("upadmin_error_bot") });
+      await sendMessageCustom({ ctx, caption: ctx.t("upadmin_error_bot") });
       return;
     }
 
@@ -46,7 +46,7 @@ export async function upadmin(ctx: MyContext) {
         targetId: mentionedUser.id,
         targetRole,
       });
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("upadmin_error_already_admin"),
       });
@@ -61,10 +61,10 @@ export async function upadmin(ctx: MyContext) {
       ctx.t("upadmin_btn_cancel"),
     );
 
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("upadmin_confirm", {
-        user: CreateMentionUser({
+        user: createMentionUser({
           Nome: mentionedUser.first_name,
           telegramiduser: mentionedUser.id,
         }),
@@ -80,7 +80,7 @@ export async function upadmin(ctx: MyContext) {
     });
   } catch (e) {
     error("upadmin - erro ao iniciar promocao", e);
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("upadmin_error", { error: "erro interno" }),
     });

@@ -1,10 +1,11 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, info, warn } from "../../../uteis/log.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import { cleanupCallback } from "../../../uteis/uteis_telegram/cleanupCallback.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, info, warn } from "../../../utils/log.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
+import { getCharacterById } from "../../../utils/extras/getCharacterById.js";
+import { cleanupCallback } from "../../../utils/telegram/cleanupCallback.js";
 
 function parseCallbackData(data: string) {
   const single = data.match(/^gift_(yes|no)_(\d+)_(\d+)_(\d+)$/);
@@ -147,7 +148,7 @@ export async function giftCallbackHandler(ctx: MyContext) {
         }
       });
 
-      const senderMention = CreateMentionUser({
+      const senderMention = createMentionUser({
         Nome: ctx.from!.first_name,
         telegramiduser: parsed.senderId,
       });
@@ -162,18 +163,30 @@ export async function giftCallbackHandler(ctx: MyContext) {
         ctx.from?.first_name ||
         ctx.t("gift-default-username");
 
-      const receiverMention = CreateMentionUser({
+      const receiverMention = createMentionUser({
         Nome: receiverName,
         telegramiduser: receiverId,
       });
 
-      const text = ctx.t("gift_success", {
-        sender: senderMention,
-        name: charExists.name,
-        receiver: receiverMention,
+      const characterData = await getCharacterById(ctx.botType, giftid);
+
+      const characterCaption = createCaption({
+        t: ctx.t,
+        chatType: ctx.botType,
+        character: characterData,
+        rawEmoji: false,
       });
 
-      await EditOrSendText({
+      const text = [
+        ctx.t("gift_success", {
+          sender: senderMention,
+          name: charExists.name,
+          receiver: receiverMention,
+        }),
+        characterCaption,
+      ].join("\n\n");
+
+      await editOrSendText({
         ctx,
         caption: text,
         reply_markup: { inline_keyboard: [] },

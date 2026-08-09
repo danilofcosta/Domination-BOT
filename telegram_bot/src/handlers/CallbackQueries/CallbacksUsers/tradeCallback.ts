@@ -1,10 +1,10 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../utils/customTypes.js";
 import { TradeHandler } from "../../Commands/CommandsUser/trade.js";
 import { getTradeSession, deleteTradeSession } from "../../../cache/tradeCache.js";
-import { cleanupCallback } from "../../../uteis/uteis_telegram/cleanupCallback.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { cleanupCallback } from "../../../utils/telegram/cleanupCallback.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 
-export async function TradeCallbackQuery(ctx: MyContext) {
+export async function tradeCallback(ctx: MyContext) {
 
     const data = ctx.callbackQuery?.data ?? "";
     const parts = data.split("_");
@@ -56,7 +56,7 @@ export async function TradeCallbackQuery(ctx: MyContext) {
                 return;
             }
 
-            await SendMensageCustom({
+            await sendMessageCustom({
                 ctx,
                 caption: ctx.t("trade_counter_not_implemented"),
             });
@@ -75,7 +75,7 @@ export async function TradeCallbackQuery(ctx: MyContext) {
                 return;
             }
 
-            await SendMensageCustom({
+            await sendMessageCustom({
                 ctx,
                 caption: ctx.t("trade_declined"),
             });

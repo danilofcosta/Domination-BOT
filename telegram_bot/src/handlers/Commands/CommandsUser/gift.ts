@@ -1,17 +1,17 @@
 import { userCommandsRegistryDict } from "../../../CommandsRegistry/CommandsRegistryUser.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, warn } from "../../../uteis/log.js";
-import { Extract_id_user } from "../../../uteis/uteis_telegram/extract_id_user.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, warn } from "../../../utils/log.js";
+import { extractUserId } from "../../../utils/telegram/extractUserId.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import {
   BTN_TYPE,
   CreateOneBtn,
-} from "../../../uteis/buildButtons/createOneButton.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { findCollectionWithIncludes } from "../../../uteis/extras/collectionUtils.js";
-import { CreateButtunConfirmation } from "../../../uteis/buildButtons/createButtonConfirmation.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import { extractNumbers } from "../../../uteis/remove num.js";
+} from "../../../utils/buildButtons/createOneButton.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { findCollectionWithIncludes } from "../../../utils/extras/collectionUtils.js";
+import { CreateButtunConfirmation } from "../../../utils/buildButtons/createButtonConfirmation.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
+import { extractNumbers } from "../../../utils/removeNum.js";
 
 const giftCache = new Map<string, number[]>();
 
@@ -20,10 +20,10 @@ export function clearGiftCache(): void {
 }
 
 export async function GiftHandler(ctx: MyContext) {
-  const mentionedUser = await Extract_id_user(ctx);
+  const mentionedUser = await extractUserId(ctx);
 
   if (!mentionedUser) {
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("gift_reply_instruction", {
         command: userCommandsRegistryDict.Gift!.command,
@@ -34,7 +34,7 @@ export async function GiftHandler(ctx: MyContext) {
 
   if (mentionedUser.id === ctx.from?.id) {
     warn("giftHandler - tentativa de auto-presente", { userId: ctx.from?.id });
-    await SendMensageCustom({ ctx, caption: ctx.t("gift_error_self") });
+    await sendMessageCustom({ ctx, caption: ctx.t("gift_error_self") });
     return;
   }
 
@@ -42,11 +42,11 @@ export async function GiftHandler(ctx: MyContext) {
     warn("giftHandler - tentativa de presente ao bot", {
       userId: ctx.from?.id,
     });
-    await SendMensageCustom({ ctx, caption: ctx.t("gift_error_bot") });
+    await sendMessageCustom({ ctx, caption: ctx.t("gift_error_bot") });
     return;
   }
 
-  const mention = CreateMentionUser({
+  const mention = createMentionUser({
     Nome: mentionedUser.first_name,
     telegramiduser: mentionedUser.id,
   });
@@ -61,7 +61,7 @@ export async function GiftHandler(ctx: MyContext) {
       `gift_no_fullharem_${mentionedUser.id}_${ctx.from!.id}`,
     );
 
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("gift_confirm_fullharem", { username: mention }),
       reply_markup,
@@ -80,7 +80,7 @@ export async function GiftHandler(ctx: MyContext) {
       typeBtn: BTN_TYPE.switch_inline_query_current_chat,
     });
 
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("gift_error_not_id"),
       reply_markup: btn,
@@ -103,7 +103,7 @@ export async function GiftHandler(ctx: MyContext) {
         giftid,
       });
 
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("gift_fav_not_found", {
           genero: ctx.botType.toLowerCase(),
@@ -114,7 +114,7 @@ export async function GiftHandler(ctx: MyContext) {
 
     const characterData = GiftCharacter.Character;
 
-    const characterCaption = create_caption({
+    const characterCaption = createCaption({
       t: ctx.t,
       chatType: ctx.botType,
       character: characterData,
@@ -133,7 +133,7 @@ export async function GiftHandler(ctx: MyContext) {
     );
 
     try {
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         character: characterData,
         caption: text,
@@ -156,7 +156,7 @@ export async function GiftHandler(ctx: MyContext) {
   });
 
   if (!result?.success) {
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("gift_error_ids_not_found", {
         ids: result?.missingIds?.join(", ") || numbers.join(", "),
@@ -185,7 +185,7 @@ export async function GiftHandler(ctx: MyContext) {
     `gift_no_multi_${cacheKey}_${mentionedUser.id}_${ctx.from!.id}`,
   );
 
-  await SendMensageCustom({
+  await sendMessageCustom({
     ctx,
     caption: text,
     reply_markup,

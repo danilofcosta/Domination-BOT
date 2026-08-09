@@ -1,9 +1,9 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
 import { permissionCache } from "../../../../cache/cache.js";
 import { clearAllBotCaches } from "../../../../cache/clearAll.js";
-import { info, error } from "../../../../uteis/log.js";
+import { info, error } from "../../../../utils/log.js";
 
 export async function reload(ctx: MyContext) {
   try {

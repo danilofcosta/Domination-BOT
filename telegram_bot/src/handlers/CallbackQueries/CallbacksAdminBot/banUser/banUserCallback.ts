@@ -1,14 +1,14 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
 import {
   getUserRole,
   onlyRoleBotAdmin,
   roleWeights,
-} from "../../../../uteis/permissions.js";
+} from "../../../../utils/permissions.js";
 import { permissionCache } from "../../../../cache/cache.js";
-import { EditOrSendText } from "../../../../uteis/uteis_telegram/EditOrSendText.js";
-import { info, warn, error } from "../../../../uteis/log.js";
+import { editOrSendText } from "../../../../utils/telegram/editOrSendText.js";
+import { info, warn, error } from "../../../../utils/log.js";
 
 export async function banUserCallback(ctx: MyContext) {
   await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
@@ -43,7 +43,7 @@ async function banUserCallbackService(ctx: MyContext) {
 
     if (action === "no") {
       info("ban - cancelado pelo executor", { executorId, targetId });
-      await EditOrSendText({ ctx, caption: ctx.t("ban_cancelled") });
+      await editOrSendText({ ctx, caption: ctx.t("ban_cancelled") });
       return;
     }
 
@@ -84,7 +84,7 @@ async function banUserCallbackService(ctx: MyContext) {
       targetId,
       targetRole,
     });
-    await EditOrSendText({ ctx, caption: ctx.t("ban_success") });
+    await editOrSendText({ ctx, caption: ctx.t("ban_success") });
   } catch (e) {
     error("ban - erro ao executar ban", e);
     await ctx.answerCallbackQuery(

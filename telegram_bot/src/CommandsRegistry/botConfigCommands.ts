@@ -1,6 +1,6 @@
 import { CommandGroup } from "@grammyjs/commands";
-import { ChatType, type MyContext } from "../uteis/CustomTypes.js";
-import { debug } from "../uteis/log.js";
+import { ChatType, type MyContext } from "../utils/customTypes.js";
+import { debug } from "../utils/log.js";
 
 const botPrefix =
   process.env.TYPE_BOT?.charAt(0)?.toLowerCase() ?? "";
@@ -9,18 +9,29 @@ const prefixs = "./!";
 const options = { ignoreCase: true, prefixs };
 type ScopeType = "all_group_chats" | "all_private_chats" | "all_chat_administrators";
 
-export enum category {
-  main,
-  Collection
-  , Economy_Trade ,
-  Info_Personalization
+export enum category_user {
+  Main = "principais user",
+  Collection = "collection",
+  EconomyTrade = "economia & Troca",
+  InfoPersonalization = "info & Personalização",
+  Hidden = "ocultos publicos",
+}
+export enum category_admin_group {
+  main = "principais admin group",
+}
+export enum category_admin_bot {
+  main = "principais admin bot",
+  Characters = "personagens",
+  Admins = "administradores"
 }
 export type CommandConfig = {
   command: string;
   commandPrivate?: string;
   commandPrivateInChat?: boolean
   other_commands?: [string]
-  category:category
+  category_user?: category_user
+  category_admin_group?: category_admin_group
+  category_admin_bot?: category_admin_bot
 
   description: {
     pt: string;

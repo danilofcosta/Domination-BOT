@@ -1,17 +1,17 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { info, warn, error } from "../../../uteis/log.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { Build_btn_harem } from "../../../uteis/buildButtons/GenerateButtonharems.js";
-import { getUserRole, roleWeights } from "../../../uteis/permissions.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { info, warn, error } from "../../../utils/log.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { buildButtonHarems } from "../../../utils/buildButtons/generateButtonHarems.js";
+import { getUserRole, roleWeights } from "../../../utils/permissions.js";
 import { setHarem } from "../../../cache/cache.js";
 import {
-  Harem_mode_rarity,
-  Harem_mode_event,
-  Harem_mode_latest,
-  Harem_mode_default,
-} from "./harem_mode_build.js";
+  haremModeRarity,
+  haremModeEvent,
+  haremModeLatest,
+  haremModeDefault,
+} from "./haremModeBuild.js";
 
 const MAX_CAPTION_LEN = 1024;
 
@@ -99,7 +99,7 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
 
   if (!user) {
     warn("HaremHandler - usuário não encontrado", { userId: ctx.from?.id });
-    return SendMensageCustom({ ctx, caption: ctx.t("harem_no_user") });
+    return sendMessageCustom({ ctx, caption: ctx.t("harem_no_user") });
   }
 
   const config = (
@@ -111,18 +111,18 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
     ? user.CharacterHusbando
     : user.CharacterWaifu;
   const name = (user.telegramData as any)?.first_name || "user";
-  const mention = CreateMentionUser({ Nome: name, telegramiduser: targetId });
+  const mention = createMentionUser({ Nome: name, telegramiduser: targetId });
   const harem_logo = ctx.t("harem_logo", { usermention: mention });
 
   const maxPageLen = MAX_CAPTION_LEN - harem_logo.length - 4;
 
   let pages: string[];
   if (mode === "rarity") {
-    pages = Harem_mode_rarity(collection, ctx, maxPageLen);
+    pages = haremModeRarity(collection, ctx, maxPageLen);
   } else if (mode === "event") {
-    pages = Harem_mode_event(collection, ctx, maxPageLen);
+    pages = haremModeEvent(collection, ctx, maxPageLen);
   } else if (mode === "latest") {
-    pages = Harem_mode_latest(collection, ctx, maxPageLen);
+    pages = haremModeLatest(collection, ctx, maxPageLen);
   } else {
     const countsData = isHusbando
       ? await prisma.characterHusbando.groupBy({
@@ -137,7 +137,7 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
     const dbAnimeCounts = new Map(
       countsData.map((c) => [c.origem, c._count.id]),
     );
-    pages = Harem_mode_default(collection, ctx, dbAnimeCounts, maxPageLen);
+    pages = haremModeDefault(collection, ctx, dbAnimeCounts, maxPageLen);
   }
 
   info("HaremHandler - páginas geradas", {
@@ -147,7 +147,7 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
 
   setHarem(force_open ?? ctx.from?.id ?? 0, { pages, forceopen: !!force_open });
 
-  const reply_markup = Build_btn_harem({
+  const reply_markup = buildButtonHarems({
     ctx,
     current_page: 0,
     total_page: pages.length,
@@ -159,7 +159,7 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
 
   if (caption.length >= MAX_CAPTION_LEN || !favoriteChar) {
     try {
-      await SendMensageCustom({ ctx, caption, reply_markup });
+      await sendMessageCustom({ ctx, caption, reply_markup });
     } catch (e) {
       error("HaremHandler - erro ao enviar texto", e);
     }
@@ -167,7 +167,7 @@ export async function HaremHandler(ctx: MyContext, force_open?: number) {
   }
 
   try {
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       character: favoriteChar,
       caption,

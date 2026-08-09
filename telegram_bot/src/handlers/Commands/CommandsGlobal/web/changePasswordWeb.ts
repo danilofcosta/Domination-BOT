@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { prisma } from "../../../../lib/prisma.js";
 import { setListener } from "../../../../cache/listenerStore.js";
-import { info, error } from "../../../../uteis/log.js";
+import { info, error } from "../../../../utils/log.js";
 
 const MIN_PASSWORD_LENGTH = 6;
 

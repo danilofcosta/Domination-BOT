@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type Collection, type MyContext } from "../../../uteis/CustomTypes.js";
-import { createResult } from "../uteis/create_inline_result.js";
-import { showResults } from "../uteis/show_results_inline.js";
+import { ChatType, type Collection, type MyContext } from "../../../utils/customTypes.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
+import { showResultsInline } from "../utils/showResultsInline.js";
 
 interface GetHaremCollectionParams {
   telegramId?: number;
@@ -84,7 +84,7 @@ export async function haremInlineQuery(ctx: MyContext) {
   if (!collection.length) return;
 
   const results = collection.map((item: any) =>
-    createResult({
+    createInlineResult({
       t: ctx.t,
       character: item,
       chatType: genero,
@@ -92,7 +92,7 @@ export async function haremInlineQuery(ctx: MyContext) {
     }),
   );
 
-  await showResults({
+  await showResultsInline({
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",

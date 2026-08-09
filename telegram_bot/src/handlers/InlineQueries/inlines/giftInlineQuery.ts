@@ -1,14 +1,14 @@
-import { CreateButtunConfirmation } from "../../../uteis/buildButtons/createButtonConfirmation.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error } from "../../../uteis/log.js";
-import { createResult } from "../uteis/create_inline_result.js";
-import { getHaremCollection, LIMIT } from "./harem_inline_query.js";
-import { showResults } from "../uteis/show_results_inline.js";
+import { CreateButtunConfirmation } from "../../../utils/buildButtons/createButtonConfirmation.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error } from "../../../utils/log.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
+import { getHaremCollection, LIMIT } from "./haremInlineQuery.js";
+import { showResultsInline } from "../utils/showResultsInline.js";
 
-export async function Gift_Inline_query(ctx: MyContext) {
+export async function giftInlineQuery(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
   // await ctx.deleteAllMessageReactions().catch((err) => {
-  //   error("Gift_Inline_query - deleteAllMessageReactions", { error: err });
+  //   error("giftInlineQuery - deleteAllMessageReactions", { error: err });
   // });
 
 
@@ -32,7 +32,7 @@ export async function Gift_Inline_query(ctx: MyContext) {
   });
 
   const results = collection.map((item: any) =>
-    createResult({
+    createInlineResult({
       t: ctx.t,
       character: item,
       chatType: genero,
@@ -45,7 +45,7 @@ export async function Gift_Inline_query(ctx: MyContext) {
     }),
   );
 
-  await showResults({
+  await showResultsInline({
     ctx,
     results,
     next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",

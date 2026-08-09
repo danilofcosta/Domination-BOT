@@ -1,5 +1,5 @@
 import { InlineKeyboard } from "grammy";
-import type { MyContext } from "../CustomTypes.js";
+import type { MyContext } from "../customTypes.js";
 
 export function CreateButtunConfirmation(
   ctx: MyContext,

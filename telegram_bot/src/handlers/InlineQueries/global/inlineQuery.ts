@@ -1,15 +1,15 @@
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { showResults } from "../uteis/show_results_inline.js";
-import { createResult } from "../uteis/create_inline_result.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { showResultsInline } from "../utils/showResultsInline.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
 import { prisma } from "../../../lib/prisma.js";
-import { log } from "../../../uteis/log.js";
-import { CreateButtunConfirmation } from "../../../uteis/buildButtons/createButtonConfirmation.js";
+import { log } from "../../../utils/log.js";
+import { CreateButtunConfirmation } from "../../../utils/buildButtons/createButtonConfirmation.js";
 import { getOrSet, rankingCache } from "../../../cache/cache.js";
 
 export async function getCharacters(ctx: MyContext) {
   if (!ctx.inlineQuery) return;
   const query = ctx.inlineQuery.query;
-  if (!query || isNaN(Number(query))) return;
+  if (!query || isNaN(Number(query))) return log("Query is not a number or is empty", "warn");
   const chatType = ctx.botType;
 
   const per =
@@ -30,20 +30,22 @@ export async function getCharacters(ctx: MyContext) {
         });
 
   if (!per) return;
-  const result = createResult({
+  const result = createInlineResult({
     character: per,
     t: ctx.t,
     rawEmoji: true,
     chatType,
   });
 
-  await showResults({
+  await showResultsInline({
     ctx,
     results: [result],
   });
 }
 
-export async function QueryCharacet(ctx: MyContext) {
+
+//  
+export async function queryCharacter(ctx: MyContext) {
   const LIMIT = 20;
 
   if (!ctx.inlineQuery) return;
@@ -79,24 +81,24 @@ export async function QueryCharacet(ctx: MyContext) {
   ]);
 
   const results = characters.map((char: any) =>
-    createResult({
+    createInlineResult({
       character: char,
       t: ctx.t,
-      rawEmoji: true,
+     // rawEmoji: true,
       chatType,
       reply_markup: CreateButtunConfirmation(
         ctx,
         `random-character-yes-${char.id}-${3}`,
         `random-character-no-${char.id}-${2}`,
-        char.likes?.toString(),
-        char.dislikes?.toString(),
+        char.likes?.toString() + '👍',
+        char.dislikes?.toString() + '👎',
         "5289772607556568230",
         "5318868949402667784",
       ),
     }),
   );
 
-  await showResults({
+  await showResultsInline({
     ctx,
     results,
     ...(offset + LIMIT < total ? { next_offset: String(offset + LIMIT) } : {}),
@@ -106,7 +108,7 @@ export async function QueryCharacet(ctx: MyContext) {
   });
 }
 
-export async function getCharactersall(ctx: MyContext) {
+export async function getAllCharacters(ctx: MyContext) {
   const LIMIT = 20;
   if (!ctx.inlineQuery) return;
   const offset = Number(ctx.inlineQuery?.offset) || 0;
@@ -145,7 +147,7 @@ export async function getCharactersall(ctx: MyContext) {
   if (!pers) return;
 
   const results = pers.map((per: any) =>
-    createResult({
+    createInlineResult({
       character: per,
       t: ctx.t,
       rawEmoji: true,
@@ -153,7 +155,7 @@ export async function getCharactersall(ctx: MyContext) {
     }),
   );
 
-  await showResults({
+  await showResultsInline({
     ctx,
     results,
     ...(offset + LIMIT < total ? { next_offset: String(offset + LIMIT) } : {}),

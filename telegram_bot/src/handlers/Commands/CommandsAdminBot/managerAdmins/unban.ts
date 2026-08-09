@@ -1,20 +1,20 @@
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
 import {
   getUserRole,
   roleWeights,
-} from "../../../../uteis/permissions.js";
-import { Extract_id_user } from "../../../../uteis/uteis_telegram/extract_id_user.js";
-import { CreateMentionUser } from "../../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { CreateButtunConfirmation } from "../../../../uteis/buildButtons/createButtonConfirmation.js";
-import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
-import { info, warn, error } from "../../../../uteis/log.js";
+} from "../../../../utils/permissions.js";
+import { extractUserId } from "../../../../utils/telegram/extractUserId.js";
+import { createMentionUser } from "../../../../utils/telegram/createMentionUser.js";
+import { CreateButtunConfirmation } from "../../../../utils/buildButtons/createButtonConfirmation.js";
+import { sendMessageCustom } from "../../../../utils/sendMessageCustom.js";
+import { info, warn, error } from "../../../../utils/log.js";
 
 export async function unban(ctx: MyContext) {
   try {
-    const mentionedUser = await Extract_id_user(ctx);
+    const mentionedUser = await extractUserId(ctx);
     if (!mentionedUser) {
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("unban_reply_instruction"),
       });
@@ -25,7 +25,7 @@ export async function unban(ctx: MyContext) {
       warn("unban - tentativa de desbanir a si mesmo", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("unban_error_self") });
+      await sendMessageCustom({ ctx, caption: ctx.t("unban_error_self") });
       return;
     }
 
@@ -33,7 +33,7 @@ export async function unban(ctx: MyContext) {
       warn("unban - tentativa de desbanir um bot", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("unban_error_bot") });
+      await sendMessageCustom({ ctx, caption: ctx.t("unban_error_bot") });
       return;
     }
 
@@ -46,7 +46,7 @@ export async function unban(ctx: MyContext) {
         targetId: mentionedUser.id,
         targetRole,
       });
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("unban_error_not_banned"),
       });
@@ -61,10 +61,10 @@ export async function unban(ctx: MyContext) {
       ctx.t("unban_btn_cancel"),
     );
 
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("unban_confirm", {
-        user: CreateMentionUser({
+        user: createMentionUser({
           Nome: mentionedUser.first_name,
           telegramiduser: mentionedUser.id,
         }),
@@ -80,7 +80,7 @@ export async function unban(ctx: MyContext) {
     });
   } catch (e) {
     error("unban - erro ao iniciar desbanimento", e);
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("unban_error", { error: "erro interno" }),
     });

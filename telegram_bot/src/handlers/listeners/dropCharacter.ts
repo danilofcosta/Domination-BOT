@@ -1,28 +1,37 @@
 import { prisma } from "../../lib/prisma.js";
-import type { MyContext } from "../../uteis/CustomTypes.js";
-import { info, warn, error } from "../../uteis/log.js";
-import { SendMensageCustom } from "../../uteis/sendMensageCustom.js";
-import { createSecretCaption } from "../../uteis/buildCapion/form_caption.js";
+import type { MyContext } from "../../utils/customTypes.js";
+import { info, warn, error } from "../../utils/log.js";
+import { sendMessageCustom } from "../../utils/sendMessageCustom.js";
+import { createSecretCaption } from "../../utils/buildCaption/formCaption.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
-import { ChatType } from "../../uteis/CustomTypes.js";
+import { ChatType } from "../../utils/customTypes.js";
 import { getDropConfig } from "../../cache/dropConfig.js";
+import { getGroupConfig } from "../../cache/groupConfig.js";
 
-export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
-  info("DropCharacter - drop iniciado", { chatId: ctx.chat?.id, genero: ctx.botType });
+export async function dropCharacter(ctx: MyContext): Promise<boolean | null> {
+  info("dropCharacter - drop iniciado", { chatId: ctx.chat?.id, genero: ctx.botType });
+
+  if (ctx.chat?.id) {
+    const groupConfig = await getGroupConfig(ctx.chat.id, ctx.botType);
+    if ((groupConfig.dropsEnabled ?? true) === false) {
+      warn("dropCharacter - drops desativados no grupo", { chatId: ctx.chat.id });
+      return null;
+    }
+  }
 
   const character = ctx.botType === ChatType.WAIFU ? await sortearWaifu() : await sortearHusbando();
   if (!character) {
-    warn("DropCharacter - nenhum personagem disponível", { chatId: ctx.chat?.id });
+    warn("dropCharacter - nenhum personagem disponível", { chatId: ctx.chat?.id });
     return null;
   }
-  info("DropCharacter - personagem sorteado", {nome: character.name, chatId: ctx.chat?.id, characterId: character.id , genero: ctx.botType });
+  info("dropCharacter - personagem sorteado", {nome: character.name, chatId: ctx.chat?.id, characterId: character.id , genero: ctx.botType });
   const caption = await createSecretCaption(ctx, character);
 
   try {
-    const message = await SendMensageCustom({ ctx, character, caption });
+    const message = await sendMessageCustom({ ctx, character, caption });
 
     if (!message) {
-      error("DropCharacter - SendMensageCustom retornou null", { chatId: ctx.chat?.id });
+      error("dropCharacter - sendMessageCustom retornou null", { chatId: ctx.chat?.id });
       return null;
     }
 
@@ -36,7 +45,7 @@ export async function DropCharacter(ctx: MyContext): Promise<boolean | null> {
     runtime.data = message.date;
     return true;
   } catch (e) {
-    error("DropCharacter - erro ao enviar mídia", e);
+    error("dropCharacter - erro ao enviar mídia", e);
     return null;
   }
 }

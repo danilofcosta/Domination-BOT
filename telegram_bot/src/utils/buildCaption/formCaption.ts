@@ -1,5 +1,5 @@
-﻿import { ChatType, type Character, type MyContext } from "../CustomTypes.js";
-import { extractListEmojisCharacter } from "./extract_emojis.js";
+import { ChatType, type Character, type MyContext } from "../customTypes.js";
+import { extractListEmojisCharacter } from "./extractEmojis.js";
 
 export async function createSecretCaption(
   ctx: MyContext,
@@ -20,6 +20,10 @@ export async function createSecretCaption(
       emoji_raridade.length > 1
         ? `[${emoji_raridade.join(", ")}]`
         : (emoji_raridade[0] ?? ""),
+    emoji_event:
+      emoji_event.length > 1
+        ? `[${emoji_event.join(", ")}]`
+        : (emoji_event[0] ?? ""),
     charater_genero: generoTexto,
   });
 

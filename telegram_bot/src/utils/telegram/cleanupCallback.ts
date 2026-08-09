@@ -1,7 +1,7 @@
 import type { Context } from "@grammyjs/commands/out/deps.node.js";
 import { debug, error } from "../log.js";
-import { EditOrSendText } from "./EditOrSendText.js";
-import type { MyContext } from "../CustomTypes.js";
+import { editOrSendText } from "./editOrSendText.js";
+import type { MyContext } from "../customTypes.js";
 
 
 // tenta apagar a mensagem ou remover os bts 
@@ -18,7 +18,7 @@ export async function cleanupCallback(ctx: MyContext) {
     try{
 await ctx.editMessageReplyMarkup()
     }catch{
-        await EditOrSendText({
+        await editOrSendText({
         ctx,
         caption: 'newcaption',
         reply_markup: { inline_keyboard: [] },

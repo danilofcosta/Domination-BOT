@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@grammyjs/auto-retry": "^1.1.1",
-    "@grammyjs/commands": "^1.2.0",
+    "@grammyjs/commands": "^1.4.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^2.4.3",
@@ -28,11 +28,11 @@
   "scripts": {
     "delmigrations": "tsx scripts/remover_migrations.ts",
     "dev": "tsx src/index.ts",
-    "seed": "tsx prisma/seed.ts",
-    "settext": "tsx scrips/uplocalate.ts",
-    "t": "tsx prisma/scrips/t.ts",
-    "test": "tsc &&node dist/index.js ",
-    "webhook": "tsx prisma/scrips/set_web_hook.ts",
+    "seed": "tsx scripts/seed.ts",
+    "settext": "tsx src/locales/locales_standard/uploadLocales.ts",
+    "t": "tsx scripts/t.ts",
+    "test": "tsc && node dist/index.js ",
+    "webhook": "tsx scripts/set_web_hook.ts",
     "start": "tsc && prisma generate && node dist/src/index.js"
   },
   "keywords": [],

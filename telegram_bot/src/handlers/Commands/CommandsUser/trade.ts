@@ -1,19 +1,19 @@
 import type { InputRichMessage } from "grammy/types";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import type { MyContext } from "../../../uteis/CustomTypes.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import type { MyContext } from "../../../utils/customTypes.js";
 import { MediaType } from "../../../../generated/prisma/client.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import { findCollectionWithIncludes } from "../../../uteis/extras/collectionUtils.js";
-import { debug, error, warn } from "../../../uteis/log.js";
-import { Extract_id_user } from "../../../uteis/uteis_telegram/extract_id_user.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
+import { findCollectionWithIncludes } from "../../../utils/extras/collectionUtils.js";
+import { debug, error, warn } from "../../../utils/log.js";
+import { extractUserId } from "../../../utils/telegram/extractUserId.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import { userCommandsRegistryDict } from "../../../CommandsRegistry/CommandsRegistryUser.js";
-import { extractNumbers } from "../../../uteis/remove num.js";
-import { BTN_TYPE, CreateOneBtn } from "../../../uteis/buildButtons/createOneButton.js";
+import { extractNumbers } from "../../../utils/removeNum.js";
+import { BTN_TYPE, CreateOneBtn } from "../../../utils/buildButtons/createOneButton.js";
 import { InlineKeyboard } from "grammy";
 import { typeBot } from "../../../CommandsRegistry/botConfigCommands.js";
 import { setTradeSession, updateTradeSession } from "../../../cache/tradeCache.js";
-import { buildCharacterMedia, createTradeTable } from "./trade_uteis.js";
+import { buildCharacterMedia, createTradeTable } from "./tradeUtils.js";
 
 
 export interface TradeHandlerparametres {
@@ -51,9 +51,9 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       receiverCharacterId: receiver_characterId,
     });
   } else {
-    const mentionedUser = await Extract_id_user(ctx);
+    const mentionedUser = await extractUserId(ctx);
     if (!mentionedUser) {
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("trade_reply_instruction", {
           command: userCommandsRegistryDict.Trade!.command,
@@ -68,7 +68,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       warn("tradeHandler - tentativa de negociar consigo mesmo", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("trade_error_user") });
+      await sendMessageCustom({ ctx, caption: ctx.t("trade_error_user") });
       return;
     }
 
@@ -76,7 +76,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       warn("tradeHandler - tentativa de negociar com o bot", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("trade_error_bot") });
+      await sendMessageCustom({ ctx, caption: ctx.t("trade_error_bot") });
       return;
     }
 
@@ -89,7 +89,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
         transmitterId: ctx.from!.id,
         receiverId: mentionedUser.id,
       });
-      return await SendMensageCustom({ ctx, caption: ctx.t("trade_error_donate_harem") });
+      return await sendMessageCustom({ ctx, caption: ctx.t("trade_error_donate_harem") });
     }
 
     const _tradeKey = setTradeSession(chat_id, ctx.from!.id, {
@@ -107,7 +107,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       btn.switchInlineCurrent(ctx.t("trade_btn_my_label_receiver"), `trade_set.character.id.receiver_${tradeKey}`).row();
       btn.text(ctx.t("trade_btn_my_label_cancel"), `trade_cancel_${tradeKey}`);
 
-      const _menu_init_id = await SendMensageCustom({
+      const _menu_init_id = await sendMessageCustom({
         ctx,
         caption: ctx.t("trade_error_not_id"),
         reply_markup: btn,
@@ -125,7 +125,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
 
     if (numbers.length === 1) {
       warn("tradeHandler - faltou ID do receptor", { userId: ctx.from?.id });
-      return await SendMensageCustom({
+      return await sendMessageCustom({
         ctx,
         caption: ctx.t("trade_error_all_id_not_info", {
           command: userCommandsRegistryDict.Trade!.command,
@@ -144,9 +144,9 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
     characterId: receiver_characterId,
   });
   if (!_receiver) {
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx, caption: ctx.t("trade_receiver_not_found", {
-        mention: CreateMentionUser({
+        mention: createMentionUser({
           Nome: receiverName, telegramiduser: receiver_id
         }),
         typeBot: typeBot!,
@@ -162,7 +162,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
   });
 
   if (!_transmitter) {
-    await SendMensageCustom({ ctx, caption: ctx.t("trade_transmitter_not_found", {
+    await sendMessageCustom({ ctx, caption: ctx.t("trade_transmitter_not_found", {
       typeBot: typeBot!,
       characterId: String(Transmitter_characterId),
     }) });
@@ -176,13 +176,13 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
     html: `
       <aside>
         🤝 <b>Negociação iniciada</b><br>
-        <cite> autor ${CreateMentionUser({ Nome: ctx.from?.first_name ?? "Desconhecido", telegramiduser: ctx.from?.id ?? 0 })}</cite>
+        <cite> autor ${createMentionUser({ Nome: ctx.from?.first_name ?? "Desconhecido", telegramiduser: ctx.from?.id ?? 0 })}</cite>
       </aside>
 
 
  <tg-slideshow> ${meuMedia?.link}${seudMedia?.link}  </tg-slideshow>
 
- <h3>${CreateMentionUser({ Nome: "teste", telegramiduser: ctx.from?.id ?? 0 })} , ${CreateMentionUser({ Nome: ctx.from?.first_name ?? "Desconhecido", telegramiduser: ctx.from?.id ?? 0 })} quer Negociar  com vc !! </h3>
+ <h3>${createMentionUser({ Nome: "teste", telegramiduser: ctx.from?.id ?? 0 })} , ${createMentionUser({ Nome: ctx.from?.first_name ?? "Desconhecido", telegramiduser: ctx.from?.id ?? 0 })} quer Negociar  com vc !! </h3>
 
 
 

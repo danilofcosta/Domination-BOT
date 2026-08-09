@@ -1,6 +1,6 @@
 import type { NextFunction } from "grammy";
-import type { MyContext } from "../../uteis/CustomTypes.js";
-import { CreateMentionUser } from "../../uteis/uteis_telegram/CreateMentionUser.js";
+import type { MyContext } from "../../utils/customTypes.js";
+import { createMentionUser } from "../../utils/telegram/createMentionUser.js";
 import { redis } from "../../cache/redis.js";
 import { blockedUsers, blockKey } from "./blockedUsers.js";
 import { BLOCK_DURATION_MS, LIMIT, TIMEFAME } from "./constants.js";
@@ -21,7 +21,7 @@ export async function rateLimiter(ctx: MyContext, next: NextFunction) {
     blockedUsers.set(key, now + BLOCK_DURATION_MS);
 
     const name = ctx.from?.first_name || ctx.from?.username || "User";
-    const userMention = CreateMentionUser({
+    const userMention = createMentionUser({
       Nome: name,
       telegramiduser: fromId,
     });

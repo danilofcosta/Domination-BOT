@@ -4,7 +4,7 @@ import { InputFile, InlineKeyboard } from "grammy";
 import fs from "fs";
 
 import { error, debug } from "./log.js";
-import type { Character, MyContext } from "./CustomTypes.js";
+import type { Character, MyContext } from "./customTypes.js";
 import { MediaType } from "../../generated/prisma/client.js";
 
 
@@ -21,7 +21,7 @@ interface ParamsSendMedia {
   reply_markup?: InlineKeyboard | any;
 }
 
-export async function SendMensageCustom(params: ParamsSendMedia) {
+export async function sendMessageCustom(params: ParamsSendMedia) {
   let { chat_id, message_thread_id, ctx, character, caption, reply_markup } = params;
 
   if (!ctx) {

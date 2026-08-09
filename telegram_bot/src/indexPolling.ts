@@ -1,6 +1,6 @@
 import type { Bot } from "grammy";
-import type { MyContext } from "./uteis/CustomTypes.js";
-import { fatal, info } from "./uteis/log.js";
+import type { MyContext } from "./utils/customTypes.js";
+import { fatal, info } from "./utils/log.js";
 import type { User } from "grammy/types";
 
 export async function RunPolling({

@@ -1,8 +1,8 @@
-﻿import { ChatType } from "../CustomTypes.js";
-import { CreateMentionUser } from "../uteis_telegram/CreateMentionUser.js";
-import { extractListEmojisCharacter } from "./extract_emojis.js";
+import { ChatType } from "../customTypes.js";
+import { createMentionUser } from "../telegram/createMentionUser.js";
+import { extractListEmojisCharacter } from "./extractEmojis.js";
 
-export interface create_caption_Params {
+export interface CreateCaptionParams {
   t: (key: string, params?: Record<string, string>) => string;
   chatType: ChatType;
   character: any;
@@ -20,14 +20,14 @@ function fmtEmojis(list: string[]): string {
   return list.length > 1 ? `[${list.join(", ")}]` : list.join(", ");
 }
 
-export function create_caption({
+export function createCaption({
   t,
   chatType,
   character,
   username,
   user_id,
   rawEmoji, addby
-}: create_caption_Params) {
+}: CreateCaptionParams) {
   const genero = t(
     chatType === ChatType.WAIFU
       ? "create-caption-gender-waifu"
@@ -52,13 +52,13 @@ export function create_caption({
       character.TelegramUser?.telegramId ||
       0;
 
-    usermention = CreateMentionUser({
+    usermention = createMentionUser({
       Nome: name,
       telegramiduser: Number(telegramId),
     });
   } else {
     if (username && user_id) {
-      usermention = CreateMentionUser({
+      usermention = createMentionUser({
         Nome: username,
         telegramiduser: Number(user_id),
       });

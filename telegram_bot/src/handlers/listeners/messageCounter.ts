@@ -1,19 +1,20 @@
 import type { User } from "grammy/types";
-import type { MyContext } from "../../uteis/CustomTypes.js";
-import { ChatType } from "../../uteis/CustomTypes.js";
-import { botNewgroupMember } from "./botNewgroupMember.js";
-import { DropCharacter } from "./doprar_per.js";
-import { debug, error, info, log } from "../../uteis/log.js";
-import { SendMensageCustom } from "../../uteis/sendMensageCustom.js";
+import type { MyContext } from "../../utils/customTypes.js";
+import { ChatType } from "../../utils/customTypes.js";
+import { botNewgroupMember } from "./botNewGroupMember.js";
+import { dropCharacter } from "./dropCharacter.js";
+import { debug, error, info, log } from "../../utils/log.js";
+import { sendMessageCustom } from "../../utils/sendMessageCustom.js";
 import {
   CreateOneBtn,
   
-} from "../../uteis/buildButtons/createOneButton.js";
+} from "../../utils/buildButtons/createOneButton.js";
 import { getRuntime } from "../../runtime/groupRuntime.js";
-import { GetCharacterById } from "../../uteis/extras/GetCharacterById.js";
+import { getCharacterById } from "../../utils/extras/getCharacterById.js";
 import { getDropConfig } from "../../cache/dropConfig.js";
+import { getGroupConfig } from "../../cache/groupConfig.js";
 
-export async function CountMessages(ctx: MyContext) {
+export async function countMessages(ctx: MyContext) {
   debug('mensagem recibida ',ctx.message?.text ,{ group:ctx.chat?.title?? ctx.from?.first_name,user:ctx.from?.first_name,id:ctx.from?.id})
   if (!ctx.chat) return;
 
@@ -54,11 +55,20 @@ export async function CountMessages(ctx: MyContext) {
   }
 
   /* ── DROP ── */
-  const { dropMsg, undropMsg } = await getDropConfig();
+  const globalDrop = await getDropConfig();
+  const groupConfig = await getGroupConfig(chatId, ctx.botType);
+  const dropsEnabled = groupConfig.dropsEnabled ?? true;
+  const dropMsg = Math.max(groupConfig.dropMsg ?? globalDrop.dropMsg, 100);
+  const undropMsg = globalDrop.undropMsg;
   console.log(dropMsg,runtime.cont,ctx.chat.title)
 
+  if (!dropsEnabled) {
+    runtime.cont = 0;
+    return;
+  }
+
   if (runtime.cont >= dropMsg && !runtime.dropId && !runtime.characterId) {
-    const result = await DropCharacter(ctx);
+    const result = await dropCharacter(ctx);
     if (!result) {
       runtime.cont = dropMsg - 10;
       return;
@@ -73,7 +83,7 @@ export async function CountMessages(ctx: MyContext) {
   /* ── UNDROP ── */
   if (runtime.cont >= undropMsg && runtime.dropId != null) {
     const character = runtime.characterId
-      ? await GetCharacterById(ctx.botType, runtime.characterId)
+      ? await getCharacterById(ctx.botType, runtime.characterId)
       : null;
 
     const generoText = ctx.t(
@@ -95,7 +105,7 @@ export async function CountMessages(ctx: MyContext) {
         callback: `click_${character?.id ?? "0"}`,
         style: "primary",
       });
-      await SendMensageCustom({ ctx, caption, reply_markup: btn });
+      await sendMessageCustom({ ctx, caption, reply_markup: btn });
       log("undrop com sucesso no chat", chatId);
     } catch (err) {
       error("Erro ao deletar mensagem:", err);

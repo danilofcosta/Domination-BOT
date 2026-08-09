@@ -1,14 +1,14 @@
 import type { InlineQueryResultCachedPhoto, InlineQueryResultCachedVideo, InlineQueryResultPhoto, InlineQueryResultVideo, ParseMode } from "grammy/types";
 import { MediaType } from "../../../../generated/prisma/enums.js";
-import type { Character, ChatType, Collection } from "../../../uteis/CustomTypes.js";
-import { error, warn } from "../../../uteis/log.js";
-import { create_caption, type create_caption_Params } from "../../../uteis/buildCapion/create_caption.js";
+import type { Character, ChatType, Collection } from "../../../utils/customTypes.js";
+import { error, warn } from "../../../utils/log.js";
+import { createCaption, type CreateCaptionParams } from "../../../utils/buildCaption/createCaption.js";
 
 
 
-export function createResult(params: create_caption_Params) {
+export function createInlineResult(params: CreateCaptionParams) {
   let character = params.character as Character;
-  const capiton = create_caption(params);
+  const capiton = createCaption(params);
 
   if (
     params.character &&
@@ -85,20 +85,20 @@ export function createResult(params: create_caption_Params) {
       } as InlineQueryResultCachedVideo;
 
     default:
-      warn(`createResult - mediaType desconhecido, usando fallback`, {
+      warn(`createInlineResult - mediaType desconhecido, usando fallback`, {
         charId: character.id,
         mediaType: character.mediaType,
       });
       const url = process.env.DEFAULT_IMAGE_URL;
       if (!url || url.trim() === "" || character.mediaType === MediaType.IMAGE_LOCAL || character.mediaType === MediaType.VIDEO_LOCAL) {
-        error(`createResult - DEFAULT_IMAGE_URL não configurada`, {
+        error(`createInlineResult - DEFAULT_IMAGE_URL não configurada`, {
           charId: character.id,
         });
 
         // params.ctx.api.sendMessage(
         //   process.env.CHAT_ID_DEV as string,
         //   `
-        //   createResult - DEFAULT_IMAGE_URL não configurada
+        //   createInlineResult - DEFAULT_IMAGE_URL não configurada
 
         //   ${character.id}
         //   ${character.mediaType}

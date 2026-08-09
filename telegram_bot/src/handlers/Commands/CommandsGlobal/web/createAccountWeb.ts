@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { InlineKeyboard } from "grammy";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { prisma } from "../../../../lib/prisma.js";
 
 export async function createAccountWeb(ctx: MyContext) {

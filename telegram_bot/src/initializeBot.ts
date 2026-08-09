@@ -1,6 +1,6 @@
 import { Bot, session } from "grammy";
 import { autoRetry } from "@grammyjs/auto-retry";
-import type { ChatType, MyContext, SessionData } from "./uteis/CustomTypes.js";
+import type { ChatType, MyContext, SessionData } from "./utils/customTypes.js";
 import { listeners } from "./listeners.js";
 import { callbacks } from "./callbackQuery.js";
 import { translationService } from "./locales/translationService.js";
@@ -10,11 +10,12 @@ import { HiddenCommandsRegistry } from "./CommandsRegistry/CommandsRegistryHidde
 import { AdminCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminBot.js";
 import { devCommands } from "./CommandsRegistry/CommandsRegistryAdminDev.js";
 import { GlobaisCommandsRegistry } from "./CommandsRegistry/CommandsRegistryGlobais.js";
-import { error, info } from "./uteis/log.js";
+import { AdminGroupCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminGroup.js";
+import { error, info } from "./utils/log.js";
 import { blockDetection } from "./bot/middleware/blockDetection.js";
 import { rateLimiter } from "./bot/middleware/rateLimiter.js";
 import { banCheck } from "./bot/middleware/banCheck.js";
-import { testDBConnection } from "./bot/testes/test_db_Connection.js";
+import { testDbConnection } from "./bot/tests/testDbConnection.js";
 
 function initialSessionData(): SessionData {
   return {
@@ -29,7 +30,7 @@ export default async function initializeBot(
   BOT_TOKEN: string,
 ): Promise<Bot<MyContext>> {
   const bot = new Bot<MyContext>(BOT_TOKEN);
-  const   _testDBConnection :boolean = await testDBConnection()
+  const   testDbConnectionResult :boolean = await testDbConnection()
 
   bot.api.config.use(autoRetry());
 
@@ -75,6 +76,7 @@ export default async function initializeBot(
   bot.use(
     GlobaisCommandsRegistry
   )
+  bot.use(AdminGroupCommandsRegistry)
   bot.use(devCommands)
 
   info('registrando listeners')

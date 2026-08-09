@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import type { MyContext } from "../CustomTypes.js";
+import type { MyContext } from "../customTypes.js";
 // Tenta extrair o ID do usuário a partir de uma mensagem de contexto, lidando com diferentes tipos de entidades e formatos de menção.
 export interface TelegramUserData {
   id: number;
@@ -8,7 +8,7 @@ export interface TelegramUserData {
   is_bot?: boolean;
 }
 // tenta extrair o id do usuário a partir de uma mensagem de contexto
-export async function Extract_id_user(
+export async function extractUserId(
   ctx: MyContext,
 ): Promise<TelegramUserData | null> {
   const reply_to_message = ctx.message?.reply_to_message;

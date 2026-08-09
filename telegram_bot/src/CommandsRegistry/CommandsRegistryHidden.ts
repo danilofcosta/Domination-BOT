@@ -1,7 +1,7 @@
 import { CommandGroup } from "@grammyjs/commands";
-import type { MyContext } from "../uteis/CustomTypes.js";
-import { debug } from "../uteis/log.js";
-import { category, type CommandConfig, registerCommand } from "./botConfigCommands.js";
+import type { MyContext } from "../utils/customTypes.js";
+import { debug } from "../utils/log.js";
+import { category_user, type CommandConfig, registerCommand } from "./botConfigCommands.js";
 import { idHandler } from "../handlers/Commands/CommandsUser/id.js";
 
 const HiddenCommandsRegistry = new CommandGroup<MyContext>();
@@ -16,7 +16,7 @@ const userCommandsRegistryDict: Record<string, CommandConfig> = {
     },
     handler: idHandler,
     scopes: ["all_group_chats", "all_chat_administrators"],
-    category: category.main,
+    category_user: category_user.Hidden,
   },
 };
 

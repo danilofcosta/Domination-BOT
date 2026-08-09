@@ -1,8 +1,8 @@
 import { prisma } from "../../../lib/prisma.js";
-import { cleanupCallback } from "../../../uteis/uteis_telegram/cleanupCallback.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, info, warn } from "../../../uteis/log.js";
-import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
+import { cleanupCallback } from "../../../utils/telegram/cleanupCallback.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, info, warn } from "../../../utils/log.js";
+import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
 
 function parseCallbackData(data: string) {
   const match = data.match(/^fav_(yes|no)_(\d+)_(\d+)$/);
@@ -64,9 +64,9 @@ export async function favCallbackHandler(ctx: MyContext) {
 
     await ctx.answerCallbackQuery(ctx.t("fav-character-success"));
 
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
-     // caption: ctx.t("fav-character-success"),
+      caption: ctx.t("fav-character-success"),
       reply_markup: { inline_keyboard: [] },
     });
   } catch (e) {

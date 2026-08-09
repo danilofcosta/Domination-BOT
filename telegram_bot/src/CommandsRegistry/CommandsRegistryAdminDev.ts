@@ -1,8 +1,9 @@
 import { CommandGroup } from "@grammyjs/commands";
-import { DropCharacter } from "../handlers/listeners/doprar_per.js";
+import { dropCharacter } from "../handlers/listeners/dropCharacter.js";
 import { options } from "./botConfigCommands.js";
-import type { MyContext } from "../uteis/CustomTypes.js";
-import { leaveGroupHandler } from "../handlers/CallBackQuerys/CallBacksAdminBot/leave_group/leave_group.js";
+import type { MyContext } from "../utils/customTypes.js";
+import { leaveGroupHandler } from "../handlers/CallbackQueries/CallbacksAdminBot/leaveGroup/leaveGroup.js";
+import { botNewgroupMember } from "../handlers/listeners/botNewGroupMember.js";
 
 const devCommands = new CommandGroup<MyContext>();
 
@@ -17,7 +18,7 @@ const guardDevOnly = async (ctx: MyContext): Promise<boolean> => {
 async function ForceDrop(ctx: MyContext) {
   const allowed = await guardDevOnly(ctx);
   if (!allowed) return;
-  const result = await DropCharacter(ctx);
+  const result = await dropCharacter(ctx);
   if (!result) {
     await ctx.reply(ctx.t("dev-fail-drop"));
   }
@@ -33,7 +34,7 @@ devCommands.command(
 devCommands.command(
   "teste",
   "Forçar drop de personagem",
-  leaveGroupHandler,
+  botNewgroupMember,
   options,
 );
 

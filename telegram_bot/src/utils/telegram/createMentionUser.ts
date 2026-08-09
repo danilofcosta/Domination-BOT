@@ -1,5 +1,5 @@
 // cria um mensão do user em Html recebendo o nome e o id do usuario
-export function CreateMentionUser(
+export function createMentionUser(
   {
     Nome,
     telegramiduser,

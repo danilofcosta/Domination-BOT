@@ -1,5 +1,5 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
-import { debug, error } from "../../../uteis/log.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { debug, error } from "../../../utils/log.js";
 
 interface ShowResultsParams {
   ctx: MyContext;
@@ -24,7 +24,7 @@ interface ShowResultsParams {
   is_personal?: boolean;
 }
 
-export async function showResults({
+export async function showResultsInline({
   ctx,
   results,
   next_offset,
@@ -33,7 +33,7 @@ export async function showResults({
   notCacheTelegram = false,
   is_personal = false,
 }: ShowResultsParams) {
-  debug("showResults - respondendo inline query", {
+  debug("showResultsInline - respondendo inline query", {
     userId: ctx.from?.id,
     resultCount: results.length,
   });
@@ -61,6 +61,6 @@ export async function showResults({
       },
     });
   } catch (e) {
-    error("showResults - erro ao responder inline query", e);
+    error("showResultsInline - erro ao responder inline query", e);
   }
 }

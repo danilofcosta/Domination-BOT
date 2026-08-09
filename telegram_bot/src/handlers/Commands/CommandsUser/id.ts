@@ -1,4 +1,4 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../utils/customTypes.js";
 
 export async function idHandler(ctx: MyContext) {
   const replied = ctx.msg?.reply_to_message;

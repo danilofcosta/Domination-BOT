@@ -1,9 +1,9 @@
 import { InlineKeyboard } from "grammy";
-import type { MyContext } from "../../../uteis/CustomTypes.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { getLatestCharacter } from "../../../uteis/extras/getLatestCharacter.js";
-import { info, error } from "../../../uteis/log.js";
-import { ProcessStartArgument } from "./ProcessStartArgument.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { getLatestCharacter } from "../../../utils/extras/getLatestCharacter.js";
+import { info, error } from "../../../utils/log.js";
+import { processStartArgument } from "./processStartArgument.js";
 import { typeBot } from "../../../CommandsRegistry/botConfigCommands.js";
 
 function formatUptime(seconds: number): string {
@@ -19,7 +19,7 @@ let lastRefreshTime = Date.now();
 export async function StartHandler(ctx: MyContext) {
   if (ctx.match) {
     info("start - comando com argumento", { match: ctx.match });
-     await ProcessStartArgument(ctx);
+     await processStartArgument(ctx);
   }
 
   if (ctx.chat?.type !== "private") {
@@ -31,7 +31,7 @@ export async function StartHandler(ctx: MyContext) {
       }
     }
     if (!ctx.message) return;
-    return await SendMensageCustom({
+    return await sendMessageCustom({
       ctx,
       caption: `Eu estou online :D`,
     });
@@ -55,13 +55,15 @@ export async function StartHandler(ctx: MyContext) {
         `https://t.me/${ctx.me?.username}?startgroup=true`,
       )
       .row()
-      .url(ctx.t("start_btn_canal"), "https://t.me/SEU_CANAL")
-      .url(ctx.t("start_btn_creditos"), "https://t.me/SEU_CREDITO")
-      .row()
+      .url(ctx.t("start_btn_canal"), process.env.CANAL_URL || `https://t.me/${ctx.me?.username}?start=canal`)
+      .url(ctx.t("start_btn_creditos"), process.env.CREDITOS_URL || `https://t.me/${ctx.me?.username}?start=creditos`)
+
+      .row().url(ctx.t("start_btn_grupo"), process.env.OFICIAL_GROUP_URL || `https://t.me/${ctx.me?.username}?start=canal`)
+
       .text(ctx.t("start_btn_guia"), `start_guia_${ctx.from?.id}`)
       .text(ctx.t("start_btn_redirect"), `start_redirect_${ctx.from?.id}`);
 
-    return await SendMensageCustom({
+    return await sendMessageCustom({
       ctx,
       character: await getLatestCharacter(ctx.botType),
       caption: ctx.t("start_welcome_private", {

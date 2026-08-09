@@ -1,6 +1,6 @@
 import type { InlineKeyboardMarkup } from "grammy/types";
-import type { MyContext } from "../CustomTypes.js";
-import { SendMensageCustom } from "../sendMensageCustom.js";
+import type { MyContext } from "../customTypes.js";
+import { sendMessageCustom } from "../sendMessageCustom.js";
 
 type Options = {
   ctx: MyContext;
@@ -9,7 +9,7 @@ type Options = {
   removeButtons?: boolean;
 };
 
-export async function EditOrSendText({
+export async function editOrSendText({
   ctx,
   reply_markup,
   caption,
@@ -22,7 +22,7 @@ export async function EditOrSendText({
   }
 
   if (!ctx.callbackQuery) {
-    return SendMensageCustom({ ctx, caption, reply_markup });
+    return sendMessageCustom({ ctx, caption, reply_markup });
   }
 
   const hasText = !!ctx.callbackQuery.message?.text;
@@ -46,7 +46,7 @@ const opts = {
       });
 
     await edit.catch(() =>
-    SendMensageCustom({ ctx, caption, reply_markup }),
+    sendMessageCustom({ ctx, caption, reply_markup }),
   );
 
   await ctx.answerCallbackQuery();

@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { ChatType, type Character, type MyContext } from "../CustomTypes.js";
+import { ChatType, type Character, type MyContext } from "../customTypes.js";
 import { error, info } from "../log.js";
 import { getOrSet, maxIdCache } from "../../cache/cache.js";
 // Busca um personagem aleatório do banco de dados, garantindo que o ID seja válido e lidando com possíveis conflitos de chave primária.
@@ -28,7 +28,7 @@ async function getRandomCharacter(model: any, include: object, cacheKey: string)
 
     return character as Character | null;
   } catch (e) {
-    error("RandomCharacter - erro ao buscar personagem aleatório", e);
+    error("randomCharacter - erro ao buscar personagem aleatório", e);
     return null;
   }
 }
@@ -46,9 +46,9 @@ const waifuInclude = {
   WaifuRarity: { select: { Rarity: raritySelect } },
 } as const;
 
-export async function RandomCharacter(ctx: MyContext): Promise<Character | null> {
+export async function randomCharacter(ctx: MyContext): Promise<Character | null> {
   const genero = ctx.botType;
-  info("RandomCharacter - buscando personagem aleatório", { genero });
+  info("randomCharacter - buscando personagem aleatório", { genero });
 
   if (genero === ChatType.HUSBANDO) {
     return getRandomCharacter(prisma.characterHusbando, husbandoInclude, "maxId:husbando");

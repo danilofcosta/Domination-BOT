@@ -1,12 +1,12 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../utils/customTypes.js";
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType } from "../../../uteis/CustomTypes.js";
-import { info, warn } from "../../../uteis/log.js";
+import { ChatType } from "../../../utils/customTypes.js";
+import { info, warn } from "../../../utils/log.js";
 import { haremModes } from "../../Commands/CommandsUser/haremModes.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
 
-export async function haremmodeCallback(ctx: MyContext) {
+export async function haremModeCallback(ctx: MyContext) {
   if (!ctx.callbackQuery?.data) return;
 
   const modeMatch = ctx.callbackQuery.data.replace("haremmode_", "");
@@ -15,7 +15,7 @@ export async function haremmodeCallback(ctx: MyContext) {
 
   const isValid = haremModes.some((m) => m.id === modeMatch);
   if (!isValid) {
-    warn("haremmodeCallback - modo inválido", { modeMatch });
+    warn("haremModeCallback - modo inválido", { modeMatch });
     await ctx.answerCallbackQuery();
     return;
   }
@@ -76,10 +76,10 @@ export async function haremmodeCallback(ctx: MyContext) {
   await ctx.answerCallbackQuery(
     ctx.t("haremmodecb-updated", { mode: modeText }),
   );
-  await EditOrSendText({
+  await editOrSendText({
     ctx,
     caption: ctx.t("haremmodecb-updated", { mode: modeText }),
   });
 
-  info("haremmodeCallback - modo atualizado", { userId, mode: modeMatch });
+  info("haremModeCallback - modo atualizado", { userId, mode: modeMatch });
 }

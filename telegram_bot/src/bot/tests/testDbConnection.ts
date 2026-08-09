@@ -1,8 +1,8 @@
 
 import { prisma } from "../../lib/prisma.js";
-import { log ,error} from "../../uteis/log.js";
+import { log ,error} from "../../utils/log.js";
 
-export async function testDBConnection() {
+export async function testDbConnection() {
   log('INICIANDO teste de conexão com db')
   try {
     await prisma.$connect();

@@ -1,14 +1,14 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
 import {
   getUserRole,
   onlyRoleBotAdmin,
   roleWeights,
-} from "../../../../uteis/permissions.js";
+} from "../../../../utils/permissions.js";
 import { permissionCache } from "../../../../cache/cache.js";
-import { EditOrSendText } from "../../../../uteis/uteis_telegram/EditOrSendText.js";
-import { info, warn, error } from "../../../../uteis/log.js";
+import { editOrSendText } from "../../../../utils/telegram/editOrSendText.js";
+import { info, warn, error } from "../../../../utils/log.js";
 
 export async function unbanCallback(ctx: MyContext) {
   await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
@@ -43,7 +43,7 @@ async function unbanCallbackService(ctx: MyContext) {
 
     if (action === "no") {
       info("unban - cancelado pelo executor", { executorId, targetId });
-      await EditOrSendText({ ctx, caption: ctx.t("unban_cancelled") });
+      await editOrSendText({ ctx, caption: ctx.t("unban_cancelled") });
       return;
     }
 
@@ -77,7 +77,7 @@ async function unbanCallbackService(ctx: MyContext) {
       executorId,
       targetId,
     });
-    await EditOrSendText({ ctx, caption: ctx.t("unban_success") });
+    await editOrSendText({ ctx, caption: ctx.t("unban_success") });
   } catch (e) {
     error("unban - erro ao desbanir usuario", e);
     await ctx.answerCallbackQuery(

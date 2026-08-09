@@ -1,7 +1,7 @@
 import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import { characterCache } from "../../../cache/cache.js";
 
 function buildLetterKeyboard(cacheKey: string) {
@@ -156,7 +156,7 @@ export async function animelistCommand(ctx: MyContext) {
   const text = ctx.t("animelist-select-letter");
   const keyboard = buildLetterKeyboard(cacheKey);
 
-  return await SendMensageCustom({
+  return await sendMessageCustom({
     ctx,
     caption: text,
     reply_markup: keyboard,

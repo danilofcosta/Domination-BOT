@@ -1,9 +1,9 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, info, warn } from "../../../uteis/log.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { GetCharacterById } from "../../../uteis/extras/GetCharacterById.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, info, warn } from "../../../utils/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { getCharacterById } from "../../../utils/extras/getCharacterById.js";
 
 const SOURCE_TYPE_EMOJI: Record<string, string> = {
   ANIME: "📺",
@@ -20,7 +20,7 @@ export async function DetectHandler(ctx: MyContext) {
     const detectId = Number(idStr);
 
     if (!ctx.match || idStr === "" || isNaN(detectId)) {
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         caption: [
           "Por favor, forneça um ID de personagem.",
@@ -36,10 +36,10 @@ export async function DetectHandler(ctx: MyContext) {
       noCache,
     });
 
-    const character = await GetCharacterById(ctx.botType, detectId, !noCache);
+    const character = await getCharacterById(ctx.botType, detectId, !noCache);
     if (!character) {
       warn("DetectHandler - personagem não encontrado", { id: detectId });
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         caption: "Personagem não encontrado. Verifique o ID informado.",
       });
@@ -69,7 +69,7 @@ export async function DetectHandler(ctx: MyContext) {
       | null
       | undefined;
     const uploader = addby?.id
-      ? CreateMentionUser({
+      ? createMentionUser({
           Nome: `${addby.first_name ?? "Usuário"}${
             addby.last_name ? ` ${addby.last_name}` : ""
           }`,
@@ -95,7 +95,7 @@ export async function DetectHandler(ctx: MyContext) {
       const data = (c.TelegramUser?.telegramData ?? {}) as Record<string, any>;
       const name = data.first_name ?? "Usuário";
     
-      const username = data.username ? ` (@${data.username})` :  CreateMentionUser({ Nome: data.first_name ??'', telegramiduser:   Number(c.TelegramUser?.telegramId ?? c.userId ?? 0)});
+      const username = data.username ? ` (@${data.username})` :  createMentionUser({ Nome: data.first_name ??'', telegramiduser:   Number(c.TelegramUser?.telegramId ?? c.userId ?? 0)});
       return `• ${name}${username.trim()} (<code>${String(
         c.TelegramUser?.telegramId ?? c.userId,
       )}</code>)`;
@@ -116,10 +116,10 @@ export async function DetectHandler(ctx: MyContext) {
       owners: usersList.length,
     });
 
-    return SendMensageCustom({ ctx, caption,character });
+    return sendMessageCustom({ ctx, caption,character });
   } catch (e) {
     error("DetectHandler - erro ao buscar personagem", e);
-    return SendMensageCustom({
+    return sendMessageCustom({
       ctx,
       caption: "Erro ao buscar o personagem. Tente novamente.",
     });

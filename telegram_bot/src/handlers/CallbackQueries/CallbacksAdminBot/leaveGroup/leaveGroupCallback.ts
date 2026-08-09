@@ -1,14 +1,14 @@
 import { getLeaveGroupCache, setLeaveGroupCache } from "../../../../cache/cache.js";
-import { createButtonsLeaveMenu } from "../../../../uteis/buildButtons/createButtonsLeaveMenu.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
-import { onlyRoleBotAdmin } from "../../../../uteis/permissions.js";
-import { EditOrSendText } from "../../../../uteis/uteis_telegram/EditOrSendText.js";
+import { createButtonsLeaveMenu } from "../../../../utils/buildButtons/createButtonsLeaveMenu.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
+import { onlyRoleBotAdmin } from "../../../../utils/permissions.js";
+import { editOrSendText } from "../../../../utils/telegram/editOrSendText.js";
 import { ProfileType } from "../../../../../generated/prisma/enums.js";
-import { leaveGroupHandlerUI } from "./leave_group.ui.js";
+import { leaveGroupHandlerUI } from "./leaveGroup.ui.js";
 import { setListener } from "../../../../cache/listenerStore.js";
 import { translationService } from "../../../../locales/translationService.js";
-import { CreateOneBtn } from "../../../../uteis/buildButtons/createOneButton.js";
-import { info, error } from "../../../../uteis/log.js";
+import { CreateOneBtn } from "../../../../utils/buildButtons/createOneButton.js";
+import { info, error } from "../../../../utils/log.js";
 import { prisma } from "../../../../lib/prisma.js";
 
 export async function leaveGroupCallback(ctx: MyContext) {
@@ -83,7 +83,7 @@ export async function leaveGroupCallbackService(ctx: MyContext) {
             },
         });
 
-        await EditOrSendText({
+        await editOrSendText({
             ctx,
             caption: "Digite a nova mensagem de saída do bot:",
             reply_markup: CreateOneBtn({
@@ -115,7 +115,7 @@ export async function leaveGroupCallbackService(ctx: MyContext) {
         send_message_to_group: cache.send_message_to_group,
     });
 
-    await EditOrSendText({ ctx, caption: bot_leave_group_text, reply_markup });
+    await editOrSendText({ ctx, caption: bot_leave_group_text, reply_markup });
 }
 
 async function executeLeaveGroup(ctx: MyContext, chatId: number, cache: ReturnType<typeof getLeaveGroupCache> & {}) {

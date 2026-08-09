@@ -1,16 +1,16 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
-import { Extract_id_user } from "../../../../uteis/uteis_telegram/extract_id_user.js";
-import { CreateMentionUser } from "../../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { CreateButtunConfirmation } from "../../../../uteis/buildButtons/createButtonConfirmation.js";
-import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
-import { info, warn, error } from "../../../../uteis/log.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
+import { extractUserId } from "../../../../utils/telegram/extractUserId.js";
+import { createMentionUser } from "../../../../utils/telegram/createMentionUser.js";
+import { CreateButtunConfirmation } from "../../../../utils/buildButtons/createButtonConfirmation.js";
+import { sendMessageCustom } from "../../../../utils/sendMessageCustom.js";
+import { info, warn, error } from "../../../../utils/log.js";
 
-export async function cleancolletion(ctx: MyContext) {
+export async function cleanCollection(ctx: MyContext) {
   try {
-    const mentionedUser = await Extract_id_user(ctx);
+    const mentionedUser = await extractUserId(ctx);
     if (!mentionedUser) {
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: ctx.t("clean_reply_instruction"),
       });
@@ -18,18 +18,18 @@ export async function cleancolletion(ctx: MyContext) {
     }
 
     if (mentionedUser.id === ctx.from?.id) {
-      warn("cleancolletion - tentativa de limpar a propria colecao", {
+      warn("cleanCollection - tentativa de limpar a propria colecao", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("clean_error_self") });
+      await sendMessageCustom({ ctx, caption: ctx.t("clean_error_self") });
       return;
     }
 
     if (mentionedUser.is_bot || mentionedUser.id === ctx.me?.id) {
-      warn("cleancolletion - tentativa de limpar colecao de um bot", {
+      warn("cleanCollection - tentativa de limpar colecao de um bot", {
         userId: ctx.from?.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("clean_error_bot") });
+      await sendMessageCustom({ ctx, caption: ctx.t("clean_error_bot") });
       return;
     }
 
@@ -43,11 +43,11 @@ export async function cleancolletion(ctx: MyContext) {
     const total = waifuCount + husbandoCount;
 
     if (total === 0) {
-      info("cleancolletion - colecao ja vazia", {
+      info("cleanCollection - colecao ja vazia", {
         executorId,
         targetId: mentionedUser.id,
       });
-      await SendMensageCustom({ ctx, caption: ctx.t("clean_error_nothing") });
+      await sendMessageCustom({ ctx, caption: ctx.t("clean_error_nothing") });
       return;
     }
 
@@ -59,10 +59,10 @@ export async function cleancolletion(ctx: MyContext) {
       ctx.t("clean_btn_cancel"),
     );
 
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("clean_confirm", {
-        user: CreateMentionUser({
+        user: createMentionUser({
           Nome: mentionedUser.first_name,
           telegramiduser: mentionedUser.id,
         }),
@@ -71,14 +71,14 @@ export async function cleancolletion(ctx: MyContext) {
       reply_markup,
     });
 
-    info("cleancolletion - confirmacao solicitada", {
+    info("cleanCollection - confirmacao solicitada", {
       executorId,
       targetId: mentionedUser.id,
       total,
     });
   } catch (e) {
-    error("cleancolletion - erro ao iniciar limpeza", e);
-    await SendMensageCustom({
+    error("cleanCollection - erro ao iniciar limpeza", e);
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("clean_error", { error: "erro interno" }),
     });

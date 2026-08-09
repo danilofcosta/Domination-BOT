@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { createResult } from "../uteis/create_inline_result.js";
-import { showResults } from "../uteis/show_results_inline.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
+import { showResultsInline } from "../utils/showResultsInline.js";
 
 export async function animeInlineQuery(ctx: MyContext) {
   const query = ctx.inlineQuery?.query || "";
@@ -34,7 +34,7 @@ export async function animeInlineQuery(ctx: MyContext) {
   }
 
   const results = characters.map((char: any) =>
-    createResult({
+    createInlineResult({
       character: char,
       t: ctx.t,
       rawEmoji: true,
@@ -42,5 +42,5 @@ export async function animeInlineQuery(ctx: MyContext) {
     }),
   );
 
-  await showResults({ ctx, results, maxCacheTelegram: false });
+  await showResultsInline({ ctx, results, maxCacheTelegram: false });
 }

@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { ChatType } from "../CustomTypes.js";
+import { ChatType } from "../customTypes.js";
 import { getOrSet, rankingCache } from "../../cache/cache.js";
 
 async function queryById(botType: ChatType, characterId: number) {
@@ -21,13 +21,13 @@ async function queryById(botType: ChatType, characterId: number) {
   });
 }
 
-export async function GetCharacterById(
+export async function getCharacterById(
   botType: ChatType,
   characterId: number,
   useCache = true,
 ) {
   if (!useCache) return queryById(botType, characterId);
-  const cacheKey = `GetCharacterById:${botType}:${characterId}`;
+  const cacheKey = `getCharacterById:${botType}:${characterId}`;
   return getOrSet(rankingCache, cacheKey, () =>
     queryById(botType, characterId),
   );

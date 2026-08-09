@@ -1,10 +1,10 @@
 import { prisma } from "../../../../lib/prisma.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
-import { onlyRoleBotAdmin } from "../../../../uteis/permissions.js";
+import { onlyRoleBotAdmin } from "../../../../utils/permissions.js";
 import { setHarem } from "../../../../cache/cache.js";
-import { EditOrSendText } from "../../../../uteis/uteis_telegram/EditOrSendText.js";
-import { info, warn, error } from "../../../../uteis/log.js";
+import { editOrSendText } from "../../../../utils/telegram/editOrSendText.js";
+import { info, warn, error } from "../../../../utils/log.js";
 
 export async function cleanCollectionCallback(ctx: MyContext) {
   await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
@@ -28,7 +28,7 @@ async function cleanCollectionCallbackService(ctx: MyContext) {
     const executorId = Number(match[3]!);
 
     if (ctx.from?.id !== executorId) {
-      warn("cleancolletion - callback de outro usuario", {
+      warn("cleanCollection - callback de outro usuario", {
         fromId: ctx.from?.id,
         executorId,
         targetId,
@@ -38,11 +38,11 @@ async function cleanCollectionCallbackService(ctx: MyContext) {
     }
 
     if (action === "no") {
-      info("cleancolletion - cancelado pelo executor", {
+      info("cleanCollection - cancelado pelo executor", {
         executorId,
         targetId,
       });
-      await EditOrSendText({ ctx, caption: ctx.t("clean_cancelled") });
+      await editOrSendText({ ctx, caption: ctx.t("clean_cancelled") });
       return;
     }
 
@@ -57,17 +57,17 @@ async function cleanCollectionCallbackService(ctx: MyContext) {
 
     const total = waifuResult.count + husbandoResult.count;
 
-    info("cleancolletion - colecao limpa", {
+    info("cleanCollection - colecao limpa", {
       executorId,
       targetId,
       deleted: total,
     });
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: ctx.t("clean_success", { count: String(total) }),
     });
   } catch (e) {
-    error("cleancolletion - erro ao limpar colecao", e);
+    error("cleanCollection - erro ao limpar colecao", e);
     await ctx.answerCallbackQuery(
       ctx.t("clean_error", { error: "erro interno" }),
     );

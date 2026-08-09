@@ -2091,6 +2091,30 @@ export const _base: localekey[] = [
         { key: "addedBy", description: null },
       ],
     },
+  },
+  {
+    key: "bot_new_group_msg",
+    description: null,
+    localeTraslation: {
+      value: "<b>Que ótimo! — Agora, faço parte desse chat</b>\n\n<blockquote> <a href=\"https://t.me/${botName}?start=canal\"> Guia dominations</a> — Use /${command_config} para ajustar algumas configurações simples do Bot neste chat </blockquote>.\n\nClique no botão abaixo para me adicionar a novos grupos e garantir que eles também estejam na comunidade",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "botName", description: null }
+        ,{ key: "command_config", description: null }
+      ],
+    },
+  },
+  {
+    key: "start_btn_grupo",
+    description: null,
+    localeTraslation: {
+      value: "👥 Grupo Oficial",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
   }// ==================== BOT LEAVE GROUP ====================
   ,
 
@@ -2319,7 +2343,7 @@ Agora resta apenas olhar para o vazio e lembrar: o verdadeiro farm foram os amig
     key: "clean_reply_instruction",
     description: null,
     localeTraslation: {
-      value: "Responda a mensagem de um usuário ou mencione-o para limpar a coleção.\nEx: /cleancolletion @usuario",
+      value: "Responda a mensagem de um usuário ou mencione-o para limpar a coleção.\nEx: /cleanCollection @usuario",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -2977,6 +3001,17 @@ value: "🌌 Bem-vindo ao ${bot}!\n\nA experiência definitiva de coleção de p
     },
   },
   {
+    key: "start_creditos",
+    description: null,
+    localeTraslation: {
+      value: "💠 Créditos\n\nBot desenvolvido com 💜 pela equipe de administração:\n${admins}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "admins", description: null }],
+    },
+  },
+  {
     key: "start_btn_addme",
     description: null,
     localeTraslation: {
@@ -3027,6 +3062,191 @@ value: "🌌 Bem-vindo ao ${bot}!\n\nA experiência definitiva de coleção de p
       value: "🔄 Redirecionar",
       isButton: true,
       ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_title",
+    description: null,
+    localeTraslation: {
+      value: "⚙️ Configurações ${configTitleLabel}\n\nGrupo: <b>${group}</b>\n\n💧 Drops: <b>${dropStatus}</b>\n📊 Drop a cada <b>${dropMsg}</b> mensagens (mín. 100)",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "group", description: null },
+        { key: "dropStatus", description: null },
+        { key: "dropMsg", description: null },
+      ],
+    },
+  },
+  {
+    key: "config_status_on",
+    description: null,
+    localeTraslation: {
+      value: "✅ Ativados",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_status_off",
+    description: null,
+    localeTraslation: {
+      value: "❌ Desativados",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_btn_toggle_off",
+    description: null,
+    localeTraslation: {
+      value: "❌ Desativar drops",
+      isButton: true,
+      ButtonSetting: { color: "danger", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_btn_toggle_on",
+    description: null,
+    localeTraslation: {
+      value: "✅ Ativar drops",
+      isButton: true,
+      ButtonSetting: { color: "success", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_btn_minus",
+    description: null,
+    localeTraslation: {
+      value: "➖ -100",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_btn_plus",
+    description: null,
+    localeTraslation: {
+      value: "➕ +100",
+      isButton: true,
+      ButtonSetting: { color: "primary", custonEmojId: 1 },
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_only_admin",
+    description: null,
+    localeTraslation: {
+      value: "⛔ Apenas administradores do grupo podem usar este menu.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_group_only",
+    description: null,
+    localeTraslation: {
+      value: "ℹ️ Use ${commands} dentro de um grupo.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "commands", description: null }],
+    },
+  },
+  {
+    key: "config_updated",
+    description: null,
+    localeTraslation: {
+      value: "✅ Configuração atualizada!",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_drops_enabled",
+    description: null,
+    localeTraslation: {
+      value: "✅ Drops ativados neste grupo!",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "config_drops_disabled",
+    description: null,
+    localeTraslation: {
+      value: "❌ Drops desativados neste grupo!",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+
+  // ==================== DROP COMMAND ====================
+  {
+    key: "drop_cmd_status",
+    description: null,
+    localeTraslation: {
+      value: "Atualmente, estou dropando ${typeBot}s aos usuários: ${status}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [
+        { key: "typeBot", description: null },
+        { key: "status", description: null },
+      ],
+    },
+  },
+  {
+    key: "drop_cmd_invalid",
+    description: null,
+    localeTraslation: {
+      value: "O parâmetro não foi reconhecido, use uma das opções seguintes: yes/no/on/off",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "drop_cmd_only_admin",
+    description: null,
+    localeTraslation: {
+      value: "⛔ Apenas administradores do grupo podem usar este comando.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "drop_cmd_group_only",
+    description: null,
+    localeTraslation: {
+      value: "ℹ️ Use /drop dentro de um grupo.",
+      isButton: null,
+      ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
       extrakey: null,
     },

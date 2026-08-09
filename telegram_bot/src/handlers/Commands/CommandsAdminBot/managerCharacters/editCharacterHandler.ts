@@ -1,11 +1,11 @@
-import type { MyContext, PreCharacter } from "../../../../uteis/CustomTypes.js";
-import { ChatType } from "../../../../uteis/CustomTypes.js";
+import type { MyContext, PreCharacter } from "../../../../utils/customTypes.js";
+import { ChatType } from "../../../../utils/customTypes.js";
 import { setCharacter } from "../../../../cache/cache.js";
-import { EditUI } from "./addcharacter/edit.ui.js";
-import { error, info } from "../../../../uteis/log.js";
+import { EditUI } from "./addCharacter/edit.ui.js";
+import { error, info } from "../../../../utils/log.js";
 import { botPrefix } from "../../../../CommandsRegistry/botConfigCommands.js";
-import { SendMensageCustom } from "../../../../uteis/sendMensageCustom.js";
-import { GetCharacterById } from "../../../../uteis/extras/GetCharacterById.js";
+import { sendMessageCustom } from "../../../../utils/sendMessageCustom.js";
+import { getCharacterById } from "../../../../utils/extras/getCharacterById.js";
 
 function dbCharacterToPreCharacter(
   dbChar: any,
@@ -32,7 +32,7 @@ function dbCharacterToPreCharacter(
   };
 }
 
-export async function EditCharacterHandler(ctx: MyContext) {
+export async function editCharacterHandler(ctx: MyContext) {
   let idcharactertoedit: number | undefined;
   let noCache = false;
 
@@ -61,19 +61,19 @@ export async function EditCharacterHandler(ctx: MyContext) {
     const usage = ctx.t("edit-id-not-informed", { botPrefix: botPrefix });
     const caption = `${usage}\n\n💡 Para buscar direto do banco (sem cache), use: <code>/editchar${botPrefix} &lt;id&gt; nocache</code>`;
     await ctx.reply(caption, { parse_mode: "HTML" });
-    await SendMensageCustom({ ctx, caption });
+    await sendMessageCustom({ ctx, caption });
     return;
   }
 
   try {
     const genero = ctx.botType;
 
-    info("EditCharacterHandler - buscando personagem para edição", {
+    info("editCharacterHandler - buscando personagem para edição", {
       id: idcharactertoedit,
       noCache,
     });
 
-    const dbChar = await GetCharacterById(genero, idcharactertoedit, !noCache);
+    const dbChar = await getCharacterById(genero, idcharactertoedit, !noCache);
 
     if (!dbChar) {
       await ctx.reply(ctx.t("error-character-not-found"));
@@ -86,7 +86,7 @@ export async function EditCharacterHandler(ctx: MyContext) {
 
     await EditUI(ctx, preChar, cacheId, "edit");
   } catch (e) {
-    error("EditCharacterHandler error", e);
+    error("editCharacterHandler error", e);
     await ctx.reply(ctx.t("add-char-error", { error: "erro interno" }));
   }
 }

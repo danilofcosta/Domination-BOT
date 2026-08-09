@@ -1,8 +1,8 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { createResult } from "../uteis/create_inline_result.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
 
-export async function inline_per(ctx: MyContext, charListData: { userId: number; characterIds: number[]; genero: string }) {
+export async function inlineById(ctx: MyContext, charListData: { userId: number; characterIds: number[]; genero: string }) {
   const genero = ctx.botType;
 
   const characters = await (genero === ChatType.HUSBANDO
@@ -24,7 +24,7 @@ export async function inline_per(ctx: MyContext, charListData: { userId: number;
       }));
 
   const results = characters.map((char: any) =>
-    createResult({
+    createInlineResult({
       character: char,
       t: ctx.t,
       rawEmoji: true,

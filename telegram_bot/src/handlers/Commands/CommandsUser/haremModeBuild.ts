@@ -1,11 +1,11 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
-import { extractListEmojisCharacter } from "../../../uteis/buildCapion/extract_emojis.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { extractListEmojisCharacter } from "../../../utils/buildCaption/extractEmojis.js";
 
 function getCharacter(entry: any) {
   return entry.Character;
 }
 
-export function Harem_mode_latest(
+export function haremModeLatest(
   list_character: any[],
   ctx: MyContext,
   maxPageLen: number,
@@ -108,7 +108,7 @@ function buildGroupedPages(
   return pages;
 }
 
-export function Harem_mode_rarity(
+export function haremModeRarity(
   list_character: any[],
   ctx: MyContext,
   maxPageLen: number,
@@ -130,7 +130,7 @@ export function Harem_mode_rarity(
   );
 }
 
-export function Harem_mode_event(
+export function haremModeEvent(
   list_character: any[],
   ctx: MyContext,
   maxPageLen: number,
@@ -152,7 +152,7 @@ export function Harem_mode_event(
   );
 }
 
-export function Harem_mode_default(
+export function haremModeDefault(
   list_character: any[],
   ctx: MyContext,
   dbAnimeCounts: Map<string, number>,

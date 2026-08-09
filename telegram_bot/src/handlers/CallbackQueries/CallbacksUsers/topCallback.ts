@@ -1,8 +1,8 @@
 import { InlineKeyboard } from "grammy";
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { debug, info, warn } from "../../../uteis/log.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { debug, info, warn } from "../../../utils/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import {
   buildTopMessage,
   buildTopGruposMessage,
@@ -10,14 +10,14 @@ import {
   type RankingItem,
 } from "../../Commands/CommandsUser/top.js";
 import { getOrSet, rankingCache } from "../../../cache/cache.js";
-import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
+import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
 import {
   createButtonsTopGlobal,
   createButtonsTopChat,
   createButtonsTopGrupos,
-} from "../../../uteis/buildButtons/createButtonsTop.js";
+} from "../../../utils/buildButtons/createButtonsTop.js";
 
-export async function TopCallbackQuery(ctx: MyContext) {
+export async function topCallback(ctx: MyContext) {
   const parts = ctx.match ? (ctx.match as any).input.split("_") : [];
   const [, action] = parts;
   const chatId = ctx.chat?.id;
@@ -55,7 +55,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     if (!ranking.length) {
       warn(`topHandlerChat - ranking vazio`, { userId: ctx.from?.id, chatId });
-      return EditOrSendText({ ctx, caption: ctx.t("top-empty"), reply_markup: reply_markup });
+      return editOrSendText({ ctx, caption: ctx.t("top-empty"), reply_markup: reply_markup });
     }
 
     debug(`topHandlerChat - usuários no ranking`, { count: ranking.length, chatId });
@@ -64,7 +64,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
 
 
-    await EditOrSendText({
+    await editOrSendText({
       ctx, caption: text, reply_markup: reply_markup
     })
   }
@@ -92,7 +92,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     if (!ranking.length) {
       warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
-      return SendMensageCustom({ ctx, caption: ctx.t("top-empty") });
+      return sendMessageCustom({ ctx, caption: ctx.t("top-empty") });
     }
 
     debug(`topHandler - usuários no ranking`, { count: ranking.length });
@@ -101,7 +101,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     const reply_markup = createButtonsTopGlobal(ctx);
 
-    await EditOrSendText(
+    await editOrSendText(
       { ctx, caption: text, reply_markup: reply_markup }
     )
 
@@ -120,7 +120,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     if (!ranking.length) {
       warn(`topGrupos - ranking vazio`, { userId: ctx.from?.id });
-      return EditOrSendText({
+      return editOrSendText({
         ctx,
         caption: ctx.t("top_grupos_empty"),
         reply_markup: createButtonsTopGrupos(ctx),
@@ -131,7 +131,7 @@ export async function TopCallbackQuery(ctx: MyContext) {
 
     const text = await buildTopGruposMessage(ctx, ranking);
 
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: text,
       reply_markup: createButtonsTopGrupos(ctx),

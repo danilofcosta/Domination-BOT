@@ -1,17 +1,17 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { debug, error, info, warn } from "../../../uteis/log.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { debug, error, info, warn } from "../../../utils/log.js";
 import { rankingCache, getOrSet } from "../../../cache/cache.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { getLatestCharacter } from "../../../uteis/extras/getLatestCharacter.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { getLatestCharacter } from "../../../utils/extras/getLatestCharacter.js";
 
-import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
+import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
 import {
   createButtonsTopGlobal,
   createButtonsTopChat,
   createButtonsTopGrupos,
-} from "../../../uteis/buildButtons/createButtonsTop.js";
+} from "../../../utils/buildButtons/createButtonsTop.js";
 
 export type RankingItem = {
   userId: bigint;
@@ -75,7 +75,7 @@ function escapeHtml(text: string): string {
       (userData.first_name as string) ||
       (userData.username as string) ||
       "user";
-    const mention = CreateMentionUser({
+    const mention = createMentionUser({
       Nome: name,
       telegramiduser: Number(item.userId),
     });
@@ -147,7 +147,7 @@ export async function topHandler(ctx: MyContext) {
 
   if (!ranking.length) {
     warn(`topHandler - ranking vazio`, { userId: ctx.from?.id });
-    return SendMensageCustom({ ctx, caption: ctx.t("top-empty") });
+    return sendMessageCustom({ ctx, caption: ctx.t("top-empty") });
   }
 
   debug(`topHandler - usuários no ranking`, { count: ranking.length });
@@ -160,7 +160,7 @@ export async function topHandler(ctx: MyContext) {
 
   if (character) {
     try {
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         character: character,
         caption: text,
@@ -168,14 +168,14 @@ export async function topHandler(ctx: MyContext) {
       });
     } catch (e) {
       error(`topHandler - erro ao enviar mídia`, e);
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         caption: ctx.t("top-empty"),
       });
     }
   }
 
-  return SendMensageCustom({
+  return sendMessageCustom({
     ctx,
     caption: text,
   });
@@ -192,7 +192,7 @@ export async function topGruposHandler(ctx: MyContext) {
 
   if (!ranking.length) {
     warn(`topGrupos - ranking vazio`, { userId: ctx.from?.id });
-    return SendMensageCustom({ ctx, caption: ctx.t("top_grupos_empty") });
+    return sendMessageCustom({ ctx, caption: ctx.t("top_grupos_empty") });
   }
 
   debug(`topGrupos - grupos no ranking`, { count: ranking.length });
@@ -205,7 +205,7 @@ export async function topGruposHandler(ctx: MyContext) {
 
   if (character) {
     try {
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         character: character,
         caption: text,
@@ -216,7 +216,7 @@ export async function topGruposHandler(ctx: MyContext) {
     }
   }
 
-  return SendMensageCustom({
+  return sendMessageCustom({
     ctx,
     caption: text,
     reply_markup: reply_markup,
@@ -225,7 +225,7 @@ export async function topGruposHandler(ctx: MyContext) {
 
 export async function topHandlerChat(ctx: MyContext) {
   if (ctx.chat?.type === "private") {
-    return SendMensageCustom({
+    return sendMessageCustom({
       ctx,
       caption: ctx.t("top-chat-group-only"),
     });
@@ -264,7 +264,7 @@ export async function topHandlerChat(ctx: MyContext) {
 
   if (!ranking.length) {
     warn(`topHandlerChat - ranking vazio`, { userId: ctx.from?.id, chatId });
-    return EditOrSendText({ ctx, caption: ctx.t("top-empty") });
+    return editOrSendText({ ctx, caption: ctx.t("top-empty") });
   }
 
   debug(`topHandlerChat - usuários no ranking`, { count: ranking.length, chatId });
@@ -277,7 +277,7 @@ export async function topHandlerChat(ctx: MyContext) {
 
   if (character) {
     try {
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         character: character,
         caption: text,
@@ -285,14 +285,14 @@ export async function topHandlerChat(ctx: MyContext) {
       });
     } catch (e) {
       error(`topHandlerChat - erro ao enviar mídia`, e);
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         caption: ctx.t("top-empty"),
       });
     }
   }
 
-  return SendMensageCustom({
+  return sendMessageCustom({
     ctx,
     caption: text,
   });

@@ -1,6 +1,6 @@
-import { error, info } from "../../uteis/log.js";
+import { error, info } from "../../utils/log.js";
 
-export function Environment_validation() {
+export function environmentValidation() {
   const requiredEnvs = [
     "BOT_TOKEN_WAIFU",
     "BOT_TOKEN_HUSBANDO",

@@ -1,12 +1,12 @@
 import { CommandGroup } from "@grammyjs/commands";
-import type { MyContext } from "../uteis/CustomTypes.js";
-import { debug } from "../uteis/log.js";
+import type { MyContext } from "../utils/customTypes.js";
+import { debug } from "../utils/log.js";
 import {
   botPrefix,
   typeBot,
   type CommandConfig,
   registerCommand,
-  category,
+  category_user,
 } from "./botConfigCommands.js";
 import {
   topHandler,
@@ -21,7 +21,7 @@ import { HaremHandler } from "../handlers/Commands/CommandsUser/harem.js";
 import { HaremmodeHandler } from "../handlers/Commands/CommandsUser/haremmode.js";
 import { CapturarCharacter } from "../handlers/Commands/CommandsUser/dominar.js";
 import { TradeHandler } from "../handlers/Commands/CommandsUser/trade.js";
-import { RandomCharacterHandler } from "../handlers/Commands/CommandsUser/RandomCharacterHander.js";
+import { RandomCharacterHandler } from "../handlers/Commands/CommandsUser/RandomCharacterHandler.js";
 import { animelistCommand } from "../handlers/Commands/CommandsUser/animelist.js";
 import { DetectHandler } from "../handlers/Commands/CommandsUser/detect.js";
 
@@ -29,7 +29,7 @@ const userCommandsRegistry = new CommandGroup<MyContext>();
 
 export const userCommandsRegistryDict: Record<string, CommandConfig> = {
   top: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "top" + botPrefix,
     commandPrivate: "top",
     description: {
@@ -40,17 +40,17 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_private_chats"],
   },
   topchat: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "topchat" + botPrefix,
     description: {
       pt: "Mostra o top de jogadores",
       en: "Show the top players",
     },
     handler: topHandlerChat,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   topgrupo: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "topgrupo" + botPrefix,
     commandPrivate: "topgrupo",
     description: {
@@ -61,17 +61,17 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
     scopes: ["all_group_chats", "all_private_chats"],
   },
   Trade: {
-    category: category.Economy_Trade,
+    category_user: category_user.EconomyTrade,
     command: "trade" + botPrefix,
     description: {
       pt: "negocia a troca de personagens com outro usuario",
       en: "Trade characters with another user",
     },
     handler: TradeHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Myinfos: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "myinfo" + botPrefix,
     commandPrivate: "myinfo",
     description: {
@@ -79,10 +79,10 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: Myinfos,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Info: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "info" + botPrefix,
     commandPrivate: "info",
     description: {
@@ -90,20 +90,20 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show user info",
     },
     handler: InfoHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Gift: {
-    category: category.Economy_Trade,
+    category_user: category_user.EconomyTrade,
     command: "gift" + botPrefix,
     description: {
       pt: "Presenteia um personagem para outro usuario",
       en: "Gift a character to another user",
     },
     handler: GiftHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Fav: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "fav" + botPrefix,
     commandPrivate: "fav",
     description: {
@@ -111,10 +111,10 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Select your favorite character",
     },
     handler: favHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Harem: {
-    category: category.main,
+    category_user: category_user.Main,
     command: `my${typeBot}s`,
 
     commandPrivate: "harem",
@@ -123,10 +123,10 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show your character harem",
     },
     handler: HaremHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   HaremMode: {
-    category: category.Collection,
+    category_user: category_user.Collection,
     command: "haremmode" + botPrefix,
     commandPrivate: "haremmode",
     description: {
@@ -134,10 +134,10 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Change harem display mode",
     },
     handler: HaremmodeHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Random: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: typeBot ? typeBot.toLowerCase() : "random",
     commandPrivate: typeBot ? typeBot.toLowerCase() : "random", commandPrivateInChat: true,
 
@@ -146,10 +146,10 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Brings a random character from the DB",
     },
     handler: RandomCharacterHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Animelist: {
-    category: category.Info_Personalization,
+    category_user: category_user.InfoPersonalization,
     command: "animelist" + botPrefix,
     commandPrivate: "animelist" + botPrefix,
     description: {
@@ -157,20 +157,20 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "List animes by letter",
     },
     handler: animelistCommand,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Dominar: {
     command: "dominar",
-    category: category.main,
+    category_user: category_user.Main,
     description: {
       pt: "Tenta capturar um personagem que apareceu no chat",
       en: "Try to capture a character that appeared in chat",
     },
     handler: CapturarCharacter,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
   Detect: {
-    category: category.main,
+    category_user: category_user.Main,
     command: "detect" + botPrefix,
     commandPrivate: "detect",
     description: {
@@ -178,7 +178,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Search a character and show who owns it",
     },
     handler: DetectHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+    scopes: ["all_group_chats", ],
   },
 };
 

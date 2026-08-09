@@ -1,10 +1,10 @@
 import { prisma } from "../../../lib/prisma.js";
-import type { MyContext } from "../../../uteis/CustomTypes.js";
+import type { MyContext } from "../../../utils/customTypes.js";
 import { ProfileType } from "../../../../generated/prisma/client.js";
-import { info, warn, error } from "../../../uteis/log.js";
+import { info, warn, error } from "../../../utils/log.js";
 import { getHarem, setHarem, permissionCache } from "../../../cache/cache.js";
-import { getUserRole, roleWeights } from "../../../uteis/permissions.js";
-import { Build_btn_harem } from "../../../uteis/buildButtons/GenerateButtonharems.js";
+import { getUserRole, roleWeights } from "../../../utils/permissions.js";
+import { buildButtonHarems } from "../../../utils/buildButtons/generateButtonHarems.js";
 import { InlineKeyboard } from "grammy";
 
 type HaremAction =
@@ -223,7 +223,7 @@ export async function haremCallback(ctx: MyContext) {
     return;
   }
 
-  const keyboard = Build_btn_harem({
+  const keyboard = buildButtonHarems({
     ctx,
     current_page: page,
     total_page: total,

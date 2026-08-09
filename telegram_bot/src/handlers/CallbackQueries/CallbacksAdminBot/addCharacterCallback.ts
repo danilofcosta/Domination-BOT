@@ -1,24 +1,24 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
-import { error, log } from "../../../uteis/log.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { error, log } from "../../../utils/log.js";
 import { getCharacter, setCharacter } from "../../../cache/cache.js";
-import { extractMediaData } from "../../../uteis/uteis_telegram/extractMediaData.js";
-import { EditOrSendText } from "../../../uteis/uteis_telegram/EditOrSendText.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+import { extractMediaData } from "../../../utils/telegram/extractMediaData.js";
+import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import {
   createCharacter,
   updateCharacter,
-} from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/character.service.js";
-import { onlyRoleBotAdmin } from "../../../uteis/permissions.js";
+} from "../../Commands/CommandsAdminBot/managerCharacters/addCharacter/character.service.js";
+import { onlyRoleBotAdmin } from "../../../utils/permissions.js";
 import { ProfileType } from "../../../../generated/prisma/client.js";
 import { InlineKeyboard } from "grammy";
-import { CreateOneBtn } from "../../../uteis/buildButtons/createOneButton.js";
-import { createButtonEditCharacter } from "../../../uteis/buildButtons/createButtonEditCharacter.js";
-import { EditUI } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/edit.ui.js";
-import { getRaritiesAll } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/rarity.service.js";
-import { getEventsAll } from "../../Commands/CommandsAdminBot/manegerCharacters/addcharacter/event.service.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
+import { CreateOneBtn } from "../../../utils/buildButtons/createOneButton.js";
+import { createButtonEditCharacter } from "../../../utils/buildButtons/createButtonEditCharacter.js";
+import { EditUI } from "../../Commands/CommandsAdminBot/managerCharacters/addCharacter/edit.ui.js";
+import { getRaritiesAll } from "../../Commands/CommandsAdminBot/managerCharacters/addCharacter/rarity.service.js";
+import { getEventsAll } from "../../Commands/CommandsAdminBot/managerCharacters/addCharacter/event.service.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
 import { setListener } from "../../../cache/listenerStore.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
 
 const ITEMS_PER_PAGE = 10;
 const SOURCE_TYPES = ["ANIME", "GAME", "MANGA", "MOVIE"] as const;
@@ -89,7 +89,7 @@ async function showRaritySelection(
     text: "Concluido",
     callback_data: `add-${actionType}_${id}_sel_done`,
   });
-  await EditOrSendText({ ctx, caption: text, reply_markup: keyboard });
+  await editOrSendText({ ctx, caption: text, reply_markup: keyboard });
 }
 
 async function showEventSelection(
@@ -145,7 +145,7 @@ async function showEventSelection(
     callback_data: `add-${actionType}_${id}_sel_done`,
   });
 
-  await EditOrSendText({ ctx, caption: text, reply_markup: keyboard });
+  await editOrSendText({ ctx, caption: text, reply_markup: keyboard });
 }
 // checa se o comando ta sendo usando por um adm
 export async function addCharacterCallbackHandler(ctx: MyContext) {
@@ -206,7 +206,7 @@ async function handleCallback(ctx: MyContext) {
       },
     });
 
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: ctx.t("add-character-enter-name"),
       reply_markup: CreateOneBtn({
@@ -239,7 +239,7 @@ async function handleCallback(ctx: MyContext) {
       },
     });
 
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: ctx.t("add-character-enter-anime"),
       reply_markup: CreateOneBtn({
@@ -286,7 +286,7 @@ async function handleCallback(ctx: MyContext) {
       },
     });
 
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: ctx.t("add-character-enter-media"),
       reply_markup: CreateOneBtn({
@@ -319,7 +319,7 @@ async function handleCallback(ctx: MyContext) {
       text: "Concluido",
       callback_data: `add-${actionType}_${cacheId}_sel_done`,
     });
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: text,
       reply_markup: keyboard,
@@ -429,7 +429,7 @@ async function handleCallback(ctx: MyContext) {
       return;
     }
     const caption = `<b>Nome:</b> ${current.nome}\n<b>Anime:</b> ${current.anime}\n<b>Origem:</b> ${current.sourceType || "ANIME"}\n<b>Raridades:</b> ${current.rarities?.join(", ") || "Nenhuma"}\n<b>Eventos:</b> ${current.events?.join(", ") || "Nenhum"}`;
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption,
       reply_markup: createButtonEditCharacter({
@@ -460,7 +460,7 @@ async function handleCallback(ctx: MyContext) {
           rarities: characterData.rarities,
           events: characterData.events,
         });
-        await EditOrSendText({
+        await editOrSendText({
           ctx,
           caption: ctx.t("edit-character-success", {
             character_id: characterData.editId,
@@ -489,11 +489,11 @@ async function handleCallback(ctx: MyContext) {
 
       if (!character_db) {
         error(  'personagem nao adicionado no db')
-        await SendMensageCustom({
+        await sendMessageCustom({
           ctx,
           caption: ctx.t("add-char-error", { error: "erro ao salvar" }),
         });
-        await EditOrSendText({
+        await editOrSendText({
           ctx,
           caption: `${characterData.nome},${characterData.anime},`,
           removeButtons: true,
@@ -502,13 +502,13 @@ async function handleCallback(ctx: MyContext) {
 
       const dbChatId = process.env.DATABASE_TELEGRAM_ID;
       if (dbChatId && actionType === "add") {
-        const caption = create_caption({
+        const caption = createCaption({
           character: character_db,
           chatType: characterData.genero,
-          addby:ctx.t("add_character_confirm", { usermention: CreateMentionUser({ Nome: ctx.from?.first_name ??'', telegramiduser: ctx.from?.id ?? 0 }) }),
+          addby:ctx.t("add_character_confirm", { usermention: createMentionUser({ Nome: ctx.from?.first_name ??'', telegramiduser: ctx.from?.id ?? 0 }) }),
           t: ctx.t,
         });
-        await SendMensageCustom({
+        await sendMessageCustom({
           ctx,
           chat_id: dbChatId,
           caption,
@@ -543,7 +543,7 @@ async function handleCallback(ctx: MyContext) {
   // ─── home ──────────────────────────────────────────────────
 
   if (action === "home") {
-    await EditOrSendText({
+    await editOrSendText({
       ctx,
       caption: `<b>Nome:</b> ${characterData.nome}\n<b>Anime:</b> ${characterData.anime}\n<b>Origem:</b> ${characterData.sourceType || "ANIME"}\n<b>Raridades:</b> ${characterData.rarities?.join(", ") || "Nenhuma"}\n<b>Eventos:</b> ${characterData.events?.join(", ") || "Nenhum"}`,
       reply_markup: createButtonEditCharacter({

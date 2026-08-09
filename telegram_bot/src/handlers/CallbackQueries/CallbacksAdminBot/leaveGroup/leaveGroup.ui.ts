@@ -1,10 +1,10 @@
 import { InlineKeyboard } from "grammy";
 import { ProfileType } from "../../../../../generated/prisma/enums.js";
 import { getLeaveGroupCache, setLeaveGroupCache } from "../../../../cache/cache.js";
-import { createButtonsLeaveMenu } from "../../../../uteis/buildButtons/createButtonsLeaveMenu.js";
-import type { MyContext } from "../../../../uteis/CustomTypes.js";
-import { onlyRoleBotAdmin } from "../../../../uteis/permissions.js";
-import { EditOrSendText } from "../../../../uteis/uteis_telegram/EditOrSendText.js";
+import { createButtonsLeaveMenu } from "../../../../utils/buildButtons/createButtonsLeaveMenu.js";
+import type { MyContext } from "../../../../utils/customTypes.js";
+import { onlyRoleBotAdmin } from "../../../../utils/permissions.js";
+import { editOrSendText } from "../../../../utils/telegram/editOrSendText.js";
 
 export async function leaveGroupHandlerUI(ctx: MyContext, targetChatId?: number) {
     await onlyRoleBotAdmin(ProfileType.SUPER_ADMIN)(ctx, async () => {
@@ -20,5 +20,5 @@ export async function leaveGroupServiceUI(ctx: MyContext, targetChatId?: number)
 
     reply_markup.text('Editar mensagem', `bot_leave_personalize.message.edit.text_${chatId}`).row()
     reply_markup.text('voltar', `bot_leave_menu.main_${chatId}`)
-    EditOrSendText({ ctx, caption: caption, reply_markup })
+    editOrSendText({ ctx, caption: caption, reply_markup })
 }

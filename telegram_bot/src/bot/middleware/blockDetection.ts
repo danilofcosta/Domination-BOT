@@ -1,5 +1,5 @@
 import type { NextFunction } from "grammy";
-import type { MyContext } from "../../uteis/CustomTypes.js";
+import type { MyContext } from "../../utils/customTypes.js";
 import { blockedUsers, blockKey } from "./blockedUsers.js";
 
 export async function blockDetection(ctx: MyContext, next: NextFunction) {

@@ -1,13 +1,13 @@
-import type { MyContext, PreCharacter } from "../../../../../uteis/CustomTypes.js";
-import { ChatType } from "../../../../../uteis/CustomTypes.js";
-import { extractMediaData } from "../../../../../uteis/uteis_telegram/extractMediaData.js";
-import { SendMensageCustom } from "../../../../../uteis/sendMensageCustom.js";
-import { create_caption } from "../../../../../uteis/buildCapion/create_caption.js";
+import type { MyContext, PreCharacter } from "../../../../../utils/customTypes.js";
+import { ChatType } from "../../../../../utils/customTypes.js";
+import { extractMediaData } from "../../../../../utils/telegram/extractMediaData.js";
+import { sendMessageCustom } from "../../../../../utils/sendMessageCustom.js";
+import { createCaption } from "../../../../../utils/buildCaption/createCaption.js";
 import { createCharacter } from "./character.service.js";
 import { EditUI } from "./edit.ui.js";
 import { setCharacter } from "../../../../../cache/cache.js";
-import { info, error } from "../../../../../uteis/log.js";
-import { CreateMentionUser } from "../../../../../uteis/uteis_telegram/CreateMentionUser.js";
+import { info, error } from "../../../../../utils/log.js";
+import { createMentionUser } from "../../../../../utils/telegram/createMentionUser.js";
 
 function parseTokens(rest: string[]) {
   const tokens = rest.join(" ").toLowerCase().split(/\s+/);
@@ -48,7 +48,7 @@ async function sendAddedNotification(
     return;
   }
 
-  const caption = create_caption({
+  const caption = createCaption({
     t: ctx.t,
     chatType: data.genero,
     character: character_db,
@@ -56,9 +56,9 @@ async function sendAddedNotification(
 
   const fullCaption = isNoautor
     ? caption
-    : caption + "\n\n" + ctx.t("add_character_confirm", { usermention: CreateMentionUser({ Nome: ctx.from?.first_name ??'', telegramiduser: ctx.from?.id ?? 0 }) });
+    : caption + "\n\n" + ctx.t("add_character_confirm", { usermention: createMentionUser({ Nome: ctx.from?.first_name ??'', telegramiduser: ctx.from?.id ?? 0 }) });
 
-  await SendMensageCustom({
+  await sendMessageCustom({
     ctx,
     chat_id: chatId,
     caption: fullCaption,
@@ -95,7 +95,7 @@ async function addCharacterDirect(
   }
 }
 
-export async function AddCharacterHandler(ctx: MyContext) {
+export async function addCharacterHandler(ctx: MyContext) {
   try {
     let textCommand: string | undefined;
     let reply = ctx.message?.reply_to_message;
@@ -172,7 +172,7 @@ export async function AddCharacterHandler(ctx: MyContext) {
     setCharacter(cacheId, charData);
     await EditUI(ctx, charData, cacheId);
   } catch (e) {
-    error("AddCharacterHandler - erro", e);
+    error("addCharacterHandler - erro", e);
     await ctx.reply(ctx.t("add-char-error", { error: "erro interno" }));
   }
 }

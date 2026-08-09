@@ -1,10 +1,10 @@
 import { MediaType } from "../../../../generated/prisma/client.js";
 import { prisma } from "../../../lib/prisma.js";
-import { CreateOneBtn } from "../../../uteis/buildButtons/createOneButton.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, info } from "../../../uteis/log.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
+import { CreateOneBtn } from "../../../utils/buildButtons/createOneButton.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, info } from "../../../utils/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
 
 function buildProgressBar(ratio: number, maxBlocks = 10) {
   const filled = Math.round(Math.min(ratio, 1) * maxBlocks);
@@ -23,7 +23,7 @@ export async function Myinfos(ctx: MyContext) {
   });
 
   if (!user) {
-    return SendMensageCustom({
+    return sendMessageCustom({
       ctx,
       caption: ctx.t("error-not-registered"),
     });
@@ -43,7 +43,7 @@ export async function Myinfos(ctx: MyContext) {
   const text = [
     ctx.t("myinfo-title"),
     ctx.t("myinfo-user", {
-      name: CreateMentionUser({
+      name: createMentionUser({
         Nome: ctx.from!.first_name,
         telegramiduser: ctx.from!.id,
       }),
@@ -65,7 +65,7 @@ export async function Myinfos(ctx: MyContext) {
 
   const bestPhoto = photos?.photos?.[0]?.at(-1)?.file_id;
 
-  const msg = await SendMensageCustom({
+  const msg = await sendMessageCustom({
     ctx,
     reply_markup:CreateOneBtn({text:ctx.t("harem_btn_close"),callback:`harem_user_${ctx.from!.id}_close`}),
     caption: text,

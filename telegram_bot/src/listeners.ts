@@ -1,28 +1,28 @@
 import { Composer } from "grammy";
-import type { MyContext } from "./uteis/CustomTypes.js";
-import { CountMessages } from "./handlers/listeners/message_counter.js";
-import { haremInlineQuery } from "./handlers/InlineQuerys/inlines/harem_inline_query.js";
+import type { MyContext } from "./utils/customTypes.js";
+import { countMessages } from "./handlers/listeners/messageCounter.js";
+import { haremInlineQuery } from "./handlers/InlineQueries/inlines/haremInlineQuery.js";
 import {
   getCharacters,
-  getCharactersall,
-  QueryCharacet,
-} from "./handlers/InlineQuerys/global/inline_query.js";
-import { animeInlineQuery } from "./handlers/InlineQuerys/global/anime_inline_query.js";
-import { Gift_Inline_query } from "./handlers/InlineQuerys/inlines/gift_iniline_query.js";
-import { Fav_Inline_query } from "./handlers/InlineQuerys/inlines/fav_iniline_query.js";
-import { searchHarem } from "./handlers/InlineQuerys/inlines/search_haren.js";
-import { inline_per } from "./handlers/InlineQuerys/global/inline_by_id.js";
+  getAllCharacters,
+  queryCharacter,
+} from "./handlers/InlineQueries/global/inlineQuery.js";
+import { animeInlineQuery } from "./handlers/InlineQueries/global/animeInlineQuery.js";
+import { giftInlineQuery } from "./handlers/InlineQueries/inlines/giftInlineQuery.js";
+import { favInlineQuery } from "./handlers/InlineQueries/inlines/favInlineQuery.js";
+import { searchHarem } from "./handlers/InlineQueries/inlines/searchHarem.js";
+import { inlineById } from "./handlers/InlineQueries/global/inlineById.js";
 import { getCharList } from "./cache/cache.js";
-import { ChatType } from "./uteis/CustomTypes.js";
+import { ChatType } from "./utils/customTypes.js";
 
 import { getListener, clearListener } from "./cache/listenerStore.js";
-import { debug, error, info } from "./uteis/log.js";
-import { TradeInlineQuery } from "./handlers/InlineQuerys/inlines/tradeInlineQuery.js";
+import { debug, error, info } from "./utils/log.js";
+import { TradeInlineQuery } from "./handlers/InlineQueries/inlines/tradeInlineQuery.js";
 
 const listeners = new Composer<MyContext>();
 
 listeners.on("message", async (ctx, next) => {
-  console.log(`mensagem recebida :${ctx.chat?.type} ${ctx.from?.id}`)
+  debug(`mensagem recebida :${ctx.chat?.type} ${ctx.from?.id}`)
   const userId = ctx.from?.id;
   const chatId = ctx.chat?.id;
   if (!userId || !chatId) {
@@ -39,12 +39,12 @@ listeners.on("message", async (ctx, next) => {
 
   // await next();
 if (["group", "supergroup"].includes(ctx.chat.type)) {
-  return await CountMessages(ctx);
+  return await countMessages(ctx);
 }
 });
 // listeners
 //   .chatType(["group", "supergroup"])
-//   .on("message", CountMessages);
+//   .on("message", countMessages);
 const userLatestQuery = new Map<number, string>();
 
 setInterval(() => {
@@ -92,11 +92,11 @@ listeners.on("inline_query", async (ctx) => {
     }
 
     if (query.startsWith("select_gift_to_")) {
-      return await Gift_Inline_query(ctx);
+      return await giftInlineQuery(ctx);
     }
 
     if (query.startsWith("select_my_fav")) {
-      return await Fav_Inline_query(ctx);
+      return await favInlineQuery(ctx);
     }
 
     if (firstPart === "harem" && queryParts[1] === "user") {
@@ -113,7 +113,7 @@ listeners.on("inline_query", async (ctx) => {
 
       const charListData = getCharList(targetUserId, genero);
       if (!charListData) return;
-      return await inline_per(ctx, charListData);
+      return await inlineById(ctx, charListData);
     }
 
     if (query.startsWith("my:")) {
@@ -130,11 +130,11 @@ listeners.on("inline_query", async (ctx) => {
     }
 
     if (query === "") {
-      await getCharactersall(ctx);
+      await getAllCharacters(ctx);
       return;
     }
 
-    await QueryCharacet(ctx);
+    await queryCharacter(ctx);
     return;
   };
 
@@ -157,7 +157,7 @@ listeners.on("inline_query", async (ctx) => {
     }
   } finally {
     const duration = Date.now() - start;
-    info(`Inline query [${query}] do usuario ${userId}  levou ${duration}ms`);
+    debug(`Inline query [${query}] do usuario ${userId}  levou ${duration}ms`);
   }
 });
 

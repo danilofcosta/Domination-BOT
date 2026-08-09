@@ -1,15 +1,15 @@
 import "dotenv/config";
 
-import { ChatType } from "./uteis/CustomTypes.js";
+import { ChatType } from "./utils/customTypes.js";
 import initializeBot from "./initializeBot.js";
-import { RunPolling } from "./index_Polling.js";
-import { checkBotToken } from "./uteis/checkBot.js";
-import { fatal } from "./uteis/log.js";
-import { Environment_validation } from "./bot/testes/environment_validation.js";
+import { RunPolling } from "./indexPolling.js";
+import { checkBotToken } from "./utils/checkBot.js";
+import { fatal } from "./utils/log.js";
+import { environmentValidation } from "./bot/tests/environmentValidation.js";
 import { startInvalidationSubscriber } from "./cache/invalidationSubscriber.js";
 
 const start = async () => {
-  await Environment_validation()
+  await environmentValidation()
   const type =
     process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU
       ? ChatType.WAIFU

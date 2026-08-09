@@ -2,7 +2,7 @@ import { prisma } from "../lib/prisma.js";
 import { getOrSet, permissionCache } from "../cache/cache.js";
 import { error } from "./log.js";
 import { ProfileType } from "../../generated/prisma/client.js";
-import type { MyContext } from "./CustomTypes.js";
+import type { MyContext } from "./customTypes.js";
 
 export const roleWeights: Record<ProfileType, number> = {
   [ProfileType.BANNED]: -1,
@@ -43,4 +43,19 @@ export function onlyRoleBotAdmin(minPermission: ProfileType) {
 export async function isUserBanned(userId: number): Promise<boolean> {
   const role = await getUserRole(userId);
   return roleWeights[role] === roleWeights[ProfileType.BANNED];
+}
+
+export async function isGroupAdmin(
+  ctx: MyContext,
+  userId: number,
+  chatId?: number,
+): Promise<boolean> {
+  const targetChatId = chatId ?? ctx.chat?.id;
+  if (!targetChatId) return false;
+  try {
+    const admins = await ctx.api.getChatAdministrators(targetChatId);
+    return admins.some((m) => m.user.id === userId && !m.user.is_bot);
+  } catch {
+    return false;
+  }
 }

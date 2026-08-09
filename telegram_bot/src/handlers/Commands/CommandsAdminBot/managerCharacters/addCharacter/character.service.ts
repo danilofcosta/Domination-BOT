@@ -1,5 +1,17 @@
 import { prisma } from "../../../../../lib/prisma.js";
-import { ChatType } from "../../../../../uteis/CustomTypes.js";
+import { Prisma } from "../../../../../../generated/prisma/client.js";
+import { ChatType } from "../../../../../utils/customTypes.js";
+
+const CHARACTER_TABLE_BY_GENERO: Record<ChatType, string> = {
+  [ChatType.HUSBANDO]: "CharacterHusbando",
+  [ChatType.WAIFU]: "CharacterWaifu",
+};
+
+function characterTable(genero: ChatType): string {
+  const table = CHARACTER_TABLE_BY_GENERO[genero];
+  if (!table) throw new Error(`Invalid genero: ${genero}`);
+  return table;
+}
 
 export type UpdateCharacterData = {
   id: number;
@@ -41,8 +53,8 @@ function generateSlug(name: string, origem: string): string {
 export async function createCharacter(data: CreateCharacterData) {
   const slug = generateSlug(data.nome, data.anime);
 
-  const nextIdResult = await prisma.$queryRawUnsafe<{ next_id: number }[]>(
-    `SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM "${data.genero === ChatType.HUSBANDO ? "CharacterHusbando" : "CharacterWaifu"}"`,
+  const nextIdResult = await prisma.$queryRaw<{ next_id: number }[]>(
+    Prisma.sql`SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM ${Prisma.raw(`"${characterTable(data.genero)}"`)}`,
   );
   const nextId = nextIdResult[0]?.next_id ?? 1;
 

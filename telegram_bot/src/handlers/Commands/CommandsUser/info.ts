@@ -1,13 +1,13 @@
 import { prisma } from "../../../lib/prisma.js";
-import { ChatType, type MyContext } from "../../../uteis/CustomTypes.js";
-import { error, info } from "../../../uteis/log.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
-import { Extract_id_user } from "../../../uteis/uteis_telegram/extract_id_user.js";
+import { ChatType, type MyContext } from "../../../utils/customTypes.js";
+import { error, info } from "../../../utils/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { extractUserId } from "../../../utils/telegram/extractUserId.js";
 
 export async function InfoHandler(ctx: MyContext) {
   try {
-    const mentionedUser = await Extract_id_user(ctx);
+    const mentionedUser = await extractUserId(ctx);
     const targetId = mentionedUser?.id ?? ctx.from?.id ?? 0;
 
     const isHusbando = ctx.botType === ChatType.HUSBANDO;
@@ -56,7 +56,7 @@ export async function InfoHandler(ctx: MyContext) {
     const text = [
       ctx.t("info_id", { id: String(targetId) }),
       ctx.t("info_name", {
-        user: CreateMentionUser({ Nome: firstName, telegramiduser: targetId }),
+        user: createMentionUser({ Nome: firstName, telegramiduser: targetId }),
       }),
       ctx.t("info_username", { username: username ? `@${username}` : "—" }),
       ctx.t("info_status", { status: profileType }),
@@ -73,10 +73,10 @@ export async function InfoHandler(ctx: MyContext) {
       targetId,
     });
 
-    await SendMensageCustom({ ctx, caption: text });
+    await sendMessageCustom({ ctx, caption: text });
   } catch (e) {
     error("InfoHandler - erro ao exibir info", e);
-    await SendMensageCustom({
+    await sendMessageCustom({
       ctx,
       caption: ctx.t("info_error", { error: "erro interno" }),
     });

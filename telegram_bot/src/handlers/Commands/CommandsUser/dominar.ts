@@ -2,23 +2,23 @@ import {
   ChatType,
   type Character,
   type MyContext,
-} from "../../../uteis/CustomTypes.js";
-import { BTN_TYPE } from "../../../uteis/buildButtons/createOneButton.js";
-import { LinkMsg } from "../../../uteis/uteis_telegram/LinkMsg.js";
-import { AddCharacterCollection } from "../../../uteis/extras/AddCharacterCollection.js";
-import { extractListEmojisCharacter } from "../../../uteis/buildCapion/extract_emojis.js";
-import { info, error, debug, warn } from "../../../uteis/log.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
+} from "../../../utils/customTypes.js";
+import { BTN_TYPE } from "../../../utils/buildButtons/createOneButton.js";
+import { linkMsg } from "../../../utils/telegram/linkMsg.js";
+import { addCharacterCollection } from "../../../utils/extras/addCharacterCollection.js";
+import { extractListEmojisCharacter } from "../../../utils/buildCaption/extractEmojis.js";
+import { info, error, debug, warn } from "../../../utils/log.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
 import {
   CreateOneBtn,
   type CreateOneBtnOptions,
-} from "../../../uteis/buildButtons/createOneButton.js";
+} from "../../../utils/buildButtons/createOneButton.js";
 import { getRuntime } from "../../../runtime/groupRuntime.js";
-import { GetCharacterById } from "../../../uteis/extras/GetCharacterById.js";
+import { getCharacterById } from "../../../utils/extras/getCharacterById.js";
 import { checkDailyLimit, getDailyCount } from "../../../cache/redis.js";
 import { getDropConfig } from "../../../cache/dropConfig.js";
 import { DAILY_LIMIT } from "../../../bot/middleware/constants.js";
-import { CreateMentionUser } from "../../../uteis/uteis_telegram/CreateMentionUser.js";
+import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = [
@@ -85,7 +85,7 @@ function successDominarMessage(
 ) {
   if (!collection || !character) return ctx.t("success-dominar-fallback");
   const success_dominar_title = ctx.t("success_dominar_title", {
-    usermention: CreateMentionUser({
+    usermention: createMentionUser({
       Nome: ctx.from?.first_name || "user",
       telegramiduser: ctx.from?.id || 0,
     }),
@@ -168,7 +168,7 @@ function acquireLock(runtime: any, userId: number, now: number): boolean {
 }
 
 export async function CapturarCharacter(ctx: MyContext) {
-  // return SendMensageCustom({
+  // return sendMessageCustom({
   //   ctx,
   //   caption: "Dominação de persogem temporariamente desativada :(",
   // });
@@ -176,7 +176,7 @@ export async function CapturarCharacter(ctx: MyContext) {
   if (!ctx.chat?.id) return;
   const runtime = getRuntime(ctx.chat.id);
   const character = runtime.characterId
-    ? await GetCharacterById(ctx.botType, runtime.characterId)
+    ? await getCharacterById(ctx.botType, runtime.characterId)
     : null;
   const type = ctx.botType;
   const userId = Number(ctx.from?.id);
@@ -184,7 +184,7 @@ export async function CapturarCharacter(ctx: MyContext) {
   info(`CapturarCharacter - tentativa: "${tentativa}"`, {
     userId,
     chatId: ctx.chat?.id,
-    usermention: CreateMentionUser({
+    usermention: createMentionUser({
       Nome: ctx.from?.first_name || "user",
       telegramiduser: ctx.from?.id || 0,
     }),
@@ -213,12 +213,20 @@ export async function CapturarCharacter(ctx: MyContext) {
       });
       if (character && !tentativa) {
         try {
-          await SendMensageCustom({
+          const msg = await sendMessageCustom({
             ctx,
             caption: ctx.t("drop_character_attempt_empty", {
               genero: type === ChatType.WAIFU ? "waifu" : "husbando",
             }),
           });
+          setTimeout(() => {
+            ctx.api.deleteMessage(ctx.chat!.id, msg.message_id).catch((e) => {
+              warn(`Falha ao deletar mensagem`, {
+                msgId: msg.message_id,
+                error: e,
+              });
+            });
+          }, 10000);
         } catch (e) {
           error("Erro ao enviar mensagem de nome vazio", e);
         }
@@ -232,10 +240,10 @@ export async function CapturarCharacter(ctx: MyContext) {
         userId,
       });
 
-      const url = LinkMsg(Number(ctx.chat?.id), Number(runtime.dropId));
+      const url = linkMsg(Number(ctx.chat?.id), Number(runtime.dropId));
 
       try {
-        const msg = await SendMensageCustom({
+        const msg = await sendMessageCustom({
           ctx,
           caption: ctx.t("drop_character_attempt_incorrect"),
           reply_markup: CreateOneBtn({
@@ -265,7 +273,7 @@ export async function CapturarCharacter(ctx: MyContext) {
     if (!withinLimit) {
       warn(`CapturarCharacter - limite diário atingido`, { userId });
       try {
-        await SendMensageCustom({
+        await sendMessageCustom({
           ctx,
           caption: ctx.t("daily_dominar_limit", {
             genero: type === ChatType.WAIFU ? "waifu" : "husbando",
@@ -287,7 +295,7 @@ export async function CapturarCharacter(ctx: MyContext) {
       characterName: character.name,
     });
 
-    const character_collection: any | null = await AddCharacterCollection({
+    const character_collection: any | null = await addCharacterCollection({
       type,
       userId,
       from: ctx.from || {},
@@ -296,11 +304,11 @@ export async function CapturarCharacter(ctx: MyContext) {
     });
 
     if (!character_collection) {
-      error(`AddCharacterCollection retornou null`, {
+      error(`addCharacterCollection retornou null`, {
         userId,
         characterId: character.id,
       });
-      return SendMensageCustom({
+      return sendMessageCustom({
         ctx,
         caption: ctx.t("error_adding_character"),
       });
@@ -330,7 +338,7 @@ export async function CapturarCharacter(ctx: MyContext) {
     });
 
     try {
-      await SendMensageCustom({
+      await sendMessageCustom({
         ctx,
         caption: successDominarMessageResult,
         reply_markup: CreateOneBtn({

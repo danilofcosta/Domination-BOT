@@ -1,9 +1,9 @@
 import { InlineKeyboard } from "grammy";
-import type { MyContext } from "../../../uteis/CustomTypes.js";
-import { createResult } from "../uteis/create_inline_result.js";
-import { showResults } from "../uteis/show_results_inline.js";
-import { getHaremCollection, LIMIT } from "./harem_inline_query.js";
-import { debug, error } from "../../../uteis/log.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { createInlineResult } from "../utils/createInlineResult.js";
+import { showResultsInline } from "../utils/showResultsInline.js";
+import { getHaremCollection, LIMIT } from "./haremInlineQuery.js";
+import { debug, error } from "../../../utils/log.js";
 import { getTradeSession, updateTradeSession } from "../../../cache/tradeCache.js";
 
 
@@ -63,7 +63,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
                 const btn = new InlineKeyboard();
                 btn.text(ctx.t("trade_btn_confirm_trade"), `trade_execute_${tradeKey}`);
 
-                return createResult({
+                return createInlineResult({
                     t: ctx.t,
                     character: item,
                     chatType: genero,
@@ -72,7 +72,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
                 });
             });
 
-            await showResults({
+            await showResultsInline({
                 ctx,
                 results,
                 next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
@@ -97,7 +97,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
             ).row();
             btn.text(ctx.t("trade_btn_my_label_cancel"), 'trade_btn_cancel');
 
-            return createResult({
+            return createInlineResult({
                 t: ctx.t,
                 character: item,
                 chatType: genero,
@@ -106,7 +106,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
             });
         });
 
-        await showResults({
+        await showResultsInline({
             ctx,
             results,
             next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
@@ -137,7 +137,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
                 btn.text(ctx.t("trade_btn_confirm_trade"), `trade_execute_${tradeKey}`);
                 btn.text(ctx.t("trade_btn_my_label_cancel"), `trade_cancel_${tradeKey}`);
 
-                return createResult({
+                return createInlineResult({
                     t: ctx.t,
                     character: item,
                     chatType: genero,
@@ -146,7 +146,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
                 });
             });
 
-            await showResults({
+            await showResultsInline({
                 ctx,
                 results,
                 next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",
@@ -171,7 +171,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
             ).row();
             btn.text(ctx.t("trade_btn_my_label_cancel"), 'trade_btn_cancel');
 
-            return createResult({
+            return createInlineResult({
                 t: ctx.t,
                 character: item,
                 chatType: genero,
@@ -180,7 +180,7 @@ export async function TradeInlineQuery(ctx: MyContext) {
             });
         });
 
-        await showResults({
+        await showResultsInline({
             ctx,
             results,
             next_offset: offset + LIMIT < total ? String(offset + LIMIT) : "",

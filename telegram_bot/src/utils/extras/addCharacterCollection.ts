@@ -1,8 +1,12 @@
 import { prisma } from "../../lib/prisma.js";
-import { ChatType } from "../CustomTypes.js";
-import type { Collection } from "../CustomTypes.js";
-import type { Prisma } from "../../../generated/prisma/client.js";
+import { ChatType, type Collection } from "../customTypes.js";
+import { Prisma } from "../../../generated/prisma/client.js";
 import { info, error, debug } from "../log.js";
+
+const COLLECTION_TABLE_BY_GENERO = {
+  [ChatType.WAIFU]: "WaifuCollection",
+  [ChatType.HUSBANDO]: "HusbandoCollection",
+} as const;
 // Adiciona um personagem à coleção do usuário, garantindo que o usuário exista e lidando com possíveis conflitos de chave primária.
 interface AddCharacterCollectionForm {
   type: ChatType;
@@ -21,34 +25,28 @@ async function upsertCollectionAtomic(
   fromIdChat: number | bigint,
  
 ) {
-  const table = isWaifu ? "WaifuCollection" : "HusbandoCollection";
-  const seq = `"${table}_id_seq"`;
+  const table = COLLECTION_TABLE_BY_GENERO[isWaifu ? ChatType.WAIFU : ChatType.HUSBANDO];
+  const quotedTable = Prisma.raw(`"${table}"`);
+  const seq = `${table}_id_seq`;
 
   try {
-    await tx.$executeRawUnsafe(
-      `INSERT INTO "${table}" ("userId", "characterId", "count", "fromIdChat", "createdAt", "updatedAt")
-       VALUES ($1, $2, 1, $3, NOW(), NOW())
+    await tx.$executeRaw(
+      Prisma.sql`INSERT INTO ${quotedTable} ("userId", "characterId", "count", "fromIdChat", "createdAt", "updatedAt")
+       VALUES (${Number(telegramId)}, ${characterId}, 1, ${fromIdChat}, NOW(), NOW())
        ON CONFLICT ("userId", "characterId")
-       DO UPDATE SET "count" = "${table}"."count" + 1, "updatedAt" = NOW()`,
-      Number(telegramId),
-      characterId,
-      fromIdChat,
+       DO UPDATE SET "count" = ${quotedTable}."count" + 1, "updatedAt" = NOW()`,
     );
   } catch (e: unknown) {
     const isPkey = /_pkey/i.test(String((e as any)?.message ?? ""));
     if (isPkey) {
-      await tx.$executeRawUnsafe(
-        `SELECT setval($1, (SELECT COALESCE(MAX("id"), 0) + 1 FROM "${table}"), false)`,
-        seq,
+      await tx.$executeRaw(
+        Prisma.sql`SELECT setval(${seq}, (SELECT COALESCE(MAX("id"), 0) + 1 FROM ${quotedTable}), false)`,
       );
-      await tx.$executeRawUnsafe(
-        `INSERT INTO "${table}" ("userId", "characterId", "count", "fromIdChat", "createdAt", "updatedAt")
-         VALUES ($1, $2, 1, $3, NOW(), NOW())
+      await tx.$executeRaw(
+        Prisma.sql`INSERT INTO ${quotedTable} ("userId", "characterId", "count", "fromIdChat", "createdAt", "updatedAt")
+         VALUES (${Number(telegramId)}, ${characterId}, 1, ${fromIdChat}, NOW(), NOW())
          ON CONFLICT ("userId", "characterId")
-         DO UPDATE SET "count" = "${table}"."count" + 1, "updatedAt" = NOW()`,
-        Number(telegramId),
-        characterId,
-        fromIdChat,
+         DO UPDATE SET "count" = ${quotedTable}."count" + 1, "updatedAt" = NOW()`,
       );
     } else {
       throw e;
@@ -64,7 +62,7 @@ async function upsertCollectionAtomic(
       });
 }
 
-export async function AddCharacterCollection({
+export async function addCharacterCollection({
   type,
   userId,
   from,
@@ -78,7 +76,7 @@ export async function AddCharacterCollection({
   const isWaifu = type === ChatType.WAIFU;
   const telegramId = BigInt(userId);
 
-  info("AddCharacterCollection", {
+  info("addCharacterCollection", {
     telegramId: telegramId.toString(),
     characterId,
     isWaifu,
@@ -125,7 +123,7 @@ export async function AddCharacterCollection({
       return upsertCollectionAtomic(tx, isWaifu, telegramId, characterId, fromIdChat);
     });
 
-    debug("AddCharacterCollection OK", {
+    debug("addCharacterCollection OK", {
       telegramId: telegramId.toString(),
       characterId,
       count: result.count,
@@ -133,7 +131,7 @@ export async function AddCharacterCollection({
 
     return result;
   } catch (e) {
-    error("AddCharacterCollection ERROR", e);
+    error("addCharacterCollection ERROR", e);
     return null;
   }
 }

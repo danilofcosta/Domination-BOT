@@ -1,9 +1,9 @@
-import type { MyContext } from "../../../uteis/CustomTypes.js";
-import { RandomCharacter } from "../../../uteis/extras/randomCharacter.js";
-import { SendMensageCustom } from "../../../uteis/sendMensageCustom.js";
-import { create_caption } from "../../../uteis/buildCapion/create_caption.js";
-import { error, info, warn } from "../../../uteis/log.js";
-import { GetCharacterById } from "../../../uteis/extras/GetCharacterById.js";
+import type { MyContext } from "../../../utils/customTypes.js";
+import { randomCharacter } from "../../../utils/extras/randomCharacter.js";
+import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { createCaption } from "../../../utils/buildCaption/createCaption.js";
+import { error, info, warn } from "../../../utils/log.js";
+import { getCharacterById } from "../../../utils/extras/getCharacterById.js";
 
 export async function RandomCharacterHandler(ctx: MyContext) {
   try {
@@ -17,34 +17,34 @@ export async function RandomCharacterHandler(ctx: MyContext) {
           id,
           noCache,
         });
-        const character = await GetCharacterById(ctx.botType, id, !noCache);
+        const character = await getCharacterById(ctx.botType, id, !noCache);
         if (character) {
-          const caption = create_caption({
+          const caption = createCaption({
             t: ctx.t,
             character,
             chatType: ctx.botType,
           });
-          return SendMensageCustom({ ctx, character, caption });
+          return sendMessageCustom({ ctx, character, caption });
         }
         warn("RandomCharacterHandler - personagem não encontrado", { id });
-        return SendMensageCustom({ ctx, caption: ctx.t("error-character-not-found") });
+        return sendMessageCustom({ ctx, caption: ctx.t("error-character-not-found") });
       }
     }
 
-    const character = await RandomCharacter(ctx);
+    const character = await randomCharacter(ctx);
     if (!character) {
       warn("RandomCharacterHandler - nenhum personagem encontrado");
       await ctx.reply(ctx.t("error-character-not-found"));
       return;
     }
 
-    const capiton = create_caption({
+    const capiton = createCaption({
       t: ctx.t,
       character,
       chatType: ctx.botType,
     });
 
-    await SendMensageCustom({ ctx, character, caption: capiton });
+    await sendMessageCustom({ ctx, character, caption: capiton });
   } catch (e) {
     error("RandomCharacterHandler - erro geral", e);
     await ctx.reply(ctx.t("error-character-not-found"));

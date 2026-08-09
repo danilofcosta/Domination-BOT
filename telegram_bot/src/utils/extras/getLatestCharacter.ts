@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { ChatType } from "../CustomTypes.js";
+import { ChatType } from "../customTypes.js";
 
 export async function getLatestCharacter(botType: ChatType) {
   return botType === ChatType.HUSBANDO
