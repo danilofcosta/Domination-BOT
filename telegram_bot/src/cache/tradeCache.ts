@@ -35,3 +35,7 @@ export function updateTradeSession(key: string, partial: Partial<TradeSession>):
 export function deleteTradeSession(key: string): void {
     tradeCache.delete(key);
 }
+
+export function clearTradeCache(): void {
+    tradeCache.clear();
+}

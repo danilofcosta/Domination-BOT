@@ -15,6 +15,10 @@ import { extractNumbers } from "../../../uteis/remove num.js";
 
 const giftCache = new Map<string, number[]>();
 
+export function clearGiftCache(): void {
+  giftCache.clear();
+}
+
 export async function GiftHandler(ctx: MyContext) {
   const mentionedUser = await Extract_id_user(ctx);
 

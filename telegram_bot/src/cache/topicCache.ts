@@ -12,3 +12,7 @@ export function getCachedTopic(chatId: number): number | undefined {
 export function setCachedTopic(chatId: number, topicId: number): void {
   topicCache.set(chatId, topicId);
 }
+
+export function clearTopicCache(): void {
+  topicCache.clear();
+}

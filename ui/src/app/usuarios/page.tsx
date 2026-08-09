@@ -101,7 +101,7 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
   if (search) {
     const all = await prisma.telegramUser.findMany({
       where: where as any,
-      orderBy: { id: "asc" },
+      orderBy: { id: "desc" },
       select: userSelect,
     });
     const filtered = all.filter((u) => {
@@ -123,7 +123,7 @@ export default async function UsuariosPage({ searchParams }: UserSearchParams) {
     [users, total] = await Promise.all([
       prisma.telegramUser.findMany({
         where: where as any,
-        orderBy: { id: "asc" },
+        orderBy: { id: "desc" },
         skip: (page - 1) * perPage,
         take: perPage,
         select: userSelect,

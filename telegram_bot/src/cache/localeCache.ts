@@ -12,3 +12,7 @@ export function getCachedLocale(scopeId: number): string | undefined {
 export function setCachedLocale(scopeId: number, locale: string): void {
   localeCache.set(scopeId, locale);
 }
+
+export function clearLocaleCache(): void {
+  localeCache.clear();
+}

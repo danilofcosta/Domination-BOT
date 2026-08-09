@@ -111,3 +111,15 @@ export function setHarem(userId: number, data: HaremCacheData | null) {
 export function getHarem(userId: number): HaremCacheData | undefined {
   return haremStore.get(userId);
 }
+
+export function clearAllCaches() {
+  rankingCache.clear();
+  permissionCache.clear();
+  maxIdCache.clear();
+  characterCache.clear();
+  rarityCache.clear();
+  eventCache.clear();
+  charListCache.clear();
+  leaveGroupStore.clear();
+  haremStore.clear();
+}

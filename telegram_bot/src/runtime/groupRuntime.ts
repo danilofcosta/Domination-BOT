@@ -17,6 +17,10 @@ export function getRuntime(chatId: number): RuntimeDropState {
   return runtime;
 }
 
+export function clearRuntimeDrops(): void {
+  runtimeDrops.clear();
+}
+
 setInterval(() => {
   const now = Date.now();
   for (const [chatId, runtime] of runtimeDrops.entries()) {

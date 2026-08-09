@@ -37,3 +37,11 @@ export function getListener(userId: number, chatId: number): StoredListener | un
 export function clearListener(userId: number, chatId: number): void {
   listenerMap.delete(key(userId, chatId));
 }
+
+export function clearAllListeners(): void {
+  listenerMap.clear();
+  for (const timer of listenerTimers.values()) {
+    clearTimeout(timer);
+  }
+  listenerTimers.clear();
+}

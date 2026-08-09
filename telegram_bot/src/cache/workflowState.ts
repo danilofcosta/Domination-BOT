@@ -94,3 +94,10 @@ export function setBackupState(userId: number, state: BackupState): void {
 export function clearBackupState(userId: number): void {
   backupStateMap.delete(userId);
 }
+
+export function clearAllWorkflowState(): void {
+  adminSetupMap.clear();
+  rarityEditMap.clear();
+  eventEditMap.clear();
+  backupStateMap.clear();
+}

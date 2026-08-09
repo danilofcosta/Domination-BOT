@@ -2,6 +2,7 @@ import { prisma } from "../../../../lib/prisma.js";
 import type { MyContext } from "../../../../uteis/CustomTypes.js";
 import { ProfileType } from "../../../../../generated/prisma/client.js";
 import { permissionCache } from "../../../../cache/cache.js";
+import { clearAllBotCaches } from "../../../../cache/clearAll.js";
 import { info, error } from "../../../../uteis/log.js";
 
 export async function reload(ctx: MyContext) {
@@ -60,6 +61,8 @@ export async function reload(ctx: MyContext) {
     for (const user of existingUsers) {
       permissionCache.delete(String(user.telegramId));
     }
+
+    await clearAllBotCaches();
 
     if (count === 0) {
       await ctx.reply(ctx.t("reload_no_users"));

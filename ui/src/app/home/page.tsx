@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getTelegramName } from "@/lib/telegram";
+import { getTelegramName, getTelegramInfo } from "@/lib/telegram";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { RefreshButton } from "@/components/refresh-button";
 import { DashboardCharts } from "@/components/dashboard-charts";
@@ -236,8 +236,30 @@ export default async function Home() {
     userCols.set(key, (userCols.get(key) ?? 0) + (row._sum.count ?? 0));
   }
 
+  const topUserIds = [...userCols.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([id]) => BigInt(id));
+
+  const topTelegramUsers = await prisma.telegramUser.findMany({
+    where: { telegramId: { in: topUserIds } },
+    select: { telegramId: true, telegramData: true },
+  });
+
+  const userLabelById = new Map<string, string>();
+  for (const tu of topTelegramUsers) {
+    const { username } = getTelegramInfo(tu.telegramData);
+    const label = username
+      ? `@${username}`
+      : getTelegramName(tu.telegramData);
+    userLabelById.set(String(tu.telegramId), label);
+  }
+
   const topUsersData = [...userCols.entries()]
-    .map(([id, value]) => ({ label: `#${id}`, value }))
+    .map(([id, value]) => ({
+      label: userLabelById.get(id) ?? `#${id}`,
+      value,
+    }))
     .sort((a, b) => b.value - a.value)
     .slice(0, 8);
 
@@ -412,6 +434,9 @@ export default async function Home() {
                   <span className="text-muted-foreground shrink-0 text-[11px]">
                     {timeAgo(a.updatedAt)}
                   </span>
+                </div>
+                <div className="text-muted-foreground mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+                  <span>Modificado: {a.updatedAt.toLocaleString("pt-BR")}</span>
                 </div>
                 {"extra" in a && a.extra && (
                   <p className="text-muted-foreground mt-1 text-[11px]">

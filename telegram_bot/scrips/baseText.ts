@@ -2158,6 +2158,28 @@ Agora resta apenas olhar para o vazio e lembrar: o verdadeiro farm foram os amig
     },
   },
   {
+    key: "clearcache_success",
+    description: null,
+    localeTraslation: {
+      value: "✅ Cache do bot limpo com sucesso.",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: null,
+    },
+  },
+  {
+    key: "clearcache_error",
+    description: null,
+    localeTraslation: {
+      value: "❌ Erro ao limpar o cache: ${error}",
+      isButton: null,
+      ButtonSetting: null,
+      locale: { lang: "pt", icon: "🇧🇷" },
+      extrakey: [{ key: "error", description: null }],
+    },
+  },
+  {
     key: "ban_reply_instruction",
     description: null,
     localeTraslation: {

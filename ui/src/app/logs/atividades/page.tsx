@@ -28,7 +28,18 @@ export default async function AtividadesPage({ searchParams }: SearchParams) {
 
   const [allGroups, allWaifus, allHusbandos, allHusbandoCollections, allWaifuCollections] =
     await Promise.all([
-      prisma.telegramGroup.findMany({ orderBy: { updatedAt: "desc" } }),
+      prisma.telegramGroup.findMany({
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true,
+          groupId: true,
+          groupName: true,
+          configuration: true,
+          addedBy: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
       prisma.characterWaifu.findMany({
         orderBy: { updatedAt: "desc" },
         include: {
@@ -210,7 +221,20 @@ function ActivityRow({
   const { type, data, updatedAt } = activity;
 
   if (type === "group") {
-    const g = data as { id: number; groupId: bigint; groupName: string };
+    const g = data as {
+      id: number;
+      groupId: bigint;
+      groupName: string;
+      configuration: unknown;
+      addedBy: unknown;
+      createdAt: Date;
+    };
+    const config = (g.configuration as Record<string, unknown>) ?? {};
+    const addedBy = (g.addedBy as Record<string, unknown>) ?? null;
+    const addedByName =
+      addedBy?.first_name || addedBy?.username || addedBy?.Nome
+        ? String(addedBy?.first_name || addedBy?.username || addedBy?.Nome)
+        : "—";
     return (
       <Card size="sm">
         <CardContent className="flex items-start gap-3 py-3">
@@ -219,9 +243,21 @@ function ActivityRow({
           </Badge>
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium text-sm">{g.groupName}</p>
-            <p className="text-muted-foreground text-[11px]">
-              ID: {g.id} &middot; Group ID: {String(g.groupId)}
-            </p>
+            <div className="text-muted-foreground mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+              <span>ID: {g.id}</span>
+              <span>Group ID: {String(g.groupId)}</span>
+              <span>Criado: {g.createdAt.toLocaleString("pt-BR")}</span>
+              <span>Modificado: {updatedAt.toLocaleString("pt-BR")}</span>
+              <span>Adicionado por: {addedByName}</span>
+              <span>Chaves de config: {Object.keys(config).length}</span>
+            </div>
+            {Object.keys(config).length > 0 && (
+              <p className="text-muted-foreground mt-1 truncate text-[10px]">
+                {Object.entries(config)
+                  .map(([k, v]) => `${k}=${typeof v === "object" ? JSON.stringify(v) : String(v)}`)
+                  .join(" · ")}
+              </p>
+            )}
           </div>
           <span className="text-muted-foreground shrink-0 text-[11px]">{timeAgo(updatedAt)}</span>
         </CardContent>
@@ -232,10 +268,15 @@ function ActivityRow({
   if (type === "waifu") {
     const w = data as {
       id: number; name: string; origem: string; popularity: number; likes: number; dislikes: number;
-      sourceType: string;
+      sourceType: string; mediaType: string; createdAt: Date; addby: unknown; linkweb: string | null;
       WaifuRarity: Array<{ Rarity: { name: string } }>;
       WaifuEvent: Array<{ Event: { name: string } }>;
     };
+    const addby = (w.addby as Record<string, unknown>) ?? null;
+    const addbyName =
+      addby?.first_name || addby?.username || addby?.Nome
+        ? String(addby?.first_name || addby?.username || addby?.Nome)
+        : "—";
     return (
       <Card size="sm">
         <CardContent className="flex items-start gap-3 py-3">
@@ -248,13 +289,16 @@ function ActivityRow({
               <span>#{w.id}</span>
               <span>{w.origem}</span>
               <span>{w.sourceType}</span>
+              <span>{w.mediaType}</span>
               <span>{w.likes} curtidas / {w.dislikes} nao curtidas</span>
               <span>Popularidade: {w.popularity}</span>
+              <span>Criado: {w.createdAt.toLocaleString("pt-BR")}</span>
+              <span>Adicionado por: {addbyName}</span>
               {w.WaifuRarity.length > 0 && (
-                <span>{w.WaifuRarity.map((r) => r.Rarity.name).join(", ")}</span>
+                <span>Raridades: {w.WaifuRarity.map((r) => r.Rarity.name).join(", ")}</span>
               )}
               {w.WaifuEvent.length > 0 && (
-                <span>{w.WaifuEvent.map((e) => e.Event.name).join(", ")}</span>
+                <span>Eventos: {w.WaifuEvent.map((e) => e.Event.name).join(", ")}</span>
               )}
             </div>
           </div>
@@ -267,10 +311,15 @@ function ActivityRow({
   if (type === "husbando") {
     const h = data as {
       id: number; name: string; origem: string; popularity: number; likes: number; dislikes: number;
-      sourceType: string;
+      sourceType: string; mediaType: string; createdAt: Date; addby: unknown; linkweb: string | null;
       HusbandoRarity: Array<{ Rarity: { name: string } }>;
       HusbandoEvent: Array<{ Event: { name: string } }>;
     };
+    const addby = (h.addby as Record<string, unknown>) ?? null;
+    const addbyName =
+      addby?.first_name || addby?.username || addby?.Nome
+        ? String(addby?.first_name || addby?.username || addby?.Nome)
+        : "—";
     return (
       <Card size="sm">
         <CardContent className="flex items-start gap-3 py-3">
@@ -283,13 +332,16 @@ function ActivityRow({
               <span>#{h.id}</span>
               <span>{h.origem}</span>
               <span>{h.sourceType}</span>
+              <span>{h.mediaType}</span>
               <span>{h.likes} curtidas / {h.dislikes} nao curtidas</span>
               <span>Popularidade: {h.popularity}</span>
+              <span>Criado: {h.createdAt.toLocaleString("pt-BR")}</span>
+              <span>Adicionado por: {addbyName}</span>
               {h.HusbandoRarity.length > 0 && (
-                <span>{h.HusbandoRarity.map((r) => r.Rarity.name).join(", ")}</span>
+                <span>Raridades: {h.HusbandoRarity.map((r) => r.Rarity.name).join(", ")}</span>
               )}
               {h.HusbandoEvent.length > 0 && (
-                <span>{h.HusbandoEvent.map((e) => e.Event.name).join(", ")}</span>
+                <span>Eventos: {h.HusbandoEvent.map((e) => e.Event.name).join(", ")}</span>
               )}
             </div>
           </div>
@@ -305,6 +357,8 @@ function ActivityRow({
     const name = getTelegramName(c.TelegramUser?.telegramData);
     const userName = name === "—" ? `#${c.userId}` : name;
     const characterName = isH ? c.CharacterHusbando?.name : c.CharacterWaifu?.name ?? "?";
+    const character = isH ? c.CharacterHusbando : c.CharacterWaifu;
+    const userId = String(c.userId);
     return (
       <Card size="sm">
         <CardContent className="flex items-start gap-3 py-3">
@@ -320,7 +374,15 @@ function ActivityRow({
           </Badge>
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium text-sm">{userName}</p>
-            <p className="text-muted-foreground mt-0.5 text-[11px]">
+            <div className="text-muted-foreground mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+              <span>Telegram ID: {userId}</span>
+              <span>Char ID: {c.characterId}</span>
+              <span>Quantidade: {c.count}</span>
+              {c.fromIdChat != null && <span>Origem do chat: {String(c.fromIdChat)}</span>}
+              <span>Adicionado: {c.createdAt.toLocaleString("pt-BR")}</span>
+              {character?.origem && <span>Origem: {character.origem}</span>}
+            </div>
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
               Adicionou {characterName} &times;{c.count}
             </p>
           </div>

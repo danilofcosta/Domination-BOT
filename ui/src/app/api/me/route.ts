@@ -32,6 +32,11 @@ export async function GET(request: NextRequest) {
         id: found.id,
         telegramId: found.telegramId.toString(),
         profileType: found.profileType,
+        language: found.language,
+        coins: found.coins,
+        webLogin: found.webLogin,
+        waifuConfig: found.waifuConfig,
+        husbandoConfig: found.husbandoConfig,
         telegramData: found.telegramData,
       };
     }

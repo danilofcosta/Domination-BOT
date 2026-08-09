@@ -15,6 +15,7 @@ import { openharem } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBo
 import { upadmin } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/upadmin.js";
 import { unban } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/unban.js";
 import { unadmin } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/unadmin.js";
+import { clearcache } from "../handlers/Commands/CommandsAdminBot/manegerAdminsBot/clearcache.js";
 
 type AdminCommand = {
   minPermission: ProfileType;
@@ -118,6 +119,16 @@ const userCommandsRegistryDict: Record<string, AdminCommand> = {
       pt: "Rebaixar um usuário de ADMIN (super admin)",
     },
     handler: unadmin,
+  },
+
+  clearcache: {
+    minPermission: ProfileType.ADMIN,
+    command: "clearcache" + botPrefix,
+    description: {
+      en: "Clear the bot's caches (admin)",
+      pt: "Limpar os caches do bot (admin)",
+    },
+    handler: clearcache,
   },
 
 };

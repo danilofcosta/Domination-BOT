@@ -10,6 +10,11 @@ interface TelegramUser {
   id: number;
   telegramId: string;
   profileType: string;
+  language: string;
+  coins: number;
+  webLogin: string | null;
+  waifuConfig: Record<string, unknown> | null;
+  husbandoConfig: Record<string, unknown> | null;
   telegramData: Record<string, unknown> | null;
 }
 
@@ -109,11 +114,59 @@ export default function ProfilePage() {
                 </Badge>
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-muted-foreground">Idioma</p>
+                  <p className="font-medium">{user.telegramUser.language}</p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-muted-foreground">Moedas</p>
+                  <p className="font-medium">
+                    {user.telegramUser.coins.toLocaleString("pt-BR")}
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-muted-foreground">Login Web</p>
+                  <p className="font-medium">
+                    {user.telegramUser.webLogin || "—"}
+                  </p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-muted-foreground">Telegram ID</p>
+                  <p className="font-mono text-sm">
+                    {user.telegramUser.telegramId}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Waifu Config
+                  </p>
+                  <pre className="max-h-40 overflow-auto whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
+                    {user.telegramUser.waifuConfig
+                      ? JSON.stringify(user.telegramUser.waifuConfig, null, 2)
+                      : "—"}
+                  </pre>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Husbando Config
+                  </p>
+                  <pre className="max-h-40 overflow-auto whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
+                    {user.telegramUser.husbandoConfig
+                      ? JSON.stringify(user.telegramUser.husbandoConfig, null, 2)
+                      : "—"}
+                  </pre>
+                </div>
+              </div>
+
               <div className="rounded-lg border p-3">
                 <p className="text-xs text-muted-foreground mb-1">
                   Telegram Data
                 </p>
-                <pre className="whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
+                <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
                   {user.telegramUser.telegramData
                     ? JSON.stringify(user.telegramUser.telegramData, null, 2)
                     : "—"}
