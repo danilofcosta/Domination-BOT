@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { UserInfoDialog } from "@/components/user-info-dialog";
 
+export const dynamic = "force-dynamic";
+
 async function unbanUser(formData: FormData) {
   "use server";
   const id = formData.get("id") as string;

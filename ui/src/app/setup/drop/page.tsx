@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import RarityGrid, { RarityGridSkeleton, type Rarity } from "@/components/rarity-grid";
 
+export const dynamic = "force-dynamic";
+
 async function RarityGridLoader() {
   const { getRarities } = await import("@/actions/drop");
   const rarities = (await getRarities()) as Rarity[];

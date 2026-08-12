@@ -14,9 +14,13 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-async function applyNewPassword(username: string, newPassword: string) {
+function isCancel(value: string): boolean {
+  return ["cancel", "cancelar"].includes(value.toLowerCase());
+}
+
+async function applyNewPassword(webUserId: string, newPassword: string) {
   const webUser = await prisma.user.findUnique({
-    where: { username },
+    where: { id: webUserId },
     include: { account: true },
   });
 
@@ -55,19 +59,18 @@ async function applyNewPassword(username: string, newPassword: string) {
   }
 
   info("changePassword - senha alterada", {
-    username,
+    webUserId: webUser.id,
     targetUserId: webUser.id,
   });
 
-  return { ok: true as const, username };
-}
-
-function isCancel(value: string): boolean {
-  return ["cancel", "cancelar"].includes(value.toLowerCase());
+  return {
+    ok: true as const,
+    displayName: webUser.username ?? webUser.name ?? webUser.email ?? webUser.id,
+  };
 }
 
 export async function changePasswordWeb(ctx: MyContext): Promise<void> {
-  const userId = ctx.from?.id;
+  const userId = ctx.from?.id || 0;
   const chatId = ctx.chat?.id;
 
   if (ctx.chat?.type !== "private") {
@@ -76,7 +79,32 @@ export async function changePasswordWeb(ctx: MyContext): Promise<void> {
   }
   if (!userId || !chatId) return;
 
-  const makePasswordAction = (username: string) => {
+  const telegramUser = await prisma.telegramUser.findUnique({
+    where: { telegramId: BigInt(userId) },
+  });
+
+  if (!telegramUser) {
+    await ctx.reply(
+      "❌ Sua conta Telegram não está vinculada a nenhuma conta web.",
+    );
+    return;
+  }
+
+  const webUser = await prisma.user.findFirst({
+    where: { telegramUserId: telegramUser.id },
+  });
+
+  if (!webUser) {
+    await ctx.reply(
+      "❌ Sua conta Telegram não está vinculada a nenhuma conta web.",
+    );
+    return;
+  }
+
+  const displayName =
+    webUser.username ?? webUser.name ?? webUser.email ?? webUser.id;
+
+  const makePasswordAction = (webUserId: string) => {
     return async (passCtx: MyContext) => {
       const newPassword = passCtx.message?.text?.trim();
       if (!newPassword || newPassword.startsWith("/")) return;
@@ -93,20 +121,20 @@ export async function changePasswordWeb(ctx: MyContext): Promise<void> {
         );
         setListener(userId, chatId, {
           type: "text",
-          action: makePasswordAction(username),
+          action: makePasswordAction(webUserId),
         });
         return;
       }
 
       try {
-        const result = await applyNewPassword(username, newPassword);
+        const result = await applyNewPassword(webUserId, newPassword);
         if (!result.ok) {
           await passCtx.reply("❌ Erro ao alterar a senha. Tente novamente.");
           return;
         }
         await passCtx.reply(
           `✅ <b>Senha alterada com sucesso!</b>\n\n` +
-            `Usuário: <b>${escapeHtml(result.username)}</b>\n\n` +
+            `Usuário: <b>${escapeHtml(result.displayName)}</b>\n\n` +
             "Sessões antigas continuam válidas; a nova senha valerá no próximo login.",
           { parse_mode: "HTML" },
         );
@@ -119,48 +147,16 @@ export async function changePasswordWeb(ctx: MyContext): Promise<void> {
     };
   };
 
-  const askPassword = async (msgCtx: MyContext, username: string) => {
-    await msgCtx.reply(
-      `🔑 Usuário <b>${escapeHtml(username)}</b> encontrado.\n\n` +
-        `Agora envie a <b>nova senha</b> (mínimo de ${MIN_PASSWORD_LENGTH} caracteres):`,
-      { parse_mode: "HTML" },
-    );
-
-    setListener(userId, chatId, {
-      type: "text",
-      action: makePasswordAction(username),
-    });
-  };
-
-  const askUsername = async (msgCtx: MyContext) => {
-    const username = msgCtx.message?.text?.trim();
-    if (!username || username.startsWith("/")) return;
-    if (isCancel(username)) {
-      await msgCtx.reply("Operação cancelada.");
-      return;
-    }
-
-    const webUser = await prisma.user.findUnique({ where: { username } });
-
-    if (!webUser) {
-      await msgCtx.reply(
-        `❌ Não existe conta web com o usuário <b>${escapeHtml(username)}</b>.\n` +
-          "Envie o usuário novamente ou <i>/cancel</i>.",
-        { parse_mode: "HTML" },
-      );
-      setListener(userId, chatId, { type: "text", action: askUsername });
-      return;
-    }
-
-    await askPassword(msgCtx, username);
-  };
-
   await ctx.reply(
-    "🔑 <b>Trocar senha da conta web</b>\n\n" +
-      "Envie o <b>usuário (username)</b> da conta cuja senha será alterada.\n\n" +
+    `🔑 <b>Trocar senha da conta web</b>\n\n` +
+      `Conta vinculada: <b>${escapeHtml(displayName)}</b>\n\n` +
+      `Envie a <b>nova senha</b> (mínimo de ${MIN_PASSWORD_LENGTH} caracteres):\n\n` +
       "Envie <i>/cancel</i> a qualquer momento para cancelar.",
     { parse_mode: "HTML" },
   );
 
-  setListener(userId, chatId, { type: "text", action: askUsername });
+  setListener(userId, chatId, {
+    type: "text",
+    action: makePasswordAction(webUser.id),
+  });
 }

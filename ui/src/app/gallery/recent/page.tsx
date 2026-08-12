@@ -8,6 +8,8 @@ import { GalleryGrid } from "@/components/gallery-grid";
 import { GalleryFilterBar } from "@/components/gallery-filter-bar";
 import { GalleryHeaderActions } from "@/components/gallery-header-actions";
 
+export const dynamic = "force-dynamic";
+
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

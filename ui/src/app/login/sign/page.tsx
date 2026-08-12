@@ -46,7 +46,9 @@ function SignForm() {
     null
   );
 
-  const telegramUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME}?start=myacontweb`;
+  const telegramUrl = `https://t.me/${
+    process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME
+  }?start=createaccountweb`;
 
   async function handleVerifyToken() {
     if (!token.trim()) {

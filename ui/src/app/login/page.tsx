@@ -31,7 +31,9 @@ export default function Login() {
     null
   );
 
-  const forgotPasswordUrl = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME}?start=forgotpassword`;
+  const forgotPasswordUrl = `https://t.me/${
+    process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME
+  }?start=changepassword`;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { PencilIcon } from "lucide-react";
 import { CharacterEditDialog } from "@/components/character-edit-dialog";
 
+export const dynamic = "force-dynamic";
+
 type WaifuPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

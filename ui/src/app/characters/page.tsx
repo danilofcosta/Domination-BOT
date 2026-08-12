@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { CreateCharacterDialog } from "@/components/create-character-dialog";
 
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   const [waifuAgg, husbandoAgg, topWaifu, topHusbando, allRarities, allEvents] = await Promise.all([
     prisma.characterWaifu.aggregate({

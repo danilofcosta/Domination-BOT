@@ -4,6 +4,8 @@ import { resolveMediaUrl } from "@/lib/telegram/resolveMediaUrl";
 import { CharacterEditForm } from "@/components/character-edit-form";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: Promise<{ type: string; id: string }>;
 };

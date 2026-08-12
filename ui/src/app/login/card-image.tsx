@@ -7,7 +7,7 @@ export function CardImage() {
  autoPlay
  loop
  muted
- poster="https://i.pinimg.com/736x/24/c3/13/24c31340bf81884382cf87c3eea9ac9c.jpg"
+ poster="poster.jpg"
  playsInline
         className="relative z-20 aspect-video w-full object-cover brightness-50 grayscale dark:brightness-35"
 

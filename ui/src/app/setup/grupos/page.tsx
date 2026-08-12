@@ -3,6 +3,8 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { EditSheet } from "@/components/edit-sheet";
 
+export const dynamic = "force-dynamic";
+
 async function updateGroup(formData: FormData) {
   "use server";
   try {

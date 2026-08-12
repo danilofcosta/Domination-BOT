@@ -579,7 +579,7 @@ export const _base: localekey[] = [
     key: "new_character_secret_caption",
     description: null,
     localeTraslation: {
-      value: "${emoji_raridade} <b> ${charater_genero}  Apareceu ${emoji_event}!</b>\n<b>capture enviando</b>\n /dominar <code>[Nome]</code>",
+      value: "${emoji_raridade} ${emoji_event} <b> ${charater_genero}  Apareceu!</b>\n<b>capture enviando</b>\n /dominar <code>[Nome]</code>",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },

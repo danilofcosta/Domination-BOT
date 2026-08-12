@@ -1,9 +1,8 @@
-import { ProfileType } from "../../../../generated/prisma/client.js";
 import type { MyContext } from "../../../utils/customTypes.js";
-import { onlyRoleBotAdmin } from "../../../utils/permissions.js";
 import { changePasswordWeb } from "./web/changePasswordWeb.js";
 import { createAccountWeb } from "./web/createAccountWeb.js";
 import { sendMessageCustom } from "../../../utils/sendMessageCustom.js";
+import { debug } from "../../../utils/log.js";
 
 
 async function getGroupAdminsMentions(ctx: MyContext): Promise<string[]> {
@@ -21,6 +20,7 @@ async function getGroupAdminsMentions(ctx: MyContext): Promise<string[]> {
 }
 
 export async function processStartArgument(ctx: MyContext): Promise<void> {
+  debug("processStartArgument - match:", ctx.match);
   if (ctx.match) {
     switch (ctx.match) {
       // case "help": {
@@ -50,14 +50,10 @@ export async function processStartArgument(ctx: MyContext): Promise<void> {
         break;
       }
       case "createaccountweb": {
-        return await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
-          await createAccountWeb(ctx);
-        });
+        return await createAccountWeb(ctx);
       }
       case "changepassword": {
-        return await onlyRoleBotAdmin(ProfileType.ADMIN)(ctx, async () => {
-          await changePasswordWeb(ctx);
-        });
+        return await changePasswordWeb(ctx);
       }
       default:
         try {

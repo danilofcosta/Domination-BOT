@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ProfileFilterSelect } from "@/components/profile-filter-select";
 
+export const dynamic = "force-dynamic";
+
 const PROFILE_LABELS: Record<string, string> = {
   SUPREME: "Supremo",
   SUPER_ADMIN: "Super Admin",

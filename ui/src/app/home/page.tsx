@@ -5,6 +5,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { RefreshButton } from "@/components/refresh-button";
 import { DashboardCharts } from "@/components/dashboard-charts";
 
+export const dynamic = "force-dynamic";
+
 type Activity = {
   type: string;
   label: string;

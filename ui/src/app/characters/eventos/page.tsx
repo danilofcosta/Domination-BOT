@@ -6,6 +6,8 @@ import { AddDialog } from "@/components/add-dialog";
 import { DeleteButton } from "@/components/delete-button";
 import ExpandableText from "@/components/expandable-text";
 
+export const dynamic = "force-dynamic";
+
 async function updateEvent(formData: FormData) {
   "use server";
   try {

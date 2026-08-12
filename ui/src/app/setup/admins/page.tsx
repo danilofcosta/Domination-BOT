@@ -6,6 +6,8 @@ import {
 } from "@/components/permissions-matrix";
 import { getPermissionMatrix } from "@/lib/permissions";
 
+export const dynamic = "force-dynamic";
+
 const ROLE_DEFS: RoleDef[] = [
   { value: "SUPREME", label: "Supremo", locked: true },
   { value: "SUPER_ADMIN", label: "Super Admin" },

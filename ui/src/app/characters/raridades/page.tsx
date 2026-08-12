@@ -5,6 +5,8 @@ import { EditSheet } from "@/components/edit-sheet";
 import { AddDialog } from "@/components/add-dialog";
 import { DeleteButton } from "@/components/delete-button";
 
+export const dynamic = "force-dynamic";
+
 async function updateRarity(formData: FormData) {
   "use server";
   try {

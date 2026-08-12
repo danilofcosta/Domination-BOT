@@ -9,6 +9,8 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

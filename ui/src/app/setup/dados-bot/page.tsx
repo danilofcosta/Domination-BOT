@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ConfigForm } from "@/components/config-form";
 
+export const dynamic = "force-dynamic";
+
 const FALLBACKS = {
   DROP: 100,
   UNDROP_OFFSET: 40,
