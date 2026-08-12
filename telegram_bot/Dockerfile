@@ -8,6 +8,9 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
+COPY prisma.config.ts ./
+
+ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 
 RUN npm ci \
     && npx prisma generate

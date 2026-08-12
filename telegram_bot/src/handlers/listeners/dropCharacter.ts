@@ -81,7 +81,10 @@ async function sortearWaifu() {
   return prisma.characterWaifu.findFirst({
     where: { WaifuRarity: { some: { rarityId: raridade.id } } },
     skip,
-    include: { WaifuRarity: { include: { Rarity: true } } },
+    include: {
+      WaifuRarity: { include: { Rarity: true } },
+      WaifuEvent: { include: { Event: true } },
+    },
   });
 }
 
@@ -98,6 +101,9 @@ async function sortearHusbando() {
   return prisma.characterHusbando.findFirst({
     where: { HusbandoRarity: { some: { rarityId: raridade.id } } },
     skip,
-    include: { HusbandoRarity: { include: { Rarity: true } } },
+    include: {
+      HusbandoRarity: { include: { Rarity: true } },
+      HusbandoEvent: { include: { Event: true } },
+    },
   });
 }
