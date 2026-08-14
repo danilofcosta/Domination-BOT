@@ -34,6 +34,10 @@ export type Collection = WaifuCollection | HusbandoCollection ;
 export type EventType = WaifuEvent | HusbandoEvent;
 export type RarityType = WaifuRarity | HusbandoRarity;
 
+export enum NODE_ENV {
+  PRODUCTION = "production",
+  DEVELOPMENT = "development",
+}
 
 export interface PreCharacter {
   idchat?: number;

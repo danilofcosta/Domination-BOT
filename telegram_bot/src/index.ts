@@ -1,15 +1,17 @@
 import "dotenv/config";
 
-import { ChatType } from "./utils/customTypes.js";
+import { ChatType, NODE_ENV } from "./utils/customTypes.js";
 import initializeBot from "./initializeBot.js";
 import { RunPolling } from "./indexPolling.js";
 import { checkBotToken } from "./utils/checkBot.js";
-import { fatal } from "./utils/log.js";
+import { fatal, info } from "./utils/log.js";
 import { environmentValidation } from "./bot/tests/environmentValidation.js";
 import { startInvalidationSubscriber } from "./cache/invalidationSubscriber.js";
+import { RunWebHook } from "./index_webhook.js";
 
 const start = async () => {
   await environmentValidation()
+   let app;
   const type =
     process.env.TYPE_BOT?.toLowerCase() === ChatType.WAIFU
       ? ChatType.WAIFU
@@ -33,9 +35,28 @@ const start = async () => {
  
   await startInvalidationSubscriber();
  
+
+
  
+
+
+  
+  if (
+    process.env.VERCEL === "true" ||
+    process.env.NODE_ENV === NODE_ENV.PRODUCTION
+  ) {
+    app = await RunWebHook({bot});
+  } else if (process.env.NODE_ENV === NODE_ENV.DEVELOPMENT) {
+    
   RunPolling({ bot: bot, dbtest: true, botInfo: me });
+  } else {
+    info("NODE_ENV não definido, usando polling");
+
+  RunPolling({ bot: bot, dbtest: true, botInfo: me });
+  }
+
+  return app;
 
 };
 
-start();
+export default start();
