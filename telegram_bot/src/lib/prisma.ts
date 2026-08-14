@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL;
+const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error(
@@ -16,7 +16,10 @@ if (!connectionString) {
   );
 }
 //const adapter = new PrismaNeon({ connectionString, });
-const adapter = new PrismaPg({ connectionString, });
+const adapter = new PrismaPg({
+  connectionString: connectionString.split("?")[0],
+  ssl: { rejectUnauthorized: false },
+});
 
 export const prisma =
   globalForPrisma.prisma ??
