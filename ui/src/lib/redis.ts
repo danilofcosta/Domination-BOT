@@ -11,7 +11,7 @@ export async function getRedis() {
     }
     return globalForRedis.redis as any;
   }
-  const client = createClient({ url: process.env.REDIS_URL });
+  const client = createClient({ url: process.env.REDIS_URL || process.env.DOMINATION_REDIS_URL });
   client.on("error", (err) => console.error("Redis error:", err));
   await client.connect();
   globalForRedis.redis = client;
