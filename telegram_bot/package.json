@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.6",
     "@types/node": "^26.0.0",
     "@types/pg": "^8.20.0",
     "dotenv": "^17.4.2",
@@ -27,6 +28,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "prisma generate",
     "delmigrations": "tsx scripts/remover_migrations.ts",
     "dev": "tsx src/index.ts",
     "seed": "tsx scripts/seed.ts",
