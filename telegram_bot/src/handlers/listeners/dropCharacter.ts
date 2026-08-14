@@ -7,6 +7,7 @@ import { getRuntime } from "../../runtime/groupRuntime.js";
 import { ChatType } from "../../utils/customTypes.js";
 import { getDropConfig } from "../../cache/dropConfig.js";
 import { getGroupConfig } from "../../cache/groupConfig.js";
+import { getRecentDropIds, trackDrop } from "../../cache/recentDrops.js";
 
 export async function dropCharacter(ctx: MyContext): Promise<boolean | null> {
   info("dropCharacter - drop iniciado", { chatId: ctx.chat?.id, genero: ctx.botType });
@@ -19,7 +20,12 @@ export async function dropCharacter(ctx: MyContext): Promise<boolean | null> {
     }
   }
 
-  const character = ctx.botType === ChatType.WAIFU ? await sortearWaifu() : await sortearHusbando();
+  const chatId = ctx.chat?.id;
+  const excluded = chatId ? getRecentDropIds(chatId, ctx.botType) : [];
+  const character =
+    ctx.botType === ChatType.WAIFU
+      ? await sortearWaifu(excluded)
+      : await sortearHusbando(excluded);
   if (!character) {
     warn("dropCharacter - nenhum personagem disponível", { chatId: ctx.chat?.id });
     return null;
@@ -36,6 +42,8 @@ export async function dropCharacter(ctx: MyContext): Promise<boolean | null> {
     }
 
     if (!ctx.chat?.id) return null;
+
+    trackDrop(ctx.chat.id, ctx.botType, character.id as number);
 
     const { dropMsg } = await getDropConfig();
     const runtime = getRuntime(ctx.chat.id);
@@ -68,42 +76,66 @@ async function sortearRaridade() {
   return raridades[0];
 }
 
-async function sortearWaifu() {
+async function sortearWaifu(excluded: number[]) {
   const raridade = await sortearRaridade();
   if (!raridade) return null;
-  const total = await prisma.characterWaifu.count({
-    where: { WaifuRarity: { some: { rarityId: raridade.id },every:{CharacterWaifu:{mediaType:"IMAGE_URL"}} } },
+
+  const where = (ex: number[]) => ({
+    id: { notIn: ex },
+    WaifuRarity: { some: { rarityId: raridade.id } },
   });
 
-  if (total === 0) return null;
+  for (const ex of [excluded, []]) {
+    const total = await prisma.characterWaifu.count({
+      where: {
+        ...where(ex),
+        WaifuRarity: {
+          some: { rarityId: raridade.id },
+          every: { CharacterWaifu: { mediaType: "IMAGE_URL" } },
+        },
+      },
+    });
+    if (total === 0) continue;
 
-  const skip = Math.floor(Math.random() * total);
-  return prisma.characterWaifu.findFirst({
-    where: { WaifuRarity: { some: { rarityId: raridade.id } } },
-    skip,
-    include: {
-      WaifuRarity: { include: { Rarity: true } },
-      WaifuEvent: { include: { Event: true } },
-    },
-  });
+    const skip = Math.floor(Math.random() * total);
+    return prisma.characterWaifu.findFirst({
+      where: where(ex),
+      skip,
+      include: {
+        WaifuRarity: { include: { Rarity: true } },
+        WaifuEvent: { include: { Event: true } },
+      },
+    });
+  }
+
+  return null;
 }
 
-async function sortearHusbando() {
+async function sortearHusbando(excluded: number[]) {
   const raridade = await sortearRaridade();
   if (!raridade) return null;
-  const total = await prisma.characterHusbando.count({
-    where: { HusbandoRarity: { some: { rarityId: raridade.id } } },
+
+  const where = (ex: number[]) => ({
+    id: { notIn: ex },
+    HusbandoRarity: { some: { rarityId: raridade.id } },
   });
 
-  if (total === 0) return null;
+  for (const ex of [excluded, []]) {
+    const total = await prisma.characterHusbando.count({
+      where: where(ex),
+    });
+    if (total === 0) continue;
 
-  const skip = Math.floor(Math.random() * total);
-  return prisma.characterHusbando.findFirst({
-    where: { HusbandoRarity: { some: { rarityId: raridade.id } } },
-    skip,
-    include: {
-      HusbandoRarity: { include: { Rarity: true } },
-      HusbandoEvent: { include: { Event: true } },
-    },
-  });
+    const skip = Math.floor(Math.random() * total);
+    return prisma.characterHusbando.findFirst({
+      where: where(ex),
+      skip,
+      include: {
+        HusbandoRarity: { include: { Rarity: true } },
+        HusbandoEvent: { include: { Event: true } },
+      },
+    });
+  }
+
+  return null;
 }
