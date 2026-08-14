@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import type { RedisClientType } from "redis";
+import { debug } from "../utils/log.js";
 
 function isValidRedisUrl(url: string | undefined): url is string {
   if (!url) return false;
@@ -11,11 +12,11 @@ function isValidRedisUrl(url: string | undefined): url is string {
   }
 }
 
-export const redisUrl = isValidRedisUrl(process.env.REDIS_URL)
+export const redisUrl = isValidRedisUrl(process.env.REDIS_URL || process.env.DOMINATION_REDIS_URL)
   ? process.env.REDIS_URL
   : null;
 
-console.log(
+debug(
   redisUrl
     ? `[redis] REDIS_URL válida — usando Redis em ${redisUrl}`
     : "[redis] REDIS_URL ausente/inválida — usando armazenamento em memória",
