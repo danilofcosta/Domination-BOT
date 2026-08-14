@@ -175,7 +175,7 @@ export const _base: localekey[] = [
     key: "top_user_position_user",
     description: null,
     localeTraslation: {
-      value: "Sua posição :${position}\n Total :${total}",
+      value: "Sua posição :${position}\nTotal :${total}",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -238,7 +238,7 @@ export const _base: localekey[] = [
     key: "top_user_position_grupos",
     description: null,
     localeTraslation: {
-      value: "Posição do grupo ${chat_title} :${position}\n Total :${total}",
+      value: "Posição do grupo ${chat_title} :${position}\nTotal :${total}",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -533,7 +533,7 @@ export const _base: localekey[] = [
     key: "drop_character_attempt_empty",
     description: null,
     localeTraslation: {
-      value: "Ok mais qual nome do ${genero} ?\n     <code> /dominar Nome do personagem </code>",
+      value: "Ok mais qual nome do ${genero} ?\n  <code> /dominar Nome do personagem </code>",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -579,7 +579,7 @@ export const _base: localekey[] = [
     key: "new_character_secret_caption",
     description: null,
     localeTraslation: {
-      value: "${emoji_raridade} ${emoji_event} <b> ${charater_genero}  Apareceu!</b>\n<b>capture enviando</b>\n /dominar <code>[Nome]</code>",
+      value: "${emoji_raridade} ${emoji_event} <b> ${charater_genero}  Apareceu!</b>\n<b>capture enviando</b>\n/dominar <code>[Nome]</code>",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -594,7 +594,7 @@ export const _base: localekey[] = [
     key: "drop_character_secret_caption",
     description: null,
     localeTraslation: {
-      value: "${charater_genero}  ja fugiu !\n    O nome é <code> ${charater_nome} - ${charater_anime} </code>",
+      value: "${charater_genero}  ja fugiu !\n O nome é <code> ${charater_nome} - ${charater_anime} </code>",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -1299,7 +1299,7 @@ export const _base: localekey[] = [
     key: "gift_success",
     description: null,
     localeTraslation: {
-      value: "Operacao completa\n    ${sender} deu ${name} para ${receiver}!",
+      value: "Operacao completa\n${sender} deu ${name} para ${receiver}!",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -1858,7 +1858,7 @@ export const _base: localekey[] = [
     key: "trade_reply_instruction",
     description: "Instrução de reply para trade",
     localeTraslation: {
-      value: "${command} 55 , 55 (em Resposta)\n ou ${command}  @Wadomination_bot 55 , 55",
+      value: "${command} 55 , 55 (em Resposta)\nou ${command}  @Wadomination_bot 55 , 55",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -2122,7 +2122,7 @@ export const _base: localekey[] = [
     key: "bot_leave_group_text",
     description: null,
     localeTraslation: {
-      value: "Tem certeza que deseja remover o bot do grupo?\n\nmenbros devem ter a coleção apagada : ${membrers_clean_colletion}\n menbros devem ser blockeados  : ${membrers_ban}\n mandar mensagem antes de sair ? ${send_message_to_group}",
+      value: "Tem certeza que deseja remover o bot do grupo?\n\nmenbros devem ter a coleção apagada : ${membrers_clean_colletion}\nmenbros devem ser blockeados  : ${membrers_ban}\nmandar mensagem antes de sair ? ${send_message_to_group}",
       isButton: null,
       ButtonSetting: null,
       locale: { lang: "pt", icon: "🇧🇷" },
@@ -2954,7 +2954,7 @@ Agora resta apenas olhar para o vazio e lembrar: o verdadeiro farm foram os amig
     description: null,
     localeTraslation: {
      
-value: "🌌 Bem-vindo ao ${bot}!\n\nA experiência definitiva de coleção de personagens de anime no Telegram!\n\n✨ Colecione milhares de waifus e husbandos únicos.\n⚔️ Faça personagens aparecerem conversando em grupos.\n\nToque nos botões abaixo para explorar!\n\n⦾ ᴏ Qᴜᴇ Eᴜ FᴀÇᴏ: FᴀÇᴏ ᴀᴘᴀʀᴇᴄᴇʀ\n     ${gener} ɴᴏ sᴇᴜ ᴄʜᴀᴛ ᴘᴀʀᴀ\n     ᴏs ᴜsᴜÁʀɪᴏs ᴄᴀᴘᴛᴜʀᴀʀᴇᴍ.\n⦾ ᴄᴏᴍᴏ Mᴇ Usᴀʀ: Aᴅɪᴄɪᴏɴᴇ-Mᴇ ᴀᴏ\n     sᴇᴜ ɢʀᴜᴘᴏ ᴇ ᴛᴏǫᴜᴇ ɴᴏ ʙᴏᴛÃᴏ\n     ᴅᴇ Aᴊᴜᴅᴀ ᴘᴀʀᴀ Mᴀɪs Dᴇᴛᴀʟʜᴇs.\n\n➺ ᴘɪɴɢ: ${ping} ms\n➺ ᴛᴇᴍᴘᴏ ᴏɴʟɪɴᴇ: ${uptime}"
+value: "🌌 Bem-vindo ao ${bot}!\n\nA experiência definitiva de coleção de personagens de anime no Telegram!\n\n✨ Colecione milhares de waifus e husbandos únicos.\n⚔️ Faça personagens aparecerem conversando em grupos.\n\nToque nos botões abaixo para explorar!\n\n⦾ ᴏ Qᴜᴇ Eᴜ FᴀÇᴏ: FᴀÇᴏ ᴀᴘᴀʀᴇᴄᴇʀ\n  ${gener} ɴᴏ sᴇᴜ ᴄʜᴀᴛ ᴘᴀʀᴀ\n  ᴏs ᴜsᴜÁʀɪᴏs ᴄᴀᴘᴛᴜʀᴀʀᴇᴍ.\n⦾ ᴄᴏᴍᴏ Mᴇ Usᴀʀ: Aᴅɪᴄɪᴏɴᴇ-Mᴇ ᴀᴏ\n  sᴇᴜ ɢʀᴜᴘᴏ ᴇ ᴛᴏǫᴜᴇ ɴᴏ ʙᴏᴛÃᴏ\n  ᴅᴇ Aᴊᴜᴅᴀ ᴘᴀʀᴀ Mᴀɪs Dᴇᴛᴀʟʜᴇs.\n\n➺ ᴘɪɴɢ: ${ping} ms\n➺ ᴛᴇᴍᴘᴏ ᴏɴʟɪɴᴇ: ${uptime}"
 
       ,isButton: null,
       ButtonSetting: null,
