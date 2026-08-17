@@ -1,4 +1,5 @@
 import type { MyContext } from "../../../utils/customTypes.js";
+import { deleteMessageAfter } from "../../../utils/telegram/deleteMessageAfter.js";
 
 export async function idHandler(ctx: MyContext) {
   const replied = ctx.msg?.reply_to_message;
@@ -24,4 +25,5 @@ export async function idHandler(ctx: MyContext) {
   }
 
   await ctx.reply(msg, { parse_mode: "HTML" });
+  deleteMessageAfter(ctx, ctx.msg!.message_id, 10000);
 }

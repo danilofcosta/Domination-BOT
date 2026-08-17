@@ -133,7 +133,8 @@ export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
 
   clearCache: {
     minPermission: ProfileType.ADMIN,
-    command: "clearCache" + botPrefix,
+    command: "clearcache" + botPrefix,
+    commandPrivate: "clearcacache",
     category_admin_bot: category_admin_bot.Admins,
     description: {
       en: "Clear the bot's caches (admin)",

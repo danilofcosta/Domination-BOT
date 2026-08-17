@@ -151,6 +151,13 @@ export function trace(...args: unknown[]) {
   write("verbose", ...args);
 }
 
+
+export function verbose(...args: unknown[]) {
+  write("verbose", ...args);
+}
+
+
+
 export function error(...args: unknown[]) {
   write("error", ...args);}
 

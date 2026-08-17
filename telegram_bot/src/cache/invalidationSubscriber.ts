@@ -2,12 +2,13 @@ import { createClient } from "redis";
 import { redisUrl } from "./redis.js";
 import { invalidateDropConfig } from "./dropConfig.js";
 import { translationService } from "../locales/translationService.js";
+import { debug, error } from "../utils/log.js";
 
 const INVALIDATION_CHANNEL = "bot:cache:invalidate";
 
 export async function startInvalidationSubscriber(): Promise<void> {
   if (!redisUrl) {
-    console.log(
+    debug(
       "[invalidate] REDIS_URL ausente — invalidação via pub/sub desativada",
     );
     return;
@@ -16,7 +17,7 @@ export async function startInvalidationSubscriber(): Promise<void> {
   try {
     const subscriber = createClient({ url: redisUrl });
     subscriber.on("error", (err) =>
-      console.error("[invalidate] erro no subscriber:", err.message),
+      debug("[invalidate] erro no subscriber:", err.message),
     );
     await subscriber.connect();
 
@@ -27,7 +28,7 @@ export async function startInvalidationSubscriber(): Promise<void> {
 
         if (type === "dropConfig") {
           invalidateDropConfig();
-          console.log("[invalidate] dropConfig invalidado");
+          debug("[invalidate] dropConfig invalidado");
           return;
         }
 
@@ -35,23 +36,23 @@ export async function startInvalidationSubscriber(): Promise<void> {
           translationService.reload().catch((err) =>
             console.error("[invalidate] erro ao recarregar traduções:", err),
           );
-          console.log("[invalidate] traduções recarregando");
+          debug("[invalidate] traduções recarregando");
           return;
         }
 
         invalidateDropConfig();
         translationService.reload().catch((err) =>
-          console.error("[invalidate] erro ao recarregar traduções:", err),
+          error("[invalidate] erro ao recarregar traduções:", err),
         );
-        console.log("[invalidate] caches invalidados (all)");
+        debug("[invalidate] caches invalidados (all)");
       } catch (err) {
-        console.error("[invalidate] erro ao processar mensagem:", err);
+        error ("[invalidate] erro ao processar mensagem:", err);
       }
     });
 
-    console.log(`[invalidate] inscrito no canal ${INVALIDATION_CHANNEL}`);
+    debug(`[invalidate] inscrito no canal ${INVALIDATION_CHANNEL}`);
   } catch (err) {
-    console.error(
+    error(
       "[invalidate] falha ao iniciar subscriber (bot segue sem invalidação por pub/sub):",
       err,
     );

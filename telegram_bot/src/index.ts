@@ -28,9 +28,9 @@ const start = async () => {
     );
   }
 
-  console.log(`Iniciando o bot... (tipo: ${type})`);
+  info(`Iniciando o bot... (tipo: ${type})`);
   const bot = await initializeBot(type, BOT_TOKEN);
-
+  info(`Checando o token do bot... (tipo: ${type})`);
   const me = await checkBotToken(BOT_TOKEN, () => bot.api.getMe());
  
   await startInvalidationSubscriber();

@@ -7,10 +7,10 @@ export async function clearCache(ctx: MyContext) {
     const chatId = ctx.chat?.id;
     if (!chatId) return;
 
-    if (chatId !== Number(process.env.GROUP_ADM)) {
-      error("clearCache - grupo nao e de adms", chatId);
-      return;
-    }
+    // if (chatId !== Number(process.env.GROUP_ADM)  || Number(chatId) !== Number(process.env.CHAT_ID_DEV)) {
+    //   error("clearCache - grupo nao e de adms", chatId);
+    //   return;
+    // }
 
     await clearAllBotCaches();
 

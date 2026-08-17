@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { debug } from "../utils/log.js";
 
 type TranslationMap = Map<string, Map<string, string>>;
 
@@ -17,7 +18,7 @@ class TranslationService {
       include: { translations: true },
     });
 
-    console.log(`[i18n] ${keys.length} LocaleKeys carregados`);
+    debug(`[i18n] ${keys.length} LocaleKeys carregados`);
     if (keys.length > 0) {
       const sample = keys[0]!;
       // console.log(`[i18n] Sample key:`, JSON.stringify(sample, null, 2));
@@ -31,7 +32,7 @@ class TranslationService {
         ? Array.isArray(key.translations) ? key.translations : [key.translations]
         : [];
       if (translations.length === 0) {
-        console.log(`[i18n] Key "${key.key}" sem tradução`);
+        debug(`[i18n] Key "${key.key}" sem tradução`);
         continue;
       }
       for (const t of translations) {
@@ -46,7 +47,7 @@ class TranslationService {
       }
     }
 
-    console.log(`[i18n] ${loadedCount} traduções carregadas, locales:`, [...map.keys()].map(l => `${l}(${map.get(l)!.size})`));
+    debug(`[i18n] ${loadedCount} traduções carregadas, locales:`, [...map.keys()].map(l => `${l}(${map.get(l)!.size})`));
 
     this.translations = map;
   }

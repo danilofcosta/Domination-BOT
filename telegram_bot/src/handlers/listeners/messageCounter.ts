@@ -3,7 +3,7 @@ import type { MyContext } from "../../utils/customTypes.js";
 import { ChatType } from "../../utils/customTypes.js";
 import { botNewgroupMember } from "./botNewGroupMember.js";
 import { dropCharacter } from "./dropCharacter.js";
-import { debug, error, info, log } from "../../utils/log.js";
+import { debug, error, info, log, verbose } from "../../utils/log.js";
 import { sendMessageCustom } from "../../utils/sendMessageCustom.js";
 import {
   CreateOneBtn,
@@ -14,8 +14,9 @@ import { getCharacterById } from "../../utils/extras/getCharacterById.js";
 import { getDropConfig } from "../../cache/dropConfig.js";
 import { getGroupConfig } from "../../cache/groupConfig.js";
 
+
 export async function countMessages(ctx: MyContext) {
-  debug('mensagem recibida ',ctx.message?.text ,{ group:ctx.chat?.title?? ctx.from?.first_name,user:ctx.from?.first_name,id:ctx.from?.id})
+  verbose('mensagem recibida ',ctx.message?.text ,{ group:ctx.chat?.title?? ctx.from?.first_name,user:ctx.from?.first_name,id:ctx.from?.id})
   if (!ctx.chat) return;
 
   const chatId = ctx.chat.id;
@@ -27,6 +28,7 @@ export async function countMessages(ctx: MyContext) {
   if (ctx.message?.new_chat_members) {
     const newMembers = ctx.message.new_chat_members as User[];
     if (newMembers.some((m) => m.id === ctx.me.id)) {
+      debug("Bot adicionado a um grupo, executando botNewgroupMember");
       return botNewgroupMember(ctx);
     }
   }
@@ -60,7 +62,7 @@ export async function countMessages(ctx: MyContext) {
   const dropsEnabled = groupConfig.dropsEnabled ?? true;
   const dropMsg = Math.max(groupConfig.dropMsg ?? globalDrop.dropMsg, 100);
   const undropMsg = globalDrop.undropMsg;
-  console.log(dropMsg,runtime.cont,ctx.chat.title)
+  verbose("Drop messages:", dropMsg, "cont:", runtime.cont, "chat:", ctx.chat.title);
 
   if (!dropsEnabled) {
     runtime.cont = 0;

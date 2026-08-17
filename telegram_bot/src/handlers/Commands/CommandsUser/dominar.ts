@@ -19,6 +19,7 @@ import { checkDailyLimit, getDailyCount } from "../../../cache/redis.js";
 import { getDropConfig } from "../../../cache/dropConfig.js";
 import { DAILY_LIMIT } from "../../../bot/middleware/constants.js";
 import { createMentionUser } from "../../../utils/telegram/createMentionUser.js";
+import { deleteMessageAfter } from "../../../utils/telegram/deleteMessageAfter.js";
 
 function verificarNome(personagem: string, tentativa: string) {
   const ignorar = [
@@ -219,14 +220,7 @@ export async function CapturarCharacter(ctx: MyContext) {
               genero: type === ChatType.WAIFU ? "waifu" : "husbando",
             }),
           });
-          setTimeout(() => {
-            ctx.api.deleteMessage(ctx.chat!.id, msg.message_id).catch((e) => {
-              warn(`Falha ao deletar mensagem`, {
-                msgId: msg.message_id,
-                error: e,
-              });
-            });
-          }, 10000);
+     deleteMessageAfter(ctx, msg.message_id, 120000);
         } catch (e) {
           error("Erro ao enviar mensagem de nome vazio", e);
         }
@@ -253,14 +247,7 @@ export async function CapturarCharacter(ctx: MyContext) {
           } as CreateOneBtnOptions),
         });
 
-        setTimeout(() => {
-          ctx.api.deleteMessage(ctx.chat!.id, msg.message_id).catch((e) => {
-            warn(`Falha ao deletar mensagem`, {
-              msgId: msg.message_id,
-              error: e,
-            });
-          });
-        }, 120000);
+        deleteMessageAfter(ctx, msg.message_id, 120000);
       } catch (e) {
         error("Erro ao enviar mensagem de nome incorreto", e);
       }
