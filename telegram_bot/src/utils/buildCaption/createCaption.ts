@@ -99,7 +99,7 @@ export function createCaption({
     emoji_event: fmtEmojis(eventEmojis),
     event_name: eventName,
   });
-  if (addby) { return `${title}\n\n${name}\n${info}\n${rarity}\n\n${event} \n\n${addby}`.trim(); }
+  if (addby) { return `${title}\n\n${name}\n${info}\n${rarity}\n\n${event}\n${addby}`.trim(); }
 
 
 
