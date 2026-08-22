@@ -1,6 +1,7 @@
 "use server";
 
 import { uploadMediaToTelegram } from "@/lib/telegram/uploadMedia";
+import { sessionHasPermission } from "@/lib/session";
 
 export async function uploadMediaFile(
   base64: string,
@@ -8,6 +9,13 @@ export async function uploadMediaFile(
   type: "waifu" | "husbando",
 ) {
   try {
+    if (!(await sessionHasPermission("manage_characters"))) {
+      return {
+        success: false,
+        message: "Sem permissão para enviar mídias.",
+      };
+    }
+
     const buffer = Buffer.from(base64, "base64");
 
     if (buffer.length > 30 * 1024 * 1024) {
@@ -26,9 +34,10 @@ export async function uploadMediaFile(
       message: "Upload realizado com sucesso",
     };
   } catch (error) {
+    console.error("uploadMediaFile error:", error);
     return {
       success: false,
-      message: `Erro no upload: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+      message: "Erro interno no upload.",
     };
   }
 }

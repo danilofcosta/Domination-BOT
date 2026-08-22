@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { Bot } from "grammy";
 import { revalidatePath } from "next/cache";
+import { sessionHasPermission } from "@/lib/session";
 
 function getBot(type: "waifu" | "husbando") {
   const token = type === "waifu" ? process.env.BOT_TOKEN_WAIFU : process.env.BOT_TOKEN_HUSBANDO;
@@ -11,8 +12,12 @@ function getBot(type: "waifu" | "husbando") {
 }
 
 export async function updateRarityWeight(id: number, weight: number) {
+  if (!(await sessionHasPermission("manage_drop"))) {
+    return { success: false, message: "Sem permissão para alterar o sistema de drop." };
+  }
   await prisma.rarity.update({ where: { id }, data: { weight } });
   revalidatePath("/setup/drop");
+  return { success: true as const };
 }
 
 export async function getRarities() {
@@ -123,6 +128,10 @@ export async function dropCharacter(
   groupId: number,
 ) {
   try {
+    if (!(await sessionHasPermission("manage_drop"))) {
+      return { success: false, message: "Sem permissão para dropar personagens." };
+    }
+
     const group = await prisma.telegramGroup.findUnique({
       where: { id: groupId },
       select: { groupId: true },
@@ -180,6 +189,7 @@ export async function dropCharacter(
 
     return { success: true, message: `${character.name} dropado no grupo ${group.groupId}!` };
   } catch (e) {
-    return { success: false, message: String(e) };
+    console.error("dropCharacter error:", e);
+    return { success: false, message: "Erro interno ao dropar personagem." };
   }
 }

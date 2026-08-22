@@ -1,29 +1,19 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "../../generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { notifyCharacterUpdate } from "@/lib/telegram/notifyCharacterUpdate";
 import { notifyCharacterCreation } from "@/lib/telegram/notifyCharacterCreation";
 import { generateSlug } from "@/lib/slug";
 import { getTelegramInfo } from "@/lib/telegram";
-import { getProfileType, hasPermission } from "@/lib/permissions";
-
-async function getSessionUserId(): Promise<string | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("better-auth.session_token")?.value;
-  if (!token) return null;
-  const session = await prisma.session.findUnique({
-    where: { token },
-    select: { userId: true },
-  });
-  return session?.userId ?? null;
-}
+import {
+  getSessionUserId,
+  sessionHasPermission,
+} from "@/lib/session";
 
 async function canManageCharacters(): Promise<boolean> {
-  const userId = await getSessionUserId();
-  const profileType = userId ? await getProfileType(userId) : null;
-  return hasPermission(profileType, "manage_characters");
+  return sessionHasPermission("manage_characters");
 }
 
 type NewMedia = {
@@ -57,30 +47,22 @@ export async function createCharacter(
       };
     }
 
-    const cookieStore = await cookies();
-    const token = cookieStore.get("better-auth.session_token")?.value;
-
     let addby: { name: string; id: number } | null = null;
-    if (token) {
-      const session = await prisma.session.findUnique({
-        where: { token },
-        select: { userId: true },
+    const sessionUserId = await getSessionUserId();
+    if (sessionUserId) {
+      const user = await prisma.user.findUnique({
+        where: { id: sessionUserId },
+        select: { telegramUserId: true },
       });
-      if (session) {
-        const user = await prisma.user.findUnique({
-          where: { id: session.userId },
-          select: { telegramUserId: true },
+      if (user?.telegramUserId) {
+        const tu = await prisma.telegramUser.findUnique({
+          where: { id: user.telegramUserId },
+          select: { id: true, telegramData: true },
         });
-        if (user?.telegramUserId) {
-          const tu = await prisma.telegramUser.findUnique({
-            where: { id: user.telegramUserId },
-            select: { id: true, telegramData: true },
-          });
-          if (tu) {
-            const { firstName, lastName } = getTelegramInfo(tu.telegramData);
-            const name = [firstName, lastName].filter(Boolean).join(" ") || "Unknown";
-            addby = { name, id: tu.id };
-          }
+        if (tu) {
+          const { firstName, lastName } = getTelegramInfo(tu.telegramData);
+          const name = [firstName, lastName].filter(Boolean).join(" ") || "Unknown";
+          addby = { name, id: tu.id };
         }
       }
     }
@@ -92,8 +74,8 @@ export async function createCharacter(
       throw new Error(`Tipo de personagem inválido: ${type}`);
     }
 
-    const [nextIdResult] = await prisma.$queryRawUnsafe<{ next_id: number }[]>(
-      `SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM "${characterTable}"`
+    const [nextIdResult] = await prisma.$queryRaw<{ next_id: number }[]>(
+      Prisma.sql`SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM ${Prisma.raw(`"${characterTable}"`)}`
     );
     const nextId = nextIdResult.next_id;
 
@@ -269,16 +251,7 @@ export async function updateCharacter(
     let finalMedia = data.media;
     let finalMediaType = data.mediaType;
 
-    console.log("[updateCharacter] type=%s id=%d", type, id);
-    console.log("[updateCharacter] hasNewMedia=%s", !!data.newMedia);
-    console.log("[updateCharacter] data.media (old)=%s", data.media?.slice(0, 60));
-    console.log("[updateCharacter] data.mediaType (old)=%s", data.mediaType);
-
     if (data.newMedia) {
-      console.log("[updateCharacter] newMedia.type=%s", data.newMedia.type);
-      console.log("[updateCharacter] newMedia.value (first 60)=%s", data.newMedia.value?.slice(0, 60));
-      console.log("[updateCharacter] newMedia.mimeType=%s", data.newMedia.mimeType);
-
       if (data.newMedia.type === "url") {
         finalMedia = data.newMedia.value;
         finalMediaType = data.newMedia.mimeType.startsWith("video/")
@@ -291,9 +264,6 @@ export async function updateCharacter(
           : "IMAGE_FILEID";
       }
     }
-
-    console.log("[updateCharacter] finalMedia (first 60)=%s", finalMedia?.slice(0, 60));
-    console.log("[updateCharacter] finalMediaType=%s", finalMediaType);
 
     const mediaUpdateFields: Record<string, unknown> = {
       name: data.name,
@@ -383,9 +353,6 @@ export async function updateCharacter(
     }
 
     notifyCharacterUpdate(type, id, changes).catch(() => {});
-
-    console.log("[updateCharacter] DB updated. media=%s mediaType=%s", up?.media?.slice(0, 60), up?.mediaType);
-    console.log("[updateCharacter] matched expectation: media=%s expected=%s", up?.media === finalMedia, up?.mediaType === finalMediaType);
 
     return { success: true, message: "Personagem atualizado com sucesso!", updated: up };
   } catch (error) {

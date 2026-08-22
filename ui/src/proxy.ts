@@ -11,7 +11,6 @@ const PUBLIC_PATHS = [
   "/api/me",
   "/api/logout",
   "/api/login",
-  "/api/upload",
   "/profile",
 ];
 
@@ -138,8 +137,17 @@ export default async function handler(request: NextRequest) {
     }
 
     return NextResponse.next();
-  } catch {
-    return NextResponse.next();
+  } catch (e) {
+    console.error("proxy auth error:", e);
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: "Erro ao validar sessão." },
+        { status: 500 }
+      );
+    }
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 }
 

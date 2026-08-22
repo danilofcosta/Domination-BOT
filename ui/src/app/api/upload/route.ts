@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadMediaToTelegram } from "@/lib/telegram/uploadMedia";
+import { sessionHasPermission } from "@/lib/session";
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4", "video/webm", "video/x-matroska", "video/quicktime"];
 
@@ -33,6 +34,13 @@ function detectMime(buffer: Buffer): string | null {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await sessionHasPermission("manage_characters"))) {
+      return NextResponse.json(
+        { success: false, message: "Não autorizado." },
+        { status: 403 },
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const type = formData.get("type") as string | null;
@@ -71,8 +79,9 @@ export async function POST(request: NextRequest) {
       message: "Upload realizado com sucesso",
     });
   } catch (error) {
+    console.error("upload error:", error);
     return NextResponse.json(
-      { success: false, message: `Erro no upload: ${error instanceof Error ? error.message : "Erro desconhecido"}` },
+      { success: false, message: "Erro interno no upload." },
       { status: 500 },
     );
   }

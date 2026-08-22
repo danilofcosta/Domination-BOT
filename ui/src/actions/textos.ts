@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getRedis } from "@/lib/redis";
+import { sessionHasPermission } from "@/lib/session";
 
 const INVALIDATION_CHANNEL = "bot:cache:invalidate";
 
@@ -59,6 +60,10 @@ export async function getTextos(): Promise<TextoEntry[]> {
 }
 
 export async function saveTextos(changes: { key: string; value: string }[]) {
+  if (!(await sessionHasPermission("manage_config"))) {
+    return { success: false, count: 0, error: "Sem permissão para editar textos." };
+  }
+
   const pairs = changes.filter(
     (c) =>
       typeof c?.key === "string" &&
@@ -107,6 +112,7 @@ export async function saveTextos(changes: { key: string; value: string }[]) {
     await publishInvalidation("translations");
     return { success: true, count: pairs.length };
   } catch (e) {
-    return { success: false, count: 0, error: String(e) };
+    console.error("saveTextos error:", e);
+    return { success: false, count: 0, error: "Erro interno ao salvar textos." };
   }
 }
