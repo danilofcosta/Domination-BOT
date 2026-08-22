@@ -2,9 +2,15 @@
 
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
-import { debug, error } from "../utils/log.js";
+import { error } from "../utils/log.js";
 import { ProfileType } from "../../generated/prisma/client.js";
-import { botPrefix, registerCommand, category_admin_bot, type CommandConfig } from "./botConfigCommands.js";
+import {
+  botPrefix,
+  addMenuCommand,
+  category_admin_bot,
+  type ChatScope,
+  type CommandConfig,
+} from "./botConfigCommands.js";
 import { onlyRoleBotAdmin } from "../utils/permissions.js";
 import { addCharacterHandler } from "../handlers/Commands/CommandsAdminBot/managerCharacters/addCharacter/addCharacterHandler.js";
 import { editCharacterHandler } from "../handlers/Commands/CommandsAdminBot/managerCharacters/editCharacterHandler.js";
@@ -16,8 +22,6 @@ import { upadmin } from "../handlers/Commands/CommandsAdminBot/managerAdmins/upa
 import { unban } from "../handlers/Commands/CommandsAdminBot/managerAdmins/unban.js";
 import { unadmin } from "../handlers/Commands/CommandsAdminBot/managerAdmins/unadmin.js";
 import { clearCache } from "../handlers/Commands/CommandsAdminBot/managerAdmins/clearCache.js";
-
-const  AdminBotCommandsRegistry = new CommandGroup<MyContext>();
 
 export const  AdminBotCommandsRegistryDict: Record<string, CommandConfig> = {
   addchar: {
@@ -135,17 +139,28 @@ export const  AdminBotCommandsRegistryDict: Record<string, CommandConfig> = {
 
 };
 
-for (const cfg of Object.values( AdminBotCommandsRegistryDict)) {
-  const handlerWrapper = async (ctx: MyContext) => {
-    if (!cfg.minPermission){
-     return  error("Comando sem permissão mínima definida", cfg.command);
-    }
-
-    await onlyRoleBotAdmin(cfg.minPermission)(ctx, async () => {
-      await cfg.handler(ctx);
+/**
+ * Registra os comandos admin-bot no menu agregado, restritos ao grupo
+ * administrativo (GROUP_ADM) e visiveis apenas para administradores do chat.
+ * O menu nao mostra alias privado: comandos admin ficam so nesse chat.
+ */
+export function addAdminBotCommandsToMenu(
+  menu: CommandGroup<MyContext>,
+  scope: ChatScope,
+): void {
+  for (const cfg of Object.values(AdminBotCommandsRegistryDict)) {
+    addMenuCommand(menu, cfg, {
+      mainScopes: [scope],
+      aliasScopes: [],
+      wrap: (handler) => async (ctx) => {
+        if (!cfg.minPermission) {
+          error("Comando sem permissão mínima definida", cfg.command);
+          return;
+        }
+        await onlyRoleBotAdmin(cfg.minPermission)(ctx, async () => {
+          await handler(ctx);
+        });
+      },
     });
-  };
-  registerCommand( AdminBotCommandsRegistry, cfg);
+  }
 }
-
-export {  AdminBotCommandsRegistry };

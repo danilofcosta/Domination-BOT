@@ -1,11 +1,10 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
-import { debug } from "../utils/log.js";
 import {
   botPrefix,
   typeBot,
   type CommandConfig,
-  registerCommand,
+  addMenuCommand,
   category_user,
 } from "./botConfigCommands.js";
 import {
@@ -25,8 +24,6 @@ import { RandomCharacterHandler } from "../handlers/Commands/CommandsUser/Random
 import { animelistCommand } from "../handlers/Commands/CommandsUser/animelist.js";
 import { DetectHandler } from "../handlers/Commands/CommandsUser/detect.js";
 
-const userCommandsRegistry = new CommandGroup<MyContext>();
-
 export const userCommandsRegistryDict: Record<string, CommandConfig> = {
   top: {
     category_user: category_user.InfoPersonalization,
@@ -37,7 +34,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: topHandler,
-     
   },
   topchat: {
     category_user: category_user.InfoPersonalization,
@@ -47,7 +43,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: topHandlerChat,
- 
   },
   topgrupo: {
     category_user: category_user.InfoPersonalization,
@@ -58,7 +53,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top groups",
     },
     handler: topGruposHandler,
-     
   },
   Trade: {
     category_user: category_user.EconomyTrade,
@@ -68,7 +62,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Trade characters with another user",
     },
     handler: TradeHandler,
- 
   },
   Myinfos: {
     category_user: category_user.InfoPersonalization,
@@ -79,7 +72,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: Myinfos,
- 
   },
   Info: {
     category_user: category_user.InfoPersonalization,
@@ -90,7 +82,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show user info",
     },
     handler: InfoHandler,
- 
   },
   Gift: {
     category_user: category_user.EconomyTrade,
@@ -100,7 +91,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Gift a character to another user",
     },
     handler: GiftHandler,
- 
   },
   Fav: {
     category_user: category_user.InfoPersonalization,
@@ -111,7 +101,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Select your favorite character",
     },
     handler: favHandler,
- 
   },
   Harem: {
     category_user: category_user.Main,
@@ -123,7 +112,6 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show your character harem",
     },
     handler: HaremHandler,
-   
   },
   HaremMode: {
     category_user: category_user.Collection,
@@ -134,19 +122,18 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Change harem display mode",
     },
     handler: HaremmodeHandler,
-
   },
   Random: {
     category_user: category_user.InfoPersonalization,
     command: typeBot ? typeBot.toLowerCase() : "random",
-    commandPrivate: typeBot ? typeBot.toLowerCase() : "random", commandPrivateInChat: true,
+    commandPrivate: typeBot ? typeBot.toLowerCase() : "random",
+    commandPrivateInChat: true,
 
     description: {
       pt: "Traz um personagem aleatório do DB",
       en: "Brings a random character from the DB",
     },
     handler: RandomCharacterHandler,
-
   },
   Animelist: {
     category_user: category_user.InfoPersonalization,
@@ -157,17 +144,16 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "List animes by letter",
     },
     handler: animelistCommand,
-
   },
   Dominar: {
     command: "dominar",
     category_user: category_user.Main,
+    commandPrivateInChat: false,
     description: {
       pt: "Tenta capturar um personagem que apareceu no chat",
       en: "Try to capture a character that appeared in chat",
     },
     handler: CapturarCharacter,
- 
   },
   Detect: {
     category_user: category_user.Main,
@@ -178,21 +164,16 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Search a character and show who owns it",
     },
     handler: DetectHandler,
-
   },
 };
 
-for (const cfg of Object.values(userCommandsRegistryDict)) {
-  const handlerWrapper = async (ctx: MyContext) => {
-    debug("Comando", cfg.command, ctx.chat?.type, "executado por", ctx.from?.username);
-    if
-      (ctx.chat?.type !== 'private' && ctx.commandMatch?.command === cfg.commandPrivate && cfg.commandPrivateInChat === false) {
-      return debug("Comando privado em", ctx.chat?.type, 'ignorado', cfg.commandPrivate, ctx.chat?.type, "executado por", ctx.from?.username);
-
-    }
-    return cfg.handler(ctx);
-  };
-  registerCommand(userCommandsRegistry, cfg);
+/**
+ * Registra os comandos de usuario no menu agregado.
+ * Unico ponto que conhece os escopos: nome principal em grupos, alias
+ * (commandPrivate) em chats privados; nomes iguais cobrem ambos.
+ */
+export function addUserCommandsToMenu(menu: CommandGroup<MyContext>): void {
+  for (const cfg of Object.values(userCommandsRegistryDict)) {
+    addMenuCommand(menu, cfg);
+  }
 }
-
-export { userCommandsRegistry };

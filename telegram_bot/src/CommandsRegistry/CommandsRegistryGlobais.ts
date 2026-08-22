@@ -1,16 +1,13 @@
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
-import { debug } from "../utils/log.js";
 import {
   category_user,
   type CommandConfig,
-  registerCommand,
+  addMenuCommand,
 } from "./botConfigCommands.js";
 
 import { StartHandler } from "../handlers/Commands/CommandsGlobal/start.js";
 import { helpHandler } from "../handlers/Commands/CommandsGlobal/helpHandler.js";
-
-const GlobaisCommandsRegistry = new CommandGroup<MyContext>();
 
 export const GlobaisCommandsRegistryDict: Record<string, CommandConfig> = {
   start: {
@@ -39,17 +36,12 @@ export const GlobaisCommandsRegistryDict: Record<string, CommandConfig> = {
   },
 };
 
-for (const cfg of Object.values(GlobaisCommandsRegistryDict)) {
-  const handlerWrapper = async (ctx: MyContext) => {
-    debug("Comando", cfg.command, ctx.chat?.type, "executado por", ctx.from?.username);
-    if
-      (ctx.chat?.type !== 'private' && ctx.commandMatch?.command === cfg.commandPrivate && cfg.commandPrivateInChat === false) {
-      return debug("Comando privado em", ctx.chat?.type, 'ignorado', cfg.commandPrivate, ctx.chat?.type, "executado por", ctx.from?.username);
-
-    }
-    return cfg.handler(ctx);
-  };
-  registerCommand(GlobaisCommandsRegistry, cfg);
+/**
+ * Registra start/help no menu agregado (grupos + privado).
+ * commandPrivate === command -> o proprio nome principal cobre os dois chats.
+ */
+export function addGlobalCommandsToMenu(menu: CommandGroup<MyContext>): void {
+  for (const cfg of Object.values(GlobaisCommandsRegistryDict)) {
+    addMenuCommand(menu, cfg);
+  }
 }
-
-export { GlobaisCommandsRegistry };

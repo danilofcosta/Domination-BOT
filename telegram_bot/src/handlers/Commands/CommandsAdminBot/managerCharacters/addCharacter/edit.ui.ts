@@ -1,4 +1,4 @@
-import { userCommandsRegistry, userCommandsRegistryDict } from "../../../../../CommandsRegistry/CommandsRegistryUser.js";
+import { userCommandsRegistryDict } from "../../../../../CommandsRegistry/CommandsRegistryUser.js";
 import { createButtonEditCharacter } from "../../../../../utils/buildButtons/createButtonEditCharacter.js";
 import type { MyContext, PreCharacter } from "../../../../../utils/customTypes.js";
 import { sendMessageCustom } from "../../../../../utils/sendMessageCustom.js";
