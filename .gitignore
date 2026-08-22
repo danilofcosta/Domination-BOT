@@ -19,3 +19,4 @@ newui/
 tmp_get_session.cjs
 tmp_get_session.ts
 .env
+telegram_bot/scripts/test.ts

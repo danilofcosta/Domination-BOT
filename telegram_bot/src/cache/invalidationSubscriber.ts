@@ -2,11 +2,12 @@ import { createClient } from "redis";
 import { redisUrl } from "./redis.js";
 import { invalidateDropConfig } from "./dropConfig.js";
 import { translationService } from "../locales/translationService.js";
-import { debug, error } from "../utils/log.js";
+import { debug, error, info } from "../utils/log.js";
 
 const INVALIDATION_CHANNEL = "bot:cache:invalidate";
 
 export async function startInvalidationSubscriber(): Promise<void> {
+  info("[invalidate] iniciando subscriber de invalidação de cache...");
   if (!redisUrl) {
     debug(
       "[invalidate] REDIS_URL ausente — invalidação via pub/sub desativada",

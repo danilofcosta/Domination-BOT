@@ -1,9 +1,9 @@
 import { CommandGroup } from "@grammyjs/commands";
 import { ChatType, type MyContext } from "../utils/customTypes.js";
-import { debug } from "../utils/log.js";
-
-const botPrefix =
-  process.env.TYPE_BOT?.charAt(0)?.toLowerCase() ?? "";
+import { verbose } from "../utils/log.js";
+import type { ProfileType } from "../../generated/prisma/enums.js";
+//botPrefix [waifu , husbando]  
+const botPrefix = process.env.TYPE_BOT?.charAt(0)?.toLowerCase() ?? "";
 const typeBot = process.env.TYPE_BOT ? process.env.TYPE_BOT.toLowerCase() : process.env.TYPE_BOT;
 const prefixs = "./!";
 const options = { ignoreCase: true, prefixs };
@@ -24,10 +24,14 @@ export enum category_admin_bot {
   Characters = "personagens",
   Admins = "administradores"
 }
+
+
 export type CommandConfig = {
   command: string;
   commandPrivate?: string;
   commandPrivateInChat?: boolean
+  commandInChat?: boolean
+minPermission?: ProfileType
   other_commands?: [string]
   category_user?: category_user
   category_admin_group?: category_admin_group
@@ -38,29 +42,36 @@ export type CommandConfig = {
     en: string;
   };
   handler: (ctx: MyContext) => Promise<any> | any;
-  scopes: ScopeType[];
+ // scopes: ScopeType[];
 };
 
 export function registerCommand(
   registry: CommandGroup<MyContext>,
-  command: string,
-
-  description: string,
-  handler: (ctx: MyContext) => Promise<any> | any,
-  commandPrivate?: string, other_commands?: [string]
+CommandsRegistryDict: CommandConfig
 ) {
-  debug('registrando comando', command)
-  const groupCmd = registry.command(command, description, handler, options);
-  groupCmd.addToScope({ type: "all_group_chats" }, handler);
+  verbose('registrando comando', CommandsRegistryDict.command)
 
-  if (commandPrivate) {
-    const privateCmd = registry.command(commandPrivate, description, handler, options);
-    privateCmd.addToScope({ type: "all_private_chats" }, handler);
+  if (CommandsRegistryDict.commandInChat || CommandsRegistryDict.commandInChat === undefined) {
+    const publicCmd = registry.command(CommandsRegistryDict.command, CommandsRegistryDict.description.pt, CommandsRegistryDict.handler, options);
+    publicCmd.addToScope({ type: 'all_chat_administrators' }, CommandsRegistryDict.handler);
   }
+
+  if (CommandsRegistryDict.commandPrivate) {
+    const privateCmd = registry.command(CommandsRegistryDict.commandPrivate, CommandsRegistryDict.description.pt, CommandsRegistryDict.handler, options);
+    privateCmd.addToScope({ type: 'all_private_chats' }, CommandsRegistryDict.handler);
+  }
+
+
+  // if (CommandsRegistryDict.minPermission && process.env.GROUP_ADM) {
+  //      const publicCmd = registry.command(CommandsRegistryDict.command, CommandsRegistryDict.description.pt, CommandsRegistryDict.handler, options);
+  //   publicCmd.addToScope({ type: "chat_administrators",
+  //   chat_id: process.env.GROUP_ADM ||0 }, CommandsRegistryDict.handler);
+  // }
 }
 
+
 export function isWaifuBotCheck(): boolean {
-  debug("Tipo de bot em execução", typeBot?.toLowerCase());
+  verbose("checando tipo de bot fun isWaifuBotCheck()", typeBot?.toLowerCase());
 
   if (typeBot?.toLowerCase() === ChatType.WAIFU) {
     return true;

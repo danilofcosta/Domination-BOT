@@ -7,7 +7,10 @@ import { translationService } from "./locales/translationService.js";
 import { i18nMiddleware } from "./locales/i18nFlavor.js";
 import { userCommandsRegistry } from "./CommandsRegistry/CommandsRegistryUser.js";
 import { HiddenCommandsRegistry } from "./CommandsRegistry/CommandsRegistryHidden.js";
-import { AdminCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminBot.js";
+import {
+  AdminBotCommandsRegistry,
+  AdminBotCommandsRegistryDict,
+} from "./CommandsRegistry/CommandsRegistryAdminBot.js";
 import { devCommands } from "./CommandsRegistry/CommandsRegistryAdminDev.js";
 import { GlobaisCommandsRegistry } from "./CommandsRegistry/CommandsRegistryGlobais.js";
 import { AdminGroupCommandsRegistry } from "./CommandsRegistry/CommandsRegistryAdminGroup.js";
@@ -24,13 +27,32 @@ function initialSessionData(): SessionData {
     chatTitle: "",
   };
 }
+async function deleteAllCommands(bot: Bot<MyContext>) {
+  await Promise.all([
+    bot.api.deleteMyCommands({
+      scope: { type: "default" },
+    }),
+
+    bot.api.deleteMyCommands({
+      scope: { type: "all_private_chats" },
+    }),
+
+    bot.api.deleteMyCommands({
+      scope: { type: "all_group_chats" },
+    }),
+
+    bot.api.deleteMyCommands({
+      scope: { type: "all_chat_administrators" },
+    }),
+  ]);
+}
 
 export default async function initializeBot(
   ChatTypeBot: ChatType,
   BOT_TOKEN: string,
 ): Promise<Bot<MyContext>> {
   const bot = new Bot<MyContext>(BOT_TOKEN);
-  const   testDbConnectionResult :boolean = await testDbConnection()
+  const testDbConnectionResult: boolean = await testDbConnection();
 
   bot.api.config.use(autoRetry());
 
@@ -44,47 +66,60 @@ export default async function initializeBot(
   );
 
   bot.use(async (ctx, next) => {
+    // definição do tipo de chat e título do chat na sessão
     const chat = ctx.chat;
     const chatType = (chat?.type ?? "private") as SessionData["chatType"];
-    ctx.session.chatType = chatType;
+    ctx.session.chatType = chatType; // definição do tipo de chat na sessão (private, group, supergroup, channel)
+    ctx.botType = ChatTypeBot; // definição do tipo de bot na sessão WAIFU ou HUSBANDO
     ctx.session.chatTitle =
       chatType === "private"
         ? (ctx.from?.first_name ?? ctx.from?.username ?? "")
         : chat && "title" in chat
           ? ((chat as { title?: string }).title ?? "")
-          : "";
+          : ""; // definição do título do chat na sessão (nome do usuário ou título do grupo/canal)
     await next();
   });
-
-  bot.use(async (ctx, next) => {
-    ctx.botType = ChatTypeBot;
-    await next();
-  });
-  await translationService.init();  
+  // inicialização do serviço de tradução e registro dos middlewares
+  await translationService.init();
   bot.use(i18nMiddleware);
   bot.use(blockDetection);
   bot.use(rateLimiter);
   bot.use(banCheck);
 
-  bot.api.deleteMyCommands()
-  userCommandsRegistry.setCommands(bot)
+  // registro dos comandos do bot visiveis para os usuários
+  await deleteAllCommands(bot);
+  await userCommandsRegistry.setCommands(bot);
+   await GlobaisCommandsRegistry.setCommands(bot);
+  if (process.env.GROUP_ADM) {
+    await bot.api.setMyCommands(
+      Object.values(AdminBotCommandsRegistryDict).map((cfg) => ({
+        command: cfg.command,
+        description: cfg.description.pt,
+      })),
+      {
+        scope: {
+          type: "chat",
+          chat_id: process.env.GROUP_ADM || 0,
+        },
+      },
+    );
+  }
 
-  info('registrando comandos')
-  bot.use(userCommandsRegistry)
-  bot.use(HiddenCommandsRegistry)
-  bot.use(AdminCommandsRegistry)
-  bot.use(
-    GlobaisCommandsRegistry
-  )
-  bot.use(AdminGroupCommandsRegistry)
-  bot.use(devCommands)
+  info("registrando comandos");
+  bot.use(userCommandsRegistry);
+  bot.use(HiddenCommandsRegistry);
+  bot.use(AdminBotCommandsRegistry);
+  bot.use(GlobaisCommandsRegistry);
+  bot.use(AdminGroupCommandsRegistry);
+  bot.use(devCommands);
 
-  info('registrando listeners')
-
+  info("registrando listeners");
   bot.use(listeners);
   bot.use(callbacks);
+  // tratamento de erros do bot
   bot.catch((err) => {
     error("BOT ERROR:", err);
   });
+
   return bot;
 }

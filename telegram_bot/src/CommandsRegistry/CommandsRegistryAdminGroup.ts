@@ -21,8 +21,7 @@ export const AdminGroupCommandsRegistryDict: Record<string, CommandConfig> = {
       pt: "Configurações da Federação neste chat (admin)",
       en: "Federation settings for this chat (admin)",
     },
-    handler: configHandler,
-    scopes: ["all_group_chats"],
+    handler: configHandler
   },
   drop: {
     command: "drop",
@@ -31,8 +30,7 @@ export const AdminGroupCommandsRegistryDict: Record<string, CommandConfig> = {
       pt: "Liga/desliga drops neste chat (admin) — /drop [yes|no|on|off]",
       en: "Enable/disable drops in this chat (admin) — /drop [yes|no|on|off]",
     },
-    handler: dropHandler,
-    scopes: ["all_group_chats"],
+    handler: dropHandler
   },
 };
 
@@ -43,10 +41,7 @@ for (const cfg of Object.values(AdminGroupCommandsRegistryDict)) {
   };
   registerCommand(
     AdminGroupCommandsRegistry,
-    cfg.command,
-    cfg.description.pt,
-    handlerWrapper,
-    cfg.commandPrivate,
+    cfg
   );
 }
 

@@ -37,7 +37,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: topHandler,
-    scopes: ["all_group_chats", "all_private_chats"],
+     
   },
   topchat: {
     category_user: category_user.InfoPersonalization,
@@ -47,7 +47,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: topHandlerChat,
-    scopes: ["all_group_chats", ],
+ 
   },
   topgrupo: {
     category_user: category_user.InfoPersonalization,
@@ -58,7 +58,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top groups",
     },
     handler: topGruposHandler,
-    scopes: ["all_group_chats", "all_private_chats"],
+     
   },
   Trade: {
     category_user: category_user.EconomyTrade,
@@ -68,7 +68,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Trade characters with another user",
     },
     handler: TradeHandler,
-    scopes: ["all_group_chats", ],
+ 
   },
   Myinfos: {
     category_user: category_user.InfoPersonalization,
@@ -79,7 +79,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show the top players",
     },
     handler: Myinfos,
-    scopes: ["all_group_chats", ],
+ 
   },
   Info: {
     category_user: category_user.InfoPersonalization,
@@ -90,7 +90,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show user info",
     },
     handler: InfoHandler,
-    scopes: ["all_group_chats", ],
+ 
   },
   Gift: {
     category_user: category_user.EconomyTrade,
@@ -100,7 +100,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Gift a character to another user",
     },
     handler: GiftHandler,
-    scopes: ["all_group_chats", ],
+ 
   },
   Fav: {
     category_user: category_user.InfoPersonalization,
@@ -111,7 +111,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Select your favorite character",
     },
     handler: favHandler,
-    scopes: ["all_group_chats", ],
+ 
   },
   Harem: {
     category_user: category_user.Main,
@@ -123,7 +123,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Show your character harem",
     },
     handler: HaremHandler,
-    scopes: ["all_group_chats", ],
+   
   },
   HaremMode: {
     category_user: category_user.Collection,
@@ -134,7 +134,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Change harem display mode",
     },
     handler: HaremmodeHandler,
-    scopes: ["all_group_chats", ],
+
   },
   Random: {
     category_user: category_user.InfoPersonalization,
@@ -146,7 +146,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Brings a random character from the DB",
     },
     handler: RandomCharacterHandler,
-    scopes: ["all_group_chats", ],
+
   },
   Animelist: {
     category_user: category_user.InfoPersonalization,
@@ -157,7 +157,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "List animes by letter",
     },
     handler: animelistCommand,
-    scopes: ["all_group_chats", ],
+
   },
   Dominar: {
     command: "dominar",
@@ -167,7 +167,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Try to capture a character that appeared in chat",
     },
     handler: CapturarCharacter,
-    scopes: ["all_group_chats", ],
+ 
   },
   Detect: {
     category_user: category_user.Main,
@@ -178,7 +178,7 @@ export const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "Search a character and show who owns it",
     },
     handler: DetectHandler,
-    scopes: ["all_group_chats", ],
+
   },
 };
 
@@ -192,7 +192,7 @@ for (const cfg of Object.values(userCommandsRegistryDict)) {
     }
     return cfg.handler(ctx);
   };
-  registerCommand(userCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
+  registerCommand(userCommandsRegistry, cfg);
 }
 
 export { userCommandsRegistry };

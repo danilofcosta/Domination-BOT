@@ -15,7 +15,7 @@ const userCommandsRegistryDict: Record<string, CommandConfig> = {
       en: "return your id",
     },
     handler: idHandler,
-    scopes: ["all_group_chats", "all_chat_administrators"],
+     
     category_user: category_user.Hidden,
   },
 };
@@ -25,7 +25,7 @@ for (const cfg of Object.values(userCommandsRegistryDict)) {
     debug("Comando", cfg.command, "executado por", ctx.from?.username);
     return cfg.handler(ctx);
   };
-  registerCommand(HiddenCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
+  registerCommand(HiddenCommandsRegistry, cfg);
 }
 
 export { HiddenCommandsRegistry };

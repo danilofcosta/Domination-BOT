@@ -35,12 +35,6 @@ const start = async () => {
  
   await startInvalidationSubscriber();
  
-
-
- 
-
-
-  
   if (
     process.env.VERCEL === "true" ||
     process.env.NODE_ENV === NODE_ENV.PRODUCTION

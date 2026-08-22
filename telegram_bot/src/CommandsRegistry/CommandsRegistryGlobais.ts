@@ -2,7 +2,6 @@ import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
 import { debug } from "../utils/log.js";
 import {
-  botPrefix,
   category_user,
   type CommandConfig,
   registerCommand,
@@ -22,20 +21,21 @@ export const GlobaisCommandsRegistryDict: Record<string, CommandConfig> = {
       pt: "Mostra o top de jogadores",
       en: "Show the top players",
     },
+    commandInChat:false,
     commandPrivateInChat:true,
     handler: StartHandler,
-    scopes: ["all_group_chats", "all_private_chats"],
+     
   },
   help: {
     command: "help",
     commandPrivate: "help",
+    commandInChat:false,
     category_user: category_user.Main,
     description: {
       pt: "Mostra o guia de comandos",
       en: "Show the commands guide",
     },
-    handler: helpHandler,
-    scopes: ["all_private_chats"],
+    handler: helpHandler
   },
 };
 
@@ -49,7 +49,7 @@ for (const cfg of Object.values(GlobaisCommandsRegistryDict)) {
     }
     return cfg.handler(ctx);
   };
-  registerCommand(GlobaisCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
+  registerCommand(GlobaisCommandsRegistry, cfg);
 }
 
 export { GlobaisCommandsRegistry };

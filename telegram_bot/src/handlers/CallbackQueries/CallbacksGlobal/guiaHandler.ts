@@ -3,7 +3,7 @@ import type { MyContext } from "../../../utils/customTypes.js";
 import { category_user, category_admin_group, category_admin_bot } from "../../../CommandsRegistry/botConfigCommands.js";
 import { userCommandsRegistryDict } from "../../../CommandsRegistry/CommandsRegistryUser.js";
 import { AdminGroupCommandsRegistryDict } from "../../../CommandsRegistry/CommandsRegistryAdminGroup.js";
-import { AdminCommandsRegistryDict } from "../../../CommandsRegistry/CommandsRegistryAdminBot.js";
+import {  AdminBotCommandsRegistryDict } from "../../../CommandsRegistry/CommandsRegistryAdminBot.js";
 import { editOrSendText } from "../../../utils/telegram/editOrSendText.js";
 import { StartHandler } from "../../Commands/CommandsGlobal/start.js";
 import { error } from "../../../utils/log.js";
@@ -40,7 +40,7 @@ function getCommandsByCategory(cat: category_user | category_admin_group | categ
   }
   const adminBotCat = adminBotCategories.find((c) => c.key === cat);
   if (adminBotCat) {
-    return Object.values(AdminCommandsRegistryDict)
+    return Object.values( AdminBotCommandsRegistryDict)
       .filter((c) => c.category_admin_bot === adminBotCat.key)
       .map((c) => `/${c.command} - ${c.description.pt}`);
   }

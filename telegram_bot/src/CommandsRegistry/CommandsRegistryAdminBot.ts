@@ -2,9 +2,9 @@
 
 import { CommandGroup } from "@grammyjs/commands";
 import type { MyContext } from "../utils/customTypes.js";
-import { debug } from "../utils/log.js";
+import { debug, error } from "../utils/log.js";
 import { ProfileType } from "../../generated/prisma/client.js";
-import { botPrefix, registerCommand, category_admin_bot } from "./botConfigCommands.js";
+import { botPrefix, registerCommand, category_admin_bot, type CommandConfig } from "./botConfigCommands.js";
 import { onlyRoleBotAdmin } from "../utils/permissions.js";
 import { addCharacterHandler } from "../handlers/Commands/CommandsAdminBot/managerCharacters/addCharacter/addCharacterHandler.js";
 import { editCharacterHandler } from "../handlers/Commands/CommandsAdminBot/managerCharacters/editCharacterHandler.js";
@@ -17,21 +17,9 @@ import { unban } from "../handlers/Commands/CommandsAdminBot/managerAdmins/unban
 import { unadmin } from "../handlers/Commands/CommandsAdminBot/managerAdmins/unadmin.js";
 import { clearCache } from "../handlers/Commands/CommandsAdminBot/managerAdmins/clearCache.js";
 
-type AdminCommand = {
-  minPermission: ProfileType;
-  command: string;
-  commandPrivate?: string;
-  category_admin_bot: category_admin_bot;
-  description: {
-    en: string;
-    pt: string;
-  };
-  handler: (ctx: MyContext) => Promise<any>;
-};
+const  AdminBotCommandsRegistry = new CommandGroup<MyContext>();
 
-const AdminCommandsRegistry = new CommandGroup<MyContext>();
-
-export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
+export const  AdminBotCommandsRegistryDict: Record<string, CommandConfig> = {
   addchar: {
     minPermission: ProfileType.ADMIN,
     command: "addchar" + botPrefix,
@@ -41,6 +29,7 @@ export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
       pt: "Adicionar um personagem ao banco de dados (admin)",
     },
     handler: addCharacterHandler,
+     
   },
   editchar: {
     minPermission: ProfileType.ADMIN,
@@ -51,6 +40,7 @@ export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
       pt: "editar um personagem ao banco de dados (admin)",
     },
     handler: editCharacterHandler,
+     
   },
 
   reloadadms: {
@@ -78,7 +68,7 @@ export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
 
   cleanCollection: {
     minPermission: ProfileType.ADMIN,
-    command: "cleanCollection" + botPrefix,
+    command: "cleancollection" + botPrefix,
     category_admin_bot: category_admin_bot.Admins,
     description: {
       en: "Clean a user's collection (admin)",
@@ -134,7 +124,7 @@ export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
   clearCache: {
     minPermission: ProfileType.ADMIN,
     command: "clearcache" + botPrefix,
-    commandPrivate: "clearcacache",
+    commandPrivate: "clearcache",
     category_admin_bot: category_admin_bot.Admins,
     description: {
       en: "Clear the bot's caches (admin)",
@@ -145,14 +135,17 @@ export const AdminCommandsRegistryDict: Record<string, AdminCommand> = {
 
 };
 
-for (const cfg of Object.values(AdminCommandsRegistryDict)) {
+for (const cfg of Object.values( AdminBotCommandsRegistryDict)) {
   const handlerWrapper = async (ctx: MyContext) => {
-    debug("AdminCommand", cfg.command, "executado por", ctx.from?.username);
+    if (!cfg.minPermission){
+     return  error("Comando sem permissão mínima definida", cfg.command);
+    }
+
     await onlyRoleBotAdmin(cfg.minPermission)(ctx, async () => {
       await cfg.handler(ctx);
     });
   };
-  registerCommand(AdminCommandsRegistry, cfg.command, cfg.description.pt, handlerWrapper, cfg.commandPrivate);
+  registerCommand( AdminBotCommandsRegistry, cfg);
 }
 
-export { AdminCommandsRegistry };
+export {  AdminBotCommandsRegistry };

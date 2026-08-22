@@ -36,7 +36,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
   let receiverName = "";
   let tradeKey: string;
 
-  if (tradeHandlerparametres) {
+  if (tradeHandlerparametres && tradeHandlerparametres.receiver_id && tradeHandlerparametres.Transmitter_id) {
     receiver_id = tradeHandlerparametres.receiver_id;
     receiver_characterId = tradeHandlerparametres.receiver_characterId;
     Transmitter_id = tradeHandlerparametres.Transmitter_id;
@@ -56,7 +56,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       await sendMessageCustom({
         ctx,
         caption: ctx.t("trade_reply_instruction", {
-          command: userCommandsRegistryDict.Trade!.command,
+          command: '/' + userCommandsRegistryDict.Trade!.command,
         }),
       });
       return;
@@ -128,7 +128,7 @@ export async function TradeHandler(ctx: MyContext, tradeHandlerparametres?: Trad
       return await sendMessageCustom({
         ctx,
         caption: ctx.t("trade_error_all_id_not_info", {
-          command: userCommandsRegistryDict.Trade!.command,
+          command: '/' + userCommandsRegistryDict.Trade!.command,
         }),
       });
     }
