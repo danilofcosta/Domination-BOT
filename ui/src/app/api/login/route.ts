@@ -110,7 +110,8 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch {
+  } catch (e) {
+    console.error("[login] Error:", e);
     return NextResponse.json(
       { error: "Erro interno." },
       { status: 500 },

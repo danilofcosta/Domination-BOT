@@ -7,9 +7,10 @@ import { BLOCK_DURATION_MS, LIMIT, TIMEFAME } from "./constants.js";
 
 export async function rateLimiter(ctx: MyContext, next: NextFunction) {
   const fromId = ctx.from?.id;
-  if (fromId === undefined) return next();
+  if (fromId === undefined || !fromId) return next();
+  if ( !ctx.chat?.id) return next();
 
-  const now = Date.now();
+  const now = ctx.message?.date ? ctx.message.date * 1000 : Date.now();
   const key = blockKey(ctx.chat?.id, fromId);
   const exceeded = await redis.rateLimitExceeded(
     `rl:${key}`,

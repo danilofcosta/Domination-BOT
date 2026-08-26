@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CardImage } from "../card-image";
 
+
 type Step = "token" | "form";
 
 function SignForm() {
@@ -42,9 +43,10 @@ function SignForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string; error: boolean } | null>(
-    null
-  );
+  const [message, setMessage] = useState<{
+    text: string;
+    error: boolean;
+  } | null>(null);
 
   const telegramUrl = `https://t.me/${
     process.env.NEXT_PUBLIC_TELEGRAM_BOT_NAME
@@ -187,7 +189,7 @@ function SignForm() {
                   "text-center text-sm",
                   message.error
                     ? "text-destructive"
-                    : "text-emerald-600 dark:text-emerald-400"
+                    : "text-emerald-600 dark:text-emerald-400",
                 )}
               >
                 {message.text}
@@ -246,7 +248,9 @@ function SignForm() {
                   />
                   <button
                     type="button"
-                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
                     aria-pressed={showPassword}
                     onClick={() => setShowPassword((value) => !value)}
                     className="absolute top-1/2 right-2 -translate-y-1/2 rounded text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
@@ -284,9 +288,7 @@ function SignForm() {
                   />
                   <button
                     type="button"
-                    aria-label={
-                      showConfirm ? "Ocultar senha" : "Mostrar senha"
-                    }
+                    aria-label={showConfirm ? "Ocultar senha" : "Mostrar senha"}
                     aria-pressed={showConfirm}
                     onClick={() => setShowConfirm((value) => !value)}
                     className="absolute top-1/2 right-2 -translate-y-1/2 rounded text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
@@ -316,7 +318,7 @@ function SignForm() {
                     "text-center text-sm",
                     message.error
                       ? "text-destructive"
-                      : "text-emerald-600 dark:text-emerald-400"
+                      : "text-emerald-600 dark:text-emerald-400",
                   )}
                 >
                   {message.text}
