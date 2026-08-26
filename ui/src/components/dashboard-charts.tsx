@@ -166,7 +166,7 @@ export function DashboardCharts({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={dailyData}
-            margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+            margin={{ top: 5, right: 5, left: -20, bottom: 20 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
@@ -175,10 +175,13 @@ export function DashboardCharts({
             />
             <XAxis
               dataKey="label"
-              tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+              tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
               tickLine={false}
               axisLine={{ stroke: "var(--border)" }}
-              interval={0}
+              interval={1}
+              angle={-45}
+              textAnchor="end"
+              height={40}
             />
             <YAxis
               tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
@@ -191,7 +194,7 @@ export function DashboardCharts({
               contentStyle={tooltipStyle}
               labelStyle={{ color: "var(--foreground)" }}
             />
-            <Bar dataKey="value" name="Personagens" fill="#8b5cf6" radius={[4, 4, 0, 0]} maxBarSize={24} />
+            <Bar dataKey="value" name="Personagens" fill="#8b5cf6" radius={[4, 4, 0, 0]} maxBarSize={20} />
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>
