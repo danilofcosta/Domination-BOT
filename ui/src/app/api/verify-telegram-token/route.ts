@@ -30,20 +30,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const telegramId = BigInt(verification.identifier);
+    const rawId = verification.identifier;
+    if (!rawId || !/^\d+$/.test(rawId)) {
+      return NextResponse.json(
+        { valid: false, error: "Token inválido." },
+        { status: 400 },
+      );
+    }
+
+    const telegramId = BigInt(rawId);
     const telegramUser = await prisma.telegramUser.findUnique({
       where: { telegramId },
     });
 
     if (!telegramUser) {
       return NextResponse.json(
-        { valid: false, error: "Usuário do Telegram não encontrado." },
-        { status: 404 },
+        { valid: false, error: "Token inválido." },
+        { status: 400 },
       );
     }
 
     return NextResponse.json({ valid: true, telegramId: Number(telegramId) });
-  } catch {
+  } catch (err) {
+    console.error("verify-telegram-token error:", err);
     return NextResponse.json(
       { valid: false, error: "Erro interno." },
       { status: 500 },

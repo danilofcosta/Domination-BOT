@@ -9,15 +9,15 @@ export async function POST(request: NextRequest) {
     if (!token || typeof token !== "string") {
       return NextResponse.json({ error: "Token é obrigatório." }, { status: 400 });
     }
-    if (!username || typeof username !== "string" || username.length < 3) {
+    if (!username || typeof username !== "string" || username.length < 3 || username.length > 20 || !/^[a-zA-Z0-9_]+$/.test(username)) {
       return NextResponse.json(
-        { error: "Usuário deve ter pelo menos 3 caracteres." },
+        { error: "Usuário inválido." },
         { status: 400 },
       );
     }
-    if (!password || password.length < 6) {
+    if (!password || password.length < 8) {
       return NextResponse.json(
-        { error: "A senha deve ter pelo menos 6 caracteres." },
+        { error: "A senha deve ter pelo menos 8 caracteres." },
         { status: 400 },
       );
     }

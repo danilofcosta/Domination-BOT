@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -32,11 +32,9 @@ type Step = "token" | "form";
 
 function SignForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const tokenParam = searchParams.get("token");
 
-  const [step, setStep] = useState<Step>(tokenParam ? "form" : "token");
-  const [token, setToken] = useState(tokenParam ?? "");
+  const [step, setStep] = useState<Step>("token");
+  const [token, setToken] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -220,6 +218,8 @@ function SignForm() {
                     className="pl-8"
                     required
                     minLength={3}
+                    maxLength={20}
+                    pattern="[a-zA-Z0-9_]+"
                   />
                 </div>
               </div>
@@ -241,10 +241,10 @@ function SignForm() {
                     onChange={(event) => setPassword(event.target.value)}
                     type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder="Mínimo 8 caracteres"
                     className="pr-8 pl-8"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -284,7 +284,7 @@ function SignForm() {
                     placeholder="Repita a senha"
                     className="pr-8 pl-8"
                     required
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -355,9 +355,5 @@ function SignForm() {
 }
 
 export default function SignPage() {
-  return (
-    <Suspense fallback={null}>
-      <SignForm />
-    </Suspense>
-  );
+  return <SignForm />;
 }

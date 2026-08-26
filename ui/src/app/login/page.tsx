@@ -2,26 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Eye,
-  EyeOff,
-  LoaderCircle,
-  LockKeyhole,
-  LogIn,
-  User,
-} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { CardImage } from "./card-image";
 import { LoginForm } from "./from-login";
 
